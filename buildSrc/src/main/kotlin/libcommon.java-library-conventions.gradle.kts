@@ -17,6 +17,14 @@ dependencies {
     implementation(platform("io.netty:netty-bom:4.1.56.Final"))
 	// junit-bom
 	testImplementation(platform("org.junit:junit-bom:5.7.0"))
+
+    constraints {
+        implementation("org.slf4j:slf4j-api:1.7.30")
+        implementation("ch.qos.logback:logback-classic:1.2.3")
+    }
+    // log4j2
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.14.0"))
+
 }
 
 java {
