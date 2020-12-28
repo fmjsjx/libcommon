@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.util;
 
+import java.nio.charset.StandardCharsets;
 import java.util.function.IntPredicate;
 
 /**
@@ -118,6 +119,39 @@ public class StringUtil {
             values[i] = Long.parseLong(strings[i]);
         }
         return values;
+    }
+
+    /**
+     * Converts the byte array to hex string.
+     * 
+     * @param value the byte array
+     * @return the hex string
+     */
+    public static final String toHexString(byte[] value) {
+        if (value == null) {
+            return null;
+        }
+        if (value.length == 0) {
+            return "";
+        }
+        return toHexString0(value);
+    }
+
+    private static final String toHexString0(byte[] value) {
+        final byte[] hexBytes = HexBytesHolder.HEX_BYTES;
+        byte[] hexValue = new byte[value.length << 1];
+        for (int i = 0; i < value.length; i++) {
+            byte b = value[i];
+            int index = i * 2;
+            hexValue[index] = hexBytes[(b >>> 0x4) & 0xf];
+            hexValue[index + 1] = hexBytes[b & 0xf];
+        }
+        return new String(hexValue, StandardCharsets.US_ASCII);
+    }
+
+    private static final class HexBytesHolder {
+        private static final byte[] HEX_BYTES = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
+                'e', 'f' };
     }
 
     private StringUtil() {
