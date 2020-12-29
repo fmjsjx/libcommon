@@ -107,6 +107,15 @@ public class ChecksumUtil {
     }
 
     /**
+     * Returns the {@link ChecksumUtil} with the {@code CRC-32} checksum type.
+     * 
+     * @return the {@link ChecksumUtil} with the {@code CRC-32} checksum type
+     */
+    public static final ChecksumUtil crc32() {
+        return CRC32UtilInstanceHolder.instance.get();
+    }
+
+    /**
      * Calculates and returns the {@code CRC-32} checksum value with the specified
      * array of bytes.
      * 
@@ -116,7 +125,7 @@ public class ChecksumUtil {
      * @return the {@code CRC-32} checksum value
      */
     public static final long crc32(byte[] b, int off, int len) {
-        return CRC32UtilInstanceHolder.instance.get().calculateValue(b, off, len);
+        return crc32().calculateValue(b, off, len);
     }
 
     /**
@@ -128,7 +137,7 @@ public class ChecksumUtil {
      * @return the {@code CRC-32} checksum value
      */
     public static final long crc32(byte[] b, byte[]... others) {
-        return CRC32UtilInstanceHolder.instance.get().calculateValue(b, others);
+        return crc32().calculateValue(b, others);
     }
 
     /**
@@ -140,11 +149,20 @@ public class ChecksumUtil {
      * @return the the {@code CRC-32} checksum value
      */
     public static final long crc32(ByteBuffer buffer, ByteBuffer... otherBuffers) {
-        return CRC32UtilInstanceHolder.instance.get().calculateValue(buffer, otherBuffers);
+        return crc32().calculateValue(buffer, otherBuffers);
     }
 
     private static final class CRC32CUtilInstanceHolder {
         private static final ThreadLocalUtil instance = new ThreadLocalUtil(CheckType.CRC_32C);
+    }
+
+    /**
+     * Returns the {@link ChecksumUtil} with the {@code CRC-32C} checksum type.
+     * 
+     * @return the {@link ChecksumUtil} with the {@code CRC-32C} checksum type
+     */
+    public static final ChecksumUtil crc32c() {
+        return CRC32CUtilInstanceHolder.instance.get();
     }
 
     /**
@@ -157,7 +175,7 @@ public class ChecksumUtil {
      * @return the {@code CRC-32C} checksum value
      */
     public static final long crc32c(byte[] b, int off, int len) {
-        return CRC32CUtilInstanceHolder.instance.get().calculateValue(b, off, len);
+        return crc32c().calculateValue(b, off, len);
     }
 
     /**
@@ -169,7 +187,7 @@ public class ChecksumUtil {
      * @return the {@code CRC-32C} checksum value
      */
     public static final long crc32c(byte[] b, byte[]... others) {
-        return CRC32CUtilInstanceHolder.instance.get().calculateValue(b, others);
+        return crc32c().calculateValue(b, others);
     }
 
     /**
@@ -181,7 +199,7 @@ public class ChecksumUtil {
      * @return the the {@code CRC-32C} checksum value
      */
     public static final long crc32c(ByteBuffer buffer, ByteBuffer... otherBuffers) {
-        return CRC32CUtilInstanceHolder.instance.get().calculateValue(buffer, otherBuffers);
+        return crc32c().calculateValue(buffer, otherBuffers);
     }
 
     private final CheckType type;
