@@ -1,6 +1,7 @@
 package com.github.fmjsjx.libcommon.util;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.function.IntPredicate;
 
 /**
@@ -96,12 +97,7 @@ public class StringUtil {
      * @return an {@code int} array
      */
     public static final int[] splitInt(String value, String regex) {
-        String[] strings = value.split(regex);
-        int[] values = new int[strings.length];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = Integer.parseInt(strings[i]);
-        }
-        return values;
+        return Arrays.stream(value.split(regex)).mapToInt(Integer::parseInt).toArray();
     }
 
     /**
@@ -113,12 +109,7 @@ public class StringUtil {
      * @return a {@code long} array
      */
     public static final long[] splitLong(String value, String regex) {
-        String[] strings = value.split(regex);
-        long[] values = new long[strings.length];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = Long.parseLong(strings[i]);
-        }
-        return values;
+        return Arrays.stream(value.split(regex)).mapToLong(Long::parseLong).toArray();
     }
 
     /**
@@ -152,6 +143,111 @@ public class StringUtil {
     private static final class HexBytesHolder {
         private static final byte[] HEX_BYTES = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
                 'e', 'f' };
+    }
+
+    /**
+     * Parses the string argument as a signed decimal integer in hex.
+     * 
+     * @param value        the string value
+     * @param defaultValue the default value if the string is null or empty
+     * @return the integer value represented by the argument in hex
+     */
+    public static final int parseIntHex(String value, int defaultValue) {
+        if (isEmpty(value)) {
+            return defaultValue;
+        }
+        return Integer.parseInt(value, 16);
+    }
+
+    /**
+     * Parses the string argument as a signed decimal integer.
+     * 
+     * @param value        the string value
+     * @param defaultValue the default value if the string is null or empty
+     * @return the integer value represented by the argument in decimal
+     */
+    public static final int parseInt(String value, int defaultValue) {
+        if (isEmpty(value)) {
+            return defaultValue;
+        }
+        return Integer.parseInt(value);
+    }
+
+    /**
+     * Parses the string argument as a signed decimal {@code long} in hex.
+     * 
+     * @param value        the string value
+     * @param defaultValue the default value if the string is null or empty
+     * @return the {@code long} represented by the argument in hex
+     */
+    public static final long parseLongHex(String value, long defaultValue) {
+        if (isEmpty(value)) {
+            return defaultValue;
+        }
+        return Long.parseLong(value);
+    }
+
+    /**
+     * Parses the string argument as a signed decimal {@code long}.
+     * 
+     * @param value        the string value
+     * @param defaultValue the default value if the string is null or empty
+     * @return the {@code long} represented by the argument in decimal
+     */
+    public static final long parseLong(String value, long defaultValue) {
+        if (isEmpty(value)) {
+            return defaultValue;
+        }
+        return Long.parseLong(value);
+    }
+
+    /**
+     * Converts a string to a double precision floating point value.
+     * 
+     * @param value        the string to convert
+     * @param defaultValue the default value if the string is null or empty
+     * @return the {@code double} precision value
+     */
+    public static final double parseDouble(String value, double defaultValue) {
+        if (isEmpty(value)) {
+            return defaultValue;
+        }
+        return Double.parseDouble(value);
+    }
+
+    /**
+     * Parses the string argument as a {@code boolean}. The {@code boolean} returned
+     * represents the value {@code true} if the string argument is not {@code null}
+     * and is equal, ignoring case, to the string {@code "true"} or {@code "1"}.
+     * Otherwise, a {@code false} value is returned, including for a {@code null}
+     * argument.
+     * 
+     * <p>
+     * Examples:
+     * 
+     * <pre>
+     *     {@code StringUtil.parseBoolean("true")} returns {@code true}.
+     *     {@code StringUtil.parseBoolean("1")} returns {@code true}.
+     *     {@code StringUtil.parseBoolean("TrUe")} returns {@code true}.
+     *     {@code StringUtil.parseBoolean("0")} returns {@code false}.
+     *     {@code StringUtil.parseBoolean(null)} returns {@code false}.
+     *     {@code StringUtil.parseBoolean("")} returns {@code false}.
+     *     {@code StringUtil.parseBoolean("yes")} returns {@code false}.
+     * </pre>
+     * 
+     * @param value the string containing the {@code boolean} representation to be
+     *              parsed
+     * @return the {@code boolean} represented by the string argument
+     */
+    public static final boolean parseBoolean(String value) {
+        if (value == null) {
+            return false;
+        }
+        if ("1".equals(value)) {
+            return true;
+        } else {
+            return Boolean.parseBoolean(value);
+        }
     }
 
     private StringUtil() {
