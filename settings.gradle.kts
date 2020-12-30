@@ -9,3 +9,4 @@
 
 rootProject.name = "libcommon"
 include("libcommon-util")
+include("libcommon-collection")
