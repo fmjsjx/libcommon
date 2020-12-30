@@ -94,7 +94,7 @@ public interface LongSet extends Set<Long> {
      * Removes all of this set's values that are also contained in the specified
      * set.
      * 
-     * @param value she values
+     * @param values the values
      * @return {@code true} if all of this set's values that are also contained in
      *         the specified array
      */

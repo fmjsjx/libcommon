@@ -486,5 +486,8 @@ public class PrimitiveCollections {
         }
 
     }
+    
+    private PrimitiveCollections() {
+    }
 
 }

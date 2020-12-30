@@ -94,7 +94,7 @@ public interface IntSet extends Set<Integer> {
      * Removes all of this set's values that are also contained in the specified
      * set.
      * 
-     * @param value she values
+     * @param values the values
      * @return {@code true} if all of this set's values that are also contained in
      *         the specified array
      */

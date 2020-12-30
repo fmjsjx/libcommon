@@ -6,7 +6,7 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api")
     
-    implementation("io.netty:netty-common")
+    api("io.netty:netty-common")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
 
