@@ -81,6 +81,7 @@ public class NumberUtil {
      * Converts and returns the given value as a {@code byte}.
      * 
      * @param value a number
+     * @param defaultValue the default value
      * @return a {@code byte}
      */
     public static final byte byteValue(Number value, int defaultValue) {
@@ -91,6 +92,7 @@ public class NumberUtil {
      * Converts and returns the given value as a {@code byte}.
      * 
      * @param value a number
+     * @param defaultValue the default value
      * @return a {@code byte}
      */
     public static final short shortValue(Number value, int defaultValue) {
@@ -101,6 +103,7 @@ public class NumberUtil {
      * Converts and returns the given value as a {@code float}.
      * 
      * @param value a number
+     * @param defaultValue the default value
      * @return a {@code float}
      */
     public static final float floatValue(Number value, double defaultValue) {
