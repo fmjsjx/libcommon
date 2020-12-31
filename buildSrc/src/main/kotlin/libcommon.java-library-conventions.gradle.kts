@@ -21,6 +21,7 @@ dependencies {
     constraints {
         implementation("org.slf4j:slf4j-api:1.7.30")
         implementation("ch.qos.logback:logback-classic:1.2.3")
+        api("io.lettuce:lettuce-core:6.0.1.RELEASE")
     }
     // log4j2
     implementation(platform("org.apache.logging.log4j:log4j-bom:2.14.0"))

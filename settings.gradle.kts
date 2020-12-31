@@ -8,5 +8,6 @@
  */
 
 rootProject.name = "libcommon"
-include("libcommon-util")
 include("libcommon-collection")
+include("libcommon-redis")
+include("libcommon-util")
