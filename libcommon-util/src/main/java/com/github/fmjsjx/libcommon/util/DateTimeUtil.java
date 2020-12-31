@@ -1,7 +1,9 @@
 package com.github.fmjsjx.libcommon.util;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -68,12 +70,58 @@ public class DateTimeUtil {
     }
 
     /**
+     * Obtains an instance of {@link LocalDateTime} using seconds from the epoch of
+     * 1970-01-01T00:00:00Z and the specified zone ID.
+     * 
+     * @param epochSecond the number of seconds from 1970-01-01T00:00:00Z
+     * @param zone        the time-zone, which may be an offset, not null
+     * @return the local date-time
+     */
+    public static final LocalDateTime local(long epochSecond, ZoneId zone) {
+        return LocalDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), zone);
+    }
+
+    /**
+     * Obtains an instance of {@link LocalDateTime} using seconds from the epoch of
+     * 1970-01-01T00:00:00Z.
+     * 
+     * @param epochSecond the number of seconds from 1970-01-01T00:00:00Z
+     * @return the local date-time
+     */
+    public static final LocalDateTime local(long epochSecond) {
+        return local(epochSecond, zone());
+    }
+
+    /**
      * Returns the {@link ZonedDateTime} with the default time-zone at now.
      * 
      * @return the {@code ZonedDateTime} with the default time-zone at now
      */
     public static final ZonedDateTime zonedNow() {
         return ZonedDateTime.now();
+    }
+
+    /**
+     * Obtains an instance of {@link ZonedDateTime} using seconds from the epoch of
+     * 1970-01-01T00:00:00Z and the specified zone ID.
+     * 
+     * @param epochSecond the number of seconds from 1970-01-01T00:00:00Z
+     * @param zone        the time-zone, which may be an offset, not null
+     * @return the zoned date-time
+     */
+    public static final ZonedDateTime zoned(long epochSecond, ZoneId zone) {
+        return ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), zone);
+    }
+
+    /**
+     * Obtains an instance of {@link ZonedDateTime} using seconds from the epoch of
+     * 1970-01-01T00:00:00Z.
+     * 
+     * @param epochSecond the number of seconds from 1970-01-01T00:00:00Z
+     * @return the zoned date-time
+     */
+    public static final ZonedDateTime zoned(long epochSecond) {
+        return zoned(epochSecond, zone());
     }
 
     /**
@@ -160,17 +208,43 @@ public class DateTimeUtil {
     }
 
     /**
-     * Parses and returns the date from {@code integer} number with format
+     * Returns the number of the specified time with format {@code HHmmss} as
+     * {@code int} type.
+     * 
+     * @param time the time
+     * @return the number of the specified time with format {@code HHmmss} as
+     *         {@code int} type
+     */
+    public static final int toNumber(LocalTime time) {
+        return time.getHour() * 10000 + time.getMinute() * 100 + time.getSecond();
+    }
+
+    /**
+     * Parses and returns the date from an {@code integer} number with format
      * {@code yyyyMMdd}.
      * 
      * @param n the number
-     * @return the date from {@code integer} number with format {@code yyyyMMdd}
+     * @return the local date
      */
-    public static final LocalDate fromNumber(int n) {
+    public static final LocalDate toDate(int n) {
         var year = n / 10000;
         var month = n / 100 % 100;
         var dayOfMonth = n % 100;
         return LocalDate.of(year, month, dayOfMonth);
+    }
+
+    /**
+     * Parse and returns the time from an {@code integer} number with format
+     * {@code HHmmss}.
+     * 
+     * @param n the number
+     * @return the local time
+     */
+    public static final LocalTime toTime(int n) {
+        var hour = n / 10000;
+        var minute = n / 100 % 100;
+        var second = n % 100;
+        return LocalTime.of(hour, minute, second);
     }
 
     private DateTimeUtil() {
