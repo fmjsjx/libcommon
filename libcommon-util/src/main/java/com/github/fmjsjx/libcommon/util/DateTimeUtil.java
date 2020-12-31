@@ -34,21 +34,12 @@ public class DateTimeUtil {
     }
 
     /**
-     * Returns the {@link LocalDate} at today.
-     * 
-     * @return the {@code LocalDate} at today
-     */
-    public static final LocalDate today() {
-        return LocalDate.now();
-    }
-
-    /**
      * Returns the {@link LocalDate} at tomorrow.
      * 
      * @return the {@code LocalDate} at tomorrow
      */
     public static final LocalDate tomorrow() {
-        return today().plusDays(1);
+        return LocalDate.now().plusDays(1);
     }
 
     /**
@@ -57,16 +48,7 @@ public class DateTimeUtil {
      * @return the {@code LocalDate} at yesterday
      */
     public static final LocalDate yesterday() {
-        return today().minusDays(1);
-    }
-
-    /**
-     * Returns the {@link LocalDateTime} at now.
-     * 
-     * @return the {@code LocalDateTime} at now
-     */
-    public static final LocalDateTime localNow() {
-        return LocalDateTime.now();
+        return LocalDate.now().minusDays(1);
     }
 
     /**
@@ -78,6 +60,9 @@ public class DateTimeUtil {
      * @return the local date-time
      */
     public static final LocalDateTime local(long epochSecond, ZoneId zone) {
+        if (zone instanceof ZoneOffset) {
+            return LocalDateTime.ofEpochSecond(epochSecond, 0, (ZoneOffset) zone);
+        }
         return LocalDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), zone);
     }
 
@@ -90,15 +75,6 @@ public class DateTimeUtil {
      */
     public static final LocalDateTime local(long epochSecond) {
         return local(epochSecond, zone());
-    }
-
-    /**
-     * Returns the {@link ZonedDateTime} with the default time-zone at now.
-     * 
-     * @return the {@code ZonedDateTime} with the default time-zone at now
-     */
-    public static final ZonedDateTime zonedNow() {
-        return ZonedDateTime.now();
     }
 
     /**
@@ -125,12 +101,30 @@ public class DateTimeUtil {
     }
 
     /**
-     * Returns the {@link OffsetDateTime} with the default time-zone at now.
+     * Obtains an instance of {@link OffsetDateTime} using seconds from the epoch of
+     * 1970-01-01T00:00:00Z and the specified zone ID.
      * 
-     * @return the {@code OffsetDateTime} with the default time-zone at now
+     * @param epochSecond the number of seconds from 1970-01-01T00:00:00Z
+     * @param zone        the time-zone, which may be an offset, not null
+     * @return the offset date-time
      */
-    public static final OffsetDateTime offsetNow() {
-        return OffsetDateTime.now();
+    public static final OffsetDateTime offset(long epochSecond, ZoneId zone) {
+        if (zone instanceof ZoneOffset) {
+            var offset = (ZoneOffset) zone;
+            return OffsetDateTime.of(local(epochSecond, offset), offset);
+        }
+        return OffsetDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), zone);
+    }
+
+    /**
+     * Obtains an instance of {@link OffsetDateTime} using seconds from the epoch of
+     * 1970-01-01T00:00:00Z.
+     * 
+     * @param epochSecond the number of seconds from 1970-01-01T00:00:00Z
+     * @return the offset date-time
+     */
+    public static final OffsetDateTime offset(long epochSecond) {
+        return offset(epochSecond, zone());
     }
 
     /**
