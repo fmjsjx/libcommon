@@ -14,9 +14,11 @@ version = "1.0.0-SNAPSHOT"
 
 dependencies {
 	// netty-bom
-    implementation(platform("io.netty:netty-bom:4.1.56.Final"))
+    api(platform("io.netty:netty-bom:4.1.56.Final"))
 	// junit-bom
 	testImplementation(platform("org.junit:junit-bom:5.7.0"))
+	// jackson2-bom
+	api(platform("com.fasterxml.jackson:jackson-bom:2.11.4"))
 
     constraints {
         implementation("org.slf4j:slf4j-api:1.7.30")

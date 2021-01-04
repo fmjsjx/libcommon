@@ -9,5 +9,7 @@
 
 rootProject.name = "libcommon"
 include("libcommon-collection")
+include("libcommon-json")
+include("libcommon-json-jackson2")
 include("libcommon-redis")
 include("libcommon-util")
