@@ -8,6 +8,7 @@
  */
 
 rootProject.name = "libcommon"
+include("libcommon-bom")
 include("libcommon-collection")
 include("libcommon-json")
 include("libcommon-json-dsljson")
