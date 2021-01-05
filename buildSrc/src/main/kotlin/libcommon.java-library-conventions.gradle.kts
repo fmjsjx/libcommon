@@ -60,7 +60,7 @@ publishing {
                 }
             }
             pom {
-                name.set(project.description)
+                name.set(description)
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {
@@ -90,7 +90,7 @@ publishing {
     repositories {
         maven {
             name = "sonatypeOss"
-            credentials(PasswordCredentials)
+            credentials(PasswordCredentials::class)
             val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
             val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots")
             url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
