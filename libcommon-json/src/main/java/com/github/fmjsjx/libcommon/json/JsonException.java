@@ -1,20 +1,46 @@
 package com.github.fmjsjx.libcommon.json;
 
-import java.util.Objects;
-
 /**
  * A runtime exception threw by a JSON encoder/decoder.
  */
-public abstract class JsonException extends RuntimeException {
+public class JsonException extends RuntimeException {
 
-    private static final long serialVersionUID = 5604421476181087459L;
+    private static final long serialVersionUID = 4234828639293246052L;
 
-    protected JsonException(String message, Throwable cause) {
-        super(message, Objects.requireNonNull(cause, "cause must not be null"));
+    /**
+     * Constructs a new {@link JsonException}.
+     */
+    public JsonException() {
+        super();
     }
 
-    protected JsonException(Throwable cause) {
-        super(Objects.requireNonNull(cause, "cause must not be null"));
+    /**
+     * Constructs a new {@link JsonException} with the specified detail message.
+     * 
+     * @param message the detail message
+     */
+    public JsonException(String message) {
+        super(message);
+    }
+
+    /**
+     * Constructs a new {@link JsonException} with the specified detail message and
+     * cause.
+     * 
+     * @param message the detail message
+     * @param cause   the cause
+     */
+    public JsonException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Constructs a new {@link JsonException} with the specified cause.
+     * 
+     * @param cause the cause
+     */
+    public JsonException(Throwable cause) {
+        super(cause);
     }
 
 }

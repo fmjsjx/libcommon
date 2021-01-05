@@ -19,7 +19,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
- * The jackson2 implementation of {@link JsonLibrary}.
+ * The implementation of {@link JsonLibrary} using Jackson2.
  */
 public class Jackson2Library implements JsonLibrary<JsonNode> {
 
@@ -28,7 +28,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      */
     public static final class Jackson2Exception extends JsonException {
 
-        private static final long serialVersionUID = -6059180774102905076L;
+        private static final long serialVersionUID = -3634220857125631467L;
 
         /**
          * Creates a new {@link Jackson2Exception} instance.

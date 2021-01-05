@@ -8,9 +8,7 @@ dependencies {
     
     api(project(":libcommon-json"))
     
-    api("com.fasterxml.jackson.core:jackson-databind")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    api("com.jsoniter:jsoniter")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
 
@@ -20,7 +18,7 @@ dependencies {
 
 }
 
-description = "libcommon/JSON Jackson2"
+description = "libcommon/JSON Jsoniter"
 
 tasks.test {
     // Use junit platform for unit tests.
