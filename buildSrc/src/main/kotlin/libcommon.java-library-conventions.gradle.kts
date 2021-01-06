@@ -60,7 +60,7 @@ publishing {
                 }
             }
             pom {
-                name.set(description)
+                name.set(project.getDescription())
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {

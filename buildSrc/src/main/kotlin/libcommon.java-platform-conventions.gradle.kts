@@ -7,24 +7,12 @@ plugins {
 group = "com.github.fmjsjx"
 version = "1.0.0.M1"
 
-dependencies {
-	constraints {
-        api(project(":libcommon-collection"))
-        api(project(":libcommon-json"))
-        api(project(":libcommon-json-dsljson"))
-        api(project(":libcommon-json-jackson2"))
-        api(project(":libcommon-json-jsoniter"))
-        api(project(":libcommon-redis"))
-        api(project(":libcommon-util"))
-    }
-}
-
 publishing {
     publications {
     	create<MavenPublication>("mavenJava") {
         	from(components["javaPlatform"])
             pom {
-                name.set(description)
+                name.set(project.getDescription())
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {
