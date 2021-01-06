@@ -1,6 +1,5 @@
 plugins {
     `java-library`
-    id("libcommon.publish-conventions")
 }
 
 repositories {
