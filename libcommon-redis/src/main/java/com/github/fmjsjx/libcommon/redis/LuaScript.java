@@ -73,8 +73,9 @@ public interface LuaScript<R> {
     /**
      * Creates a new {@link LuaScript} from {@link String}.
      * 
-     * @param script the script text, must not be {@code null}
-     * @param <R>    the result type of the script
+     * @param <R>        the result type of the script
+     * @param script     the script text, must not be {@code null}
+     * @param outputType the output type
      * @return a new {@link LuaScript} instance with output type {@code INTEGER} and
      *         return type {@code Long}
      */
