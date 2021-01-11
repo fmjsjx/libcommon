@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.util;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -42,6 +43,46 @@ public class ClassUtil {
      */
     public static final boolean hasClassForName(String className) {
         return findForName(className).isPresent();
+    }
+
+    /**
+     * Constructs a new instance for the specified class with the given string name.
+     * 
+     * @param <T>       the type of the returned instance
+     * @param className the fully qualified name of the desired class
+     * @param args      array of objects to be passed as arguments to the
+     *                  constructor call
+     * @return an {@code Optional<T>}
+     */
+    public static final <T> Optional<T> constructForClassName(String className, Object... args) {
+        Optional<Class<T>> oclass = findForName(className);
+        if (args.length == 0) {
+            return oclass.map(ClassUtil::constructForClass);
+        }
+        return oclass.map(clazz -> {
+            try {
+                var types = toTypes(args);
+                var constructor = clazz.getDeclaredConstructor(types);
+                constructor.setAccessible(true);
+                return constructor.newInstance(args);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private static final <T> T constructForClass(Class<T> clazz) {
+        try {
+            var constructor = clazz.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            return constructor.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static final Class<?>[] toTypes(Object... args) {
+        return Arrays.stream(args).map(Object::getClass).toArray(Class[]::new);
     }
 
     private ClassUtil() {
