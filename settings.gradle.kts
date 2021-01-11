@@ -1,6 +1,7 @@
 rootProject.name = "libcommon"
 include(":libcommon-bom")
 include(":libcommon-collection")
+include(":libcommon-jdbc")
 include(":libcommon-json")
 include(":libcommon-json-dsljson")
 include(":libcommon-json-jackson2")
