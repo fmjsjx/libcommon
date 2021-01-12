@@ -233,7 +233,7 @@ public class JdbcUtil {
      * @param conn         the SQL connection
      * @param sql          the SQL to execute
      * @param paramsSetter the {@link PreparedExecution} to set parameters
-     * @param keyHolder    a {@link ResultExecution} to holding all generated keys
+     * @param keysHolder    a {@link ResultExecution} to holding all generated keys
      * @return the number of rows affected
      * @throws SQLRuntimeException if a database access error occurs
      */
@@ -326,15 +326,15 @@ public class JdbcUtil {
      * @param conn         the SQL connection
      * @param sql          the SQL to execute
      * @param paramsSetter the {@link PreparedExecution} to set parameters
-     * @param keyHolder    a {@link ResultExecution} to holding all generated keys
+     * @param keysHolder    a {@link ResultExecution} to holding all generated keys
      * @return the number of rows affected
      * @throws SQLRuntimeException if a database access error occurs
      * 
      * @see #update(Connection, String, PreparedExecution, ResultExecution)
      */
     public static final int insert(Connection conn, String sql, PreparedExecution paramsSetter,
-            ResultExecution keyHolder) throws SQLRuntimeException {
-        return update(conn, sql, paramsSetter, keyHolder);
+            ResultExecution keysHolder) throws SQLRuntimeException {
+        return update(conn, sql, paramsSetter, keysHolder);
     }
 
     /**
