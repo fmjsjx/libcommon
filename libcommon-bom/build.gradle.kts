@@ -14,6 +14,7 @@ dependencies {
         api(project(":libcommon-json-jsoniter"))
         api(project(":libcommon-redis"))
         api(project(":libcommon-util"))
+        api(project(":libcommon-jdbc"))
     }
 }
 
