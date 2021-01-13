@@ -11,17 +11,17 @@ repositories {
 
 dependencies {
 	// netty-bom
-    api(platform("io.netty:netty-bom:4.1.56.Final"))
+    api(platform("io.netty:netty-bom:4.1.57.Final"))
 	// junit-bom
 	testImplementation(platform("org.junit:junit-bom:5.7.0"))
 	// jackson2-bom
-	api(platform("com.fasterxml.jackson:jackson-bom:2.11.4"))
+	api(platform("com.fasterxml.jackson:jackson-bom:2.12.1"))
 
     constraints {
         implementation("org.slf4j:slf4j-api:1.7.30")
         implementation("ch.qos.logback:logback-classic:1.2.3")
-        api("io.lettuce:lettuce-core:6.0.1.RELEASE")
-        api("com.dslplatform:dsl-json-java8:1.9.7")
+        api("io.lettuce:lettuce-core:6.0.2.RELEASE")
+        api("com.dslplatform:dsl-json-java8:1.9.8")
         api("com.jsoniter:jsoniter:0.9.23")
     }
     // log4j2
