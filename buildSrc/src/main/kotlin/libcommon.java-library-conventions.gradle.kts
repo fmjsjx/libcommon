@@ -3,10 +3,7 @@ plugins {
 }
 
 repositories {
-    maven {
-        url = uri("https://maven.aliyun.com/repository/public/")
-    }
-	jcenter()
+    jcenter()
 }
 
 dependencies {
