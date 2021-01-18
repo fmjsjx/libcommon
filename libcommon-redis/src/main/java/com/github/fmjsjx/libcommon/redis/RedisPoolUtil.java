@@ -94,24 +94,21 @@ public class RedisPoolUtil {
      * @return a {@code CompletableFuture<Void>}
      */
     public static final <K, V> CompletableFuture<Void> accept(AsyncPool<? super StatefulRedisConnection<K, V>> pool,
-            Function<? super StatefulRedisConnection<K, V>, CompletionStage<Void>> action) {
+            Function<? super StatefulRedisConnection<K, V>, ? extends CompletionStage<Void>> action) {
         return pool.acquire().thenCompose(autoRelease(pool, action));
     }
 
     /**
-     * Acquire a connection from the specified {@link AsyncPool} and then execute
-     * the specified {@code action} asynchronously. The acquired connection will be
-     * released back to the {@code pool} automatically.
      * 
-     * @param <K>    the key type of the connection
-     * @param <V>    the value type of the connection
-     * @param pool   a non-blocking pool to acquires REDIS connection
-     * @param action the action
-     * @return a {@code CompletableFuture<Void>}
+     * @param <K>
+     * @param <V>
+     * @param pool
+     * @param action
+     * @return
      */
     public static final <K, V> CompletableFuture<Void> acceptAsync(
             AsyncPool<? super StatefulRedisConnection<K, V>> pool,
-            Function<? super StatefulRedisConnection<K, V>, CompletionStage<Void>> action) {
+            Function<? super StatefulRedisConnection<K, V>, ? extends CompletionStage<Void>> action) {
         return pool.acquire().thenComposeAsync(autoRelease(pool, action));
     }
 
@@ -129,7 +126,8 @@ public class RedisPoolUtil {
      */
     public static final <K, V> CompletableFuture<Void> acceptAsync(
             AsyncPool<? super StatefulRedisConnection<K, V>> pool,
-            Function<? super StatefulRedisConnection<K, V>, CompletionStage<Void>> action, Executor executor) {
+            Function<? super StatefulRedisConnection<K, V>, ? extends CompletionStage<Void>> action,
+            Executor executor) {
         return pool.acquire().thenComposeAsync(autoRelease(pool, action), executor);
     }
 
