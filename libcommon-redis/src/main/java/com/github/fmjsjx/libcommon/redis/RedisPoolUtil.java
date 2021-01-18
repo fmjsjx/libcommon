@@ -99,12 +99,15 @@ public class RedisPoolUtil {
     }
 
     /**
+     * Acquire a connection from the specified {@link AsyncPool} and then execute
+     * the specified {@code action} asynchronously. The acquired connection will be
+     * released back to the {@code pool} automatically.
      * 
-     * @param <K>
-     * @param <V>
-     * @param pool
-     * @param action
-     * @return
+     * @param <K>    the key type of the connection
+     * @param <V>    the value type of the connection
+     * @param pool   a non-blocking pool to acquires REDIS connection
+     * @param action the action
+     * @return a {@code CompletableFuture<Void>}
      */
     public static final <K, V> CompletableFuture<Void> acceptAsync(AsyncPool<StatefulRedisConnection<K, V>> pool,
             Function<StatefulRedisConnection<K, V>, CompletionStage<Void>> action) {
