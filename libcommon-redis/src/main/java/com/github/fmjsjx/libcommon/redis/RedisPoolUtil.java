@@ -25,8 +25,8 @@ public class RedisPoolUtil {
      * @param action the action
      * @return a {@code CompletableFuture<R>}
      */
-    public static final <K, V, R> CompletableFuture<R> apply(AsyncPool<? super StatefulRedisConnection<K, V>> pool,
-            Function<? super StatefulRedisConnection<K, V>, ? extends CompletionStage<R>> action) {
+    public static final <K, V, R> CompletableFuture<R> apply(AsyncPool<StatefulRedisConnection<K, V>> pool,
+            Function<StatefulRedisConnection<K, V>, CompletionStage<R>> action) {
         return pool.acquire().thenCompose(autoRelease(pool, action));
     }
 
@@ -42,8 +42,8 @@ public class RedisPoolUtil {
      * @return an {@code auto-release action} with the specified {@link AsyncPool}
      */
     public static final <K, V, R> Function<? super StatefulRedisConnection<K, V>, ? extends CompletionStage<R>> autoRelease(
-            AsyncPool<? super StatefulRedisConnection<K, V>> pool,
-            Function<? super StatefulRedisConnection<K, V>, ? extends CompletionStage<R>> action) {
+            AsyncPool<StatefulRedisConnection<K, V>> pool,
+            Function<StatefulRedisConnection<K, V>, CompletionStage<R>> action) {
         return conn -> action.apply(conn).whenComplete((r, e) -> pool.release(conn));
     }
 
@@ -59,8 +59,8 @@ public class RedisPoolUtil {
      * @param action the action
      * @return a {@code CompletableFuture<R>}
      */
-    public static final <K, V, R> CompletableFuture<R> applyAsync(AsyncPool<? super StatefulRedisConnection<K, V>> pool,
-            Function<? super StatefulRedisConnection<K, V>, ? extends CompletionStage<R>> action) {
+    public static final <K, V, R> CompletableFuture<R> applyAsync(AsyncPool<StatefulRedisConnection<K, V>> pool,
+            Function<StatefulRedisConnection<K, V>, CompletionStage<R>> action) {
         return pool.acquire().thenComposeAsync(autoRelease(pool, action));
     }
 
@@ -77,8 +77,8 @@ public class RedisPoolUtil {
      * @param executor the executor to use for asynchronous execution
      * @return a {@code CompletableFuture<R>}
      */
-    public static final <K, V, R> CompletableFuture<R> applyAsync(AsyncPool<? super StatefulRedisConnection<K, V>> pool,
-            Function<? super StatefulRedisConnection<K, V>, ? extends CompletionStage<R>> action, Executor executor) {
+    public static final <K, V, R> CompletableFuture<R> applyAsync(AsyncPool<StatefulRedisConnection<K, V>> pool,
+            Function<StatefulRedisConnection<K, V>, CompletionStage<R>> action, Executor executor) {
         return pool.acquire().thenComposeAsync(autoRelease(pool, action), executor);
     }
 
@@ -93,8 +93,8 @@ public class RedisPoolUtil {
      * @param action the action
      * @return a {@code CompletableFuture<Void>}
      */
-    public static final <K, V> CompletableFuture<Void> accept(AsyncPool<? super StatefulRedisConnection<K, V>> pool,
-            Function<? super StatefulRedisConnection<K, V>, ? extends CompletionStage<Void>> action) {
+    public static final <K, V> CompletableFuture<Void> accept(AsyncPool<StatefulRedisConnection<K, V>> pool,
+            Function<StatefulRedisConnection<K, V>, CompletionStage<Void>> action) {
         return pool.acquire().thenCompose(autoRelease(pool, action));
     }
 
@@ -106,9 +106,8 @@ public class RedisPoolUtil {
      * @param action
      * @return
      */
-    public static final <K, V> CompletableFuture<Void> acceptAsync(
-            AsyncPool<? super StatefulRedisConnection<K, V>> pool,
-            Function<? super StatefulRedisConnection<K, V>, ? extends CompletionStage<Void>> action) {
+    public static final <K, V> CompletableFuture<Void> acceptAsync(AsyncPool<StatefulRedisConnection<K, V>> pool,
+            Function<StatefulRedisConnection<K, V>, CompletionStage<Void>> action) {
         return pool.acquire().thenComposeAsync(autoRelease(pool, action));
     }
 
@@ -124,10 +123,8 @@ public class RedisPoolUtil {
      * @param executor the executor to use for asynchronous execution
      * @return a {@code CompletableFuture<Void>}
      */
-    public static final <K, V> CompletableFuture<Void> acceptAsync(
-            AsyncPool<? super StatefulRedisConnection<K, V>> pool,
-            Function<? super StatefulRedisConnection<K, V>, ? extends CompletionStage<Void>> action,
-            Executor executor) {
+    public static final <K, V> CompletableFuture<Void> acceptAsync(AsyncPool<StatefulRedisConnection<K, V>> pool,
+            Function<StatefulRedisConnection<K, V>, CompletionStage<Void>> action, Executor executor) {
         return pool.acquire().thenComposeAsync(autoRelease(pool, action), executor);
     }
 
