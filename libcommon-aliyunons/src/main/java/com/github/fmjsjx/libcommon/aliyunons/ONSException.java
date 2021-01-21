@@ -5,7 +5,7 @@ package com.github.fmjsjx.libcommon.aliyunons;
  */
 public class ONSException extends Exception {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 279825593516494378L;
 
     /**
      * Constructs a new {@link ONSException} with {@code null} as its detail

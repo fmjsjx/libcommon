@@ -5,7 +5,7 @@ package com.github.fmjsjx.libcommon.rocketmq;
  */
 public class RocketMQException extends Exception {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -7361335888820087842L;
 
     /**
      * Constructs a new {@link RocketMQException} with {@code null} as its detail

@@ -7,14 +7,14 @@ import java.util.Collection;
  */
 public class TooManyRetryException extends ONSException {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2093368191526503232L;
 
     private final Iterable<Throwable> causes;
     private final int retryTimes;
 
     /**
-     * Constructs a new {@link RocketMQException} with the specified detail message,
-     * cause and causes.
+     * Constructs a new {@link TooManyRetryException} with the specified detail
+     * message, cause and causes.
      * 
      * @param message the detail message
      * @param cause   the cause
@@ -27,7 +27,7 @@ public class TooManyRetryException extends ONSException {
     }
 
     /**
-     * Constructs a new {@link RocketMQException} with the specified cause and
+     * Constructs a new {@link TooManyRetryException} with the specified cause and
      * causes.
      * 
      * @param cause  the cause
