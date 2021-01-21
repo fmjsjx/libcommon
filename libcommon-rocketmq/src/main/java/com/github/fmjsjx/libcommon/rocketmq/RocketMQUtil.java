@@ -25,11 +25,30 @@ public class RocketMQUtil {
 
     private static final int defaultRetryTimes = 3;
 
+    /**
+     * Uses the specified producer to send the specified message.
+     * 
+     * @param producer the producer
+     * @param msg      the message
+     * @return a {@code SendResult}
+     * @throws MQClientException     if any {@link MQClientException} occurs
+     * @throws TooManyRetryException if too many retry occurs
+     */
     public static final SendResult send(MQProducer producer, Message msg)
             throws MQClientException, TooManyRetryException {
         return send(producer, msg, defaultRetryTimes);
     }
 
+    /**
+     * Uses the specified producer to send the specified message.
+     * 
+     * @param producer   the producer
+     * @param msg        the message
+     * @param retryTimes times for retry
+     * @return a {@code SendResult}
+     * @throws MQClientException     if any {@link MQClientException} occurs
+     * @throws TooManyRetryException if too many retry occurs
+     */
     public static final SendResult send(MQProducer producer, Message msg, int retryTimes)
             throws MQClientException, TooManyRetryException {
         try {
@@ -49,10 +68,25 @@ public class RocketMQUtil {
         }
     }
 
+    /**
+     * Uses the specified producer to send the specified message asynchronously.
+     * 
+     * @param producer the producer
+     * @param msg      the message
+     * @return a {@code CompletableFuture<SendResult>}
+     */
     public static final CompletableFuture<SendResult> sendAsync(MQProducer producer, Message msg) {
         return sendAsync(producer, msg, defaultRetryTimes);
     }
 
+    /**
+     * Uses the specified producer to send the specified message asynchronously.
+     * 
+     * @param producer   the producer
+     * @param msg        the message
+     * @param retryTimes times for retry
+     * @return a {@code CompletableFuture<SendResult>}
+     */
     public static final CompletableFuture<SendResult> sendAsync(MQProducer producer, Message msg, int retryTimes) {
         var future = new SendFuture(producer, msg, retryTimes);
         try {
