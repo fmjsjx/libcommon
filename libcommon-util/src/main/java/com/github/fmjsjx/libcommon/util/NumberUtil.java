@@ -234,9 +234,9 @@ public class NumberUtil {
      * Returns {@code true} if the specified value is between with begin (include)
      * and end (include), {@code false} otherwise.
      * 
-     * @param value        the value
-     * @param beginInclude the begin number (include)
-     * @param endExclude   the end number (include)
+     * @param value the value
+     * @param begin the begin number (include)
+     * @param end   the end number (include)
      * @return {@code true} if the specified value is between with begin (include)
      *         and end (include), {@code false} otherwise
      */
@@ -248,9 +248,9 @@ public class NumberUtil {
      * Returns {@code true} if the specified value is between with begin (exclude)
      * and end (exclude), {@code false} otherwise.
      * 
-     * @param value        the value
-     * @param beginInclude the begin number (exclude)
-     * @param endExclude   the end number (exclude)
+     * @param value the value
+     * @param begin the begin number (exclude)
+     * @param end   the end number (exclude)
      * @return {@code true} if the specified value is between with begin (exclude)
      *         and end (exclude), {@code false} otherwise
      */
@@ -276,9 +276,9 @@ public class NumberUtil {
      * Returns {@code false} if the specified value is between with begin (include)
      * and end (include), {@code in} otherwise.
      * 
-     * @param value        the value
-     * @param beginInclude the begin number (include)
-     * @param endExclude   the end number (include)
+     * @param value the value
+     * @param begin the begin number (include)
+     * @param end   the end number (include)
      * @return {@code false} if the specified value is between with begin (include)
      *         and end (include), {@code true} otherwise
      */
@@ -290,9 +290,9 @@ public class NumberUtil {
      * Returns {@code false} if the specified value is between with begin (exclude)
      * and end (exclude), {@code in} otherwise.
      * 
-     * @param value        the value
-     * @param beginInclude the begin number (exclude)
-     * @param endExclude   the end number (exclude)
+     * @param value the value
+     * @param begin the begin number (exclude)
+     * @param end   the end number (exclude)
      * @return {@code false} if the specified value is between with begin (exclude)
      *         and end (exclude), {@code true} otherwise
      */
