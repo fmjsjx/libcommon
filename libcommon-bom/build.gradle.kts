@@ -6,7 +6,8 @@ plugins {
 description = "libcommon/BOM"
 
 dependencies {
-	constraints {
+    constraints {
+        api(project(":libcommon-aliyunons"))
         api(project(":libcommon-collection"))
         api(project(":libcommon-jdbc"))
         api(project(":libcommon-json"))
@@ -14,14 +15,15 @@ dependencies {
         api(project(":libcommon-json-jackson2"))
         api(project(":libcommon-json-jsoniter"))
         api(project(":libcommon-redis"))
+        api(project(":libcommon-rocketmq"))
         api(project(":libcommon-util"))
     }
 }
 
 publishing {
     publications {
-    	create<MavenPublication>("mavenJava") {
-        	from(components["javaPlatform"])
+        create<MavenPublication>("mavenJava") {
+            from(components["javaPlatform"])
             pom {
                 name.set("libcommon/BOM")
                 description.set("A set of some common useful libraries.")
@@ -48,7 +50,7 @@ publishing {
                     developerConnection.set("scm:git:https://github.com/fmjsjx/libcommon.git")
                 }
             }
-    	}
+        }
     }
 }
 

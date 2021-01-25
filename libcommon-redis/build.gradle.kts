@@ -28,9 +28,9 @@ tasks.test {
 
 publishing {
     publications {
-    	create<MavenPublication>("mavenJava") {
-        	from(components["java"])
-        	versionMapping {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            versionMapping {
                 usage("java-api") {
                     fromResolutionOf("runtimeClasspath")
                 }
@@ -64,7 +64,7 @@ publishing {
                     developerConnection.set("scm:git:https://github.com/fmjsjx/libcommon.git")
                 }
             }
-    	}
+        }
     }
 }
 

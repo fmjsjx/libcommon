@@ -7,14 +7,14 @@ repositories {
 }
 
 dependencies {
-	// netty-bom
+    // netty-bom
     api(platform("io.netty:netty-bom:4.1.58.Final"))
-	// junit-bom
-	testImplementation(platform("org.junit:junit-bom:5.7.0"))
-	// jackson2-bom
-	api(platform("com.fasterxml.jackson:jackson-bom:2.12.1"))
-	// rocketmq
-	api(platform("org.apache.rocketmq:rocketmq-all:4.8.0"))
+    // junit-bom
+    testImplementation(platform("org.junit:junit-bom:5.7.0"))
+    // jackson2-bom
+    api(platform("com.fasterxml.jackson:jackson-bom:2.12.1"))
+    // rocketmq
+    api(platform("org.apache.rocketmq:rocketmq-all:4.8.0"))
 
     constraints {
         implementation("org.slf4j:slf4j-api:1.7.30")
@@ -31,15 +31,15 @@ dependencies {
 
 java {
     withSourcesJar()
-	withJavadocJar()
-	toolchain {
+    withJavadocJar()
+    toolchain {
         languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
 
 tasks.compileJava {
     options.encoding = "UTF-8"
-	options.release.set(11)
+    options.release.set(11)
 }
 
 tasks.javadoc {
