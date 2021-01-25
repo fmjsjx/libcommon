@@ -11,10 +11,6 @@ import java.nio.charset.StandardCharsets;
  */
 public interface JsonLibrary<JSON> {
 
-    private static byte[] toBytes(String src) {
-        return src.getBytes(StandardCharsets.UTF_8);
-    }
-
     /**
      * Decodes dynamic JSON object from byte array.
      * 
@@ -34,7 +30,7 @@ public interface JsonLibrary<JSON> {
      * @throws JsonException if any JSON decode error occurs
      */
     default <T extends JSON> T loads(String src) throws JsonException {
-        return loads(toBytes(src));
+        return loads(src.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -58,7 +54,7 @@ public interface JsonLibrary<JSON> {
      * @throws JsonException if any JSON decode error occurs
      */
     default <T> T loads(String src, Class<T> type) throws JsonException {
-        return loads(toBytes(src), type);
+        return loads(src.getBytes(StandardCharsets.UTF_8), type);
     }
 
     /**
@@ -82,7 +78,7 @@ public interface JsonLibrary<JSON> {
      * @throws JsonException if any JSON decode error occurs
      */
     default <T> T loads(String src, Type type) throws JsonException {
-        return loads(toBytes(src), type);
+        return loads(src.getBytes(StandardCharsets.UTF_8), type);
     }
 
     /**

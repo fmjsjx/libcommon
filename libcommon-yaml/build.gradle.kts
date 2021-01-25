@@ -1,32 +1,48 @@
 plugins {
-    `java-platform`
+    id("libcommon.java-library-conventions")
     id("libcommon.publish-conventions")
 }
 
-description = "libcommon/BOM"
-
 dependencies {
-    constraints {
-        api(project(":libcommon-aliyunons"))
-        api(project(":libcommon-collection"))
-        api(project(":libcommon-jdbc"))
-        api(project(":libcommon-json"))
-        api(project(":libcommon-json-dsljson"))
-        api(project(":libcommon-json-jackson2"))
-        api(project(":libcommon-json-jsoniter"))
-        api(project(":libcommon-redis"))
-        api(project(":libcommon-rocketmq"))
-        api(project(":libcommon-util"))
-        api(project(":libcommon-yaml"))
-    }
+
+    implementation("org.slf4j:slf4j-api")
+
+    api(project(":libcommon-json"))
+
+    api("com.fasterxml.jackson.core:jackson-databind")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+
+    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl")
+
+}
+
+description = "libcommon/YAML"
+
+tasks.test {
+    // Use junit platform for unit tests.
+    useJUnitPlatform()
 }
 
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            from(components["javaPlatform"])
+            from(components["java"])
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
             pom {
-                name.set("libcommon/BOM")
+                name.set("libcommon/YAML")
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {
