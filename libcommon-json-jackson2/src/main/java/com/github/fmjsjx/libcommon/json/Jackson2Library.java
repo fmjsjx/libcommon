@@ -85,6 +85,17 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
         return DefaultInstanceHolder.INSTANCE;
     }
 
+    /**
+     * Returns the singleton (default) {@link Jackson2Library} instance.
+     * <p>
+     * This method is equivalent to {@link #getInstance()}.
+     * 
+     * @return the singleton (default) {@code Jackson2Library} instance
+     */
+    public static final Jackson2Library defaultInstance() {
+        return DefaultInstanceHolder.INSTANCE;
+    }
+
     private static final class CachedJavaTypesHolder {
         private static final ConcurrentMap<Type, JavaType> javaTypes = new ConcurrentHashMap<>();
     }

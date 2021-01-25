@@ -68,6 +68,17 @@ public class DsljsonLibrary implements JsonLibrary<Map<String, ?>> {
         return InstanceHolder.INSTANCE;
     }
 
+    /**
+     * Returns the singleton (default) {@link DsljsonLibrary} instance.
+     * <p>
+     * This method is equivalent to {@link #getInstance()}.
+     * 
+     * @return the singleton (default) {@code DsljsonLibrary} instance
+     */
+    public static final DsljsonLibrary defaultInstance() {
+        return getInstance();
+    }
+
     private static final Type mapType = ((ParameterizedType) DsljsonLibrary.class.getGenericInterfaces()[0])
             .getActualTypeArguments()[0];
 

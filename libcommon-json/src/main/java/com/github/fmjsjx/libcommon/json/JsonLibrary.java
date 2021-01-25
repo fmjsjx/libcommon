@@ -104,6 +104,19 @@ public interface JsonLibrary<JSON> {
     String dumpsToString(Object obj) throws JsonException;
 
     /**
+     * Encodes object to JSON value as string.
+     * <p>
+     * This method is equivalent to {@link #dumpsToString(Object)}.
+     * 
+     * @param obj the object to be decoded
+     * @return a {@code String}
+     * @throws JsonException if any JSON encode error occurs
+     */
+    default String dumps(Object obj) throws JsonException {
+        return dumpsToString(obj);
+    }
+
+    /**
      * Encodes object to JSON value.
      * 
      * @param obj the object to be decoded

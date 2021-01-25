@@ -66,6 +66,17 @@ public class JsoniterLibrary implements JsonLibrary<Any> {
         return DefaultInstanceHolder.INSTANCE;
     }
 
+    /**
+     * Returns the singleton (default) {@link JsoniterLibrary} instance.
+     * <p>
+     * This method is equivalent to {@link #getInstance()}.
+     * 
+     * @return the singleton (default) {@code JsoniterLibrary} instance
+     */
+    public static final JsoniterLibrary defaultInstance() {
+        return DefaultInstanceHolder.INSTANCE;
+    }
+
     private static final byte[] NULL_BYTE_ARRAY = "null".getBytes();
 
     private final boolean useDefaultConfig;

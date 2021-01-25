@@ -10,8 +10,8 @@ dependencies {
     api(project(":libcommon-json"))
     
     api("com.fasterxml.jackson.core:jackson-databind")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
 
