@@ -300,6 +300,34 @@ public class NumberUtil {
         return value <= begin || value >= end;
     }
 
+    /**
+     * Returns the sum of the given values.
+     * 
+     * @param values the values
+     * @return the sum of the given values
+     */
+    public static final int sum(int... values) {
+        var sum = 0;
+        for (int v : values) {
+            sum += v;
+        }
+        return sum;
+    }
+
+    /**
+     * Returns the sum of the given values.
+     * 
+     * @param values the values
+     * @return the sum of the given values
+     */
+    public static final long sum(long... values) {
+        var sum = 0L;
+        for (long v : values) {
+            sum += v;
+        }
+        return sum;
+    }
+
     private NumberUtil() {
     }
 
