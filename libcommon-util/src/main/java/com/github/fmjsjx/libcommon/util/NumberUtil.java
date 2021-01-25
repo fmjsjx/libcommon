@@ -144,6 +144,162 @@ public class NumberUtil {
         return (float) doubleValue(value, defaultValue);
     }
 
+    /**
+     * Returns {@code true} if the specified array contains the specified value,
+     * {@code false} otherwise.
+     * 
+     * @param value the value
+     * @param array the array
+     * @return {@code true} if the specified array contains the specified value,
+     *         {@code false} otherwise
+     */
+    public static final boolean in(int value, int... array) {
+        for (var v : array) {
+            if (value == v) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns {@code true} if the specified array contains the specified value,
+     * {@code false} otherwise.
+     * 
+     * @param value the value
+     * @param array the array
+     * @return {@code true} if the specified array contains the specified value,
+     *         {@code false} otherwise
+     */
+    public static final boolean in(long value, long... array) {
+        for (var v : array) {
+            if (value == v) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns {@code false} if the specified array contains the specified value,
+     * {@code true} otherwise.
+     * 
+     * @param value the value
+     * @param array the array
+     * @return {@code false} if the specified array contains the specified value,
+     *         {@code true} otherwise
+     */
+    public static final boolean notIn(int value, int... array) {
+        for (var v : array) {
+            if (value == v) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns {@code false} if the specified array contains the specified value,
+     * {@code true} otherwise.
+     * 
+     * @param value the value
+     * @param array the array
+     * @return {@code false} if the specified array contains the specified value,
+     *         {@code true} otherwise
+     */
+    public static final boolean notIn(long value, long... array) {
+        for (var v : array) {
+            if (value == v) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns {@code true} if the specified value is between with begin (include)
+     * and end (exclude), {@code false} otherwise.
+     * 
+     * @param value        the value
+     * @param beginInclude the begin number (include)
+     * @param endExclude   the end number (exclude)
+     * @return {@code true} if the specified value is between with begin (include)
+     *         and end (exclude), {@code false} otherwise
+     */
+    public static final boolean inRange(int value, int beginInclude, int endExclude) {
+        return value >= beginInclude && value < endExclude;
+    }
+
+    /**
+     * Returns {@code true} if the specified value is between with begin (include)
+     * and end (include), {@code false} otherwise.
+     * 
+     * @param value        the value
+     * @param beginInclude the begin number (include)
+     * @param endExclude   the end number (include)
+     * @return {@code true} if the specified value is between with begin (include)
+     *         and end (include), {@code false} otherwise
+     */
+    public static final boolean inRangeInclude(int value, int begin, int end) {
+        return value >= begin && value <= end;
+    }
+
+    /**
+     * Returns {@code true} if the specified value is between with begin (exclude)
+     * and end (exclude), {@code false} otherwise.
+     * 
+     * @param value        the value
+     * @param beginInclude the begin number (exclude)
+     * @param endExclude   the end number (exclude)
+     * @return {@code true} if the specified value is between with begin (exclude)
+     *         and end (exclude), {@code false} otherwise
+     */
+    public static final boolean inRangeExclude(int value, int begin, int end) {
+        return value > begin && value < end;
+    }
+
+    /**
+     * Returns {@code false} if the specified value is between with begin (include)
+     * and end (exclude), {@code in} otherwise.
+     * 
+     * @param value        the value
+     * @param beginInclude the begin number (include)
+     * @param endExclude   the end number (exclude)
+     * @return {@code false} if the specified value is between with begin (include)
+     *         and end (exclude), {@code true} otherwise
+     */
+    public static final boolean notInRange(int value, int beginInclude, int endExclude) {
+        return value < beginInclude || value >= endExclude;
+    }
+
+    /**
+     * Returns {@code false} if the specified value is between with begin (include)
+     * and end (include), {@code in} otherwise.
+     * 
+     * @param value        the value
+     * @param beginInclude the begin number (include)
+     * @param endExclude   the end number (include)
+     * @return {@code false} if the specified value is between with begin (include)
+     *         and end (include), {@code true} otherwise
+     */
+    public static final boolean notInRangeInclude(int value, int begin, int end) {
+        return value < begin || value > end;
+    }
+
+    /**
+     * Returns {@code false} if the specified value is between with begin (exclude)
+     * and end (exclude), {@code in} otherwise.
+     * 
+     * @param value        the value
+     * @param beginInclude the begin number (exclude)
+     * @param endExclude   the end number (exclude)
+     * @return {@code false} if the specified value is between with begin (exclude)
+     *         and end (exclude), {@code true} otherwise
+     */
+    public static final boolean notInRangeExclude(int value, int begin, int end) {
+        return value <= begin || value >= end;
+    }
+
     private NumberUtil() {
     }
 
