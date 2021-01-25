@@ -54,20 +54,20 @@ public class Jackson2YamlLibrary implements YamlLibrary<JsonNode> {
     }
 
     /**
-     * Returns the singleton (default) {@link Jackson2Library} instance.
+     * Returns the singleton (default) {@link Jackson2YamlLibrary} instance.
      * 
-     * @return the singleton (default) {@code Jackson2Library} instance
+     * @return the singleton (default) {@code Jackson2YamlLibrary} instance
      */
     public static final Jackson2YamlLibrary getInstance() {
         return DefaultInstanceHolder.INSTANCE;
     }
 
     /**
-     * Returns the singleton (default) {@link Jackson2Library} instance.
+     * Returns the singleton (default) {@link Jackson2YamlLibrary} instance.
      * <p>
      * This method is equivalent to {@link #getInstance()}.
      * 
-     * @return the singleton (default) {@code Jackson2Library} instance
+     * @return the singleton (default) {@code Jackson2YamlLibrary} instance
      */
     public static final Jackson2YamlLibrary defaultInstance() {
         return DefaultInstanceHolder.INSTANCE;
