@@ -124,7 +124,7 @@ public class RandomUtil {
             throw new IllegalArgumentException("min(" + min + ") is greater than max(" + max + ")");
         }
         int bound = max + 1 - min;
-        return randomInt(bound, random);
+        return randomInt(bound, random) + min;
     }
 
     /**
