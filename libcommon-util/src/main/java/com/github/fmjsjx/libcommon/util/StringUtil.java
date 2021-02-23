@@ -60,7 +60,7 @@ public class StringUtil {
      *         value.length()} is not {@code 0}, otherwise {@code false}..
      */
     public static final boolean isNotEmpty(String value) {
-        return !isNotEmpty(value);
+        return !isEmpty(value);
     }
 
     /**
