@@ -4,14 +4,14 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.function.Supplier;
 
 public class DigestUtil {
 
     /**
      * All algorithms of digest.
      */
-    public enum DigestAlgorithm {
+    public enum DigestAlgorithm implements Supplier<MessageDigest> {
         /**
          * MD5
          */
@@ -23,7 +23,15 @@ public class DigestUtil {
         /**
          * SHA-256
          */
-        SHA256("SHA-256");
+        SHA256("SHA-256"),
+        /**
+         * SHA-512
+         * 
+         * @since 1.1
+         */
+        SHA512("SHA-512"),
+        // May add others...
+        ;
 
         public static final DigestAlgorithm fromAlgorithm(String algorithm) {
             switch (algorithm) {
@@ -33,6 +41,8 @@ public class DigestUtil {
                 return SHA1;
             case "SHA-256":
                 return SHA256;
+            case "SHA-512":
+                return SHA512;
             default:
                 throw new NoSuchElementException("no such algorithm `" + algorithm + "`");
             }
@@ -58,6 +68,26 @@ public class DigestUtil {
             return algorithm;
         }
 
+        @Override
+        public MessageDigest get() {
+            try {
+                return MessageDigest.getInstance(algorithm());
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        /**
+         * Creates and returns a new {@link DigestUtil} instance with this
+         * {@code algorithm}.
+         * 
+         * @return a {@code DigestUtil}
+         * @since 1.1
+         */
+        public DigestUtil createUtil() {
+            return new DigestUtil(get());
+        }
+
     }
 
     /**
@@ -66,18 +96,18 @@ public class DigestUtil {
      * 
      * @param algorithm the {@link DigestAlgorithm}
      * @return a {@code DigestUtil}
+     * @deprecated Please use {@link DigestAlgorithm#createUtil()} instead since 1.1
+     *             version.
      */
+    @Deprecated
     public static final DigestUtil newInstance(DigestAlgorithm algorithm) {
-        try {
-            return new DigestUtil(MessageDigest.getInstance(algorithm.algorithm()));
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+        return algorithm.createUtil();
     }
 
     private static final class Md5UtilInstanceHolder {
 
-        private static final ThreadLocalUtil instance = new ThreadLocalUtil(DigestAlgorithm.MD5);
+        private static final ThreadLocal<DigestUtil> instance = ThreadLocal
+                .withInitial(DigestAlgorithm.MD5::createUtil);
 
     }
 
@@ -186,7 +216,8 @@ public class DigestUtil {
 
     private static final class Sha1UtilInstanceHolder {
 
-        private static final ThreadLocalUtil instance = new ThreadLocalUtil(DigestAlgorithm.SHA1);
+        private static final ThreadLocal<DigestUtil> instance = ThreadLocal
+                .withInitial(DigestAlgorithm.SHA1::createUtil);
 
     }
 
@@ -295,7 +326,8 @@ public class DigestUtil {
 
     private static final class Sha256UtilInstanceHolder {
 
-        private static final ThreadLocalUtil instance = new ThreadLocalUtil(DigestAlgorithm.SHA256);
+        private static final ThreadLocal<DigestUtil> instance = ThreadLocal
+                .withInitial(DigestAlgorithm.SHA256::createUtil);
 
     }
 
@@ -402,21 +434,6 @@ public class DigestUtil {
      */
     public static final String sha256AsHex(ByteBuffer input, ByteBuffer... otherInputs) {
         return sha256().digestAsHex(input, otherInputs);
-    }
-
-    private static final class ThreadLocalUtil extends ThreadLocal<DigestUtil> {
-
-        private final DigestAlgorithm algorithm;
-
-        private ThreadLocalUtil(DigestAlgorithm algorithm) {
-            this.algorithm = Objects.requireNonNull(algorithm, "algorithm must not be null");
-        }
-
-        @Override
-        protected DigestUtil initialValue() {
-            return newInstance(algorithm);
-        }
-
     }
 
     private final MessageDigest digest;

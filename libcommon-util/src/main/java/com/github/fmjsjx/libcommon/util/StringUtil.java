@@ -130,8 +130,9 @@ public class StringUtil {
 
     private static final String toHexString0(byte[] value) {
         final byte[] hexBytes = HexBytesHolder.HEX_BYTES;
-        byte[] hexValue = new byte[value.length << 1];
-        for (int i = 0; i < value.length; i++) {
+        var length = value.length;
+        byte[] hexValue = new byte[length << 1];
+        for (int i = 0; i < length; i++) {
             byte b = value[i];
             int index = i * 2;
             hexValue[index] = hexBytes[(b >>> 0x4) & 0xf];

@@ -12,7 +12,7 @@ public class ChecksumUtilTest {
 
     @Test
     public void testCrc32() {
-        ChecksumUtil util = ChecksumUtil.crc32();
+        var util = ChecksumUtil.wrappedCrc32();
         CRC32 crc32 = new CRC32();
 
         crc32.update("This is a test text string!!!".getBytes());
@@ -49,7 +49,7 @@ public class ChecksumUtilTest {
 
     @Test
     public void testCrc32c() {
-        ChecksumUtil util = ChecksumUtil.crc32c();
+        var util = ChecksumUtil.wrappedCrc32c();
         CRC32C crc32c = new CRC32C();
 
         crc32c.update("This is a test text string!!!".getBytes());
