@@ -53,6 +53,11 @@ public abstract class AbstractDequeCachedPool<E, Q extends Deque<E>> implements 
     }
 
     @Override
+    public void clear() {
+        deque.clear();
+    }
+
+    @Override
     public String toString() {
         return getClass().getSimpleName() + "(size=" + size() + ", limit=" + limit() + ")";
     }

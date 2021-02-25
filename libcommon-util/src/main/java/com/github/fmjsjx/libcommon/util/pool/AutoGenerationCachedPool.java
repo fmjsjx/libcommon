@@ -61,6 +61,11 @@ public class AutoGenerationCachedPool<E> implements CachedPool<E> {
     public E take() {
         return tryTake().orElseGet(generator);
     }
+    
+    @Override
+    public void clear() {
+        pool.clear();
+    }
 
     @Override
     public String toString() {

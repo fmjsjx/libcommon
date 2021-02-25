@@ -52,5 +52,10 @@ public interface CachedPool<E> {
      *         {@code false} otherwise
      */
     boolean tryRelease(E e);
+    
+    /**
+     * Clear this pool.
+     */
+    void clear();
 
 }
