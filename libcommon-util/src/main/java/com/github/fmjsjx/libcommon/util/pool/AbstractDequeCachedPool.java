@@ -52,4 +52,9 @@ public abstract class AbstractDequeCachedPool<E, Q extends Deque<E>> implements 
         return deque.removeFirstOccurrence(e);
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(size=" + size() + ", limit=" + limit() + ")";
+    }
+
 }

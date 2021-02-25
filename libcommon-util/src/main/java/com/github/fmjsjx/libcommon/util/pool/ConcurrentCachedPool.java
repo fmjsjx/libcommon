@@ -86,5 +86,10 @@ public class ConcurrentCachedPool<E> extends AbstractDequeCachedPool<E, Concurre
         }
         return false;
     }
+    
+    @Override
+    public String toString() {
+        return "ConcurrentCachedPool(estimatedSize=" + estimatedSize() +", limit=" + limit() + ")";
+    }
 
 }

@@ -10,6 +10,7 @@ import java.util.Optional;
  * @since 1.1
  * @see BlockingCachedPool
  * @see ConcurrentCachedPool
+ * @see AutoGenerationCachedPool
  */
 public interface CachedPool<E> {
 
