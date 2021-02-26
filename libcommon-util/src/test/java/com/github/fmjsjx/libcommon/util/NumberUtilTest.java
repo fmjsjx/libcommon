@@ -19,4 +19,18 @@ public class NumberUtilTest {
         }
     }
 
+    @Test
+    public void testOptionalInt() {
+        try {
+            Long v = 123L;
+            var o = NumberUtil.optionalInt(v);
+            assertTrue(o.isPresent());
+            assertEquals(123, o.getAsInt());
+            o = NumberUtil.optionalInt(null);
+            assertTrue(o.isEmpty());
+        } catch (Exception e) {
+            fail(e);
+        }
+    }
+
 }
