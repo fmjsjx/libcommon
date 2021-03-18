@@ -129,21 +129,50 @@ public class StringUtil {
     }
 
     private static final String toHexString0(byte[] value) {
-        final byte[] hexBytes = HexBytesHolder.HEX_BYTES;
-        var length = value.length;
-        byte[] hexValue = new byte[length << 1];
-        for (int i = 0; i < length; i++) {
-            byte b = value[i];
-            int index = i * 2;
-            hexValue[index] = hexBytes[(b >>> 0x4) & 0xf];
-            hexValue[index + 1] = hexBytes[b & 0xf];
-        }
+        byte[] hexValue = new byte[value.length << 1];
+        toHexStringBytes0(value, hexValue, 0);
         return new String(hexValue, StandardCharsets.US_ASCII);
     }
 
-    private static final class HexBytesHolder {
-        private static final byte[] HEX_BYTES = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
-                'e', 'f' };
+    private static final void toHexStringBytes0(byte[] src, byte[] dest, int offset) {
+        var digits = DigitsHolder.digits;
+        for (var i = 0; i < src.length; i++) {
+            byte b = src[i];
+            var index = i * 2;
+            dest[offset + index] = digits[(b >>> 0x4) & 0xf];
+            dest[offset + index + 1] = digits[b & 0xf];
+        }
+    }
+
+    static final class DigitsHolder {
+        static final byte[] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+                'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+    }
+
+    /**
+     * Converts the byte array to hex string.
+     * 
+     * @param src  the source value
+     * @param dest the destination byte array
+     */
+    public static final void toHexStringBytes(byte[] src, byte[] dest) {
+        toHexStringBytes(src, dest, 0);
+    }
+
+    /**
+     * Converts the byte array to hex string.
+     * 
+     * @param src    the source value
+     * @param dest   the destination byte array
+     * @param offset the offset in the destination byte array to start at
+     */
+    public static final void toHexStringBytes(byte[] src, byte[] dest, int offset) {
+        var remaining = dest.length - offset;
+        var need = src.length << 1;
+        if (remaining < need) {
+            throw new ArrayIndexOutOfBoundsException("remaining length must >= " + need + " but was " + remaining);
+        }
+        toHexStringBytes0(src, dest, offset);
     }
 
     /**

@@ -2,6 +2,8 @@ package com.github.fmjsjx.libcommon.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -211,6 +213,19 @@ public class ReflectUtil {
      */
     public static final <T, R> R callDeclaredStaticMethod(Class<T> clazz, String methodName, Object... args) {
         return callDeclaredMethod(clazz, methodName, null, args);
+    }
+
+    /**
+     * Returns the actual type argument to the specified {@code parameterizedType}.
+     * 
+     * @param <R>               type of the argument type
+     * @param parameterizedType must be {@link ParameterizedType}
+     * @param index             the index of the type arguments
+     * @return the actual type argument
+     */
+    @SuppressWarnings("unchecked")
+    public static final <R extends Type> R getActualTypeArgument(Type parameterizedType, int index) {
+        return (R) ((ParameterizedType) parameterizedType).getActualTypeArguments()[index];
     }
 
     private ReflectUtil() {
