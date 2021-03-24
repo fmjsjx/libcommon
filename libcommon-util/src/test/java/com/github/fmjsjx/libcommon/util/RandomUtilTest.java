@@ -31,9 +31,10 @@ public class RandomUtilTest {
 
     @Test
     public void testRandomOne_Lint() {
-        assertEquals(10, RandomUtil.randomOne(10));
+        int value = RandomUtil.randomOne(10);
+        assertEquals(10, value);
         for (int i = 0; i < TRY_COUNT; i++) {
-            var v = RandomUtil.randomOne(10, 20, 30, 40, 50, 60, 70, 80, 90);
+            int v = RandomUtil.randomOne(10, 20, 30, 40, 50, 60, 70, 80, 90);
             if (!(v >= 10 && v <= 90 && v % 10 == 0)) {
                 fail("Unexpected value " + v);
             }
@@ -42,9 +43,10 @@ public class RandomUtilTest {
 
     @Test
     public void testRandomOne_Llong() {
-        assertEquals(10L, RandomUtil.randomOne(10L));
+        long value = RandomUtil.randomOne(10L);
+        assertEquals(10L, value);
         for (int i = 0; i < TRY_COUNT; i++) {
-            var v = RandomUtil.randomOne(10L, 20L, 30L, 40L, 50L, 60L, 70L, 80L, 90L);
+            long v = RandomUtil.randomOne(10L, 20L, 30L, 40L, 50L, 60L, 70L, 80L, 90L);
             if (!(v >= 10 && v <= 90 && v % 10 == 0)) {
                 fail("Unexpected value " + v);
             }
