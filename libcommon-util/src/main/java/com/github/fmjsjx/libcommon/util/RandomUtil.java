@@ -133,7 +133,7 @@ public class RandomUtil {
      * @param values the {@code int} array
      * @return a random element from the specified {@code int} array
      */
-    public static final int randomOne(int... values) {
+    public static final int randomOne(int[] values) {
         var length = values.length;
         switch (length) {
         case 0:
@@ -151,7 +151,7 @@ public class RandomUtil {
      * @param values the {@code long} array
      * @return a random element from the specified {@code long} array
      */
-    public static final long ramdonOne(long... values) {
+    public static final long randomOne(long[] values) {
         var length = values.length;
         switch (length) {
         case 0:
@@ -170,8 +170,7 @@ public class RandomUtil {
      * @param values the array
      * @return a random element from the specified array
      */
-    @SafeVarargs
-    public static final <T> T randomOne(T... values) {
+    public static final <T> T randomOne(T[] values) {
         var length = values.length;
         switch (length) {
         case 0:
@@ -228,7 +227,7 @@ public class RandomUtil {
      * @param weights the weights
      * @return a random index from the specified weights
      */
-    public static final int randomIndex(int... weights) {
+    public static final int randomIndex(int[] weights) {
         if (weights.length == 0) {
             throw new IllegalArgumentException("weights must not be empty");
         }
@@ -263,8 +262,7 @@ public class RandomUtil {
      * @param values the array
      * @return a random index from the specified array
      */
-    @SafeVarargs
-    public static final <T extends Weighted> int randomIndex(T... values) {
+    public static final <T extends Weighted> int randomIndex(T[] values) {
         if (values.length == 0) {
             throw new IllegalArgumentException("values must not be empty");
         }
