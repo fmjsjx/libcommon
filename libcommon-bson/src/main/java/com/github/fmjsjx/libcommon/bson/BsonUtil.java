@@ -73,6 +73,28 @@ public class BsonUtil {
     }
 
     /**
+     * Gets the {@code Document} value in an embedded document.
+     * 
+     * @param document the source document
+     * @param keys     the array of keys
+     * @return an {@code Optional<Document>}
+     */
+    public static final Optional<Document> embeddedDocument(Document document, Object... keys) {
+        return embedded(document, keys);
+    }
+
+    /**
+     * Gets the {@code Document} value in an embedded document.
+     * 
+     * @param document the source document
+     * @param keys     the list of keys
+     * @return an {@code Optional<Document>}
+     */
+    public static final Optional<Document> embeddedDocument(Document document, List<Object> keys) {
+        return embedded(document, keys);
+    }
+
+    /**
      * Gets the {@code int} value in an embedded document.
      * 
      * @param document the source document
@@ -332,6 +354,17 @@ public class BsonUtil {
             return Optional.of(((Date) value).toInstant().atZone(zone));
         }
         throw new ClassCastException(String.format("The value is not a Date (%s)", value.getClass().getName()));
+    }
+
+    /**
+     * Gets the {@code string} value in an document.
+     * 
+     * @param document the source document
+     * @param key      the key
+     * @return an {@code Optional<String>}
+     */
+    public static final Optional<String> stringValue(Document document, String key) {
+        return Optional.ofNullable(document.getString(key));
     }
 
     /**

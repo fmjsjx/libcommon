@@ -3,6 +3,12 @@ plugins {
     id("libcommon.publish-conventions")
 }
 
+java {
+    registerFeature("generatorSupport") {
+        usingSourceSet(sourceSets["main"])
+    }
+}
+
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
@@ -16,6 +22,8 @@ dependencies {
     api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
     api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     api("com.jsoniter:jsoniter")
+
+    "generatorSupportImplementation"("org.jruby:jruby-complete")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
 

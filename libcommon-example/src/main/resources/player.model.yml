@@ -1,0 +1,65 @@
+package: com.github.fmjsjx.libcommon.example.bson.model
+
+objects:
+- name: Player
+  root: true
+  fields:
+  - name: uid
+    bname: _id
+    type: int
+  - name: wallet
+    bname: wt
+    type: object
+    model: Wallet
+  - name: equipments
+    bname: qtm
+    type: map
+    key: string
+    model: Equipment
+  - name: items
+    bname: itm
+    type: simple-map
+    key: int
+    value: int
+  - name: updateVersion
+    bname: _uv
+    type: int
+    increase: true
+    json-ignore: true
+  - name: createTime
+    bname: _ut
+    type: datetime
+    json-ignore: true
+    required: true
+- name: Wallet
+  fields:
+  - name: coin
+    bname: c
+    type: int
+    required: true
+  - name: diamond
+    bname: d
+    type: int
+    required: true
+  - name: ad
+    type: int
+    required: true
+    increase: true
+- name: Equipment
+  fields:
+  - name: id
+    type: string
+    required: true
+  - name: refId
+    bname: rid
+    type: int
+    required: true
+  - name: atk
+    type: int
+    required: true
+  - name: def
+    type: int
+    required: true
+  - name: hp
+    type: int
+    required: true

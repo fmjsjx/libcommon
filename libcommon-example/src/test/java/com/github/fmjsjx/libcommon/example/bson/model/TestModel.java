@@ -92,7 +92,7 @@ public class TestModel {
             assertEquals(5000, BsonUtil.embeddedInt(doc, "wt", "c").getAsInt());
             assertEquals(10, BsonUtil.embeddedInt(doc, "wt", "d").getAsInt());
             assertEquals(0, BsonUtil.embeddedInt(doc, "wt", "ad").getAsInt());
-            var eqb = BsonUtil.<Document>embedded(doc, "eqm", "12345678-1234-5678-9abc-123456789abc").get();
+            var eqb = BsonUtil.embeddedDocument(doc, "eqm", "12345678-1234-5678-9abc-123456789abc").get();
             assertNotNull(eqb);
             assertEquals("12345678-1234-5678-9abc-123456789abc", eqb.getString("id"));
             assertEquals(1, BsonUtil.intValue(eqb, "rid").getAsInt());
@@ -128,10 +128,12 @@ public class TestModel {
 
             assertFalse(player.updated());
             assertEquals(123, player.getUid());
+            assertEquals(player, player.getWallet().parent());
             assertEquals(5000, player.getWallet().getCoin());
             assertEquals(10, player.getWallet().getDiamond());
             assertEquals(2, player.getWallet().getAd());
             assertEquals(1, player.getEquipments().size());
+            assertEquals(player, player.getEquipments().parent());
             var eq = player.getEquipments().get("12345678-1234-5678-9abc-123456789abc");
             assertTrue(eq.isPresent());
             assertEquals(player.getEquipments(), eq.get().parent());
@@ -142,8 +144,10 @@ public class TestModel {
             assertEquals(2, eq.get().getDef());
             assertEquals(100, eq.get().getHp());
             assertEquals(1, player.getItems().size());
+            assertEquals(player, player.getItems().parent());
             assertEquals(10, player.getItems().get(2001).get());
             assertEquals(1, player.getUpdateVersion());
+            
             var zone = ZoneId.systemDefault();
             assertEquals(date, Date.from(player.getCreateTime().atZone(zone).toInstant()));
             assertEquals(date, Date.from(player.getUpdateTime().atZone(zone).toInstant()));

@@ -122,13 +122,13 @@ public class Player extends RootModel<Player> {
 
     @Override
     public void load(Document src) {
-        uid = BsonUtil.intValue(src, "_id").orElse(0);
+        uid = BsonUtil.intValue(src, "_id").getAsInt();
         BsonUtil.documentValue(src, "wt").ifPresent(wallet::load);
         BsonUtil.documentValue(src, "eqm").ifPresent(equipments::load);
         BsonUtil.documentValue(src, "itm").ifPresent(items::load);
         updateVersion = BsonUtil.intValue(src, "_uv").orElse(0);
-        createTime = BsonUtil.dateTimeValue(src, "_ct").orElse(null);
-        updateTime = BsonUtil.dateTimeValue(src, "_ut").orElse(null);
+        createTime = BsonUtil.dateTimeValue(src, "_ct").get();
+        updateTime = BsonUtil.dateTimeValue(src, "_ut").get();
         reset();
     }
 

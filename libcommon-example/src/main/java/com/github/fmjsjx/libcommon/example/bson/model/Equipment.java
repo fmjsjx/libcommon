@@ -102,7 +102,7 @@ public class Equipment extends DefaultMapValueModel<String, Equipment> {
 
     @Override
     public void load(Document src) {
-        id = src.getString("id");
+        id = BsonUtil.stringValue(src, "id").get();
         refId = BsonUtil.intValue(src, "rid").getAsInt();
         atk = BsonUtil.intValue(src, "atk").getAsInt();
         def = BsonUtil.intValue(src, "def").getAsInt();
