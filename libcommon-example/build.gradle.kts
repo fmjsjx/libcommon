@@ -6,10 +6,12 @@ plugins {
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
-    
-    api(project(":libcommon-json"))
 
-    api("com.jsoniter:jsoniter")
+    implementation(project(":libcommon-bson"))
+    implementation(project(":libcommon-json-jackson2"))
+    implementation(project(":libcommon-json-jsoniter"))
+
+    testImplementation("org.mongodb:mongodb-driver-sync")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
 
@@ -19,7 +21,7 @@ dependencies {
 
 }
 
-description = "libcommon/JSON Jsoniter"
+description = "libcommon/Example"
 
 tasks.test {
     // Use junit platform for unit tests.
@@ -39,7 +41,7 @@ publishing {
                 }
             }
             pom {
-                name.set("libcommon/JSON Jsoniter")
+                name.set("libcommon/Example")
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {

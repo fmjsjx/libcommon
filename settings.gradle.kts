@@ -1,7 +1,9 @@
 rootProject.name = "libcommon"
 include(":libcommon-aliyunons")
 include(":libcommon-bom")
+include(":libcommon-bson")
 include(":libcommon-collection")
+include(":libcommon-example")
 include(":libcommon-jdbc")
 include(":libcommon-json")
 include(":libcommon-json-dsljson")

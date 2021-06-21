@@ -6,9 +6,13 @@ plugins {
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
-    
-    api(project(":libcommon-json"))
 
+    api("org.mongodb:bson")
+    api("org.mongodb:mongodb-driver-core")
+
+    api("com.fasterxml.jackson.core:jackson-databind")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     api("com.jsoniter:jsoniter")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
@@ -19,7 +23,7 @@ dependencies {
 
 }
 
-description = "libcommon/JSON Jsoniter"
+description = "libcommon/BSON"
 
 tasks.test {
     // Use junit platform for unit tests.
@@ -39,7 +43,7 @@ publishing {
                 }
             }
             pom {
-                name.set("libcommon/JSON Jsoniter")
+                name.set("libcommon/BSON")
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {

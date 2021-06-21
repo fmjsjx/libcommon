@@ -26,6 +26,9 @@ dependencies {
         api("com.dslplatform:dsl-json-java8:1.9.8")
         api("com.jsoniter:jsoniter:0.9.23")
         api("com.aliyun.openservices:ons-client:1.8.7.3.Final")
+        api("org.mongodb:bson:4.2.3")
+        api("org.mongodb:mongodb-driver-core:4.2.3")
+        implementation("org.mongodb:mongodb-driver-sync:4.2.3")
     }
     // log4j2
     implementation(platform("org.apache.logging.log4j:log4j-bom:2.14.0"))
