@@ -104,8 +104,9 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
     public void load(Document src) {
         src.forEach((k, v) -> {
             if (v instanceof Document) {
-                var value = valueLoader.apply((Document) v);
-                map.put(parseKey(k), value);
+                var key = parseKey(k);
+                var value = valueLoader.apply((Document) v).key(key).parent(this);
+                map.put(key, value);
             }
             // skip other type values
         });

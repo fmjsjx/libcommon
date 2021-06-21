@@ -7,6 +7,8 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api")
 
+    api(project(":libcommon-util"))
+
     api("org.mongodb:bson")
     api("org.mongodb:mongodb-driver-core")
 

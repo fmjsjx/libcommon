@@ -12,6 +12,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.github.fmjsjx.libcommon.bson.BsonUtil;
+import com.github.fmjsjx.libcommon.bson.model.DefaultMapModel;
 import com.github.fmjsjx.libcommon.bson.model.RootModel;
 import com.github.fmjsjx.libcommon.bson.model.SimpleMapModel;
 import com.mongodb.client.model.Updates;
@@ -20,6 +21,8 @@ public class Player extends RootModel<Player> {
 
     private int uid;
     private final Wallet wallet = new Wallet(this);
+    private final DefaultMapModel<String, Equipment, Player> equipments = DefaultMapModel.stringKeys(this, "eqm",
+            Equipment::of);
     private final SimpleMapModel<Integer, Integer, Player> items = SimpleMapModel.integerKeys(this, "itm",
             BsonInt32::new);
     @com.fasterxml.jackson.annotation.JsonIgnore
@@ -44,6 +47,10 @@ public class Player extends RootModel<Player> {
         return wallet;
     }
 
+    public DefaultMapModel<String, Equipment, Player> getEquipments() {
+        return equipments;
+    }
+
     public SimpleMapModel<Integer, Integer, Player> getItems() {
         return items;
     }
@@ -55,13 +62,13 @@ public class Player extends RootModel<Player> {
     public void setUpdateVersion(int updateVersion) {
         if (this.updateVersion != updateVersion) {
             this.updateVersion = updateVersion;
-            updatedFields.set(4);
+            updatedFields.set(5);
         }
     }
 
     public int increaseUpdateVersion() {
         var updateVersion = this.updateVersion += 1;
-        updatedFields.set(4);
+        updatedFields.set(5);
         return updateVersion;
     }
 
@@ -72,7 +79,7 @@ public class Player extends RootModel<Player> {
     public void setCreateTime(LocalDateTime createTime) {
         if (this.createTime != createTime) {
             this.createTime = createTime;
-            updatedFields.set(5);
+            updatedFields.set(6);
         }
     }
 
@@ -83,7 +90,7 @@ public class Player extends RootModel<Player> {
     public void setUpdateTime(LocalDateTime updateTime) {
         if (this.updateTime != updateTime) {
             this.updateTime = updateTime;
-            updatedFields.set(6);
+            updatedFields.set(7);
         }
     }
 
@@ -92,6 +99,7 @@ public class Player extends RootModel<Player> {
         var bson = new BsonDocument();
         bson.append("_id", new BsonInt32(uid));
         bson.append("wt", wallet.toBson());
+        bson.append("eqm", equipments.toBson());
         bson.append("itm", items.toBson());
         bson.append("_uv", new BsonInt32(updateVersion));
         bson.append("_ct", BsonUtil.toBsonDateTime(createTime));
@@ -104,6 +112,7 @@ public class Player extends RootModel<Player> {
         var doc = new Document();
         doc.append("_id", uid);
         doc.append("wt", wallet.toDocument());
+        doc.append("eqm", equipments.toDocument());
         doc.append("itm", items.toDocument());
         doc.append("_uv", updateVersion);
         doc.append("_ct", Date.from(createTime.atZone(ZoneId.systemDefault()).toInstant()));
@@ -115,10 +124,12 @@ public class Player extends RootModel<Player> {
     public void load(Document src) {
         uid = BsonUtil.intValue(src, "_id").orElse(0);
         BsonUtil.documentValue(src, "wt").ifPresent(wallet::load);
+        BsonUtil.documentValue(src, "eqm").ifPresent(equipments::load);
         BsonUtil.documentValue(src, "itm").ifPresent(items::load);
         updateVersion = BsonUtil.intValue(src, "_uv").orElse(0);
         createTime = BsonUtil.dateTimeValue(src, "_ct").orElse(null);
         updateTime = BsonUtil.dateTimeValue(src, "_ut").orElse(null);
+        reset();
     }
 
     @Override
@@ -127,19 +138,25 @@ public class Player extends RootModel<Player> {
         if (updatedFields.get(1)) {
             updates.add(Updates.set("_id", uid));
         }
+        var wallet = this.wallet;
         if (wallet.updated()) {
             wallet.appendUpdates(updates);
         }
+        var equipments = this.equipments;
+        if (equipments.updated()) {
+            equipments.appendUpdates(updates);
+        }
+        var items = this.items;
         if (items.updated()) {
             items.appendUpdates(updates);
         }
-        if (updatedFields.get(4)) {
+        if (updatedFields.get(5)) {
             updates.add(Updates.set("_uv", updateVersion));
         }
-        if (updatedFields.get(5)) {
+        if (updatedFields.get(6)) {
             updates.add(Updates.set("_ct", BsonUtil.toBsonDateTime(createTime)));
         }
-        if (updatedFields.get(6)) {
+        if (updatedFields.get(7)) {
             updates.add(Updates.set("_ut", BsonUtil.toBsonDateTime(updateTime)));
         }
     }
@@ -147,6 +164,7 @@ public class Player extends RootModel<Player> {
     @Override
     protected void resetChildren() {
         wallet.reset();
+        equipments.reset();
         items.reset();
     }
 
@@ -157,9 +175,15 @@ public class Player extends RootModel<Player> {
         if (updatedFields.get(1)) {
             update.put("uid", uid);
         }
+        var wallet = this.wallet;
         if (wallet.updated()) {
             update.put("wallet", wallet.toUpdate());
         }
+        var equipments = this.equipments;
+        if (equipments.updated()) {
+            update.put("equipments", equipments.toUpdate());
+        }
+        var items = this.items;
         if (items.updated()) {
             update.put("items", items.toUpdate());
         }
@@ -169,6 +193,11 @@ public class Player extends RootModel<Player> {
     @Override
     public Object toDelete() {
         var delete = new LinkedHashMap<>();
+        var equipments = this.equipments;
+        if (equipments.deletedSize() > 0) {
+            delete.put("equipments", equipments.toDelete());
+        }
+        var items = this.items;
         if (items.deletedSize() > 0) {
             delete.put("items", items.toDelete());
         }

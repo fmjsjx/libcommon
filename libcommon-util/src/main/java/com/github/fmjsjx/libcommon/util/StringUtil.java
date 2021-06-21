@@ -280,6 +280,58 @@ public class StringUtil {
         }
     }
 
+    /**
+     * Compares the string a to the specified string b.
+     * 
+     * @param a the first string
+     * @param b the second string
+     * @return {@code true} if a and b are both {@code null} or a equals b,
+     *         {@code false} otherwise
+     */
+    public static final boolean isEquals(String a, String b) {
+        if (a == null) {
+            return b == null;
+        }
+        if (b == null) {
+            return false;
+        }
+        return a.equals(b);
+    }
+
+    /**
+     * Compares the string a to the specified string b.
+     * <p>
+     * This method is equivalent to {@link #isEquals(String, String) !isEquals(a,
+     * b)}.
+     * 
+     * @param a the first string
+     * @param b the second string
+     * @return {@code false} if a and b are both {@code null} or a equals b,
+     *         {@code true} otherwise
+     */
+    public static final boolean isNotEquals(String a, String b) {
+        return !isEquals(a, b);
+    }
+
+    /**
+     * Compares the string a to the specified string b, ignoring case
+     * considerations.
+     * 
+     * @param a the first string
+     * @param b the second string
+     * @return {@code true} if a and b are both {@code null} or a equals b,
+     *         {@code false} otherwise
+     */
+    public static final boolean isEqualsIgnoreCase(String a, String b) {
+        if (a == null) {
+            return b == null;
+        }
+        if (b == null) {
+            return false;
+        }
+        return a.equalsIgnoreCase(b);
+    }
+
     private StringUtil() {
     }
 
