@@ -2,7 +2,6 @@ package com.github.fmjsjx.libcommon.example.bson.model;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.bson.BsonDocument;
 import org.bson.BsonInt32;
@@ -138,7 +137,7 @@ public class Wallet extends ObjectModel<Wallet> {
 
     @Override
     public Object toDelete() {
-        return Map.of();
+        return java.util.Map.of();
     }
 
 }

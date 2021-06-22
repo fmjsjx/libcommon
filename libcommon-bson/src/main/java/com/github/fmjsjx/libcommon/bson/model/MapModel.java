@@ -42,6 +42,10 @@ public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapM
 
     /**
      * Constructs a new {@link MapModel} using {@link LinkedHashMap}.
+     * 
+     * @param parent    the parent model
+     * @param name      the field name of this map in document
+     * @param keyParser the parser parses keys
      */
     protected MapModel(Parent parent, String name, Function<String, K> keyParser) {
         this(parent, name, keyParser, LinkedHashMap::new);
@@ -50,6 +54,9 @@ public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapM
     /**
      * Constructs a new {@link MapModel} by the specified factory.
      * 
+     * @param parent     the parent model
+     * @param name       the field name of this map in document
+     * @param keyParser  the parser parses keys
      * @param mapFactory the factory to create {@link Map}s
      */
     protected MapModel(Parent parent, String name, Function<String, K> keyParser, Supplier<Map<K, V>> mapFactory) {
@@ -59,7 +66,10 @@ public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapM
     /**
      * Constructs a new {@link MapModel} with the specified map given.
      * 
-     * @param map a {@link Map}
+     * @param parent    the parent model
+     * @param name      the field name of this map in document
+     * @param keyParser the parser parses keys
+     * @param map       a {@link Map}
      */
     protected MapModel(Parent parent, String name, Function<String, K> keyParser, Map<K, V> map) {
         this.parent = parent;

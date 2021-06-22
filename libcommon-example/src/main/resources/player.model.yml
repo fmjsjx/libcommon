@@ -2,7 +2,7 @@ package: com.github.fmjsjx.libcommon.example.bson.model
 
 objects:
 - name: Player
-  root: true
+  type: root
   fields:
   - name: uid
     bname: _id
@@ -15,7 +15,7 @@ objects:
     bname: qtm
     type: map
     key: string
-    model: Equipment
+    value: Equipment
   - name: items
     bname: itm
     type: simple-map
@@ -27,11 +27,17 @@ objects:
     increase: true
     json-ignore: true
   - name: createTime
+    bname: _ct
+    type: datetime
+    json-ignore: true
+    required: true
+  - name: updateTime
     bname: _ut
     type: datetime
     json-ignore: true
     required: true
 - name: Wallet
+  type: object
   fields:
   - name: coin
     bname: c
@@ -46,6 +52,8 @@ objects:
     required: true
     increase: true
 - name: Equipment
+  type: map-value
+  key: string
   fields:
   - name: id
     type: string

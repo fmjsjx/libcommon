@@ -54,7 +54,7 @@ public final class DotNotation {
     private final String value;
 
     DotNotation(String value) {
-        this.value = value;
+        this.value = value.intern();
     }
 
     /**
