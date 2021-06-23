@@ -44,7 +44,7 @@ public class ObjectUtil {
     /**
      * Compares the given two objects.
      * <p>
-     * This method is equivalent to {@link #isEquals(String, String) !isEquals(a,
+     * This method is equivalent to {@link #isEquals(Object, Object) !isEquals(a,
      * b)}.
      * 
      * @param a the first object

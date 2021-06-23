@@ -10,12 +10,6 @@ import org.jruby.embed.ScriptingContainer;
  */
 public class JRubyCodeGenerator {
 
-    /**
-     * The main method.
-     * 
-     * @param args the main arguments
-     * @throws IOException
-     */
     public static void main(String[] args) throws IOException {
         var container = new ScriptingContainer();
         container.setArgv(args);

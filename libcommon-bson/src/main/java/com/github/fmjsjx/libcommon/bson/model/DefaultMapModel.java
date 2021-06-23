@@ -27,6 +27,7 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
      * specified components.
      * 
      * @param <T>         the type of mapped values
+     * @param <U>         the type of the parent model
      * @param parent      the parent model
      * @param name        the field name of this map in document
      * @param valueLoader the loader to load values
@@ -43,6 +44,7 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
      * specified components.
      * 
      * @param <T>         the type of mapped values
+     * @param <U>         the type of the parent model
      * @param parent      the parent model
      * @param name        the field name of this map in document
      * @param valueLoader the loader to load values
@@ -59,6 +61,7 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
      * specified components.
      * 
      * @param <T>         the type of mapped values
+     * @param <U>         the type of the parent model
      * @param parent      the parent model
      * @param name        the field name of this map in document
      * @param valueLoader the loader to load values
