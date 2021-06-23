@@ -17,7 +17,7 @@ import com.github.fmjsjx.libcommon.bson.DotNotation;
 public abstract class RootModel<Self extends RootModel<Self>> extends ObjectModel<Self> {
 
     @Override
-    public <T extends BsonModel> T parent() {
+    public BsonModel parent() {
         throw new UnsupportedOperationException("method parent() cannot be called for root model");
     }
 

@@ -32,7 +32,6 @@ public abstract class DefaultMapValueModel<K, Self extends DefaultMapValueModel<
         return (Self) this;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public DefaultMapModel<K, Self, ?> parent() {
         return parent;

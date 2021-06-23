@@ -61,10 +61,9 @@ public interface BsonModel {
     /**
      * Returns the parent model.
      * 
-     * @param <T> the type of the parent model
      * @return the parent model
      */
-    <T extends BsonModel> T parent();
+    BsonModel parent();
 
     /**
      * Returns the {@code dot notation} of this model.

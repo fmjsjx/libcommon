@@ -89,7 +89,6 @@ public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapM
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Parent parent() {
         return parent;
     }
