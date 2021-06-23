@@ -8,6 +8,7 @@ description = "libcommon/BOM"
 dependencies {
     constraints {
         api(project(":libcommon-aliyunons"))
+        api(project(":libcommon-bson"))
         api(project(":libcommon-collection"))
         api(project(":libcommon-jdbc"))
         api(project(":libcommon-json"))
