@@ -22,7 +22,7 @@ import com.mongodb.client.model.Updates;
  * @param <V> the type of mapped values
  * @param <P> the type of the parent
  * 
- * @since 1.3
+ * @since 2.0
  */
 public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K, V, P, SimpleMapModel<K, V, P>> {
 
@@ -188,7 +188,7 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
     }
 
     @Override
-    public Object toDelete() {
+    public Map<Object, Object> toDelete() {
         var removedKeys = this.removedKeys;
         if (removedKeys.isEmpty()) {
             return Map.of();

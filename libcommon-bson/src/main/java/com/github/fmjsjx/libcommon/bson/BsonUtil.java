@@ -19,7 +19,7 @@ import org.bson.Document;
 /**
  * Utility class for BSON.
  * 
- * @since 1.3
+ * @since 2.0
  */
 public class BsonUtil {
 

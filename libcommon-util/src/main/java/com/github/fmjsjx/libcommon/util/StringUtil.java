@@ -287,6 +287,7 @@ public class StringUtil {
      * @param b the second string
      * @return {@code true} if a and b are both {@code null} or a equals b,
      *         {@code false} otherwise
+     * @since 2.0
      */
     public static final boolean isEquals(String a, String b) {
         if (a == null) {
@@ -308,6 +309,7 @@ public class StringUtil {
      * @param b the second string
      * @return {@code false} if a and b are both {@code null} or a equals b,
      *         {@code true} otherwise
+     * @since 2.0
      */
     public static final boolean isNotEquals(String a, String b) {
         return !isEquals(a, b);
@@ -321,6 +323,7 @@ public class StringUtil {
      * @param b the second string
      * @return {@code true} if a and b are both {@code null} or a equals b,
      *         {@code false} otherwise
+     * @since 2.0
      */
     public static final boolean isEqualsIgnoreCase(String a, String b) {
         if (a == null) {

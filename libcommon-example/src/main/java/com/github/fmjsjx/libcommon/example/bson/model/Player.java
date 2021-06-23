@@ -1,10 +1,9 @@
 package com.github.fmjsjx.libcommon.example.bson.model;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.BsonDocument;
 import org.bson.BsonInt32;
@@ -15,16 +14,16 @@ import com.github.fmjsjx.libcommon.bson.BsonUtil;
 import com.github.fmjsjx.libcommon.bson.model.DefaultMapModel;
 import com.github.fmjsjx.libcommon.bson.model.RootModel;
 import com.github.fmjsjx.libcommon.bson.model.SimpleMapModel;
+import com.github.fmjsjx.libcommon.util.DateTimeUtil;
+import com.github.fmjsjx.libcommon.util.ObjectUtil;
 import com.mongodb.client.model.Updates;
 
 public class Player extends RootModel<Player> {
 
     private int uid;
     private final Wallet wallet = new Wallet(this);
-    private final DefaultMapModel<String, Equipment, Player> equipments = DefaultMapModel.stringKeys(this, "eqm",
-            Equipment::of);
-    private final SimpleMapModel<Integer, Integer, Player> items = SimpleMapModel.integerKeys(this, "itm",
-            BsonInt32::new);
+    private final DefaultMapModel<String, Equipment, Player> equipments = DefaultMapModel.stringKeys(this, "eqm", Equipment::of);
+    private final SimpleMapModel<Integer, Integer, Player> items = SimpleMapModel.integerKeys(this, "itm", BsonInt32::new);
     @com.fasterxml.jackson.annotation.JsonIgnore
     private int updateVersion;
     @com.fasterxml.jackson.annotation.JsonIgnore
@@ -77,7 +76,7 @@ public class Player extends RootModel<Player> {
     }
 
     public void setCreateTime(LocalDateTime createTime) {
-        if (this.createTime != createTime) {
+        if (ObjectUtil.isNotEquals(this.createTime, createTime)) {
             this.createTime = createTime;
             updatedFields.set(6);
         }
@@ -88,7 +87,7 @@ public class Player extends RootModel<Player> {
     }
 
     public void setUpdateTime(LocalDateTime updateTime) {
-        if (this.updateTime != updateTime) {
+        if (ObjectUtil.isNotEquals(this.updateTime, updateTime)) {
             this.updateTime = updateTime;
             updatedFields.set(7);
         }
@@ -115,14 +114,14 @@ public class Player extends RootModel<Player> {
         doc.append("eqm", equipments.toDocument());
         doc.append("itm", items.toDocument());
         doc.append("_uv", updateVersion);
-        doc.append("_ct", Date.from(createTime.atZone(ZoneId.systemDefault()).toInstant()));
-        doc.append("_ut", Date.from(updateTime.atZone(ZoneId.systemDefault()).toInstant()));
+        doc.append("_ct", DateTimeUtil.toLegacyDate(createTime));
+        doc.append("_ut", DateTimeUtil.toLegacyDate(updateTime));
         return doc;
     }
 
     @Override
     public void load(Document src) {
-        uid = BsonUtil.intValue(src, "_id").getAsInt();
+        uid = BsonUtil.intValue(src, "_id").orElse(0);
         BsonUtil.documentValue(src, "wt").ifPresent(wallet::load);
         BsonUtil.documentValue(src, "eqm").ifPresent(equipments::load);
         BsonUtil.documentValue(src, "itm").ifPresent(items::load);
@@ -175,15 +174,12 @@ public class Player extends RootModel<Player> {
         if (updatedFields.get(1)) {
             update.put("uid", uid);
         }
-        var wallet = this.wallet;
         if (wallet.updated()) {
             update.put("wallet", wallet.toUpdate());
         }
-        var equipments = this.equipments;
         if (equipments.updated()) {
             update.put("equipments", equipments.toUpdate());
         }
-        var items = this.items;
         if (items.updated()) {
             update.put("items", items.toUpdate());
         }
@@ -191,8 +187,12 @@ public class Player extends RootModel<Player> {
     }
 
     @Override
-    public Object toDelete() {
+    public Map<Object, Object> toDelete() {
         var delete = new LinkedHashMap<>();
+        var wallet = this.wallet;
+        if (wallet.deletedSize() > 0) {
+            delete.put("wallet", wallet.toDelete());
+        }
         var equipments = this.equipments;
         if (equipments.deletedSize() > 0) {
             delete.put("equipments", equipments.toDelete());
@@ -202,6 +202,21 @@ public class Player extends RootModel<Player> {
             delete.put("items", items.toDelete());
         }
         return delete;
+    }
+
+    @Override
+    protected int deletedSize() {
+        var n = 0;
+        if (wallet.deletedSize() > 0) {
+            n++;
+        }
+        if (equipments.deletedSize() > 0) {
+            n++;
+        }
+        if (items.deletedSize() > 0) {
+            n++;
+        }
+        return n;
     }
 
 }

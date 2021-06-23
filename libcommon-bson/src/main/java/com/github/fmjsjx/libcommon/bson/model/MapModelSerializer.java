@@ -6,6 +6,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
+/**
+ * The {@link JsonSerializer} for {@link MapModel}s.
+ * 
+ * @since 2.0
+ */
 public class MapModelSerializer extends JsonSerializer<MapModel<?, ?, ?, ?>> {
 
     @Override

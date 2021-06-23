@@ -3,7 +3,7 @@ package com.github.fmjsjx.libcommon.bson;
 /**
  * BSON dot notation.
  * 
- * @since 1.3
+ * @since 2.0
  */
 public final class DotNotation {
 

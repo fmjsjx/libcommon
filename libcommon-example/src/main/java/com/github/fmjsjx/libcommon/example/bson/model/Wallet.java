@@ -2,9 +2,11 @@ package com.github.fmjsjx.libcommon.example.bson.model;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.BsonDocument;
 import org.bson.BsonInt32;
+import org.bson.BsonInt64;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -19,30 +21,30 @@ public class Wallet extends ObjectModel<Wallet> {
 
     private final Player parent;
 
-    private int coin;
-    private int diamond;
+    private long coin;
+    private long diamond;
     private int ad;
 
     public Wallet(Player parent) {
         this.parent = parent;
     }
 
-    public int getCoin() {
+    public long getCoin() {
         return coin;
     }
 
-    public void setCoin(int coin) {
+    public void setCoin(long coin) {
         if (this.coin != coin) {
             this.coin = coin;
             updatedFields.set(1);
         }
     }
 
-    public int getDiamond() {
+    public long getDiamond() {
         return diamond;
     }
 
-    public void setDiamond(int diamond) {
+    public void setDiamond(long diamond) {
         if (this.diamond != diamond) {
             this.diamond = diamond;
             updatedFields.set(2);
@@ -66,11 +68,22 @@ public class Wallet extends ObjectModel<Wallet> {
         return ad;
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Player parent() {
+        return parent;
+    }
+
+    @Override
+    public DotNotation xpath() {
+        return XPATH;
+    }
+
     @Override
     public BsonDocument toBson() {
         var bson = new BsonDocument();
-        bson.append("c", new BsonInt32(coin));
-        bson.append("d", new BsonInt32(diamond));
+        bson.append("c", new BsonInt64(coin));
+        bson.append("d", new BsonInt64(diamond));
         bson.append("ad", new BsonInt32(ad));
         return bson;
     }
@@ -86,25 +99,14 @@ public class Wallet extends ObjectModel<Wallet> {
 
     @Override
     public void load(Document src) {
-        coin = BsonUtil.intValue(src, "c").orElse(0);
-        diamond = BsonUtil.intValue(src, "d").orElse(0);
-        ad = BsonUtil.intValue(src, "ad").orElse(0);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Player parent() {
-        return parent;
-    }
-
-    @Override
-    public DotNotation xpath() {
-        return XPATH;
+        coin = BsonUtil.longValue(src, "c").getAsLong();
+        diamond = BsonUtil.longValue(src, "d").getAsLong();
+        ad = BsonUtil.intValue(src, "ad").getAsInt();
     }
 
     @Override
     protected void appendFieldUpdates(List<Bson> updates) {
-        var updatedFields = super.updatedFields;
+        var updatedFields = this.updatedFields;
         if (updatedFields.get(1)) {
             updates.add(Updates.set(xpath().resolve("c").value(), coin));
         }
@@ -123,6 +125,7 @@ public class Wallet extends ObjectModel<Wallet> {
     @Override
     public Object toSubUpdate() {
         var update = new LinkedHashMap<>();
+        var updatedFields = this.updatedFields;
         if (updatedFields.get(1)) {
             update.put("coin", coin);
         }
@@ -136,8 +139,13 @@ public class Wallet extends ObjectModel<Wallet> {
     }
 
     @Override
-    public Object toDelete() {
-        return java.util.Map.of();
+    public Map<Object, Object> toDelete() {
+        return Map.of();
+    }
+
+    @Override
+    protected int deletedSize() {
+        return 0;
     }
 
 }

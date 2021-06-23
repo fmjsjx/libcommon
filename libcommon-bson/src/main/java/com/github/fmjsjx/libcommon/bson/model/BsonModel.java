@@ -11,7 +11,7 @@ import com.github.fmjsjx.libcommon.bson.DotNotation;
 /**
  * The top interface for BSON model.
  * 
- * @see 1.3
+ * @since 2.0
  */
 public interface BsonModel {
 

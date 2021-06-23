@@ -12,7 +12,7 @@ import com.github.fmjsjx.libcommon.bson.DotNotation;
  * 
  * @param <Self> the type of the implementation class
  * 
- * @since 1.3
+ * @since 2.0
  */
 public abstract class RootModel<Self extends RootModel<Self>> extends ObjectModel<Self> {
 

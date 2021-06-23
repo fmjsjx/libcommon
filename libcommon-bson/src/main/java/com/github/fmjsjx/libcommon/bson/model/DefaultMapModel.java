@@ -17,7 +17,7 @@ import org.bson.conversions.Bson;
  * @param <V> the type of mapped values
  * @param <P> the type of the parent
  * 
- * @since 1.3
+ * @since 2.0
  */
 public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P extends BsonModel>
         extends MapModel<K, V, P, DefaultMapModel<K, V, P>> {
@@ -181,7 +181,7 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
     }
 
     @Override
-    public Object toDelete() {
+    public Map<Object, Object> toDelete() {
         var removedKeys = this.removedKeys;
         if (removedKeys.isEmpty()) {
             return Map.of();

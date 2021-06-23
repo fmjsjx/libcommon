@@ -22,6 +22,41 @@ public class ObjectUtil {
         return obj.toString();
     }
 
+    /**
+     * Compares the given two objects.
+     * 
+     * @param a the first object
+     * @param b the second object
+     * @return {@code true} if a and b are both {@code null} or a equals b,
+     *         {@code false} otherwise
+     * @since 2.0
+     */
+    public static final boolean isEquals(Object a, Object b) {
+        if (a == null) {
+            return b == null;
+        }
+        if (b == null) {
+            return false;
+        }
+        return a.equals(b);
+    }
+
+    /**
+     * Compares the given two objects.
+     * <p>
+     * This method is equivalent to {@link #isEquals(String, String) !isEquals(a,
+     * b)}.
+     * 
+     * @param a the first object
+     * @param b the second object
+     * @return {@code false} if a and b are both {@code null} or a equals b,
+     *         {@code true} otherwise
+     * @since 2.0
+     */
+    public static final boolean isNotEquals(Object a, Object b) {
+        return !isEquals(a, b);
+    }
+
     private ObjectUtil() {
     }
 

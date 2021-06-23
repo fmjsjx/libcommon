@@ -7,10 +7,10 @@ import com.github.fmjsjx.libcommon.bson.DotNotation;
 /***
  * The abstract class for values of {@link DefaultMapModel}.
  *
- * @param <K>
- * @param <Self>
+ * @param <K>    the type of key
+ * @param <Self> the type of implementation
  * 
- * @since 1.3
+ * @since 2.0
  * 
  * @see DefaultMapModel
  */

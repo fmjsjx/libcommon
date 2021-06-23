@@ -24,7 +24,7 @@ import com.mongodb.client.model.Updates;
  * @param <V>      the type of mapped values
  * @param <Parent> the type of the parent
  * @param <Self>   the type of the implementation class
- * @since 1.3
+ * @since 2.0
  */
 @JsonSerialize(using = MapModelSerializer.class)
 public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapModel<K, V, Parent, ?>>
@@ -114,6 +114,7 @@ public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapM
      * 
      * @return the size of removed entries
      */
+    @Override
     public int deletedSize() {
         return removedKeys.size();
     }

@@ -9,6 +9,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
+import java.util.Date;
 
 /**
  * Utility class for JDK8 date time API.
@@ -239,6 +240,41 @@ public class DateTimeUtil {
         var minute = n / 100 % 100;
         var second = n % 100;
         return LocalTime.of(hour, minute, second);
+    }
+
+    /**
+     * Converts the time from {@link LocalDateTime} to legacy {@link Date}.
+     * 
+     * @param time the time
+     * @return a {@code java.util.Date}
+     * @since 2.0
+     */
+    public static final Date toLegacyDate(LocalDateTime time) {
+        return toLegacyDate(time, zone());
+    }
+
+    /**
+     * Converts the time from {@link LocalDateTime} to legacy {@link Date} at
+     * specified time-zone given.
+     * 
+     * @param time the time
+     * @param zone the time-zone
+     * @return a {@code java.util.Date}
+     * @since 2.0
+     */
+    public static final Date toLegacyDate(LocalDateTime time, ZoneId zone) {
+        return toLegacyDate(time.atZone(zone));
+    }
+
+    /**
+     * Converts the time from {@link LocalDateTime} to legacy {@link Date}.
+     * 
+     * @param time the time
+     * @return a {@code java.util.Date}
+     * @since 2.0
+     */
+    public static final Date toLegacyDate(ZonedDateTime time) {
+        return Date.from(time.toInstant());
     }
 
     private DateTimeUtil() {

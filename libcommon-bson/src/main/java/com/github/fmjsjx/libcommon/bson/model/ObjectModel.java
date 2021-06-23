@@ -12,7 +12,7 @@ import com.mongodb.client.model.Updates;
  * 
  * @param <Self> the type of the implementation class
  * 
- * @since 1.3
+ * @since 2.0
  */
 public abstract class ObjectModel<Self extends ObjectModel<Self>> extends AbstractBsonModel {
 

@@ -46,8 +46,8 @@ public class TestModel {
             var bson = player.toBson();
             assertNotNull(bson);
             assertEquals(123, bson.getInt32("_id").intValue());
-            assertEquals(5000, bson.getDocument("wt").getInt32("c").intValue());
-            assertEquals(10, bson.getDocument("wt").getInt32("d").intValue());
+            assertEquals(5000, bson.getDocument("wt").getInt64("c").intValue());
+            assertEquals(10, bson.getDocument("wt").getInt64("d").intValue());
             assertEquals(0, bson.getDocument("wt").getInt32("ad").intValue());
             var eqb = bson.getDocument("eqm").getDocument("12345678-1234-5678-9abc-123456789abc");
             assertNotNull(eqb);
@@ -214,8 +214,8 @@ public class TestModel {
             player.getEquipments().put("11111111-2222-3333-4444-555555555555", eq2);
             player.getItems().put(2001, 5);
             var now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
-            player.setCreateTime(now);
-            player.setUpdateTime(now);
+            player.setCreateTime(now.minusDays(1));
+            player.setUpdateTime(now.minusSeconds(10));
 
             player.reset();
 
@@ -241,7 +241,8 @@ public class TestModel {
             var n = player.appendUpdates(updates);
             assertTrue(n > 0);
             assertEquals(n, updates.size());
-            assertEquals(Updates.set("wt.c", 5200), updates.get(0));
+            updates.forEach(System.out::println);
+            assertEquals(Updates.set("wt.c", 5200L), updates.get(0));
             assertEquals(Updates.set("wt.ad", 1), updates.get(1));
             assertEquals(Updates.set("eqm.12345678-1234-5678-9abc-123456789abc", eq1.toBson()), updates.get(2));
             assertEquals(Updates.set("eqm.00000000-0000-0000-0000-000000000000", eq3.toBson()), updates.get(3));

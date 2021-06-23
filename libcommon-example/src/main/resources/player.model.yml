@@ -12,7 +12,7 @@ objects:
     type: object
     model: Wallet
   - name: equipments
-    bname: qtm
+    bname: eqm
     type: map
     key: string
     value: Equipment
@@ -41,11 +41,11 @@ objects:
   fields:
   - name: coin
     bname: c
-    type: int
+    type: long
     required: true
   - name: diamond
     bname: d
-    type: int
+    type: long
     required: true
   - name: ad
     type: int
