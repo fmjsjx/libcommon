@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 import org.bson.BsonDateTime;
 import org.bson.Document;
 
+import com.github.fmjsjx.libcommon.util.DateTimeUtil;
+
 /**
  * Utility class for BSON.
  * 
@@ -452,7 +454,7 @@ public class BsonUtil {
             return Optional.empty();
         }
         if (value instanceof Date) {
-            return Optional.of(LocalDateTime.ofInstant(((Date) value).toInstant(), ZoneId.systemDefault()));
+            return Optional.of(DateTimeUtil.local((Date) value));
         }
         throw new ClassCastException(String.format("The value is not a Date (%s)", value.getClass().getName()));
     }
@@ -471,7 +473,7 @@ public class BsonUtil {
             return Optional.empty();
         }
         if (value instanceof Date) {
-            return Optional.of(((Date) value).toInstant().atZone(zone));
+            return Optional.of(DateTimeUtil.zoned((Date) value, zone));
         }
         throw new ClassCastException(String.format("The value is not a Date (%s)", value.getClass().getName()));
     }

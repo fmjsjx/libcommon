@@ -23,7 +23,7 @@ dependencies {
     api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     api("com.jsoniter:jsoniter")
 
-    "generatorSupportImplementation"("org.jruby:jruby-complete")
+    "generatorSupportImplementation"("org.jruby:jruby")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
 

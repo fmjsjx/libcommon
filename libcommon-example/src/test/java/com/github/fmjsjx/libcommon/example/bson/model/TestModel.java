@@ -241,7 +241,6 @@ public class TestModel {
             var n = player.appendUpdates(updates);
             assertTrue(n > 0);
             assertEquals(n, updates.size());
-            updates.forEach(System.out::println);
             assertEquals(Updates.set("wt.c", 5200L), updates.get(0));
             assertEquals(Updates.set("wt.ad", 1), updates.get(1));
             assertEquals(Updates.set("eqm.12345678-1234-5678-9abc-123456789abc", eq1.toBson()), updates.get(2));

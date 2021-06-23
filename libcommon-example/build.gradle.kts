@@ -10,6 +10,8 @@ dependencies {
     implementation(project(":libcommon-bson"))
     implementation(project(":libcommon-json-jackson2"))
     implementation(project(":libcommon-json-jsoniter"))
+    
+    implementation("org.jruby:jruby")
 
     testImplementation("org.mongodb:mongodb-driver-sync")
 

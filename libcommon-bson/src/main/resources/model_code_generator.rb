@@ -560,11 +560,11 @@ def generate_map_value(cfg)
   code = "package #{cfg['package']};\n\n"
   fill_imports(code, 'DefaultMapValueModel', cfg['fields'])
   code << "public class #{cfg['name']} extends DefaultMapValueModel<#{boxed_jtype(cfg['key'])}, #{cfg['name']}> {\n\n"
-  code << "public static final #{cfg['name']} of(Document document) {\n"
-  code << tabs(1, "var obj = new #{cfg['name']}();\n")
-  code << tabs(1, "obj.load(document);\n")
-  code << tabs(1, "return obj;\n")
-  code << "}\n\n"
+  code << tabs(1, "public static final #{cfg['name']} of(Document document) {\n")
+  code << tabs(2, "var obj = new #{cfg['name']}();\n")
+  code << tabs(2, "obj.load(document);\n")
+  code << tabs(2, "return obj;\n")
+  code << tabs(1, "}\n\n")
   fill_fields(code, cfg)
   fill_xetters(code, cfg)
   fill_to_bson(code, cfg)

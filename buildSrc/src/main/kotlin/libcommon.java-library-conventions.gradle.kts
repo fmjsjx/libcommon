@@ -30,6 +30,9 @@ dependencies {
         api("org.mongodb:mongodb-driver-core:4.2.3")
         implementation("org.mongodb:mongodb-driver-sync:4.2.3")
         implementation("org.jruby:jruby-complete:9.2.19.0")
+        implementation("org.jruby:jruby:9.2.19.0")
+        implementation("org.jruby:jruby-core:9.2.19.0")
+        implementation("org.jruby:jruby-stdlib:9.2.19.0")
     }
     // log4j2
     implementation(platform("org.apache.logging.log4j:log4j-bom:2.14.0"))

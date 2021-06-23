@@ -12,6 +12,10 @@ There are a number of modules in LibCommon, here is a quick overview:
 
 The [`libcommon-util`](libcommon-util) module provides some common utility classes.
 
+### libcommon-bson (since 2.0)
+
+The [`libcommon-bson`](libcommon-example) module provides a ORM like model framework for BSON/MongoDB. 
+
 ### libcommon-collection
 
 The [`libcommon-collection`](libcommon-collection) module provides additional collection/map.

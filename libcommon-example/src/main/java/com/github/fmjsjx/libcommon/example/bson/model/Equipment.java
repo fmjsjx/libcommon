@@ -17,11 +17,11 @@ import com.mongodb.client.model.Updates;
 
 public class Equipment extends DefaultMapValueModel<String, Equipment> {
 
-public static final Equipment of(Document document) {
-    var obj = new Equipment();
-    obj.load(document);
-    return obj;
-}
+    public static final Equipment of(Document document) {
+        var obj = new Equipment();
+        obj.load(document);
+        return obj;
+    }
 
     private String id;
     private int refId;

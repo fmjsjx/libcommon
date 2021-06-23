@@ -277,6 +277,78 @@ public class DateTimeUtil {
         return Date.from(time.toInstant());
     }
 
+    /**
+     * Converts the legacy {@link Date} to {@link LocalDateTime} using system time
+     * zone.
+     * 
+     * @param date the legacy date
+     * @return a {@code LocalDateTime}
+     * @since 2.0
+     */
+    public static final LocalDateTime local(Date date) {
+        return local(date, zone());
+    }
+
+    /**
+     * Converts the legacy {@link Date} to {@link LocalDateTime}.
+     * 
+     * @param date the legacy date
+     * @param zone the time-zone
+     * @return a {@code LocalDateTime}
+     * @since 2.0
+     */
+    public static final LocalDateTime local(Date date, ZoneId zone) {
+        return LocalDateTime.ofInstant(date.toInstant(), zone);
+    }
+
+    /**
+     * Converts the legacy {@link Date} to {@link ZonedDateTime} with system time
+     * zone.
+     * 
+     * @param date the legacy date
+     * @return a {@code ZonedDateTime}
+     * @since 2.0
+     */
+    public static final ZonedDateTime zoned(Date date) {
+        return zoned(date, zone());
+    }
+
+    /**
+     * Converts the legacy {@link Date} to {@link ZonedDateTime}.
+     * 
+     * @param date the legacy date
+     * @param zone the time-zone
+     * @return a {@code ZonedDateTime}
+     * @since 2.0
+     */
+    public static final ZonedDateTime zoned(Date date, ZoneId zone) {
+        return ZonedDateTime.ofInstant(date.toInstant(), zone);
+    }
+
+    /**
+     * Converts the legacy {@link Date} to {@link OffsetDateTime} with system time
+     * zone.
+     * 
+     * @param date the legacy date
+     * @return a {@code OffsetDateTime}
+     * @since 2.0
+     */
+    public static final OffsetDateTime offset(Date date) {
+        return offset(date, zone());
+    }
+
+    /**
+     * Converts the legacy {@link Date} to {@link OffsetDateTime}.
+     * 
+     * @param date the legacy date
+     * @param zone the time-zone
+     * @return a {@code OffsetDateTime}
+     * @since 2.0
+     */
+    public static final OffsetDateTime offset(Date date, ZoneId zone) {
+        return OffsetDateTime.ofInstant(date.toInstant(), zone);
+    }
+
     private DateTimeUtil() {
     }
 
