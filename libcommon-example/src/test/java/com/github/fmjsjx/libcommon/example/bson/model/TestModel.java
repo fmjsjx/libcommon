@@ -30,7 +30,8 @@ public class TestModel {
         try {
             var player = new Player();
             player.setUid(123);
-            player.getWallet().setCoin(5000);
+            player.getWallet().setCoinTotal(5000);
+            player.getWallet().setCoinUsed(200);
             player.getWallet().setDiamond(10);
             var equipment = new Equipment();
             equipment.setId("12345678-1234-5678-9abc-123456789abc");
@@ -46,7 +47,8 @@ public class TestModel {
             var bson = player.toBson();
             assertNotNull(bson);
             assertEquals(123, bson.getInt32("_id").intValue());
-            assertEquals(5000, bson.getDocument("wt").getInt64("c").intValue());
+            assertEquals(5000, bson.getDocument("wt").getInt64("ct").intValue());
+            assertEquals(200, bson.getDocument("wt").getInt64("cu").intValue());
             assertEquals(10, bson.getDocument("wt").getInt64("d").intValue());
             assertEquals(0, bson.getDocument("wt").getInt32("ad").intValue());
             var eqb = bson.getDocument("eqm").getDocument("12345678-1234-5678-9abc-123456789abc");
@@ -71,7 +73,8 @@ public class TestModel {
         try {
             var player = new Player();
             player.setUid(123);
-            player.getWallet().setCoin(5000);
+            player.getWallet().setCoinTotal(5000);
+            player.getWallet().setCoinUsed(200);
             player.getWallet().setDiamond(10);
             var equipment = new Equipment();
             equipment.setId("12345678-1234-5678-9abc-123456789abc");
@@ -89,7 +92,8 @@ public class TestModel {
 
             assertNotNull(doc);
             assertEquals(123, BsonUtil.intValue(doc, "_id").getAsInt());
-            assertEquals(5000, BsonUtil.embeddedInt(doc, "wt", "c").getAsInt());
+            assertEquals(5000, BsonUtil.embeddedInt(doc, "wt", "ct").getAsInt());
+            assertEquals(200, BsonUtil.embeddedInt(doc, "wt", "cu").getAsInt());
             assertEquals(10, BsonUtil.embeddedInt(doc, "wt", "d").getAsInt());
             assertEquals(0, BsonUtil.embeddedInt(doc, "wt", "ad").getAsInt());
             var eqb = BsonUtil.embeddedDocument(doc, "eqm", "12345678-1234-5678-9abc-123456789abc").get();
@@ -114,7 +118,7 @@ public class TestModel {
         try {
             var date = new Date();
             var doc = new Document().append("_id", 123) // uid
-                    .append("wt", new Document("c", 5000).append("d", 10).append("ad", 2)) // wallet
+                    .append("wt", new Document("ct", 5000).append("cu", 200).append("d", 10).append("ad", 2)) // wallet
                     .append("eqm", // equipments
                             new Document("12345678-1234-5678-9abc-123456789abc",
                                     new Document("id", "12345678-1234-5678-9abc-123456789abc").append("rid", 1)
@@ -129,7 +133,9 @@ public class TestModel {
             assertFalse(player.updated());
             assertEquals(123, player.getUid());
             assertEquals(player, player.getWallet().parent());
-            assertEquals(5000, player.getWallet().getCoin());
+            assertEquals(5000, player.getWallet().getCoinTotal());
+            assertEquals(200, player.getWallet().getCoinUsed());
+            assertEquals(4800, player.getWallet().getCoin());
             assertEquals(10, player.getWallet().getDiamond());
             assertEquals(2, player.getWallet().getAd());
             assertEquals(1, player.getEquipments().size());
@@ -147,7 +153,7 @@ public class TestModel {
             assertEquals(player, player.getItems().parent());
             assertEquals(10, player.getItems().get(2001).get());
             assertEquals(1, player.getUpdateVersion());
-            
+
             var zone = ZoneId.systemDefault();
             assertEquals(date, Date.from(player.getCreateTime().atZone(zone).toInstant()));
             assertEquals(date, Date.from(player.getUpdateTime().atZone(zone).toInstant()));
@@ -161,7 +167,8 @@ public class TestModel {
         try {
             var player = new Player();
             player.setUid(123);
-            player.getWallet().setCoin(5000);
+            player.getWallet().setCoinTotal(5000);
+            player.getWallet().setCoinUsed(200);
             player.getWallet().setDiamond(10);
             var equipment = new Equipment();
             equipment.setId("12345678-1234-5678-9abc-123456789abc");
@@ -177,7 +184,8 @@ public class TestModel {
             var json = Jackson2Library.getInstance().dumpsToString(player);
             var any = JsoniterLibrary.getInstance().loads(json);
             assertEquals(123, any.toInt("uid"));
-            assertEquals(5000, any.toInt("wallet", "coin"));
+            assertEquals(5000, any.toInt("wallet", "coinTotal"));
+            assertEquals(4800, any.toInt("wallet", "coin"));
             assertEquals(10, any.toInt("wallet", "diamond"));
             assertEquals(0, any.toInt("wallet", "ad"));
             assertEquals("12345678-1234-5678-9abc-123456789abc",
@@ -197,7 +205,8 @@ public class TestModel {
         try {
             var player = new Player();
             player.setUid(123);
-            player.getWallet().setCoin(5000);
+            player.getWallet().setCoinTotal(5000);
+            player.getWallet().setCoinUsed(200);
             player.getWallet().setDiamond(10);
             var eq1 = new Equipment();
             eq1.setId("12345678-1234-5678-9abc-123456789abc");
@@ -219,7 +228,8 @@ public class TestModel {
 
             player.reset();
 
-            player.getWallet().setCoin(5200);
+            player.getWallet().setCoinTotal(5200);
+            player.getWallet().setCoinUsed(300);
             player.getWallet().increaseAd();
 
             player.getEquipments().get("12345678-1234-5678-9abc-123456789abc").get().fullyUpdate(true).setAtk(12);
@@ -241,17 +251,18 @@ public class TestModel {
             var n = player.appendUpdates(updates);
             assertTrue(n > 0);
             assertEquals(n, updates.size());
-            assertEquals(Updates.set("wt.c", 5200L), updates.get(0));
-            assertEquals(Updates.set("wt.ad", 1), updates.get(1));
-            assertEquals(Updates.set("eqm.12345678-1234-5678-9abc-123456789abc", eq1.toBson()), updates.get(2));
-            assertEquals(Updates.set("eqm.00000000-0000-0000-0000-000000000000", eq3.toBson()), updates.get(3));
-            assertEquals(Updates.unset("eqm.11111111-2222-3333-4444-555555555555"), updates.get(4));
-            assertEquals(Updates.set("itm.2002", 1), updates.get(5));
-            assertEquals(Updates.unset("itm.2001"), updates.get(6));
-            assertEquals(Updates.set("_uv", 1), updates.get(7));
+            assertEquals(Updates.set("wt.ct", 5200L), updates.get(0));
+            assertEquals(Updates.set("wt.cu", 300L), updates.get(1));
+            assertEquals(Updates.set("wt.ad", 1), updates.get(2));
+            assertEquals(Updates.set("eqm.12345678-1234-5678-9abc-123456789abc", eq1.toBson()), updates.get(3));
+            assertEquals(Updates.set("eqm.00000000-0000-0000-0000-000000000000", eq3.toBson()), updates.get(4));
+            assertEquals(Updates.unset("eqm.11111111-2222-3333-4444-555555555555"), updates.get(5));
+            assertEquals(Updates.set("itm.2002", 1), updates.get(6));
+            assertEquals(Updates.unset("itm.2001"), updates.get(7));
+            assertEquals(Updates.set("_uv", 1), updates.get(8));
             var zone = ZoneId.systemDefault();
             var _ut = new BsonDateTime(now.atZone(zone).toInstant().toEpochMilli());
-            assertEquals(Updates.set("_ut", _ut), updates.get(8));
+            assertEquals(Updates.set("_ut", _ut), updates.get(9));
 
             player.reset();
             var updates2 = new ArrayList<Bson>();
@@ -268,7 +279,8 @@ public class TestModel {
         try {
             var player = new Player();
             player.setUid(123);
-            player.getWallet().setCoin(5000);
+            player.getWallet().setCoinTotal(5000);
+            player.getWallet().setCoinUsed(200);
             player.getWallet().setDiamond(10);
             var eq1 = new Equipment();
             eq1.setId("12345678-1234-5678-9abc-123456789abc");
@@ -290,7 +302,8 @@ public class TestModel {
 
             player.reset();
 
-            player.getWallet().setCoin(5200);
+            player.getWallet().setCoinTotal(5200);
+            player.getWallet().setCoinUsed(300);
             player.getWallet().increaseAd();
 
             player.getEquipments().get("12345678-1234-5678-9abc-123456789abc").get().fullyUpdate(true).setAtk(12);
@@ -313,12 +326,13 @@ public class TestModel {
             var json = Jackson2Library.getInstance().dumpsToString(update);
             var any = JsoniterLibrary.getInstance().loads(json);
             assertEquals(3, any.asMap().size());
-            assertEquals(2, any.get("wallet").asMap().size());
+            assertEquals(3, any.get("wallet").asMap().size());
             assertEquals(2, any.get("equipments").asMap().size());
             assertEquals(5, any.get("equipments", "12345678-1234-5678-9abc-123456789abc").asMap().size());
             assertEquals(5, any.get("equipments", "00000000-0000-0000-0000-000000000000").asMap().size());
             assertEquals(1, any.get("items").asMap().size());
-            assertEquals(5200, any.toInt("wallet", "coin"));
+            assertEquals(5200, any.toInt("wallet", "coinTotal"));
+            assertEquals(4900, any.toInt("wallet", "coin"));
             assertEquals("12345678-1234-5678-9abc-123456789abc",
                     any.toString("equipments", "12345678-1234-5678-9abc-123456789abc", "id"));
             assertEquals(1, any.toInt("equipments", "12345678-1234-5678-9abc-123456789abc", "refId"));
@@ -343,7 +357,8 @@ public class TestModel {
         try {
             var player = new Player();
             player.setUid(123);
-            player.getWallet().setCoin(5000);
+            player.getWallet().setCoinTotal(5000);
+            player.getWallet().setCoinUsed(200);
             player.getWallet().setDiamond(10);
             var eq1 = new Equipment();
             eq1.setId("12345678-1234-5678-9abc-123456789abc");
@@ -365,7 +380,7 @@ public class TestModel {
 
             player.reset();
 
-            player.getWallet().setCoin(5200);
+            player.getWallet().setCoinTotal(5200);
             player.getWallet().increaseAd();
 
             player.getEquipments().get("12345678-1234-5678-9abc-123456789abc").get().fullyUpdate(true).setAtk(12);

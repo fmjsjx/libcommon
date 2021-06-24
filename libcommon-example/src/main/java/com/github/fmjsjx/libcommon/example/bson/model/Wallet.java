@@ -21,7 +21,9 @@ public class Wallet extends ObjectModel<Wallet> {
 
     private final Player parent;
 
-    private long coin;
+    private long coinTotal;
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private long coinUsed;
     private long diamond;
     private int ad;
 
@@ -29,15 +31,32 @@ public class Wallet extends ObjectModel<Wallet> {
         this.parent = parent;
     }
 
-    public long getCoin() {
-        return coin;
+    public long getCoinTotal() {
+        return coinTotal;
     }
 
-    public void setCoin(long coin) {
-        if (this.coin != coin) {
-            this.coin = coin;
+    public void setCoinTotal(long coinTotal) {
+        if (this.coinTotal != coinTotal) {
+            this.coinTotal = coinTotal;
             updatedFields.set(1);
+            updatedFields.set(3);
         }
+    }
+
+    public long getCoinUsed() {
+        return coinUsed;
+    }
+
+    public void setCoinUsed(long coinUsed) {
+        if (this.coinUsed != coinUsed) {
+            this.coinUsed = coinUsed;
+            updatedFields.set(2);
+            updatedFields.set(3);
+        }
+    }
+
+    public long getCoin() {
+        return coinTotal - coinUsed;
     }
 
     public long getDiamond() {
@@ -47,7 +66,7 @@ public class Wallet extends ObjectModel<Wallet> {
     public void setDiamond(long diamond) {
         if (this.diamond != diamond) {
             this.diamond = diamond;
-            updatedFields.set(2);
+            updatedFields.set(4);
         }
     }
 
@@ -58,17 +77,16 @@ public class Wallet extends ObjectModel<Wallet> {
     public void setAd(int ad) {
         if (this.ad != ad) {
             this.ad = ad;
-            updatedFields.set(3);
+            updatedFields.set(5);
         }
     }
 
     public int increaseAd() {
         var ad = this.ad += 1;
-        updatedFields.set(3);
+        updatedFields.set(5);
         return ad;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Player parent() {
         return parent;
@@ -82,7 +100,8 @@ public class Wallet extends ObjectModel<Wallet> {
     @Override
     public BsonDocument toBson() {
         var bson = new BsonDocument();
-        bson.append("c", new BsonInt64(coin));
+        bson.append("ct", new BsonInt64(coinTotal));
+        bson.append("cu", new BsonInt64(coinUsed));
         bson.append("d", new BsonInt64(diamond));
         bson.append("ad", new BsonInt32(ad));
         return bson;
@@ -91,7 +110,8 @@ public class Wallet extends ObjectModel<Wallet> {
     @Override
     public Document toDocument() {
         var doc = new Document();
-        doc.append("c", coin);
+        doc.append("ct", coinTotal);
+        doc.append("cu", coinUsed);
         doc.append("d", diamond);
         doc.append("ad", ad);
         return doc;
@@ -99,7 +119,8 @@ public class Wallet extends ObjectModel<Wallet> {
 
     @Override
     public void load(Document src) {
-        coin = BsonUtil.longValue(src, "c").getAsLong();
+        coinTotal = BsonUtil.longValue(src, "ct").getAsLong();
+        coinUsed = BsonUtil.longValue(src, "cu").getAsLong();
         diamond = BsonUtil.longValue(src, "d").getAsLong();
         ad = BsonUtil.intValue(src, "ad").getAsInt();
     }
@@ -108,12 +129,15 @@ public class Wallet extends ObjectModel<Wallet> {
     protected void appendFieldUpdates(List<Bson> updates) {
         var updatedFields = this.updatedFields;
         if (updatedFields.get(1)) {
-            updates.add(Updates.set(xpath().resolve("c").value(), coin));
+            updates.add(Updates.set(xpath().resolve("ct").value(), coinTotal));
         }
         if (updatedFields.get(2)) {
+            updates.add(Updates.set(xpath().resolve("cu").value(), coinUsed));
+        }
+        if (updatedFields.get(4)) {
             updates.add(Updates.set(xpath().resolve("d").value(), diamond));
         }
-        if (updatedFields.get(3)) {
+        if (updatedFields.get(5)) {
             updates.add(Updates.set(xpath().resolve("ad").value(), ad));
         }
     }
@@ -127,12 +151,15 @@ public class Wallet extends ObjectModel<Wallet> {
         var update = new LinkedHashMap<>();
         var updatedFields = this.updatedFields;
         if (updatedFields.get(1)) {
-            update.put("coin", coin);
-        }
-        if (updatedFields.get(2)) {
-            update.put("diamond", diamond);
+            update.put("coinTotal", coinTotal);
         }
         if (updatedFields.get(3)) {
+            update.put("coin", getCoin());
+        }
+        if (updatedFields.get(4)) {
+            update.put("diamond", diamond);
+        }
+        if (updatedFields.get(5)) {
             update.put("ad", ad);
         }
         return update;

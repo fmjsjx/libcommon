@@ -39,10 +39,20 @@ objects:
 - name: Wallet
   type: object
   fields:
-  - name: coin
-    bname: c
+  - name: coinTotal
+    bname: ct
     type: long
     required: true
+  - name: coinUsed
+    bname: cu
+    type: long
+    required: true
+    json-ignore: true
+  - name: coin
+    virtual: true
+    type: long
+    sources: [coinTotal, coinUsed]
+    formula: coinTotal - coinUsed
   - name: diamond
     bname: d
     type: long

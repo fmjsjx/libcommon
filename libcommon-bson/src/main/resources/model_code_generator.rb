@@ -69,6 +69,7 @@ def fill_fields(code, cfg, parent=nil)
     code << tabs(1, "private static final LocalDateTime default#{camcel_name(field['name'])} = LocalDateTime.parse(\"#{default_value}\");\n\n")
   end
   fields.each do |field|
+    next if field['virtual']
     if field['json-ignore']
       code << tabs(1, "@com.fasterxml.jackson.annotation.JsonIgnore\n")
     end
@@ -162,8 +163,13 @@ def fill_xetters(code, cfg)
       else
         code << tabs(1, "public #{value_type} get#{camcel}() {\n")
       end
-      code << tabs(2, "return #{name};\n")
+      if field['virtual']
+        code << tabs(2, "return #{field['formula']};\n")
+      else
+        code << tabs(2, "return #{name};\n")
+      end
       code << tabs(1, "}\n\n")
+      next if field['virtual']
       code << tabs(1, "public void set#{camcel}(#{value_type} #{name}) {\n")
       if %w(int long double bool).include? type
         code << tabs(2, "if (this.#{name} != #{name}) {\n")
@@ -172,6 +178,11 @@ def fill_xetters(code, cfg)
       end
       code << tabs(3, "this.#{name} = #{name};\n")
       code << tabs(3, "updatedFields.set(#{index + 1});\n")
+      if field.has_key? 'relations'
+        field['relations'].each do |i|
+          code << tabs(3, "updatedFields.set(#{i});\n")
+        end
+      end
       if cfg['type'] == 'map-value'
         code << tabs(3, "emitUpdated();\n")
       end
@@ -181,6 +192,11 @@ def fill_xetters(code, cfg)
         code << tabs(1, "public #{value_type} increase#{camcel}() {\n")
         code << tabs(2, "var #{name} = this.#{name} += 1;\n")
         code << tabs(2, "updatedFields.set(#{index + 1});\n")
+        if field.has_key? 'relations'
+          field['relations'].each do |i|
+            code << tabs(3, "updatedFields.set(#{i});\n")
+          end
+        end
         if cfg['type'] == 'map-value'
           code << tabs(2, "emitUpdated();\n")
         end
@@ -196,6 +212,7 @@ def fill_to_bson(code, cfg, bson_type='BsonDocument')
   code << tabs(1, "public #{bson_type} toBson() {\n")
   code << tabs(2, "var bson = new BsonDocument();\n")
   cfg['fields'].each do |field|
+    next if field['virtual']
     name = field['name']
     bname = field['bname']
     type = field['type']
@@ -231,6 +248,7 @@ def fill_to_document(code, cfg)
   code << tabs(1, "public Document toDocument() {\n")
   code << tabs(2, "var doc = new Document();\n")
   cfg['fields'].each do |field|
+    next if field['virtual']
     name = field['name']
     bname = field['bname']
     type = field['type']
@@ -257,6 +275,7 @@ def fill_load(code, cfg)
   code << tabs(1, "@Override\n")
   code << tabs(1, "public void load(Document src) {\n")
   cfg['fields'].each do |field|
+    next if field['virtual']
     name = field['name']
     bname = field['bname']
     type = field['type']
@@ -324,6 +343,7 @@ def fill_append_updates(code, cfg)
   code << tabs(1, "protected void appendFieldUpdates(List<Bson> updates) {\n")
   code << tabs(2, "var updatedFields = this.updatedFields;\n")
   cfg['fields'].each_with_index do |field, index|
+    next if field['virtual']
     name = field['name']
     bname = field['bname']
     type = field['type']
@@ -377,7 +397,11 @@ def fill_to_sub_update(code, cfg)
           code << tabs(3, "update.put(\"#{name}\", #{name}.toUpdate());\n")
         else
           code << tabs(2, "if (updatedFields.get(#{index + 1})) {\n")
-          code << tabs(3, "update.put(\"#{name}\", #{name});\n")
+          if field['virtual']
+            code << tabs(3, "update.put(\"#{name}\", get#{camcel_name(name)}());\n")
+          else
+            code << tabs(3, "update.put(\"#{name}\", #{name});\n")
+          end
         end
         code << tabs(2, "}\n")
       end
@@ -532,7 +556,6 @@ def generate_object(cfg)
   code << tabs(2, "this.parent = parent;\n")
   code << tabs(1, "}\n\n")
   fill_xetters(code, cfg)
-  code << tabs(1, "@SuppressWarnings(\"unchecked\")\n")
   code << tabs(1, "@Override\n")
   code << tabs(1, "public #{parent['name']} parent() {\n")
   code << tabs(2, "return parent;\n")
@@ -584,13 +607,24 @@ parents = Hash.new
 bnames = Hash.new
 
 cfg['objects'].each do |model|
-  model['fields'].each do |field|
+  model['fields'].each_with_index do |field, index|
     if field['type'] == 'object'
       parents[field['model']] = model
       bnames[field['model']] = field['bname']
     end
     unless field.has_key? 'bname'
       field['bname'] = field['name']
+    end
+    if field['virtual']
+      model['fields'].select do |v| 
+        field['sources'].include?(v['name'])
+      end.each do |v|
+        if v.has_key? 'relations'
+          v['relations'] << index + 1
+        else
+          v['relations'] = [index + 1]
+        end
+      end
     end
   end
 end.each do |model|
