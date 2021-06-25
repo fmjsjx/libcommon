@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.bson.BsonDocument;
 import org.bson.Document;
@@ -26,67 +27,67 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
      * Constructs a new {@link DefaultMapModel} instance with integer keys and the
      * specified components.
      * 
-     * @param <T>         the type of mapped values
-     * @param <U>         the type of the parent model
-     * @param parent      the parent model
-     * @param name        the field name of this map in document
-     * @param valueLoader the loader to load values
+     * @param <T>          the type of mapped values
+     * @param <U>          the type of the parent model
+     * @param parent       the parent model
+     * @param name         the field name of this map in document
+     * @param valueFactory the factory creates value instances
      * @return a new {@code DefaultMapModel<Integer, T>} instance with integer keys
      *         and the specified components
      */
     public static final <T extends DefaultMapValueModel<Integer, T>, U extends BsonModel> DefaultMapModel<Integer, T, U> integerKeys(
-            U parent, String name, Function<Document, T> valueLoader) {
-        return new DefaultMapModel<>(parent, name, Integer::parseInt, valueLoader);
+            U parent, String name, Supplier<T> valueFactory) {
+        return new DefaultMapModel<>(parent, name, Integer::parseInt, valueFactory);
     }
 
     /**
      * Constructs a new {@link DefaultMapModel} instance with long keys and the
      * specified components.
      * 
-     * @param <T>         the type of mapped values
-     * @param <U>         the type of the parent model
-     * @param parent      the parent model
-     * @param name        the field name of this map in document
-     * @param valueLoader the loader to load values
+     * @param <T>          the type of mapped values
+     * @param <U>          the type of the parent model
+     * @param parent       the parent model
+     * @param name         the field name of this map in document
+     * @param valueFactory the factory creates value instances
      * @return a new {@code DefaultMapModel<Long, T>} instance with integer keys and
      *         the specified components
      */
     public static final <T extends DefaultMapValueModel<Long, T>, U extends BsonModel> DefaultMapModel<Long, T, U> longKeys(
-            U parent, String name, Function<Document, T> valueLoader) {
-        return new DefaultMapModel<>(parent, name, Long::parseLong, valueLoader);
+            U parent, String name, Supplier<T> valueFactory) {
+        return new DefaultMapModel<>(parent, name, Long::parseLong, valueFactory);
     }
 
     /**
      * Constructs a new {@link DefaultMapModel} instance with string keys and the
      * specified components.
      * 
-     * @param <T>         the type of mapped values
-     * @param <U>         the type of the parent model
-     * @param parent      the parent model
-     * @param name        the field name of this map in document
-     * @param valueLoader the loader to load values
+     * @param <T>          the type of mapped values
+     * @param <U>          the type of the parent model
+     * @param parent       the parent model
+     * @param name         the field name of this map in document
+     * @param valueFactory the factory creates value instances
      * @return a new {@code DefaultMapModel<String, T>} instance with integer keys
      *         and the specified components
      */
     public static final <T extends DefaultMapValueModel<String, T>, U extends BsonModel> DefaultMapModel<String, T, U> stringKeys(
-            U parent, String name, Function<Document, T> valueLoader) {
-        return new DefaultMapModel<>(parent, name, Function.identity(), valueLoader);
+            U parent, String name, Supplier<T> valueFactory) {
+        return new DefaultMapModel<>(parent, name, Function.identity(), valueFactory);
     }
 
-    private final Function<Document, V> valueLoader;
+    private final Supplier<V> valueFactory;
 
     /**
      * Constructs a new {@link DefaultMapModel} instance with the specified
      * components.
      * 
-     * @param parent      the parent model
-     * @param name        the field name of this map in document
-     * @param keyParser   the parser to parse keys
-     * @param valueLoader the loader to load values
+     * @param parent       the parent model
+     * @param name         the field name of this map in document
+     * @param keyParser    the parser to parse keys
+     * @param valueFactory the factory creates value instances
      */
-    public DefaultMapModel(P parent, String name, Function<String, K> keyParser, Function<Document, V> valueLoader) {
+    public DefaultMapModel(P parent, String name, Function<String, K> keyParser, Supplier<V> valueFactory) {
         super(parent, name, keyParser);
-        this.valueLoader = valueLoader;
+        this.valueFactory = valueFactory;
     }
 
     @Override
@@ -104,11 +105,24 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
     }
 
     @Override
+    public void load(BsonDocument src) {
+        src.forEach((k, v) -> {
+            if (v.isDocument()) {
+                var key = parseKey(k);
+                var value = valueFactory.get().parent(this).key(key);
+                value.load((BsonDocument) v);
+                map.put(key, value);
+            }
+        });
+    }
+
+    @Override
     public void load(Document src) {
         src.forEach((k, v) -> {
             if (v instanceof Document) {
                 var key = parseKey(k);
-                var value = valueLoader.apply((Document) v).key(key).parent(this);
+                var value = valueFactory.get().parent(this).key(key);
+                value.load((Document) v);
                 map.put(key, value);
             }
             // skip other type values
@@ -167,6 +181,15 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
             return true;
         }
         return false;
+    }
+    
+    @Override
+    public DefaultMapModel<K, V, P> clear() {
+        updatedKeys.clear();
+        removedKeys.addAll(map.keySet());
+        map.values().forEach(DefaultMapValueModel::unbind);
+        map.clear();
+        return this;
     }
 
     @Override

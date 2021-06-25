@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.bson.BsonDocument;
-import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.slf4j.Logger;
@@ -32,75 +31,74 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
      * Constructs a new {@link SimpleMapModel} instance with integer keys and the
      * specified components.
      * 
-     * @param <T>            the type of mapped values
-     * @param <U>            the type of the parent
-     * @param parent         the parent model
-     * @param name           the field name of this map in document
-     * @param valueConverter the converter convert values to BSON values
+     * @param <T>       the type of mapped values
+     * @param <U>       the type of the parent
+     * @param parent    the parent model
+     * @param name      the field name of this map in document
+     * @param valueType the value type
      * @return a new {@code SimpleMapModel<Integer, T>} instance with integer keys
      *         and the specified components
      */
     public static final <T, U extends BsonModel> SimpleMapModel<Integer, T, U> integerKeys(U parent, String name,
-            Function<T, ? extends BsonValue> valueConverter) {
-        return new SimpleMapModel<>(parent, name, Integer::parseInt, valueConverter);
+            SimpleMapValueType<T> valueType) {
+        return new SimpleMapModel<>(parent, name, Integer::parseInt, valueType);
     }
 
     /**
      * Constructs a new {@link SimpleMapModel} instance with long keys and the
      * specified components.
      * 
-     * @param <T>            the type of mapped values
-     * @param <U>            the type of the parent
-     * @param parent         the parent model
-     * @param name           the field name of this map in document
-     * @param valueConverter the converter convert values to BSON values
+     * @param <T>       the type of mapped values
+     * @param <U>       the type of the parent
+     * @param parent    the parent model
+     * @param name      the field name of this map in document
+     * @param valueType the value type
      * @return a new {@code SimpleMapModel<Long, T>} instance with integer keys and
      *         the specified components
      */
     public static final <T, U extends BsonModel> SimpleMapModel<Long, T, U> longKeys(U parent, String name,
-            Function<T, ? extends BsonValue> valueConverter) {
-        return new SimpleMapModel<>(parent, name, Long::parseLong, valueConverter);
+            SimpleMapValueType<T> valueType) {
+        return new SimpleMapModel<>(parent, name, Long::parseLong, valueType);
     }
 
     /**
      * Constructs a new {@link SimpleMapModel} instance with string keys and the
      * specified components.
      * 
-     * @param <T>            the type of mapped values
-     * @param <U>            the type of the parent
-     * @param parent         the parent model
-     * @param name           the field name of this map in document
-     * @param valueConverter the converter convert values to BSON values
+     * @param <T>       the type of mapped values
+     * @param <U>       the type of the parent
+     * @param parent    the parent model
+     * @param name      the field name of this map in document
+     * @param valueType the value type
      * @return a new {@code SimpleMapModel<String, T>} instance with integer keys
      *         and the specified components
      */
     public static final <T, U extends BsonModel> SimpleMapModel<String, T, U> stringKeys(U parent, String name,
-            Function<T, ? extends BsonValue> valueConverter) {
-        return new SimpleMapModel<>(parent, name, Function.identity(), valueConverter);
+            SimpleMapValueType<T> valueType) {
+        return new SimpleMapModel<>(parent, name, Function.identity(), valueType);
     }
 
-    private final Function<V, ? extends BsonValue> valueConverter;
+    private final SimpleMapValueType<V> valueType;
 
     /**
      * Constructs a new {@link SimpleMapModel} instance with the specified
      * components.
      * 
-     * @param parent         the parent model
-     * @param name           the field name of this map in document
-     * @param keyParser      the parser to parse keys
-     * @param valueConverter the converter convert values to BSON values
+     * @param parent    the parent model
+     * @param name      the field name of this map in document
+     * @param keyParser the parser to parse keys
+     * @param valueType the value type
      */
-    public SimpleMapModel(P parent, String name, Function<String, K> keyParser,
-            Function<V, ? extends BsonValue> valueConverter) {
+    public SimpleMapModel(P parent, String name, Function<String, K> keyParser, SimpleMapValueType<V> valueType) {
         super(parent, name, keyParser);
-        this.valueConverter = valueConverter;
+        this.valueType = valueType;
     }
 
     @Override
     public BsonDocument toBson() {
         var bson = new BsonDocument();
-        var valueConverter = this.valueConverter;
-        map.forEach((k, v) -> bson.append(k.toString(), valueConverter.apply(v)));
+        var valueType = this.valueType;
+        map.forEach((k, v) -> bson.append(k.toString(), valueType.toBson(v)));
         return bson;
     }
 
@@ -109,6 +107,20 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
         var doc = new Document();
         map.forEach((k, v) -> doc.append(k.toString(), v));
         return doc;
+    }
+
+    @Override
+    public void load(BsonDocument src) {
+        src.forEach((k, v) -> {
+            try {
+                map.put(parseKey(k), valueType.parse(v));
+            } catch (Exception e) {
+                if (logger.isWarnEnabled()) {
+                    logger.warn("Loading data failed on {}: {}", xpath().resolve(k), v);
+                }
+                // skip unsupported type values
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -166,6 +178,14 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
             return true;
         }
         return false;
+    }
+    
+    @Override
+    public SimpleMapModel<K, V, P> clear() {
+        updatedKeys.clear();
+        removedKeys.addAll(map.keySet());
+        map.clear();
+        return this;
     }
 
     @Override

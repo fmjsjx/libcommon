@@ -126,6 +126,14 @@ public class Wallet extends ObjectModel<Wallet> {
     }
 
     @Override
+    public void load(BsonDocument src) {
+        coinTotal = BsonUtil.longValue(src, "ct").getAsLong();
+        coinUsed = BsonUtil.longValue(src, "cu").getAsLong();
+        diamond = BsonUtil.longValue(src, "d").getAsLong();
+        ad = BsonUtil.intValue(src, "ad").getAsInt();
+    }
+
+    @Override
     protected void appendFieldUpdates(List<Bson> updates) {
         var updatedFields = this.updatedFields;
         if (updatedFields.get(1)) {

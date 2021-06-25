@@ -156,6 +156,14 @@ public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapM
     public abstract boolean remove(K key, V value);
 
     /**
+     * Removes all of the mappings from this map.
+     * 
+     * @return this map
+     * @since 2.1
+     */
+    public abstract Self clear();
+
+    /**
      * Returns the number of key-value mappings in this map.
      * 
      * @return number of key-value mappings in this map;

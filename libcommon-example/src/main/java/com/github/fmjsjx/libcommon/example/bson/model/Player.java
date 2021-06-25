@@ -14,6 +14,7 @@ import com.github.fmjsjx.libcommon.bson.BsonUtil;
 import com.github.fmjsjx.libcommon.bson.model.DefaultMapModel;
 import com.github.fmjsjx.libcommon.bson.model.RootModel;
 import com.github.fmjsjx.libcommon.bson.model.SimpleMapModel;
+import com.github.fmjsjx.libcommon.bson.model.SimpleMapValueTypes;
 import com.github.fmjsjx.libcommon.util.DateTimeUtil;
 import com.github.fmjsjx.libcommon.util.ObjectUtil;
 import com.mongodb.client.model.Updates;
@@ -22,8 +23,8 @@ public class Player extends RootModel<Player> {
 
     private int uid;
     private final Wallet wallet = new Wallet(this);
-    private final DefaultMapModel<String, Equipment, Player> equipments = DefaultMapModel.stringKeys(this, "eqm", Equipment::of);
-    private final SimpleMapModel<Integer, Integer, Player> items = SimpleMapModel.integerKeys(this, "itm", BsonInt32::new);
+    private final DefaultMapModel<String, Equipment, Player> equipments = DefaultMapModel.stringKeys(this, "eqm", Equipment::new);
+    private final SimpleMapModel<Integer, Integer, Player> items = SimpleMapModel.integerKeys(this, "itm", SimpleMapValueTypes.INTEGER);
     @com.fasterxml.jackson.annotation.JsonIgnore
     private int updateVersion;
     @com.fasterxml.jackson.annotation.JsonIgnore
@@ -121,6 +122,18 @@ public class Player extends RootModel<Player> {
 
     @Override
     public void load(Document src) {
+        uid = BsonUtil.intValue(src, "_id").orElse(0);
+        BsonUtil.documentValue(src, "wt").ifPresent(wallet::load);
+        BsonUtil.documentValue(src, "eqm").ifPresent(equipments::load);
+        BsonUtil.documentValue(src, "itm").ifPresent(items::load);
+        updateVersion = BsonUtil.intValue(src, "_uv").orElse(0);
+        createTime = BsonUtil.dateTimeValue(src, "_ct").get();
+        updateTime = BsonUtil.dateTimeValue(src, "_ut").get();
+        reset();
+    }
+
+    @Override
+    public void load(BsonDocument src) {
         uid = BsonUtil.intValue(src, "_id").orElse(0);
         BsonUtil.documentValue(src, "wt").ifPresent(wallet::load);
         BsonUtil.documentValue(src, "eqm").ifPresent(equipments::load);

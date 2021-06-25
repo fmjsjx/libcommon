@@ -2,6 +2,7 @@ package com.github.fmjsjx.libcommon.bson.model;
 
 import java.util.List;
 
+import org.bson.BsonDocument;
 import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -28,6 +29,14 @@ public interface BsonModel {
      * @return a {@code Document}
      */
     Document toDocument();
+
+    /**
+     * Load data from the source {@link BsonDocument}
+     * 
+     * @param src the source {@code BsonDocument}
+     * @since 2.1
+     */
+    void load(BsonDocument src);
 
     /**
      * Load data from the source {@link Document}.

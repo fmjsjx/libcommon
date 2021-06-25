@@ -43,6 +43,7 @@ def fill_imports(code, super_class, fields)
   end
   if fields.any? { |field| field['type'] == 'simple-map' }
     coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleMapModel'
+    coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleMapValueTypes'
   end
   if fields.any? { |field| field['type'] == 'object-id' }
     coms << 'org.bson.types.ObjectId'
@@ -86,25 +87,25 @@ def fill_fields(code, cfg, parent=nil)
       value_type = field['value']
       case key_type
       when 'string'
-        code << tabs(1, "private final DefaultMapModel<String, #{value_type}, #{name}> #{field['name']} = DefaultMapModel.stringKeys(this, \"#{field['bname']}\", #{value_type}::of);\n")
+        code << tabs(1, "private final DefaultMapModel<String, #{value_type}, #{name}> #{field['name']} = DefaultMapModel.stringKeys(this, \"#{field['bname']}\", #{value_type}::new);\n")
       when 'int'
-        code << tabs(1, "private final DefaultMapModel<Integer, #{value_type}, #{name}> #{field['name']} = DefaultMapModel.integerKeys(this, \"#{field['bname']}\", #{value_type}::of);\n")
+        code << tabs(1, "private final DefaultMapModel<Integer, #{value_type}, #{name}> #{field['name']} = DefaultMapModel.integerKeys(this, \"#{field['bname']}\", #{value_type}::new);\n")
       when 'long'
-        code << tabs(1, "private final DefaultMapModel<Long, #{value_type}, #{name}> #{field['name']} = DefaultMapModel.longKeys(this, \"#{field['bname']}\", #{value_type}::of);\n")
+        code << tabs(1, "private final DefaultMapModel<Long, #{value_type}, #{name}> #{field['name']} = DefaultMapModel.longKeys(this, \"#{field['bname']}\", #{value_type}::new);\n")
       else
         raise "unsupported type `#{key_type}`"
       end
     when 'simple-map'
       key_type = field['key']
       value_type = boxed_jtype(field['value'])
-      value_converter = value_converter(field['value'])
+      map_value_type = map_value_type(field['value'])
       case key_type
       when 'string'
-        code << tabs(1, "private final SimpleMapModel<String, #{value_type}, #{name}> #{field['name']} = SimpleMapModel.stringKeys(this, \"#{field['bname']}\", #{value_converter});\n")
+        code << tabs(1, "private final SimpleMapModel<String, #{value_type}, #{name}> #{field['name']} = SimpleMapModel.stringKeys(this, \"#{field['bname']}\", #{map_value_type});\n")
       when 'int'
-        code << tabs(1, "private final SimpleMapModel<Integer, #{value_type}, #{name}> #{field['name']} = SimpleMapModel.integerKeys(this, \"#{field['bname']}\", #{value_converter});\n")
+        code << tabs(1, "private final SimpleMapModel<Integer, #{value_type}, #{name}> #{field['name']} = SimpleMapModel.integerKeys(this, \"#{field['bname']}\", #{map_value_type});\n")
       when 'long'
-        code << tabs(1, "private final SimpleMapModel<Long, #{value_type}, #{name}> #{field['name']} = SimpleMapModel.longKeys(this, \"#{field['bname']}\", #{value_converter});\n")
+        code << tabs(1, "private final SimpleMapModel<Long, #{value_type}, #{name}> #{field['name']} = SimpleMapModel.longKeys(this, \"#{field['bname']}\", #{map_value_type});\n")
       else
         raise "unsupported type `#{key_type}`"
       end
@@ -113,6 +114,23 @@ def fill_fields(code, cfg, parent=nil)
     end
   end
   code << "\n"
+end
+
+def map_value_type(type)
+  case type
+  when 'int'
+    'SimpleMapValueTypes.INTEGER'
+  when 'long'
+    'SimpleMapValueTypes.LONG'
+  when 'bool'
+    'SimpleMapValueTypes.BOOLEAN'
+  when 'double'
+    'SimpleMapValueTypes.DOUBLE'
+  when 'string'
+    'SimpleMapValueTypes.STRING'
+  else
+    raise "unsupported simple map value type `#{type}`"
+  end
 end
 
 def camcel_name(name)
@@ -276,6 +294,11 @@ def fill_to_document(code, cfg)
 end
 
 def fill_load(code, cfg)
+  fill_load_document(code, cfg)
+  fill_load_bson(code, cfg)
+end
+
+def fill_load_document(code, cfg)
   code << tabs(1, "@Override\n")
   code << tabs(1, "public void load(Document src) {\n")
   cfg['fields'].each do |field|
@@ -313,6 +336,73 @@ def fill_load(code, cfg)
       else
         default_value = field.has_key?('default') ? field['default'].to_s == 'true' : false
         code << tabs(2, "#{name} = BsonUtil.<Boolean>embedded(src, \"#{bname}\").orElse(Boolean.#{default_value.to_s.upcase});\n")
+      end
+    when type == 'string'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").get();\n")
+      else
+        default_value = field.has_key?('default') ? field['default'] : ''
+        code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").orElse(\"#{default_value}\");\n")
+      end
+    when type == 'datetime'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").get();\n")
+      else
+        if field['default'].nil?
+          code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(null);\n")
+        elsif field['default'] == 'now'
+          code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElseGet(LocalDateTime::now);\n")
+        else
+          default_value = "default#{camcel_name(field['name'])}"
+          code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(#{default_value});\n")
+        end
+      end
+    end
+  end
+  if cfg['type'] == 'root'
+    code << tabs(2, "reset();\n")
+  end
+  code << tabs(1, "}\n\n")
+end
+
+def fill_load_bson(code, cfg)
+  code << tabs(1, "@Override\n")
+  code << tabs(1, "public void load(BsonDocument src) {\n")
+  cfg['fields'].each do |field|
+    next if field['virtual']
+    name = field['name']
+    bname = field['bname']
+    type = field['type']
+    case
+    when %w(object map simple-map).include?(type) then
+      code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresent(#{name}::load);\n")
+    when type == 'int'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").getAsInt();\n")
+      else
+        default_value = field.has_key?('default') ? field['default'] : 0
+        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").orElse(#{default_value});\n")
+      end
+    when type == 'long'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").getAsLong();\n")
+      else
+        default_value = field.has_key?('default') ? field['default'] : 0
+        code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").orElse(#{default_value}L);\n")
+      end
+    when type == 'double'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").getAsDouble();\n")
+      else
+        default_value = field.has_key?('default') ? field['default'] : 0
+        code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").orElse(#{default_value});\n")
+      end
+    when type == 'bool'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.<BsonBoolean>embedded(src, \"#{bname}\").get().getValue();\n")
+      else
+        default_value = field.has_key?('default') ? field['default'].to_s == 'true' : false
+        code << tabs(2, "#{name} = BsonUtil.<BsonBoolean>embedded(src, \"#{bname}\").orElse(BsonBoolean.#{default_value.to_s.upcase}).getValue();\n")
       end
     when type == 'string'
       if field['required']
@@ -496,20 +586,20 @@ def boxed_jtype(value)
   end
 end
 
-def value_converter(type)
-  case type
-  when 'int'
-    'BsonInt32::new'
-  when 'long'
-    'BsonInt64::new'
-  when 'bool'
-    'BsonBoolean::new'
-  when 'double'
-    'BsonDouble::new'
-  when 'string'
-    'BsonString::new'
-  end
-end
+# def value_converter(type)
+#   case type
+#   when 'int'
+#     'BsonInt32::new'
+#   when 'long'
+#     'BsonInt64::new'
+#   when 'bool'
+#     'BsonBoolean::new'
+#   when 'double'
+#     'BsonDouble::new'
+#   when 'string'
+#     'BsonString::new'
+#   end
+# end
 
 def generate_root(cfg)
   code = "package #{cfg['package']};\n\n"
@@ -587,11 +677,11 @@ def generate_map_value(cfg)
   code = "package #{cfg['package']};\n\n"
   fill_imports(code, 'DefaultMapValueModel', cfg['fields'])
   code << "public class #{cfg['name']} extends DefaultMapValueModel<#{boxed_jtype(cfg['key'])}, #{cfg['name']}> {\n\n"
-  code << tabs(1, "public static final #{cfg['name']} of(Document document) {\n")
-  code << tabs(2, "var obj = new #{cfg['name']}();\n")
-  code << tabs(2, "obj.load(document);\n")
-  code << tabs(2, "return obj;\n")
-  code << tabs(1, "}\n\n")
+  # code << tabs(1, "public static final #{cfg['name']} of(Document document) {\n")
+  # code << tabs(2, "var obj = new #{cfg['name']}();\n")
+  # code << tabs(2, "obj.load(document);\n")
+  # code << tabs(2, "return obj;\n")
+  # code << tabs(1, "}\n\n")
   fill_fields(code, cfg)
   fill_xetters(code, cfg)
   fill_to_bson(code, cfg)

@@ -17,12 +17,6 @@ import com.mongodb.client.model.Updates;
 
 public class Equipment extends DefaultMapValueModel<String, Equipment> {
 
-    public static final Equipment of(Document document) {
-        var obj = new Equipment();
-        obj.load(document);
-        return obj;
-    }
-
     private String id;
     private int refId;
     private int atk;
@@ -113,6 +107,15 @@ public class Equipment extends DefaultMapValueModel<String, Equipment> {
 
     @Override
     public void load(Document src) {
+        id = BsonUtil.stringValue(src, "id").get();
+        refId = BsonUtil.intValue(src, "rid").getAsInt();
+        atk = BsonUtil.intValue(src, "atk").getAsInt();
+        def = BsonUtil.intValue(src, "def").getAsInt();
+        hp = BsonUtil.intValue(src, "hp").getAsInt();
+    }
+
+    @Override
+    public void load(BsonDocument src) {
         id = BsonUtil.stringValue(src, "id").get();
         refId = BsonUtil.intValue(src, "rid").getAsInt();
         atk = BsonUtil.intValue(src, "atk").getAsInt();
