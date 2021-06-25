@@ -44,6 +44,10 @@ def fill_imports(code, super_class, fields)
   if fields.any? { |field| field['type'] == 'simple-map' }
     coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleMapModel'
   end
+  if fields.any? { |field| field['type'] == 'object-id' }
+    coms << 'org.bson.types.ObjectId'
+    coms << 'org.bson.BsonObjectId'
+  end
   javas.sort.each { |v| code << "import #{v};\n" }
   code << "\n"
   orgs.sort.each { |v| code << "import #{v};\n" }

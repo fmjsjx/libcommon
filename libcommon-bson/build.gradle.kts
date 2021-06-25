@@ -7,6 +7,9 @@ java {
     registerFeature("generatorSupport") {
         usingSourceSet(sourceSets["main"])
     }
+    registerFeature("mongodbSupport") {
+        usingSourceSet(sourceSets["main"])
+    }
 }
 
 dependencies {
@@ -14,14 +17,18 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
 
     api(project(":libcommon-util"))
+    api(project(":libcommon-json-jackson2"))
+    api(project(":libcommon-json-jsoniter"))
+
+//    api("com.fasterxml.jackson.core:jackson-databind")
+//    api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+//    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+//    api("com.jsoniter:jsoniter")
 
     api("org.mongodb:bson")
     api("org.mongodb:mongodb-driver-core")
-
-    api("com.fasterxml.jackson.core:jackson-databind")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    api("com.jsoniter:jsoniter")
+    "mongodbSupportApi"("org.mongodb:mongodb-driver-sync")
+    "mongodbSupportApi"("org.mongodb:mongodb-driver-reactivestreams")
 
     "generatorSupportImplementation"("org.jruby:jruby")
 

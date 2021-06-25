@@ -8,12 +8,10 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
 
     implementation(project(":libcommon-bson"))
-    implementation(project(":libcommon-json-jackson2"))
-    implementation(project(":libcommon-json-jsoniter"))
     
     implementation("org.jruby:jruby")
 
-    testImplementation("org.mongodb:mongodb-driver-sync")
+    implementation("org.mongodb:mongodb-driver-sync")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
 
