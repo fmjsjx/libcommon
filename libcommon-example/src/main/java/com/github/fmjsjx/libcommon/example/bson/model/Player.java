@@ -25,6 +25,7 @@ public class Player extends RootModel<Player> {
     private final Wallet wallet = new Wallet(this);
     private final DefaultMapModel<String, Equipment, Player> equipments = DefaultMapModel.stringKeys(this, "eqm", Equipment::new);
     private final SimpleMapModel<Integer, Integer, Player> items = SimpleMapModel.integerKeys(this, "itm", SimpleMapValueTypes.INTEGER);
+    private final CashInfo cash = new CashInfo(this);
     @com.fasterxml.jackson.annotation.JsonIgnore
     private int updateVersion;
     @com.fasterxml.jackson.annotation.JsonIgnore
@@ -55,6 +56,10 @@ public class Player extends RootModel<Player> {
         return items;
     }
 
+    public CashInfo getCash() {
+        return cash;
+    }
+
     public int getUpdateVersion() {
         return updateVersion;
     }
@@ -62,13 +67,13 @@ public class Player extends RootModel<Player> {
     public void setUpdateVersion(int updateVersion) {
         if (this.updateVersion != updateVersion) {
             this.updateVersion = updateVersion;
-            updatedFields.set(5);
+            updatedFields.set(6);
         }
     }
 
     public int increaseUpdateVersion() {
         var updateVersion = this.updateVersion += 1;
-        updatedFields.set(5);
+        updatedFields.set(6);
         return updateVersion;
     }
 
@@ -79,7 +84,7 @@ public class Player extends RootModel<Player> {
     public void setCreateTime(LocalDateTime createTime) {
         if (ObjectUtil.isNotEquals(this.createTime, createTime)) {
             this.createTime = createTime;
-            updatedFields.set(6);
+            updatedFields.set(7);
         }
     }
 
@@ -90,8 +95,16 @@ public class Player extends RootModel<Player> {
     public void setUpdateTime(LocalDateTime updateTime) {
         if (ObjectUtil.isNotEquals(this.updateTime, updateTime)) {
             this.updateTime = updateTime;
-            updatedFields.set(7);
+            updatedFields.set(8);
         }
+    }
+
+    @Override
+    public boolean updated() {
+        if (wallet.updated() || equipments.updated() || items.updated() || cash.updated()) {
+            return true;
+        }
+        return super.updated();
     }
 
     @Override
@@ -101,6 +114,7 @@ public class Player extends RootModel<Player> {
         bson.append("wt", wallet.toBson());
         bson.append("eqm", equipments.toBson());
         bson.append("itm", items.toBson());
+        bson.append("cs", cash.toBson());
         bson.append("_uv", new BsonInt32(updateVersion));
         bson.append("_ct", BsonUtil.toBsonDateTime(createTime));
         if (updateTime != null) {
@@ -116,6 +130,7 @@ public class Player extends RootModel<Player> {
         doc.append("wt", wallet.toDocument());
         doc.append("eqm", equipments.toDocument());
         doc.append("itm", items.toDocument());
+        doc.append("cs", cash.toDocument());
         doc.append("_uv", updateVersion);
         doc.append("_ct", DateTimeUtil.toLegacyDate(createTime));
         if (updateTime != null) {
@@ -130,6 +145,7 @@ public class Player extends RootModel<Player> {
         wallet.load(BsonUtil.documentValue(src, "wt").orElseGet(Document::new));
         BsonUtil.documentValue(src, "eqm").ifPresentOrElse(equipments::load, equipments::clear);
         BsonUtil.documentValue(src, "itm").ifPresentOrElse(items::load, items::clear);
+        cash.load(BsonUtil.documentValue(src, "cs").orElseGet(Document::new));
         updateVersion = BsonUtil.intValue(src, "_uv").orElse(0);
         createTime = BsonUtil.dateTimeValue(src, "_ct").get();
         updateTime = BsonUtil.dateTimeValue(src, "_ut").orElseGet(LocalDateTime::now);
@@ -142,6 +158,7 @@ public class Player extends RootModel<Player> {
         wallet.load(BsonUtil.documentValue(src, "wt").orElseGet(BsonDocument::new));
         BsonUtil.documentValue(src, "eqm").ifPresentOrElse(equipments::load, equipments::clear);
         BsonUtil.documentValue(src, "itm").ifPresentOrElse(items::load, items::clear);
+        cash.load(BsonUtil.documentValue(src, "cs").orElseGet(BsonDocument::new));
         updateVersion = BsonUtil.intValue(src, "_uv").orElse(0);
         createTime = BsonUtil.dateTimeValue(src, "_ct").get();
         updateTime = BsonUtil.dateTimeValue(src, "_ut").orElseGet(LocalDateTime::now);
@@ -166,13 +183,17 @@ public class Player extends RootModel<Player> {
         if (items.updated()) {
             items.appendUpdates(updates);
         }
-        if (updatedFields.get(5)) {
-            updates.add(Updates.set("_uv", updateVersion));
+        var cash = this.cash;
+        if (cash.updated()) {
+            cash.appendUpdates(updates);
         }
         if (updatedFields.get(6)) {
-            updates.add(Updates.set("_ct", BsonUtil.toBsonDateTime(createTime)));
+            updates.add(Updates.set("_uv", updateVersion));
         }
         if (updatedFields.get(7)) {
+            updates.add(Updates.set("_ct", BsonUtil.toBsonDateTime(createTime)));
+        }
+        if (updatedFields.get(8)) {
             updates.add(Updates.set("_ut", BsonUtil.toBsonDateTime(updateTime)));
         }
     }
@@ -182,6 +203,7 @@ public class Player extends RootModel<Player> {
         wallet.reset();
         equipments.reset();
         items.reset();
+        cash.reset();
     }
 
     @Override
@@ -199,6 +221,9 @@ public class Player extends RootModel<Player> {
         }
         if (items.updated()) {
             update.put("items", items.toUpdate());
+        }
+        if (cash.updated()) {
+            update.put("cash", cash.toUpdate());
         }
         return update;
     }
@@ -218,6 +243,10 @@ public class Player extends RootModel<Player> {
         if (items.deletedSize() > 0) {
             delete.put("items", items.toDelete());
         }
+        var cash = this.cash;
+        if (cash.deletedSize() > 0) {
+            delete.put("cash", cash.toDelete());
+        }
         return delete;
     }
 
@@ -231,6 +260,9 @@ public class Player extends RootModel<Player> {
             n++;
         }
         if (items.deletedSize() > 0) {
+            n++;
+        }
+        if (cash.deletedSize() > 0) {
             n++;
         }
         return n;
