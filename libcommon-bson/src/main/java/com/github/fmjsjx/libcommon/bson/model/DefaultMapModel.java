@@ -106,6 +106,7 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
 
     @Override
     public void load(BsonDocument src) {
+        clear0();
         src.forEach((k, v) -> {
             if (v.isDocument()) {
                 var key = parseKey(k);
@@ -118,6 +119,7 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
 
     @Override
     public void load(Document src) {
+        clear0();
         src.forEach((k, v) -> {
             if (v instanceof Document) {
                 var key = parseKey(k);
@@ -187,9 +189,13 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
     public DefaultMapModel<K, V, P> clear() {
         updatedKeys.clear();
         removedKeys.addAll(map.keySet());
+        clear0();
+        return this;
+    }
+
+    private void clear0() {
         map.values().forEach(DefaultMapValueModel::unbind);
         map.clear();
-        return this;
     }
 
     @Override

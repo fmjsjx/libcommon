@@ -756,7 +756,11 @@ public class BsonUtil {
      * @since 2.1
      */
     public static final Optional<String> stringValue(BsonDocument document, String key) {
-        return Optional.ofNullable(document.getString(key)).map(BsonString::getValue);
+        var value = document.get(key);
+        if (value == null || value.isNull()) {
+            return Optional.empty();
+        }
+        return Optional.of(value.asString().getValue());
     }
 
     /**
@@ -768,7 +772,11 @@ public class BsonUtil {
      * @since 2.1
      */
     public static final Optional<BsonDocument> documentValue(BsonDocument document, String key) {
-        return Optional.ofNullable(document.getDocument(document));
+        var value = document.get(key);
+        if (value == null || value.isNull()) {
+            return Optional.empty();
+        }
+        return Optional.of(value.asDocument());
     }
 
     /**

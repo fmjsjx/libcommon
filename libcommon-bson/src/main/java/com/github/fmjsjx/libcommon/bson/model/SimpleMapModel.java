@@ -111,6 +111,7 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
 
     @Override
     public void load(BsonDocument src) {
+        map.clear();
         src.forEach((k, v) -> {
             try {
                 map.put(parseKey(k), valueType.parse(v));
@@ -126,6 +127,7 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
     @SuppressWarnings("unchecked")
     @Override
     public void load(Document src) {
+        map.clear();
         src.forEach((k, v) -> {
             try {
                 map.put(parseKey(k), (V) v);

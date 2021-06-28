@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.bson.BsonDateTime;
+import org.bson.BsonDocument;
+import org.bson.BsonInt32;
+import org.bson.BsonInt64;
+import org.bson.BsonString;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.jupiter.api.Test;
@@ -157,6 +161,145 @@ public class TestModel {
             var zone = ZoneId.systemDefault();
             assertEquals(date, Date.from(player.getCreateTime().atZone(zone).toInstant()));
             assertEquals(date, Date.from(player.getUpdateTime().atZone(zone).toInstant()));
+
+            doc = new Document().append("_id", 125) // uid
+                    .append("wt", new Document("ct", 5200).append("cu", 200).append("d", 10).append("ad", 2)) // wallet
+                    .append("eqm", // equipments
+                            new Document("87654321-1234-5678-9abc-123456789abc",
+                                    new Document("id", "87654321-1234-5678-9abc-123456789abc").append("rid", 1)
+                                            .append("atk", 16).append("def", 2).append("hp", 100)))
+                    .append("itm", new Document("2001", 10)) // items
+                    .append("_uv", 1) // update version
+                    .append("_ct", date) // create time
+                    .append("_ut", date); // update time
+
+            player.load(doc);
+
+            assertFalse(player.updated());
+            assertEquals(125, player.getUid());
+            assertEquals(player, player.getWallet().parent());
+            assertEquals(5200, player.getWallet().getCoinTotal());
+            assertEquals(200, player.getWallet().getCoinUsed());
+            assertEquals(5000, player.getWallet().getCoin());
+            assertEquals(10, player.getWallet().getDiamond());
+            assertEquals(2, player.getWallet().getAd());
+            assertEquals(1, player.getEquipments().size());
+            assertEquals(player, player.getEquipments().parent());
+
+            eq = player.getEquipments().get("87654321-1234-5678-9abc-123456789abc");
+            assertTrue(eq.isPresent());
+            assertEquals(player.getEquipments(), eq.get().parent());
+            assertEquals("87654321-1234-5678-9abc-123456789abc", eq.get().key());
+            assertEquals("87654321-1234-5678-9abc-123456789abc", eq.get().getId());
+            assertEquals(1, eq.get().getRefId());
+            assertEquals(16, eq.get().getAtk());
+            assertEquals(2, eq.get().getDef());
+            assertEquals(100, eq.get().getHp());
+            assertEquals(1, player.getItems().size());
+            assertEquals(player, player.getItems().parent());
+            assertEquals(10, player.getItems().get(2001).get());
+            assertEquals(1, player.getUpdateVersion());
+
+            assertEquals(date, Date.from(player.getCreateTime().atZone(zone).toInstant()));
+            assertEquals(date, Date.from(player.getUpdateTime().atZone(zone).toInstant()));
+
+        } catch (Exception e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    public void testLoadBsonDocument() {
+        try {
+            var date = new Date();
+            var doc = new BsonDocument().append("_id", new BsonInt32(123)) // uid
+                    .append("wt",
+                            new BsonDocument("ct", new BsonInt64(5000)).append("cu", new BsonInt64(200))
+                                    .append("d", new BsonInt64(10)).append("ad", new BsonInt32(2))) // wallet
+                    .append("eqm", // equipments
+                            new BsonDocument("12345678-1234-5678-9abc-123456789abc",
+                                    new BsonDocument("id", new BsonString("12345678-1234-5678-9abc-123456789abc"))
+                                            .append("rid", new BsonInt32(1)).append("atk", new BsonInt32(12))
+                                            .append("def", new BsonInt32(2)).append("hp", new BsonInt32(100))))
+                    .append("itm", new BsonDocument("2001", new BsonInt32(10))) // items
+                    .append("_uv", new BsonInt32(1)) // update version
+                    .append("_ct", new BsonDateTime(date.getTime())) // create time
+                    .append("_ut", new BsonDateTime(date.getTime())); // update time
+            var player = new Player();
+            player.load(doc);
+
+            assertFalse(player.updated());
+            assertEquals(123, player.getUid());
+            assertEquals(player, player.getWallet().parent());
+            assertEquals(5000, player.getWallet().getCoinTotal());
+            assertEquals(200, player.getWallet().getCoinUsed());
+            assertEquals(4800, player.getWallet().getCoin());
+            assertEquals(10, player.getWallet().getDiamond());
+            assertEquals(2, player.getWallet().getAd());
+            assertEquals(1, player.getEquipments().size());
+            assertEquals(player, player.getEquipments().parent());
+            var eq = player.getEquipments().get("12345678-1234-5678-9abc-123456789abc");
+            assertTrue(eq.isPresent());
+            assertEquals(player.getEquipments(), eq.get().parent());
+            assertEquals("12345678-1234-5678-9abc-123456789abc", eq.get().key());
+            assertEquals("12345678-1234-5678-9abc-123456789abc", eq.get().getId());
+            assertEquals(1, eq.get().getRefId());
+            assertEquals(12, eq.get().getAtk());
+            assertEquals(2, eq.get().getDef());
+            assertEquals(100, eq.get().getHp());
+            assertEquals(1, player.getItems().size());
+            assertEquals(player, player.getItems().parent());
+            assertEquals(10, player.getItems().get(2001).get());
+            assertEquals(1, player.getUpdateVersion());
+
+            var zone = ZoneId.systemDefault();
+            assertEquals(date, Date.from(player.getCreateTime().atZone(zone).toInstant()));
+            assertEquals(date, Date.from(player.getUpdateTime().atZone(zone).toInstant()));
+
+            doc = new BsonDocument().append("_id", new BsonInt32(125)) // uid
+                    .append("wt",
+                            new BsonDocument("ct", new BsonInt64(5200)).append("cu", new BsonInt64(200))
+                                    .append("d", new BsonInt64(10)).append("ad", new BsonInt32(2))) // wallet
+                    .append("eqm", // equipments
+                            new BsonDocument("87654321-1234-5678-9abc-123456789abc",
+                                    new BsonDocument("id", new BsonString("87654321-1234-5678-9abc-123456789abc"))
+                                            .append("rid", new BsonInt32(1)).append("atk", new BsonInt32(16))
+                                            .append("def", new BsonInt32(2)).append("hp", new BsonInt32(100))))
+                    .append("itm", new BsonDocument("2001", new BsonInt32(10))) // items
+                    .append("_uv", new BsonInt32(1)) // update version
+                    .append("_ct", new BsonDateTime(date.getTime())) // create time
+                    .append("_ut", new BsonDateTime(date.getTime())); // update time
+
+            player.load(doc);
+
+            assertFalse(player.updated());
+            assertEquals(125, player.getUid());
+            assertEquals(player, player.getWallet().parent());
+            assertEquals(5200, player.getWallet().getCoinTotal());
+            assertEquals(200, player.getWallet().getCoinUsed());
+            assertEquals(5000, player.getWallet().getCoin());
+            assertEquals(10, player.getWallet().getDiamond());
+            assertEquals(2, player.getWallet().getAd());
+            assertEquals(1, player.getEquipments().size());
+            assertEquals(player, player.getEquipments().parent());
+
+            eq = player.getEquipments().get("87654321-1234-5678-9abc-123456789abc");
+            assertTrue(eq.isPresent());
+            assertEquals(player.getEquipments(), eq.get().parent());
+            assertEquals("87654321-1234-5678-9abc-123456789abc", eq.get().key());
+            assertEquals("87654321-1234-5678-9abc-123456789abc", eq.get().getId());
+            assertEquals(1, eq.get().getRefId());
+            assertEquals(16, eq.get().getAtk());
+            assertEquals(2, eq.get().getDef());
+            assertEquals(100, eq.get().getHp());
+            assertEquals(1, player.getItems().size());
+            assertEquals(player, player.getItems().parent());
+            assertEquals(10, player.getItems().get(2001).get());
+            assertEquals(1, player.getUpdateVersion());
+
+            assertEquals(date, Date.from(player.getCreateTime().atZone(zone).toInstant()));
+            assertEquals(date, Date.from(player.getUpdateTime().atZone(zone).toInstant()));
+
         } catch (Exception e) {
             fail(e);
         }

@@ -306,45 +306,49 @@ def fill_load_document(code, cfg)
     name = field['name']
     bname = field['bname']
     type = field['type']
-    case
-    when %w(object map simple-map).include?(type) then
-      code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresent(#{name}::load);\n")
-    when type == 'int'
+    case type
+    when 'object'
+      code << tabs(2, "#{name}.load(BsonUtil.documentValue(src, \"#{bname}\").orElseGet(Document::new));\n")
+    when 'map'
+      code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
+    when 'simple-map'
+      code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
+    when 'int'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").getAsInt();\n")
       else
         default_value = field.has_key?('default') ? field['default'] : 0
         code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").orElse(#{default_value});\n")
       end
-    when type == 'long'
+    when 'long'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").getAsLong();\n")
       else
         default_value = field.has_key?('default') ? field['default'] : 0
         code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").orElse(#{default_value}L);\n")
       end
-    when type == 'double'
+    when 'double'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").getAsDouble();\n")
       else
         default_value = field.has_key?('default') ? field['default'] : 0
         code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").orElse(#{default_value});\n")
       end
-    when type == 'bool'
+    when 'bool'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.<Boolean>embedded(src, \"#{bname}\").get().booleanValue();\n")
       else
         default_value = field.has_key?('default') ? field['default'].to_s == 'true' : false
         code << tabs(2, "#{name} = BsonUtil.<Boolean>embedded(src, \"#{bname}\").orElse(Boolean.#{default_value.to_s.upcase});\n")
       end
-    when type == 'string'
+    when 'string'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").get();\n")
       else
         default_value = field.has_key?('default') ? field['default'] : ''
         code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").orElse(\"#{default_value}\");\n")
       end
-    when type == 'datetime'
+    when 'datetime'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").get();\n")
       else
@@ -373,45 +377,49 @@ def fill_load_bson(code, cfg)
     name = field['name']
     bname = field['bname']
     type = field['type']
-    case
-    when %w(object map simple-map).include?(type) then
-      code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresent(#{name}::load);\n")
-    when type == 'int'
+    case type
+    when 'object'
+      code << tabs(2, "#{name}.load(BsonUtil.documentValue(src, \"#{bname}\").orElseGet(BsonDocument::new));\n")
+    when 'map'
+      code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
+    when 'simple-map'
+      code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
+    when 'int'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").getAsInt();\n")
       else
         default_value = field.has_key?('default') ? field['default'] : 0
         code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").orElse(#{default_value});\n")
       end
-    when type == 'long'
+    when 'long'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").getAsLong();\n")
       else
         default_value = field.has_key?('default') ? field['default'] : 0
         code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").orElse(#{default_value}L);\n")
       end
-    when type == 'double'
+    when 'double'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").getAsDouble();\n")
       else
         default_value = field.has_key?('default') ? field['default'] : 0
         code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").orElse(#{default_value});\n")
       end
-    when type == 'bool'
+    when 'bool'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.<BsonBoolean>embedded(src, \"#{bname}\").get().getValue();\n")
       else
         default_value = field.has_key?('default') ? field['default'].to_s == 'true' : false
         code << tabs(2, "#{name} = BsonUtil.<BsonBoolean>embedded(src, \"#{bname}\").orElse(BsonBoolean.#{default_value.to_s.upcase}).getValue();\n")
       end
-    when type == 'string'
+    when 'string'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").get();\n")
       else
         default_value = field.has_key?('default') ? field['default'] : ''
         code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").orElse(\"#{default_value}\");\n")
       end
-    when type == 'datetime'
+    when 'datetime'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").get();\n")
       else
