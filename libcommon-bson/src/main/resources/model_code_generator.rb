@@ -317,48 +317,72 @@ def fill_load_document(code, cfg)
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").getAsInt();\n")
       else
-        default_value = field.has_key?('default') ? field['default'] : 0
-        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").orElse(#{default_value});\n")
+        if field.has_key?('default-lambda')
+          code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+        else
+          default_value = field.has_key?('default') ? field['default'] : 0
+          code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").orElse(#{default_value});\n")
+        end
       end
     when 'long'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").getAsLong();\n")
       else
-        default_value = field.has_key?('default') ? field['default'] : 0
-        code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").orElse(#{default_value}L);\n")
+        if field.has_key?('default-lambda')
+          code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+        else
+          default_value = field.has_key?('default') ? field['default'] : 0
+          code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").orElse(#{default_value}L);\n")
+        end
       end
     when 'double'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").getAsDouble();\n")
       else
-        default_value = field.has_key?('default') ? field['default'] : 0
-        code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").orElse(#{default_value});\n")
+        if field.has_key?('default-lambda')
+          code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+        else
+          default_value = field.has_key?('default') ? field['default'] : 0
+          code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").orElse(#{default_value});\n")
+        end
       end
     when 'bool'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.<Boolean>embedded(src, \"#{bname}\").get().booleanValue();\n")
       else
-        default_value = field.has_key?('default') ? field['default'].to_s == 'true' : false
-        code << tabs(2, "#{name} = BsonUtil.<Boolean>embedded(src, \"#{bname}\").orElse(Boolean.#{default_value.to_s.upcase});\n")
+        if field.has_key?('default-lambda')
+          code << tabs(2, "#{name} = BsonUtil.<Boolean>embedded(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+        else
+          default_value = field.has_key?('default') ? field['default'].to_s == 'true' : false
+          code << tabs(2, "#{name} = BsonUtil.<Boolean>embedded(src, \"#{bname}\").orElse(Boolean.#{default_value.to_s.upcase});\n")
+        end
       end
     when 'string'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").get();\n")
       else
-        default_value = field.has_key?('default') ? field['default'] : ''
-        code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").orElse(\"#{default_value}\");\n")
+        if field.has_key?('default-lambda')
+          code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+        else
+          default_value = field.has_key?('default') ? field['default'] : ''
+          code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").orElse(\"#{default_value}\");\n")
+        end
       end
     when 'datetime'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").get();\n")
       else
-        if field['default'].nil?
-          code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(null);\n")
-        elsif field['default'] == 'now'
-          code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElseGet(LocalDateTime::now);\n")
+        if field.has_key?('default-lambda')
+          code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
         else
-          default_value = "default#{camcel_name(field['name'])}"
-          code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(#{default_value});\n")
+          if field['default'].nil?
+            code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(null);\n")
+          elsif field['default'] == 'now'
+            code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElseGet(LocalDateTime::now);\n")
+          else
+            default_value = "default#{camcel_name(field['name'])}"
+            code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(#{default_value});\n")
+          end
         end
       end
     end
@@ -388,48 +412,72 @@ def fill_load_bson(code, cfg)
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").getAsInt();\n")
       else
-        default_value = field.has_key?('default') ? field['default'] : 0
-        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").orElse(#{default_value});\n")
+        if field.has_key?('default-lambda')
+          code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+        else
+          default_value = field.has_key?('default') ? field['default'] : 0
+          code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").orElse(#{default_value});\n")
+        end
       end
     when 'long'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").getAsLong();\n")
       else
-        default_value = field.has_key?('default') ? field['default'] : 0
-        code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").orElse(#{default_value}L);\n")
+        if field.has_key?('default-lambda')
+          code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+        else
+          default_value = field.has_key?('default') ? field['default'] : 0
+          code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").orElse(#{default_value}L);\n")
+        end
       end
     when 'double'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").getAsDouble();\n")
       else
-        default_value = field.has_key?('default') ? field['default'] : 0
-        code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").orElse(#{default_value});\n")
+        if field.has_key?('default-lambda')
+          code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+        else
+          default_value = field.has_key?('default') ? field['default'] : 0
+          code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").orElse(#{default_value});\n")
+        end
       end
     when 'bool'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.<BsonBoolean>embedded(src, \"#{bname}\").get().getValue();\n")
       else
-        default_value = field.has_key?('default') ? field['default'].to_s == 'true' : false
-        code << tabs(2, "#{name} = BsonUtil.<BsonBoolean>embedded(src, \"#{bname}\").orElse(BsonBoolean.#{default_value.to_s.upcase}).getValue();\n")
+        if field.has_key?('default-lambda')
+          code << tabs(2, "#{name} = BsonUtil.<BsonBoolean>embedded(src, \"#{bname}\").map(BsonBoolean::getValue).orElseGet(#{field['default-lambda']});\n")
+        else
+          default_value = field.has_key?('default') ? field['default'].to_s == 'true' : false
+          code << tabs(2, "#{name} = BsonUtil.<BsonBoolean>embedded(src, \"#{bname}\").orElse(BsonBoolean.#{default_value.to_s.upcase}).getValue();\n")
+        end
       end
     when 'string'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").get();\n")
       else
-        default_value = field.has_key?('default') ? field['default'] : ''
-        code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").orElse(\"#{default_value}\");\n")
+        if field.has_key?('default-lambda')
+          code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+        else
+          default_value = field.has_key?('default') ? field['default'] : ''
+          code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").orElse(\"#{default_value}\");\n")
+        end
       end
     when 'datetime'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").get();\n")
       else
-        if field['default'].nil?
-          code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(null);\n")
-        elsif field['default'] == 'now'
-          code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElseGet(LocalDateTime::now);\n")
+        if field.has_key?('default-lambda')
+          code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
         else
-          default_value = "default#{camcel_name(field['name'])}"
-          code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(#{default_value});\n")
+          if field['default'].nil?
+            code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(null);\n")
+          elsif field['default'] == 'now'
+            code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElseGet(LocalDateTime::now);\n")
+          else
+            default_value = "default#{camcel_name(field['name'])}"
+            code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(#{default_value});\n")
+          end
         end
       end
     end

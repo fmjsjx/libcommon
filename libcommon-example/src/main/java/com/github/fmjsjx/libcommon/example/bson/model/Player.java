@@ -103,7 +103,9 @@ public class Player extends RootModel<Player> {
         bson.append("itm", items.toBson());
         bson.append("_uv", new BsonInt32(updateVersion));
         bson.append("_ct", BsonUtil.toBsonDateTime(createTime));
-        bson.append("_ut", BsonUtil.toBsonDateTime(updateTime));
+        if (updateTime != null) {
+            bson.append("_ut", BsonUtil.toBsonDateTime(updateTime));
+        }
         return bson;
     }
 
@@ -116,7 +118,9 @@ public class Player extends RootModel<Player> {
         doc.append("itm", items.toDocument());
         doc.append("_uv", updateVersion);
         doc.append("_ct", DateTimeUtil.toLegacyDate(createTime));
-        doc.append("_ut", DateTimeUtil.toLegacyDate(updateTime));
+        if (updateTime != null) {
+            doc.append("_ut", DateTimeUtil.toLegacyDate(updateTime));
+        }
         return doc;
     }
 
@@ -128,7 +132,7 @@ public class Player extends RootModel<Player> {
         BsonUtil.documentValue(src, "itm").ifPresentOrElse(items::load, items::clear);
         updateVersion = BsonUtil.intValue(src, "_uv").orElse(0);
         createTime = BsonUtil.dateTimeValue(src, "_ct").get();
-        updateTime = BsonUtil.dateTimeValue(src, "_ut").get();
+        updateTime = BsonUtil.dateTimeValue(src, "_ut").orElseGet(LocalDateTime::now);
         reset();
     }
 
@@ -140,7 +144,7 @@ public class Player extends RootModel<Player> {
         BsonUtil.documentValue(src, "itm").ifPresentOrElse(items::load, items::clear);
         updateVersion = BsonUtil.intValue(src, "_uv").orElse(0);
         createTime = BsonUtil.dateTimeValue(src, "_ct").get();
-        updateTime = BsonUtil.dateTimeValue(src, "_ut").get();
+        updateTime = BsonUtil.dateTimeValue(src, "_ut").orElseGet(LocalDateTime::now);
         reset();
     }
 
