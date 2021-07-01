@@ -49,6 +49,8 @@ public class TestModel {
             player.setCreateTime(now);
             player.setUpdateTime(now);
             var bson = player.toBson();
+            System.err.println("-- bson --");
+            System.err.println(bson);
             assertNotNull(bson);
             assertEquals(123, bson.getInt32("_id").intValue());
             assertEquals(5000, bson.getDocument("wt").getInt64("ct").intValue());
@@ -94,7 +96,8 @@ public class TestModel {
             player.setUpdateTime(now);
 
             var doc = player.toDocument();
-
+            System.err.println("-- document --");
+            System.err.println(doc);
             assertNotNull(doc);
             assertEquals(123, BsonUtil.intValue(doc, "_id").getAsInt());
             assertEquals(5000, BsonUtil.embeddedInt(doc, "wt", "ct").getAsInt());
@@ -136,7 +139,8 @@ public class TestModel {
                     .append("_ut", date); // update time
             var player = new Player();
             player.load(doc);
-
+            System.err.println("-- load --");
+            System.err.println(player);
             assertFalse(player.updated());
             assertEquals(123, player.getUid());
             assertEquals(player, player.getWallet().parent());
@@ -237,6 +241,8 @@ public class TestModel {
             var player = new Player();
             player.load(doc);
 
+            System.err.println("-- load bson --");
+            System.err.println(player);
             assertFalse(player.updated());
             assertEquals(123, player.getUid());
             assertEquals(player, player.getWallet().parent());
@@ -340,6 +346,8 @@ public class TestModel {
             player.setCreateTime(now);
             player.setUpdateTime(now);
             var json = Jackson2Library.getInstance().dumpsToString(player);
+            System.err.println("-- json --");
+            System.err.println(json);
             var any = JsoniterLibrary.getInstance().loads(json);
             assertEquals(123, any.toInt("uid"));
             assertEquals(5000, any.toInt("wallet", "coinTotal"));
@@ -411,6 +419,8 @@ public class TestModel {
             assertTrue(player.updated());
             var updates = new ArrayList<Bson>();
             var n = player.appendUpdates(updates);
+            System.err.println("-- updates --");
+            updates.forEach(System.err::println);
             assertTrue(n > 0);
             assertEquals(n, updates.size());
             assertEquals(Updates.set("wt.ct", 5200L), updates.get(0));
@@ -490,6 +500,8 @@ public class TestModel {
             var update = player.toUpdate();
             assertNotNull(update);
             var json = Jackson2Library.getInstance().dumpsToString(update);
+            System.err.println("-- update --");
+            System.err.println(json);
             var any = JsoniterLibrary.getInstance().loads(json);
             assertEquals(4, any.asMap().size());
             assertEquals(3, any.get("wallet").asMap().size());
@@ -569,6 +581,8 @@ public class TestModel {
             var delete = player.toDelete();
             assertNotNull(delete);
             var json = Jackson2Library.getInstance().dumpsToString(delete);
+            System.err.println("-- delete --");
+            System.err.println(json);
             var any = JsoniterLibrary.getInstance().loads(json);
             assertEquals(2, any.asMap().size());
             assertEquals(1, any.get("equipments").asMap().size());

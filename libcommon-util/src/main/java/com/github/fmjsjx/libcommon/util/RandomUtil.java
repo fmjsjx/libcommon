@@ -1,7 +1,9 @@
 package com.github.fmjsjx.libcommon.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -306,6 +308,79 @@ public class RandomUtil {
      */
     public static final <T extends Weighted> T randomOneWeighted(List<T> values) {
         return values.get(randomIndex(values));
+    }
+
+    /**
+     * Returns a new list contains random {@code n} elements from the specified
+     * list.
+     * 
+     * @param <T>    the type of the element from the specified list
+     * @param values the list
+     * @param n      the number of the new list size
+     * @return a new list contains random {@code n} elements from the specified list
+     */
+    public static final <T> List<T> randomN(List<T> values, int n) {
+        var out = new ArrayList<T>(Math.min(values.size(), n));
+        randomN(values, n, out);
+        return out;
+    }
+
+    /**
+     * Add random {@code n} elements into the {@code out} list from the specified
+     * list.
+     * 
+     * @param <T>    the type of the element from the specified list
+     * @param values the list
+     * @param n      the number of the new list size
+     * @param out    the output list
+     * 
+     * @since 2.2
+     */
+    public static final <T> void randomN(List<T> values, int n, List<T> out) {
+        randomN(values, n, out, true);
+    }
+
+    /**
+     * Add random {@code n} elements into the {@code out} list from the specified
+     * list.
+     * 
+     * @param <T>    the type of the element from the specified list
+     * @param values the list
+     * @param n      the number of the new list size
+     * @param out    the output list
+     * @param copy   set {@code true} to use a copy of the values as source
+     * 
+     * @since 2.2
+     */
+    public static final <T> void randomN(List<T> values, int n, List<T> out, boolean copy) {
+        if (values.size() <= n) {
+            out.addAll(values);
+            return;
+        }
+        if (copy || !(values instanceof ArrayList)) {
+            values = new ArrayList<>(values);
+        }
+        if ((n << 1) <= values.size()) {
+            for (int i = 0; i < n; i++) {
+                var index = RandomUtil.randomInt(values.size());
+                var lastIndex = values.size() - 1;
+                if (index != lastIndex) {
+                    Collections.swap(values, index, lastIndex);
+                }
+                out.add(values.remove(lastIndex));
+            }
+        } else {
+            var max = values.size() - n;
+            for (int i = 0; i < max; i++) {
+                var index = RandomUtil.randomInt(values.size());
+                var lastIndex = values.size() - 1;
+                if (index != lastIndex) {
+                    Collections.swap(values, index, lastIndex);
+                }
+                values.remove(lastIndex);
+            }
+            out.addAll(values);
+        }
     }
 
     private RandomUtil() {

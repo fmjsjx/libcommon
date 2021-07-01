@@ -1,7 +1,5 @@
 package com.github.fmjsjx.libcommon.bson.model;
 
-import org.bson.BsonValue;
-
 /**
  * The interface defines methods for types of values in {@link SimpleMapModel}.
  * 
@@ -11,30 +9,10 @@ import org.bson.BsonValue;
  * @see SimpleMapValueTypes
  * 
  * @since 2.1
+ * 
+ * @deprecated please use {@link SimpleValueType} instead
  */
-public interface SimpleMapValueType<V> {
-
-    /**
-     * Returns the class of the value type.
-     * 
-     * @return the class of the value type
-     */
-    Class<V> type();
-
-    /**
-     * Parse the value from {@link BsonValue} to java type.
-     * 
-     * @param value the value as {@code BsonType}
-     * @return the value in java type
-     */
-    V parse(BsonValue value);
-
-    /**
-     * Converts the value from java type to {@link BsonValue}.
-     * 
-     * @param value the value in java type
-     * @return a {@code BsonValue}
-     */
-    BsonValue toBson(V value);
+@Deprecated(since = "2.2")
+public interface SimpleMapValueType<V> extends SimpleValueType<V> {
 
 }

@@ -38,7 +38,11 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
      * @param valueType the value type
      * @return a new {@code SimpleMapModel<Integer, T>} instance with integer keys
      *         and the specified components
+     * 
+     * @deprecated please use
+     *             {@link #integerKeys(BsonModel, String, SimpleValueType)} instead
      */
+    @Deprecated(since = "2.2")
     public static final <T, U extends BsonModel> SimpleMapModel<Integer, T, U> integerKeys(U parent, String name,
             SimpleMapValueType<T> valueType) {
         return new SimpleMapModel<>(parent, name, Integer::parseInt, valueType);
@@ -55,7 +59,11 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
      * @param valueType the value type
      * @return a new {@code SimpleMapModel<Long, T>} instance with integer keys and
      *         the specified components
+     * 
+     * @deprecated please use {@link #longKeys(BsonModel, String, SimpleValueType)}
+     *             instead
      */
+    @Deprecated(since = "2.2")
     public static final <T, U extends BsonModel> SimpleMapModel<Long, T, U> longKeys(U parent, String name,
             SimpleMapValueType<T> valueType) {
         return new SimpleMapModel<>(parent, name, Long::parseLong, valueType);
@@ -72,13 +80,74 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
      * @param valueType the value type
      * @return a new {@code SimpleMapModel<String, T>} instance with integer keys
      *         and the specified components
+     * 
+     * @deprecated please use
+     *             {@link #stringKeys(BsonModel, String, SimpleValueType)} instead
      */
+    @Deprecated(since = "2.2")
     public static final <T, U extends BsonModel> SimpleMapModel<String, T, U> stringKeys(U parent, String name,
             SimpleMapValueType<T> valueType) {
         return new SimpleMapModel<>(parent, name, Function.identity(), valueType);
     }
 
-    private final SimpleMapValueType<V> valueType;
+    /**
+     * Constructs a new {@link SimpleMapModel} instance with integer keys and the
+     * specified components.
+     * 
+     * @param <T>       the type of mapped values
+     * @param <U>       the type of the parent
+     * @param parent    the parent model
+     * @param name      the field name of this map in document
+     * @param valueType the value type
+     * @return a new {@code SimpleMapModel<Integer, T>} instance with integer keys
+     *         and the specified components
+     * 
+     * @since 2.2
+     */
+    public static final <T, U extends BsonModel> SimpleMapModel<Integer, T, U> integerKeys(U parent, String name,
+            SimpleValueType<T> valueType) {
+        return new SimpleMapModel<>(parent, name, Integer::parseInt, valueType);
+    }
+
+    /**
+     * Constructs a new {@link SimpleMapModel} instance with long keys and the
+     * specified components.
+     * 
+     * @param <T>       the type of mapped values
+     * @param <U>       the type of the parent
+     * @param parent    the parent model
+     * @param name      the field name of this map in document
+     * @param valueType the value type
+     * @return a new {@code SimpleMapModel<Long, T>} instance with integer keys and
+     *         the specified components
+     * 
+     * @since 2.2
+     */
+    public static final <T, U extends BsonModel> SimpleMapModel<Long, T, U> longKeys(U parent, String name,
+            SimpleValueType<T> valueType) {
+        return new SimpleMapModel<>(parent, name, Long::parseLong, valueType);
+    }
+
+    /**
+     * Constructs a new {@link SimpleMapModel} instance with string keys and the
+     * specified components.
+     * 
+     * @param <T>       the type of mapped values
+     * @param <U>       the type of the parent
+     * @param parent    the parent model
+     * @param name      the field name of this map in document
+     * @param valueType the value type
+     * @return a new {@code SimpleMapModel<String, T>} instance with integer keys
+     *         and the specified components
+     * 
+     * @since 2.2
+     */
+    public static final <T, U extends BsonModel> SimpleMapModel<String, T, U> stringKeys(U parent, String name,
+            SimpleValueType<T> valueType) {
+        return new SimpleMapModel<>(parent, name, Function.identity(), valueType);
+    }
+
+    private final SimpleValueType<V> valueType;
 
     /**
      * Constructs a new {@link SimpleMapModel} instance with the specified
@@ -88,8 +157,28 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
      * @param name      the field name of this map in document
      * @param keyParser the parser to parse keys
      * @param valueType the value type
+     * 
+     * @deprecated please use
+     *             {@link #SimpleMapModel(BsonModel, String, Function, SimpleValueType)}
+     *             instead
      */
+    @Deprecated(since = "2.2")
     public SimpleMapModel(P parent, String name, Function<String, K> keyParser, SimpleMapValueType<V> valueType) {
+        this(parent, name, keyParser, (SimpleValueType<V>) valueType);
+    }
+
+    /**
+     * Constructs a new {@link SimpleMapModel} instance with the specified
+     * components.
+     * 
+     * @param parent    the parent model
+     * @param name      the field name of this map in document
+     * @param keyParser the parser to parse keys
+     * @param valueType the value type
+     * 
+     * @since 2.2
+     */
+    public SimpleMapModel(P parent, String name, Function<String, K> keyParser, SimpleValueType<V> valueType) {
         super(parent, name, keyParser);
         this.valueType = valueType;
     }
@@ -181,7 +270,7 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
         }
         return false;
     }
-    
+
     @Override
     public SimpleMapModel<K, V, P> clear() {
         updatedKeys.clear();

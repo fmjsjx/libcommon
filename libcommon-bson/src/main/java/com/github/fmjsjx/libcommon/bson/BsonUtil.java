@@ -1101,6 +1101,99 @@ public class BsonUtil {
         }
     }
 
+    /**
+     * Gets the list value in an embedded document.
+     * 
+     * @param <E>      the type of the element in list
+     * @param document the source document
+     * @param keys     the array of keys
+     * @return an {@code Optional<List<E>>}
+     * 
+     * @since 2.2
+     */
+    public static final <E> Optional<List<E>> embeddedList(Document document, Object... keys) {
+        return embedded(document, keys);
+    }
+
+    /**
+     * Gets the list value in an embedded document.
+     * 
+     * @param <E>      the type of the element in list
+     * @param document the source document
+     * @param keys     the list of keys
+     * @return an {@code Optional<List<E>>}
+     * 
+     * @since 2.2
+     */
+    public static final <E> Optional<List<E>> embeddedList(Document document, List<Object> keys) {
+        return embedded(document, keys);
+    }
+
+    /**
+     * Gets the {@code Document} value in an document.
+     * 
+     * @param <E>      the type of the element in list
+     * @param document the source document
+     * @param key      the key
+     * @return an {@code Optional<List<E>>}
+     * 
+     * @since 2.2
+     */
+    @SuppressWarnings("unchecked")
+    public static final <E> Optional<List<E>> listValue(Document document, String key) {
+        var value = document.get(key);
+        if (value == null) {
+            return Optional.empty();
+        }
+        if (value instanceof List) {
+            return Optional.of((List<E>) value);
+        }
+        throw new ClassCastException(String.format("The value is not a List (%s)", value.getClass().getName()));
+    }
+
+    /**
+     * Gets the {@code BsonArray} value in an embedded document.
+     * 
+     * @param document the source document
+     * @param keys     the array of keys
+     * @return an {@code Optional<BsonArray>}
+     * 
+     * @since 2.2
+     */
+    public static final Optional<BsonArray> embeddedArray(BsonDocument document, Object... keys) {
+        return embedded(document, keys);
+    }
+
+    /**
+     * Gets the {@code BsonArray} value in an embedded document.
+     * 
+     * @param <E>      the type of the element in list
+     * @param document the source document
+     * @param keys     the list of keys
+     * @return an {@code Optional<BsonArray>}
+     * 
+     * @since 2.2
+     */
+    public static final Optional<BsonArray> embeddedArray(BsonDocument document, List<Object> keys) {
+        return embedded(document, keys);
+    }
+
+    /**
+     * Gets the {@code BsonArray} value in an document.
+     * 
+     * @param document the source document
+     * @param key      the key
+     * @return an {@code Optional<BsonArray>}
+     * @since 2.2
+     */
+    public static final Optional<BsonArray> arrayValue(BsonDocument document, String key) {
+        var value = document.get(key);
+        if (value == null || value.isNull()) {
+            return Optional.empty();
+        }
+        return Optional.of(value.asArray());
+    }
+
     private BsonUtil() {
     }
 

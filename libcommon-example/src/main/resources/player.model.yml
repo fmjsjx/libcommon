@@ -94,3 +94,12 @@ objects:
     type: simple-map
     key: int
     value: int
+  - name: cards
+    bname: cs
+    type: simple-list
+    value: int
+  - name: orderIds
+    bname: ois
+    type: simple-list
+    value: int
+    json-ignore: true

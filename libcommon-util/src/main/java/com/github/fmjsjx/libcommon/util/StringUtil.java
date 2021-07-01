@@ -2,7 +2,13 @@ package com.github.fmjsjx.libcommon.util;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for strings.
@@ -110,6 +116,72 @@ public class StringUtil {
      */
     public static final long[] splitLong(String value, String regex) {
         return Arrays.stream(value.split(regex)).mapToLong(Long::parseLong).toArray();
+    }
+
+    /**
+     * Splits the string around matches of the given {@code regular expression} and
+     * converts the values using the specified {@code mapper}.
+     * 
+     * @param value  the string
+     * @param regex  the delimiting regular expression
+     * @param mapper a function to apply to each element
+     * @return an {@code Object} array
+     * @since 2.2
+     */
+    public static final Object[] split(String value, String regex, Function<String, Object> mapper) {
+        return Arrays.stream(value.split(regex)).map(mapper).toArray();
+    }
+
+    /**
+     * Splits the string around matches of the given {@code regular expression} and
+     * converts the values using the specified {@code mapper}.
+     * 
+     * @param <T>       the type of elements
+     * @param value     the string
+     * @param regex     the delimiting regular expression
+     * @param mapper    a function to apply to each element
+     * @param generator a function which produces a new array of the desired type
+     *                  and the provided length
+     * @return a {@code T[]}
+     * @since 2.2
+     */
+    public static final <T> T[] split(String value, String regex, Function<String, T> mapper,
+            IntFunction<T[]> generator) {
+        return Arrays.stream(value.split(regex)).map(mapper).toArray(generator);
+    }
+
+    /**
+     * Splits the string around matches of the given {@code regular expression} and
+     * converts the values using the specified {@code mapper}.
+     * 
+     * @param <T>    the type of elements
+     * @param value  the string
+     * @param regex  the delimiting regular expression
+     * @param mapper a function to apply to each element
+     * @return a {@code List<T>}
+     * @since 2.2
+     */
+    public static final <T> List<T> splitToList(String value, String regex, Function<String, T> mapper) {
+        return Arrays.stream(value.split(regex)).map(mapper).collect(Collectors.toList());
+    }
+
+    /**
+     * Splits the string around matches of the given {@code regular expression} and
+     * converts the values using the specified {@code mapper}.
+     * 
+     * @param <T>               the type of elements
+     * @param <C>               the type of the collection to be returned
+     * @param value             the string
+     * @param regex             the delimiting regular expression
+     * @param mapper            a function to apply to each element
+     * @param collectionFactory a supplier providing a new empty {@code Collection}
+     *                          into which the results will be inserted
+     * @return a {@link Collection<T>}
+     * @since 2.2
+     */
+    public static final <T, C extends Collection<T>> C splitToCollection(String value, String regex,
+            Function<String, T> mapper, Supplier<C> collectionFactory) {
+        return Arrays.stream(value.split(regex)).map(mapper).collect(Collectors.toCollection(collectionFactory));
     }
 
     /**

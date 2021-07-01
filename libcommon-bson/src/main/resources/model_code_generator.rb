@@ -1,10 +1,11 @@
+require 'set'
 require 'yaml'
 
 
 def fill_imports(code, super_class, fields)
-  javas = []
-  orgs = []
-  coms = ["com.github.fmjsjx.libcommon.bson.model.#{super_class}"]
+  javas = Set.new
+  orgs = Set.new
+  coms = Set.new ["com.github.fmjsjx.libcommon.bson.model.#{super_class}"]
   javas << 'java.util.LinkedHashMap'
   javas << 'java.util.List'
   javas << 'java.util.Map'
@@ -12,7 +13,7 @@ def fill_imports(code, super_class, fields)
   orgs << 'org.bson.Document'
   orgs << 'org.bson.conversions.Bson'
   coms << 'com.github.fmjsjx.libcommon.bson.BsonUtil'
-  if fields.any? { |field| %w(object map simple-map).none? field['type'] }
+  if fields.any? { |field| %w(object map simple-map simple-list).none? field['type'] }
     coms << 'com.mongodb.client.model.Updates'
   end
   if super_class == 'ObjectModel'
@@ -45,7 +46,11 @@ def fill_imports(code, super_class, fields)
   end
   if fields.any? { |field| field['type'] == 'simple-map' }
     coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleMapModel'
-    coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleMapValueTypes'
+    coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleValueTypes'
+  end
+  if fields.any? { |field| field['type'] == 'simple-list' }
+    coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleListModel'
+    coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleValueTypes'
   end
   if fields.any? { |field| field['type'] == 'object-id' }
     coms << 'org.bson.types.ObjectId'
@@ -111,6 +116,10 @@ def fill_fields(code, cfg, parent=nil)
       else
         raise "unsupported type `#{key_type}`"
       end
+    when 'simple-list'
+      value_type = boxed_jtype(field['value'])
+      map_value_type = map_value_type(field['value'])
+      code << tabs(1, "private final SimpleListModel<#{value_type}, #{name}> #{field['name']} = new SimpleListModel<>(this, \"#{field['bname']}\", #{map_value_type});\n")
     else
       code << tabs(1, "private #{jtype(field_type)} #{field['name']};\n")
     end
@@ -121,15 +130,15 @@ end
 def map_value_type(type)
   case type
   when 'int'
-    'SimpleMapValueTypes.INTEGER'
+    'SimpleValueTypes.INTEGER'
   when 'long'
-    'SimpleMapValueTypes.LONG'
+    'SimpleValueTypes.LONG'
   when 'bool'
-    'SimpleMapValueTypes.BOOLEAN'
+    'SimpleValueTypes.BOOLEAN'
   when 'double'
-    'SimpleMapValueTypes.DOUBLE'
+    'SimpleValueTypes.DOUBLE'
   when 'string'
-    'SimpleMapValueTypes.STRING'
+    'SimpleValueTypes.STRING'
   else
     raise "unsupported simple map value type `#{type}`"
   end
@@ -178,6 +187,11 @@ def fill_xetters(code, cfg)
       else
         raise "unsupported type `#{key_type}`"
       end
+      code << tabs(2, "return #{name};\n")
+      code << tabs(1, "}\n\n")
+    when 'simple-list'
+      value_type = boxed_jtype(field['value'])
+      code << tabs(1, "public SimpleListModel<#{value_type}, #{cfg['name']}> get#{camcel}() {\n")
       code << tabs(2, "return #{name};\n")
       code << tabs(1, "}\n\n")
     else
@@ -237,7 +251,7 @@ def fill_updated(code, cfg)
     code << tabs(1, "public boolean updated() {\n")
     code << tabs(2, "return false;\n")
     code << tabs(1, "}\n\n")
-  elsif cfg['fields'].all? { |field| %w(object map simple-map).include? field['type'] }
+  elsif cfg['fields'].all? { |field| %w(object map simple-map simple-list).include? field['type'] }
     code << tabs(1, "@Override\n")
     code << tabs(1, "public boolean updated() {\n")
     f = cfg['fields'].map do |field|
@@ -245,11 +259,11 @@ def fill_updated(code, cfg)
     end.join(' || ')
     code << tabs(2, "return #{f};\n")
     code << tabs(1, "}\n\n")
-  elsif cfg['fields'].any? { |field| %w(object map simple-map).include? field['type'] }
+  elsif cfg['fields'].any? { |field| %w(object map simple-map simple-list).include? field['type'] }
     code << tabs(1, "@Override\n")
     code << tabs(1, "public boolean updated() {\n")
     f = cfg['fields'].select do |field|
-      %w(object map simple-map).include? field['type']
+      %w(object map simple-map simple-list).include? field['type']
     end.map do |field|
       "#{field['name']}.updated()"
     end.join(' || ')
@@ -271,8 +285,12 @@ def fill_to_bson(code, cfg, bson_type='BsonDocument')
     bname = field['bname']
     type = field['type']
     case
-    when %w(object map simple-map).include?(type) then
+    when %w(object map simple-map).include?(type)
       code << tabs(2, "bson.append(\"#{bname}\", #{name}.toBson());\n")
+    when type == 'simple-list'
+      code << tabs(2, "if (!#{name}.nil()) {\n")
+      code << tabs(3, "bson.append(\"#{bname}\", #{name}.toBson());\n")
+      code << tabs(2, "}\n")
     when type == 'int'
       code << tabs(2, "bson.append(\"#{bname}\", new BsonInt32(#{name}));\n")
     when type == 'long'
@@ -315,8 +333,10 @@ def fill_to_document(code, cfg)
     bname = field['bname']
     type = field['type']
     case
-    when %w(object map simple-map).include?(type) then
+    when %w(object map simple-map).include?(type)
       code << tabs(2, "doc.append(\"#{bname}\", #{name}.toDocument());\n")
+    when type == 'simple-list'
+      code << tabs(2, "#{name}.values().ifPresent(list -> doc.append(\"#{bname}\", list));\n")
     when type == 'datetime'
       if field['required']
         code << tabs(2, "doc.append(\"#{bname}\", DateTimeUtil.toLegacyDate(#{name}));\n")
@@ -353,6 +373,8 @@ def fill_load_document(code, cfg)
       code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
     when 'simple-map'
       code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
+    when 'simple-list'
+      code << tabs(2, "BsonUtil.listValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
     when 'int'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").getAsInt();\n")
@@ -446,6 +468,8 @@ def fill_load_bson(code, cfg)
       code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
     when 'simple-map'
       code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
+    when 'simple-list'
+      code << tabs(2, "BsonUtil.arrayValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
     when 'int'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").getAsInt();\n")
@@ -527,7 +551,7 @@ end
 def fill_append_updates(code, cfg)
   code << tabs(1, "@Override\n")
   code << tabs(1, "protected void appendFieldUpdates(List<Bson> updates) {\n")
-  if cfg['fields'].any? { |field| %w(object map simple-map).none? field['type'] }
+  if cfg['fields'].any? { |field| %w(object map simple-map simple-list).none? field['type'] }
     code << tabs(2, "var updatedFields = this.updatedFields;\n")
   end
   cfg['fields'].each_with_index do |field, index|
@@ -541,7 +565,7 @@ def fill_append_updates(code, cfg)
       xpath = "xpath().resolve(\"#{bname}\").value()"
     end
     case
-    when %w(object map simple-map).include?(type) then
+    when %w(object map simple-map simple-list).include?(type) then
       code << tabs(2, "var #{name} = this.#{name};\n")
       code << tabs(2, "if (#{name}.updated()) {\n")
       code << tabs(3, "#{name}.appendUpdates(updates);\n")
@@ -563,7 +587,7 @@ def fill_reset_children(code, cfg)
   code << tabs(1, "@Override\n")
   code << tabs(1, "protected void resetChildren() {\n")
   cfg['fields'].select do |field|
-    %w(object map simple-map).include?(field['type'])
+    %w(object map simple-map simple-list).include?(field['type'])
   end.each do |field|
     name = field['name']
     code << tabs(2, "#{name}.reset();\n")
@@ -574,9 +598,9 @@ end
 def fill_to_sub_update(code, cfg)
   code << tabs(1, "@Override\n")
   code << tabs(1, "public Object toSubUpdate() {\n")
-  if cfg['fields'].count { |field| !field['json-ignore'] } > 0
+  if cfg['fields'].count { |field| not field['json-ignore'] } > 0
     code << tabs(2, "var update = new LinkedHashMap<>();\n")
-    if cfg['fields'].any? { |field| %w(object map simple-map).none? field['type'] }
+    if cfg['fields'].any? { |field| %w(object map simple-map simple-list).none? field['type'] }
       code << tabs(2, "var updatedFields = this.updatedFields;\n")
     end
     cfg['fields'].each_with_index do |field, index|
@@ -585,6 +609,10 @@ def fill_to_sub_update(code, cfg)
         if %w(object map simple-map).include?(field['type'])
           code << tabs(2, "if (#{name}.updated()) {\n")
           code << tabs(3, "update.put(\"#{name}\", #{name}.toUpdate());\n")
+        elsif field['type'] == 'simple-list'
+          code << tabs(2, "var #{name} = this.#{name};\n")
+          code << tabs(2, "if (#{name}.updated()) {\n")
+          code << tabs(3, "#{name}.values().ifPresent(values -> update.put(\"#{name}\", values));\n")
         else
           code << tabs(2, "if (updatedFields.get(#{index + 1})) {\n")
           if field['virtual']
@@ -606,15 +634,21 @@ end
 def fill_to_delete(code, cfg)
   code << tabs(1, "@Override\n")
   code << tabs(1, "public Map<Object, Object> toDelete() {\n")
-  if cfg['fields'].any? { |field| %w(object map simple-map).include?(field['type']) }
+  if cfg['fields'].select do |field|
+    not field['json-ignore']
+  end.any? { |field| %w(object map simple-map simple-list).include?(field['type']) }
     code << tabs(2, "var delete = new LinkedHashMap<>();\n")
     cfg['fields'].select do |field|
-      %w(object map simple-map).include?(field['type'])
+      %w(object map simple-map simple-list).include?(field['type'])
     end.each do |field|
       name = field['name']
       code << tabs(2, "var #{name} = this.#{name};\n")
       code << tabs(2, "if (#{name}.deletedSize() > 0) {\n")
-      code << tabs(3, "delete.put(\"#{name}\", #{name}.toDelete());\n")
+      if field['type'] == 'simple-list'
+        code << tabs(3, "delete.put(\"#{name}\", 1);\n")
+      else
+        code << tabs(3, "delete.put(\"#{name}\", #{name}.toDelete());\n")
+      end
       code << tabs(2, "}\n")
     end
     code << tabs(2, "return delete;\n")
@@ -627,10 +661,12 @@ end
 def fill_deleted_size(code, cfg)
   code << tabs(1, "@Override\n")
   code << tabs(1, "protected int deletedSize() {\n")
-  if cfg['fields'].any? { |field| %w(object map simple-map).include?(field['type']) }
+  if cfg['fields'].select do |field|
+    not field['json-ignore']
+  end.any? { |field| %w(object map simple-map simple-list).include?(field['type']) }
     code << tabs(2, "var n = 0;\n")
     cfg['fields'].select do |field|
-      %w(object map simple-map).include?(field['type'])
+      %w(object map simple-map simple-list).include?(field['type'])
     end.each do |field|
       name = field['name']
       code << tabs(2, "if (#{name}.deletedSize() > 0) {\n")

@@ -14,7 +14,7 @@ import com.github.fmjsjx.libcommon.bson.BsonUtil;
 import com.github.fmjsjx.libcommon.bson.model.DefaultMapModel;
 import com.github.fmjsjx.libcommon.bson.model.RootModel;
 import com.github.fmjsjx.libcommon.bson.model.SimpleMapModel;
-import com.github.fmjsjx.libcommon.bson.model.SimpleMapValueTypes;
+import com.github.fmjsjx.libcommon.bson.model.SimpleValueTypes;
 import com.github.fmjsjx.libcommon.util.DateTimeUtil;
 import com.github.fmjsjx.libcommon.util.ObjectUtil;
 import com.mongodb.client.model.Updates;
@@ -24,7 +24,7 @@ public class Player extends RootModel<Player> {
     private int uid;
     private final Wallet wallet = new Wallet(this);
     private final DefaultMapModel<String, Equipment, Player> equipments = DefaultMapModel.stringKeys(this, "eqm", Equipment::new);
-    private final SimpleMapModel<Integer, Integer, Player> items = SimpleMapModel.integerKeys(this, "itm", SimpleMapValueTypes.INTEGER);
+    private final SimpleMapModel<Integer, Integer, Player> items = SimpleMapModel.integerKeys(this, "itm", SimpleValueTypes.INTEGER);
     private final CashInfo cash = new CashInfo(this);
     @com.fasterxml.jackson.annotation.JsonIgnore
     private int updateVersion;

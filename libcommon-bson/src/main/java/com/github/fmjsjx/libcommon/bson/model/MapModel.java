@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 import org.bson.conversions.Bson;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.github.fmjsjx.libcommon.bson.DotNotation;
 import com.mongodb.client.model.Updates;
 
 /**
@@ -28,17 +27,14 @@ import com.mongodb.client.model.Updates;
  */
 @JsonSerialize(using = MapModelSerializer.class)
 public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapModel<K, V, Parent, ?>>
-        extends AbstractBsonModel {
+        extends AbstractContainerModel<Parent> {
 
     protected final Map<K, V> map;
 
     protected final Set<K> updatedKeys = new LinkedHashSet<>();
     protected final Set<K> removedKeys = new LinkedHashSet<>();
 
-    protected final Parent parent;
-    protected final String name;
     protected final Function<String, K> keyParser;
-    protected final DotNotation xpath;
 
     /**
      * Constructs a new {@link MapModel} using {@link LinkedHashMap}.
@@ -72,25 +68,9 @@ public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapM
      * @param map       a {@link Map}
      */
     protected MapModel(Parent parent, String name, Function<String, K> keyParser, Map<K, V> map) {
-        this.parent = parent;
-        this.name = name;
+        super(parent, name);
         this.keyParser = keyParser;
         this.map = map;
-        this.xpath = parent.xpath().resolve(name);
-    }
-
-    /**
-     * Returns the field name of this map in document.
-     * 
-     * @return the field name of this map in document
-     */
-    public String name() {
-        return name;
-    }
-
-    @Override
-    public Parent parent() {
-        return parent;
     }
 
     /**
@@ -168,6 +148,7 @@ public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapM
      * 
      * @return number of key-value mappings in this map;
      */
+    @Override
     public int size() {
         return map.size();
     }
@@ -177,6 +158,7 @@ public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapM
      * 
      * @return {@code true} if this map is empty, {@code false} otherwise
      */
+    @Override
     public boolean empty() {
         return map.isEmpty();
     }
@@ -228,11 +210,6 @@ public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapM
     }
 
     @Override
-    public DotNotation xpath() {
-        return xpath;
-    }
-
-    @Override
     public int appendUpdates(List<Bson> updates) {
         var updatedKeys = this.updatedKeys;
         var removedKeys = this.removedKeys;
@@ -254,5 +231,10 @@ public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapM
      * @param value   the value
      */
     protected abstract void appendUpdates(List<Bson> updates, K key, V value);
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + map.toString();
+    }
 
 }

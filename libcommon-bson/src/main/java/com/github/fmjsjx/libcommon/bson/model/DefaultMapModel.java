@@ -184,7 +184,7 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
         }
         return false;
     }
-    
+
     @Override
     public DefaultMapModel<K, V, P> clear() {
         updatedKeys.clear();
