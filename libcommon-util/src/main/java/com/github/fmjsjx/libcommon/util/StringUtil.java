@@ -176,7 +176,7 @@ public class StringUtil {
      * @param mapper            a function to apply to each element
      * @param collectionFactory a supplier providing a new empty {@code Collection}
      *                          into which the results will be inserted
-     * @return a {@link Collection<T>}
+     * @return a {@code Collection<T>}
      * @since 2.2
      */
     public static final <T, C extends Collection<T>> C splitToCollection(String value, String regex,
