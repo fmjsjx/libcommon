@@ -179,4 +179,9 @@ public class Equipment extends DefaultMapValueModel<String, Equipment> {
         return 0;
     }
 
+    @Override
+    public String toString() {
+        return "Equipment(" + "id=" + id + ", " + "refId=" + refId + ", " + "atk=" + atk + ", " + "def=" + def + ", " + "hp=" + hp + ")";
+    }
+
 }

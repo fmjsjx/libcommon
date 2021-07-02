@@ -268,4 +268,9 @@ public class Player extends RootModel<Player> {
         return n;
     }
 
+    @Override
+    public String toString() {
+        return "Player(" + "uid=" + uid + ", " + "wallet=" + wallet + ", " + "equipments=" + equipments + ", " + "items=" + items + ", " + "cash=" + cash + ", " + "updateVersion=" + updateVersion + ", " + "createTime=" + createTime + ", " + "updateTime=" + updateTime + ")";
+    }
+
 }

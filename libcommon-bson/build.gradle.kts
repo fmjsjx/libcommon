@@ -20,11 +20,6 @@ dependencies {
     api(project(":libcommon-json-jackson2"))
     api(project(":libcommon-json-jsoniter"))
 
-//    api("com.fasterxml.jackson.core:jackson-databind")
-//    api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
-//    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-//    api("com.jsoniter:jsoniter")
-
     api("org.mongodb:bson")
     api("org.mongodb:mongodb-driver-core")
     "mongodbSupportApi"("org.mongodb:mongodb-driver-sync")

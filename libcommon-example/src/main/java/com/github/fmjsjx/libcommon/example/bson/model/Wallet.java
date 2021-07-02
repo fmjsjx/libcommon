@@ -183,4 +183,9 @@ public class Wallet extends ObjectModel<Wallet> {
         return 0;
     }
 
+    @Override
+    public String toString() {
+        return "Wallet(" + "coinTotal=" + coinTotal + ", " + "coinUsed=" + coinUsed + ", " + "diamond=" + diamond + ", " + "ad=" + ad + ")";
+    }
+
 }

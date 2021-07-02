@@ -140,10 +140,6 @@ public class CashInfo extends ObjectModel<CashInfo> {
         if (cards.deletedSize() > 0) {
             delete.put("cards", 1);
         }
-        var orderIds = this.orderIds;
-        if (orderIds.deletedSize() > 0) {
-            delete.put("orderIds", 1);
-        }
         return delete;
     }
 
@@ -156,10 +152,12 @@ public class CashInfo extends ObjectModel<CashInfo> {
         if (cards.deletedSize() > 0) {
             n++;
         }
-        if (orderIds.deletedSize() > 0) {
-            n++;
-        }
         return n;
+    }
+
+    @Override
+    public String toString() {
+        return "CashInfo(" + "stages=" + stages + ", " + "cards=" + cards + ", " + "orderIds=" + orderIds + ")";
     }
 
 }

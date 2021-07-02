@@ -156,4 +156,8 @@ public abstract class ListModel<E, Parent extends BsonModel, Self extends ListMo
         return list == null;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + list + ")";
+    }
 }

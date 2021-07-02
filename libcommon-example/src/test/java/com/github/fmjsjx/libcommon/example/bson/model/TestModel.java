@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.example.bson.model;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,7 +13,9 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.bson.BsonArray;
 import org.bson.BsonDateTime;
 import org.bson.BsonDocument;
 import org.bson.BsonInt32;
@@ -45,28 +48,46 @@ public class TestModel {
             equipment.setHp(0);
             player.getEquipments().put("12345678-1234-5678-9abc-123456789abc", equipment);
             player.getItems().put(2001, 5);
+            player.getCash().getCards().values(List.of(1, 2, 3, 4));
+            player.getCash().getOrderIds().values(List.of(0, 1, 2, 3, 4));
             var now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
             player.setCreateTime(now);
             player.setUpdateTime(now);
+
             var bson = player.toBson();
-            System.err.println("-- bson --");
-            System.err.println(bson);
             assertNotNull(bson);
+            assertEquals(8, bson.size());
             assertEquals(123, bson.getInt32("_id").intValue());
+            assertEquals(4, bson.getDocument("wt").size());
             assertEquals(5000, bson.getDocument("wt").getInt64("ct").intValue());
             assertEquals(200, bson.getDocument("wt").getInt64("cu").intValue());
             assertEquals(10, bson.getDocument("wt").getInt64("d").intValue());
             assertEquals(0, bson.getDocument("wt").getInt32("ad").intValue());
+            assertEquals(1, bson.getDocument("eqm").size());
             var eqb = bson.getDocument("eqm").getDocument("12345678-1234-5678-9abc-123456789abc");
             assertNotNull(eqb);
+            assertEquals(5, eqb.size());
             assertEquals("12345678-1234-5678-9abc-123456789abc", eqb.getString("id").getValue());
             assertEquals(1, eqb.getInt32("rid").getValue());
             assertEquals(10, eqb.getInt32("atk").getValue());
             assertEquals(0, eqb.getInt32("def").getValue());
             assertEquals(0, eqb.getInt32("hp").getValue());
+            assertEquals(1, bson.getDocument("itm").size());
             assertEquals(5, bson.getDocument("itm").getInt32("2001").intValue());
             assertEquals(0, bson.getInt32("_uv").intValue());
+            assertEquals(3, bson.getDocument("cs").size());
             assertEquals(0, bson.getDocument("cs").getDocument("stg").size());
+            assertEquals(4, bson.getDocument("cs").getArray("cs").size());
+            assertEquals(1, bson.getDocument("cs").getArray("cs").get(0).asInt32().getValue());
+            assertEquals(2, bson.getDocument("cs").getArray("cs").get(1).asInt32().getValue());
+            assertEquals(3, bson.getDocument("cs").getArray("cs").get(2).asInt32().getValue());
+            assertEquals(4, bson.getDocument("cs").getArray("cs").get(3).asInt32().getValue());
+            assertEquals(5, bson.getDocument("cs").getArray("ois").size());
+            assertEquals(0, bson.getDocument("cs").getArray("ois").get(0).asInt32().getValue());
+            assertEquals(1, bson.getDocument("cs").getArray("ois").get(1).asInt32().getValue());
+            assertEquals(2, bson.getDocument("cs").getArray("ois").get(2).asInt32().getValue());
+            assertEquals(3, bson.getDocument("cs").getArray("ois").get(3).asInt32().getValue());
+            assertEquals(4, bson.getDocument("cs").getArray("ois").get(4).asInt32().getValue());
             var zone = ZoneId.systemDefault();
             assertEquals(now, LocalDateTime.ofInstant(Instant.ofEpochMilli(bson.getDateTime("_ct").getValue()), zone));
             assertEquals(now, LocalDateTime.ofInstant(Instant.ofEpochMilli(bson.getDateTime("_ut").getValue()), zone));
@@ -91,29 +112,46 @@ public class TestModel {
             equipment.setHp(0);
             player.getEquipments().put("12345678-1234-5678-9abc-123456789abc", equipment);
             player.getItems().put(2001, 5);
+            player.getCash().getCards().values(List.of(1, 2, 3, 4));
+            player.getCash().getOrderIds().values(List.of(0, 1, 2, 3, 4));
             var now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
             player.setCreateTime(now);
             player.setUpdateTime(now);
 
             var doc = player.toDocument();
-            System.err.println("-- document --");
-            System.err.println(doc);
             assertNotNull(doc);
+            assertEquals(8, doc.size());
             assertEquals(123, BsonUtil.intValue(doc, "_id").getAsInt());
+            assertEquals(4, BsonUtil.documentValue(doc, "wt").get().size());
             assertEquals(5000, BsonUtil.embeddedInt(doc, "wt", "ct").getAsInt());
             assertEquals(200, BsonUtil.embeddedInt(doc, "wt", "cu").getAsInt());
             assertEquals(10, BsonUtil.embeddedInt(doc, "wt", "d").getAsInt());
             assertEquals(0, BsonUtil.embeddedInt(doc, "wt", "ad").getAsInt());
+            assertEquals(1, BsonUtil.documentValue(doc, "eqm").get().size());
             var eqb = BsonUtil.embeddedDocument(doc, "eqm", "12345678-1234-5678-9abc-123456789abc").get();
             assertNotNull(eqb);
+            assertEquals(5, eqb.size());
             assertEquals("12345678-1234-5678-9abc-123456789abc", eqb.getString("id"));
             assertEquals(1, BsonUtil.intValue(eqb, "rid").getAsInt());
             assertEquals(10, BsonUtil.intValue(eqb, "atk").getAsInt());
             assertEquals(0, BsonUtil.intValue(eqb, "def").getAsInt());
             assertEquals(0, BsonUtil.intValue(eqb, "hp").getAsInt());
+            assertEquals(1, BsonUtil.documentValue(doc, "itm").get().size());
             assertEquals(5, BsonUtil.embeddedInt(doc, "itm", "2001").getAsInt());
             assertEquals(0, BsonUtil.intValue(doc, "_uv").getAsInt());
+            assertEquals(3, BsonUtil.embeddedDocument(doc, "cs").get().size());
             assertEquals(0, BsonUtil.embeddedDocument(doc, "cs", "stg").get().size());
+            assertEquals(4, BsonUtil.embeddedList(doc, "cs", "cs").get().size());
+            assertEquals(1, BsonUtil.embeddedInt(doc, "cs", "cs", 0).getAsInt());
+            assertEquals(2, BsonUtil.embeddedInt(doc, "cs", "cs", 1).getAsInt());
+            assertEquals(3, BsonUtil.embeddedInt(doc, "cs", "cs", 2).getAsInt());
+            assertEquals(4, BsonUtil.embeddedInt(doc, "cs", "cs", 3).getAsInt());
+            assertEquals(5, BsonUtil.embeddedList(doc, "cs", "ois").get().size());
+            assertEquals(0, BsonUtil.embeddedInt(doc, "cs", "ois", 0).getAsInt());
+            assertEquals(1, BsonUtil.embeddedInt(doc, "cs", "ois", 1).getAsInt());
+            assertEquals(2, BsonUtil.embeddedInt(doc, "cs", "ois", 2).getAsInt());
+            assertEquals(3, BsonUtil.embeddedInt(doc, "cs", "ois", 3).getAsInt());
+            assertEquals(4, BsonUtil.embeddedInt(doc, "cs", "ois", 4).getAsInt());
             var zone = ZoneId.systemDefault();
             assertEquals(now, LocalDateTime.ofInstant(doc.getDate("_ct").toInstant(), zone));
             assertEquals(now, LocalDateTime.ofInstant(doc.getDate("_ut").toInstant(), zone));
@@ -133,14 +171,15 @@ public class TestModel {
                                     new Document("id", "12345678-1234-5678-9abc-123456789abc").append("rid", 1)
                                             .append("atk", 12).append("def", 2).append("hp", 100)))
                     .append("itm", new Document("2001", 10)) // items
-                    .append("cs", new Document("stg", new Document())) // cash
+                    .append("cs", // cash
+                            new Document("stg", new Document()) // stages
+                                    .append("cs", new ArrayList<>(List.of(1, 2, 3, 4))) // cards
+                                    .append("ois", new ArrayList<>(List.of(0, 1, 2, 3, 4)))) // orderIds
                     .append("_uv", 1) // update version
                     .append("_ct", date) // create time
                     .append("_ut", date); // update time
             var player = new Player();
             player.load(doc);
-            System.err.println("-- load --");
-            System.err.println(player);
             assertFalse(player.updated());
             assertEquals(123, player.getUid());
             assertEquals(player, player.getWallet().parent());
@@ -165,6 +204,16 @@ public class TestModel {
             assertEquals(10, player.getItems().get(2001).get());
             assertEquals(0, player.getCash().getStages().size());
             assertEquals("cs.stg.1", player.getCash().getStages().xpath().resolve("1").value());
+            assertEquals(4, player.getCash().getCards().size());
+            assertFalse(player.getCash().getCards().nil());
+            assertFalse(player.getCash().getCards().empty());
+            assertArrayEquals(new int[] { 1, 2, 3, 4 },
+                    player.getCash().getCards().values().get().stream().mapToInt(Integer::intValue).toArray());
+            assertEquals(5, player.getCash().getOrderIds().size());
+            assertFalse(player.getCash().getOrderIds().nil());
+            assertFalse(player.getCash().getOrderIds().empty());
+            assertArrayEquals(new int[] { 0, 1, 2, 3, 4 },
+                    player.getCash().getOrderIds().values().get().stream().mapToInt(Integer::intValue).toArray());
             assertEquals(1, player.getUpdateVersion());
 
             var zone = ZoneId.systemDefault();
@@ -210,6 +259,8 @@ public class TestModel {
             assertEquals(10, player.getItems().get(2001).get());
             assertEquals(0, player.getCash().getStages().size());
             assertEquals("cs.stg.1", player.getCash().getStages().xpath().resolve("1").value());
+            assertTrue(player.getCash().getCards().nil());
+            assertTrue(player.getCash().getOrderIds().nil());
             assertEquals(1, player.getUpdateVersion());
 
             assertEquals(date, Date.from(player.getCreateTime().atZone(zone).toInstant()));
@@ -234,15 +285,20 @@ public class TestModel {
                                             .append("rid", new BsonInt32(1)).append("atk", new BsonInt32(12))
                                             .append("def", new BsonInt32(2)).append("hp", new BsonInt32(100))))
                     .append("itm", new BsonDocument("2001", new BsonInt32(10))) // items
-                    .append("cs", new BsonDocument("stg", new BsonDocument())) // cash
+                    .append("cs", // cash
+                            new BsonDocument("stg", new BsonDocument()) // stages
+                                    .append("cs", // cards
+                                            new BsonArray(List.of(new BsonInt32(1), new BsonInt32(2), new BsonInt32(3),
+                                                    new BsonInt32(4))))
+                                    .append("ois", // orderIds
+                                            new BsonArray(List.of(new BsonInt32(0), new BsonInt32(1), new BsonInt32(2),
+                                                    new BsonInt32(3), new BsonInt32(4)))))
                     .append("_uv", new BsonInt32(1)) // update version
                     .append("_ct", new BsonDateTime(date.getTime())) // create time
                     .append("_ut", new BsonDateTime(date.getTime())); // update time
             var player = new Player();
             player.load(doc);
 
-            System.err.println("-- load bson --");
-            System.err.println(player);
             assertFalse(player.updated());
             assertEquals(123, player.getUid());
             assertEquals(player, player.getWallet().parent());
@@ -267,6 +323,16 @@ public class TestModel {
             assertEquals(10, player.getItems().get(2001).get());
             assertEquals(0, player.getCash().getStages().size());
             assertEquals("cs.stg.1", player.getCash().getStages().xpath().resolve("1").value());
+            assertEquals(4, player.getCash().getCards().size());
+            assertFalse(player.getCash().getCards().nil());
+            assertFalse(player.getCash().getCards().empty());
+            assertArrayEquals(new int[] { 1, 2, 3, 4 },
+                    player.getCash().getCards().values().get().stream().mapToInt(Integer::intValue).toArray());
+            assertEquals(5, player.getCash().getOrderIds().size());
+            assertFalse(player.getCash().getOrderIds().nil());
+            assertFalse(player.getCash().getOrderIds().empty());
+            assertArrayEquals(new int[] { 0, 1, 2, 3, 4 },
+                    player.getCash().getOrderIds().values().get().stream().mapToInt(Integer::intValue).toArray());
             assertEquals(1, player.getUpdateVersion());
 
             var zone = ZoneId.systemDefault();
@@ -315,6 +381,8 @@ public class TestModel {
             assertEquals(10, player.getItems().get(2001).get());
             assertEquals(0, player.getCash().getStages().size());
             assertEquals("cs.stg.1", player.getCash().getStages().xpath().resolve("1").value());
+            assertTrue(player.getCash().getCards().nil());
+            assertTrue(player.getCash().getOrderIds().nil());
             assertEquals(1, player.getUpdateVersion());
 
             assertEquals(date, Date.from(player.getCreateTime().atZone(zone).toInstant()));
@@ -342,27 +410,38 @@ public class TestModel {
             player.getEquipments().put("12345678-1234-5678-9abc-123456789abc", equipment);
             player.getItems().put(2001, 5);
             player.getCash().getStages().put(1, 1);
+            player.getCash().getCards().values(List.of(1, 2, 3, 4));
+            player.getCash().getOrderIds().values(List.of(0, 1, 2, 3, 4));
             var now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
             player.setCreateTime(now);
             player.setUpdateTime(now);
             var json = Jackson2Library.getInstance().dumpsToString(player);
-            System.err.println("-- json --");
-            System.err.println(json);
             var any = JsoniterLibrary.getInstance().loads(json);
+            assertEquals(5, any.asMap().size());
             assertEquals(123, any.toInt("uid"));
+            assertEquals(4, any.get("wallet").asMap().size());
             assertEquals(5000, any.toInt("wallet", "coinTotal"));
             assertEquals(4800, any.toInt("wallet", "coin"));
             assertEquals(10, any.toInt("wallet", "diamond"));
             assertEquals(0, any.toInt("wallet", "ad"));
+            assertEquals(1, any.get("equipments").asMap().size());
             assertEquals("12345678-1234-5678-9abc-123456789abc",
                     any.toString("equipments", "12345678-1234-5678-9abc-123456789abc", "id"));
+            assertEquals(5, any.get("equipments", "12345678-1234-5678-9abc-123456789abc").asMap().size());
             assertEquals(1, any.toInt("equipments", "12345678-1234-5678-9abc-123456789abc", "refId"));
             assertEquals(10, any.toInt("equipments", "12345678-1234-5678-9abc-123456789abc", "atk"));
             assertEquals(0, any.toInt("equipments", "12345678-1234-5678-9abc-123456789abc", "def"));
             assertEquals(0, any.toInt("equipments", "12345678-1234-5678-9abc-123456789abc", "hp"));
+            assertEquals(1, any.get("items").asMap().size());
             assertEquals(5, any.toInt("items", "2001"));
+            assertEquals(2, any.get("cash").asMap().size());
             assertEquals(1, any.get("cash", "stages").asMap().size());
             assertEquals(1, any.toInt("cash", "stages", "1"));
+            assertEquals(4, any.get("cash", "cards").asList().size());
+            assertEquals(1, any.toInt("cash", "cards", 0));
+            assertEquals(2, any.toInt("cash", "cards", 1));
+            assertEquals(3, any.toInt("cash", "cards", 2));
+            assertEquals(4, any.toInt("cash", "cards", 3));
         } catch (Exception e) {
             fail(e);
         }
@@ -390,6 +469,7 @@ public class TestModel {
             eq2.setHp(2);
             player.getEquipments().put("11111111-2222-3333-4444-555555555555", eq2);
             player.getItems().put(2001, 5);
+            player.getCash().getOrderIds().values(List.of(0, 1, 2, 3, 4));
             var now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
             player.setCreateTime(now.minusDays(1));
             player.setUpdateTime(now.minusSeconds(10));
@@ -412,6 +492,8 @@ public class TestModel {
             player.getItems().put(2002, 1);
             player.getItems().remove(2001);
             player.getCash().getStages().put(1, 1);
+            player.getCash().getCards().values(List.of(1, 2, 3, 4));
+            player.getCash().getOrderIds().clear();
             now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
             player.setUpdateTime(now);
             player.increaseUpdateVersion();
@@ -419,8 +501,6 @@ public class TestModel {
             assertTrue(player.updated());
             var updates = new ArrayList<Bson>();
             var n = player.appendUpdates(updates);
-            System.err.println("-- updates --");
-            updates.forEach(System.err::println);
             assertTrue(n > 0);
             assertEquals(n, updates.size());
             assertEquals(Updates.set("wt.ct", 5200L), updates.get(0));
@@ -432,10 +512,16 @@ public class TestModel {
             assertEquals(Updates.set("itm.2002", 1), updates.get(6));
             assertEquals(Updates.unset("itm.2001"), updates.get(7));
             assertEquals(Updates.set("cs.stg.1", 1), updates.get(8));
-            assertEquals(Updates.set("_uv", 1), updates.get(9));
+            assertEquals(
+                    Updates.set("cs.cs",
+                            new BsonArray(
+                                    List.of(new BsonInt32(1), new BsonInt32(2), new BsonInt32(3), new BsonInt32(4)))),
+                    updates.get(9));
+            assertEquals(Updates.unset("cs.ois"), updates.get(10));
+            assertEquals(Updates.set("_uv", 1), updates.get(11));
             var zone = ZoneId.systemDefault();
             var _ut = new BsonDateTime(now.atZone(zone).toInstant().toEpochMilli());
-            assertEquals(Updates.set("_ut", _ut), updates.get(10));
+            assertEquals(Updates.set("_ut", _ut), updates.get(12));
 
             player.reset();
             assertFalse(player.updated());
@@ -470,6 +556,7 @@ public class TestModel {
             eq2.setHp(2);
             player.getEquipments().put("11111111-2222-3333-4444-555555555555", eq2);
             player.getItems().put(2001, 5);
+            player.getCash().getOrderIds().values(List.of(0, 1, 2, 3, 4));
             var now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
             player.setCreateTime(now);
             player.setUpdateTime(now);
@@ -492,6 +579,8 @@ public class TestModel {
             player.getItems().put(2002, 1);
             player.getItems().remove(2001);
             player.getCash().getStages().put(1, 1);
+            player.getCash().getCards().values(List.of(1, 2, 3, 4));
+            player.getCash().getOrderIds().clear();
             now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
             player.setUpdateTime(now);
             player.increaseUpdateVersion();
@@ -500,8 +589,6 @@ public class TestModel {
             var update = player.toUpdate();
             assertNotNull(update);
             var json = Jackson2Library.getInstance().dumpsToString(update);
-            System.err.println("-- update --");
-            System.err.println(json);
             var any = JsoniterLibrary.getInstance().loads(json);
             assertEquals(4, any.asMap().size());
             assertEquals(3, any.get("wallet").asMap().size());
@@ -509,6 +596,9 @@ public class TestModel {
             assertEquals(5, any.get("equipments", "12345678-1234-5678-9abc-123456789abc").asMap().size());
             assertEquals(5, any.get("equipments", "00000000-0000-0000-0000-000000000000").asMap().size());
             assertEquals(1, any.get("items").asMap().size());
+            assertEquals(2, any.get("cash").asMap().size());
+            assertEquals(1, any.get("cash", "stages").asMap().size());
+            assertEquals(4, any.get("cash", "cards").asList().size());
             assertEquals(5200, any.toInt("wallet", "coinTotal"));
             assertEquals(4900, any.toInt("wallet", "coin"));
             assertEquals("12345678-1234-5678-9abc-123456789abc",
@@ -525,8 +615,11 @@ public class TestModel {
             assertEquals(2, any.toInt("equipments", "00000000-0000-0000-0000-000000000000", "hp"));
             assertEquals(1, any.toInt("wallet", "ad"));
             assertEquals(1, any.toInt("items", "2002"));
-            assertEquals(1, any.get("cash", "stages").asMap().size());
             assertEquals(1, any.toInt("cash", "stages", "1"));
+            assertEquals(1, any.toInt("cash", "cards", 0));
+            assertEquals(2, any.toInt("cash", "cards", 1));
+            assertEquals(3, any.toInt("cash", "cards", 2));
+            assertEquals(4, any.toInt("cash", "cards", 3));
         } catch (Exception e) {
             fail(e);
         }
@@ -554,6 +647,8 @@ public class TestModel {
             eq2.setHp(2);
             player.getEquipments().put("11111111-2222-3333-4444-555555555555", eq2);
             player.getItems().put(2001, 5);
+            player.getCash().getCards().values(List.of(1, 2, 3, 4));
+            player.getCash().getOrderIds().values(List.of(0, 1, 2, 3, 4));
             var now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
             player.setCreateTime(now);
             player.setUpdateTime(now);
@@ -574,6 +669,8 @@ public class TestModel {
 
             player.getItems().put(2002, 1);
             player.getItems().remove(2001);
+            player.getCash().getCards().clear();
+            player.getCash().getOrderIds().clear();
             now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
             player.setUpdateTime(now);
             player.increaseUpdateVersion();
@@ -581,14 +678,14 @@ public class TestModel {
             var delete = player.toDelete();
             assertNotNull(delete);
             var json = Jackson2Library.getInstance().dumpsToString(delete);
-            System.err.println("-- delete --");
-            System.err.println(json);
             var any = JsoniterLibrary.getInstance().loads(json);
-            assertEquals(2, any.asMap().size());
+            assertEquals(3, any.asMap().size());
             assertEquals(1, any.get("equipments").asMap().size());
             assertEquals(1, any.get("items").asMap().size());
+            assertEquals(1, any.get("cash").asMap().size());
             assertEquals(1, any.toInt("equipments", "11111111-2222-3333-4444-555555555555"));
             assertEquals(1, any.toInt("items", "2001"));
+            assertEquals(1, any.toInt("cash", "cards"));
         } catch (Exception e) {
             fail(e);
         }

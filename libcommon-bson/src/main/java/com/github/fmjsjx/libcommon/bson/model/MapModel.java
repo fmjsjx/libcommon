@@ -234,7 +234,7 @@ public abstract class MapModel<K, V, Parent extends BsonModel, Self extends MapM
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + map.toString();
+        return getClass().getSimpleName() + "(" + map.toString() + ")";
     }
 
 }

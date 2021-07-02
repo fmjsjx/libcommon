@@ -604,25 +604,24 @@ def fill_to_sub_update(code, cfg)
       code << tabs(2, "var updatedFields = this.updatedFields;\n")
     end
     cfg['fields'].each_with_index do |field, index|
-      unless field['json-ignore']
-        name = field['name']
-        if %w(object map simple-map).include?(field['type'])
-          code << tabs(2, "if (#{name}.updated()) {\n")
-          code << tabs(3, "update.put(\"#{name}\", #{name}.toUpdate());\n")
-        elsif field['type'] == 'simple-list'
-          code << tabs(2, "var #{name} = this.#{name};\n")
-          code << tabs(2, "if (#{name}.updated()) {\n")
-          code << tabs(3, "#{name}.values().ifPresent(values -> update.put(\"#{name}\", values));\n")
+      next if field['json-ignore']
+      name = field['name']
+      if %w(object map simple-map).include?(field['type'])
+        code << tabs(2, "if (#{name}.updated()) {\n")
+        code << tabs(3, "update.put(\"#{name}\", #{name}.toUpdate());\n")
+      elsif field['type'] == 'simple-list'
+        code << tabs(2, "var #{name} = this.#{name};\n")
+        code << tabs(2, "if (#{name}.updated()) {\n")
+        code << tabs(3, "#{name}.values().ifPresent(values -> update.put(\"#{name}\", values));\n")
+      else
+        code << tabs(2, "if (updatedFields.get(#{index + 1})) {\n")
+        if field['virtual']
+          code << tabs(3, "update.put(\"#{name}\", get#{camcel_name(name)}());\n")
         else
-          code << tabs(2, "if (updatedFields.get(#{index + 1})) {\n")
-          if field['virtual']
-            code << tabs(3, "update.put(\"#{name}\", get#{camcel_name(name)}());\n")
-          else
-            code << tabs(3, "update.put(\"#{name}\", #{name});\n")
-          end
+          code << tabs(3, "update.put(\"#{name}\", #{name});\n")
         end
-        code << tabs(2, "}\n")
       end
+      code << tabs(2, "}\n")
     end
     code << tabs(2, "return update;\n")
   else
@@ -641,6 +640,7 @@ def fill_to_delete(code, cfg)
     cfg['fields'].select do |field|
       %w(object map simple-map simple-list).include?(field['type'])
     end.each do |field|
+      next if field['json-ignore']
       name = field['name']
       code << tabs(2, "var #{name} = this.#{name};\n")
       code << tabs(2, "if (#{name}.deletedSize() > 0) {\n")
@@ -668,6 +668,7 @@ def fill_deleted_size(code, cfg)
     cfg['fields'].select do |field|
       %w(object map simple-map simple-list).include?(field['type'])
     end.each do |field|
+      next if field['json-ignore']
       name = field['name']
       code << tabs(2, "if (#{name}.deletedSize() > 0) {\n")
       code << tabs(3, "n++;\n")
@@ -677,6 +678,18 @@ def fill_deleted_size(code, cfg)
   else
     code << tabs(2, "return 0;\n")
   end
+  code << tabs(1, "}\n\n")
+end
+
+def fill_to_string(code, cfg)
+  code << tabs(1, "@Override\n")
+  code << tabs(1, "public String toString() {\n")
+  values = cfg['fields'].select do |field|
+    not field['virtual']
+  end.map do |field|
+    "\"#{field['name']}=\" + #{field['name']}"
+  end.join ' + ", " + '
+  code << tabs(2, "return \"#{cfg['name']}(\" + #{values} + \")\";\n")
   code << tabs(1, "}\n\n")
 end
 
@@ -737,6 +750,7 @@ def generate_root(cfg)
   fill_to_sub_update(code, cfg)
   fill_to_delete(code, cfg)
   fill_deleted_size(code, cfg)
+  fill_to_string(code, cfg)
   code << "}\n"
 end
 
@@ -793,6 +807,7 @@ def generate_object(cfg)
   fill_to_sub_update(code, cfg)
   fill_to_delete(code, cfg)
   fill_deleted_size(code, cfg)
+  fill_to_string(code, cfg)
   code << "}\n"
 end
 
@@ -815,6 +830,7 @@ def generate_map_value(cfg)
   fill_to_sub_update(code, cfg)
   fill_to_delete(code, cfg)
   fill_deleted_size(code, cfg)
+  fill_to_string(code, cfg)
   code << "}\n"
 end
 
