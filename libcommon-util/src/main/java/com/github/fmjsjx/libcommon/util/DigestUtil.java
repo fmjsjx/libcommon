@@ -436,6 +436,136 @@ public class DigestUtil {
         return sha256().digestAsHex(input, otherInputs);
     }
 
+    private static final class Sha512UtilInstanceHolder {
+
+        private static final ThreadLocal<DigestUtil> instance = ThreadLocal
+                .withInitial(DigestAlgorithm.SHA512::createUtil);
+
+    }
+
+    /**
+     * Returns the {@link DigestUtil} with the {@code SHA-512} digest algorithm.
+     * 
+     * @return the {@link DigestUtil} with the {@code SHA-512} digest algorithm
+     * 
+     * @since 2.2
+     */
+    public static final DigestUtil sha512() {
+        return Sha512UtilInstanceHolder.instance.get();
+    }
+
+    /**
+     * Calculates and returns the {@code SHA-512} digest using the specified string.
+     * 
+     * @param input the string
+     * @return the array of bytes for the resulting hash value
+     * 
+     * @since 2.2
+     */
+    public static final byte[] sha512(String input) {
+        return sha512().digest(input);
+    }
+
+    /**
+     * Calculates and returns the {@code SHA-512} digest using the specified array
+     * of bytes, starting at the specified offset.
+     * 
+     * 
+     * @param input  the array of bytes
+     * @param offset the offset to start from in the array of bytes
+     * @param len    the number of bytes to use, starting at
+     * @return the array of bytes for the resulting hash value
+     * 
+     * @since 2.2
+     */
+    public static final byte[] sha512(byte[] input, int offset, int len) {
+        return sha512().digest(input, offset, len);
+    }
+
+    /**
+     * Calculates and returns the {@code SHA-512} digest using the specified arrays
+     * of bytes.
+     * 
+     * @param input       the first array of bytes
+     * @param otherInputs the other arrays of bytes
+     * @return the array of bytes for the resulting hash value
+     * 
+     * @since 2.2
+     */
+    public static final byte[] sha512(byte[] input, byte[]... otherInputs) {
+        return sha512().digest(input, otherInputs);
+    }
+
+    /**
+     * Calculates and returns the {@code SHA-512} digest using the specified
+     * buffers.
+     * 
+     * @param input       the first {@link ByteBuffer}
+     * @param otherInputs the other {@link ByteBuffer}s
+     * @return the array of bytes for the resulting hash value
+     * 
+     * @since 2.2
+     */
+    public static final byte[] sha512(ByteBuffer input, ByteBuffer... otherInputs) {
+        return sha512().digest(input, otherInputs);
+    }
+
+    /**
+     * Calculates and returns the {@code SHA-512} digest using the specified string.
+     * 
+     * @param input the string
+     * @return the hex string for the resulting hash value
+     * 
+     * @since 2.2
+     */
+    public static final String sha512AsHex(String input) {
+        return sha512().digestAsHex(input);
+    }
+
+    /**
+     * Calculates and returns the {@code SHA-512} digest using the specified array
+     * of bytes, starting at the specified offset.
+     * 
+     * 
+     * @param input  the array of bytes
+     * @param offset the offset to start from in the array of bytes
+     * @param len    the number of bytes to use, starting at
+     * @return the hex string of bytes for the resulting hash value
+     * 
+     * @since 2.2
+     */
+    public static final String sha512AsHex(byte[] input, int offset, int len) {
+        return sha512().digestAsHex(input, offset, len);
+    }
+
+    /**
+     * Calculates and returns the {@code SHA-512} digest using the specified arrays
+     * of bytes.
+     * 
+     * @param input       the first array of bytes
+     * @param otherInputs the other arrays of bytes
+     * @return the hex string for the resulting hash value
+     * 
+     * @since 2.2
+     */
+    public static final String sha512AsHex(byte[] input, byte[]... otherInputs) {
+        return sha512().digestAsHex(input, otherInputs);
+    }
+
+    /**
+     * Calculates and returns the {@code SHA-512} digest using the specified
+     * buffers.
+     * 
+     * @param input       the first {@link ByteBuffer}
+     * @param otherInputs the other {@link ByteBuffer}s
+     * @return the hex string for the resulting hash value
+     * 
+     * @since 2.2
+     */
+    public static final String sha512AsHex(ByteBuffer input, ByteBuffer... otherInputs) {
+        return sha512().digestAsHex(input, otherInputs);
+    }
+
     private final MessageDigest digest;
 
     private DigestUtil(MessageDigest digest) {
