@@ -1167,7 +1167,6 @@ public class BsonUtil {
     /**
      * Gets the {@code BsonArray} value in an embedded document.
      * 
-     * @param <E>      the type of the element in list
      * @param document the source document
      * @param keys     the list of keys
      * @return an {@code Optional<BsonArray>}
