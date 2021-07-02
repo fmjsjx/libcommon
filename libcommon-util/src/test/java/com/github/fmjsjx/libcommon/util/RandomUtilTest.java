@@ -1,9 +1,12 @@
 package com.github.fmjsjx.libcommon.util;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -121,6 +124,78 @@ public class RandomUtilTest {
             var index = RandomUtil.randomIndex(weights);
             assertTrue(index >= 0 && index < 5);
         }
+    }
+
+    @Test
+    public void testRandomN_List_int() {
+        var list = List.of("a", "b", "c", "d", "e", "f", "g");
+        var out = RandomUtil.randomN(list, 3);
+        assertNotNull(out);
+        assertEquals(3, out.size());
+        assertAll(out.stream().map(v -> () -> assertTrue(list.contains(v))));
+        assertEquals(3, Set.copyOf(out).size());
+
+        out = RandomUtil.randomN(list, 5);
+        assertNotNull(out);
+        assertEquals(5, out.size());
+        assertAll(out.stream().map(v -> () -> assertTrue(list.contains(v))));
+        assertEquals(5, Set.copyOf(out).size());
+    }
+
+    @Test
+    public void testRandomN_List_int_List() {
+        var list = List.of("a", "b", "c", "d", "e", "f", "g");
+        var out = new ArrayList<String>();
+        RandomUtil.randomN(list, 3, out);
+        assertNotNull(out);
+        assertEquals(3, out.size());
+        assertAll(out.stream().map(v -> () -> assertTrue(list.contains(v))));
+        assertEquals(3, Set.copyOf(out).size());
+
+        out = new ArrayList<String>();
+        RandomUtil.randomN(list, 5, out);
+        assertNotNull(out);
+        assertEquals(5, out.size());
+        assertAll(out.stream().map(v -> () -> assertTrue(list.contains(v))));
+        assertEquals(5, Set.copyOf(out).size());
+    }
+
+    @Test
+    public void testRandomN_List_int_List_boolean() {
+        var list = List.of("a", "b", "c", "d", "e", "f", "g");
+        var out = new ArrayList<String>();
+        RandomUtil.randomN(list, 3, out, true);
+        assertNotNull(out);
+        assertEquals(3, out.size());
+        assertAll(out.stream().map(v -> () -> assertTrue(list.contains(v))));
+        assertEquals(3, Set.copyOf(out).size());
+
+        out = new ArrayList<String>();
+        RandomUtil.randomN(list, 5, out, false);
+        assertNotNull(out);
+        assertEquals(5, out.size());
+        assertAll(out.stream().map(v -> () -> assertTrue(list.contains(v))));
+        assertEquals(5, Set.copyOf(out).size());
+
+        var list2 = new ArrayList<>(list);
+        out = new ArrayList<String>();
+        RandomUtil.randomN(list2, 3, out, false);
+        assertNotNull(out);
+        assertEquals(3, out.size());
+        assertAll(out.stream().map(v -> () -> assertTrue(list.contains(v))));
+        assertEquals(3, Set.copyOf(out).size());
+        assertTrue(list2.size() < 7);
+        assertEquals(4, list2.size());
+
+        list2 = new ArrayList<>(list);
+        out = new ArrayList<String>();
+        RandomUtil.randomN(list2, 5, out, false);
+        assertNotNull(out);
+        assertEquals(5, out.size());
+        assertAll(out.stream().map(v -> () -> assertTrue(list.contains(v))));
+        assertEquals(5, Set.copyOf(out).size());
+        assertTrue(list2.size() < 7);
+        assertEquals(5, list2.size());
     }
 
 }
