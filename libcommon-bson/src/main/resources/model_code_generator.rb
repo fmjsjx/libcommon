@@ -6,6 +6,7 @@ def fill_imports(code, super_class, fields)
   javas = Set.new
   orgs = Set.new
   coms = Set.new ["com.github.fmjsjx.libcommon.bson.model.#{super_class}"]
+  others = Set.new
   javas << 'java.util.LinkedHashMap'
   javas << 'java.util.List'
   javas << 'java.util.Map'
@@ -15,6 +16,9 @@ def fill_imports(code, super_class, fields)
   coms << 'com.github.fmjsjx.libcommon.bson.BsonUtil'
   if fields.any? { |field| %w(object map simple-map simple-list).none? field['type'] }
     coms << 'com.mongodb.client.model.Updates'
+  end
+  if fields.any? { |field| field['json-ignore'] }
+    coms << 'com.fasterxml.jackson.annotation.JsonIgnore'
   end
   if super_class == 'ObjectModel'
     coms << 'com.github.fmjsjx.libcommon.bson.DotNotation'
@@ -62,6 +66,10 @@ def fill_imports(code, super_class, fields)
   code << "\n"
   coms.sort.each { |v| code << "import #{v};\n" }
   code << "\n"
+  unless others.empty?
+    others.sort.each { |v| code << "import #{v};\n" }
+    code << "\n"
+  end
 end
 
 def tabs(n, value = '')
@@ -83,7 +91,7 @@ def fill_fields(code, cfg, parent=nil)
   fields.each do |field|
     next if field['virtual']
     if field['json-ignore']
-      code << tabs(1, "@com.fasterxml.jackson.annotation.JsonIgnore\n")
+      code << tabs(1, "@JsonIgnore\n")
     end
     field_type = field['type']
     case field_type
@@ -153,6 +161,9 @@ def fill_xetters(code, cfg)
   cfg['fields'].each_with_index do |field, index|
     name = field['name']
     camcel = camcel_name(name)
+    if field['json-ignore']
+      code << tabs(1, "@JsonIgnore\n")
+    end
     type = field['type']
     case type
     when 'object'

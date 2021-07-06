@@ -8,6 +8,7 @@ import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.fmjsjx.libcommon.bson.BsonUtil;
 import com.github.fmjsjx.libcommon.bson.DotNotation;
 import com.github.fmjsjx.libcommon.bson.model.ObjectModel;
@@ -23,7 +24,7 @@ public class CashInfo extends ObjectModel<CashInfo> {
 
     private final SimpleMapModel<Integer, Integer, CashInfo> stages = SimpleMapModel.integerKeys(this, "stg", SimpleValueTypes.INTEGER);
     private final SimpleListModel<Integer, CashInfo> cards = new SimpleListModel<>(this, "cs", SimpleValueTypes.INTEGER);
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    @JsonIgnore
     private final SimpleListModel<Integer, CashInfo> orderIds = new SimpleListModel<>(this, "ois", SimpleValueTypes.INTEGER);
 
     public CashInfo(Player parent) {
@@ -38,6 +39,7 @@ public class CashInfo extends ObjectModel<CashInfo> {
         return cards;
     }
 
+    @JsonIgnore
     public SimpleListModel<Integer, CashInfo> getOrderIds() {
         return orderIds;
     }

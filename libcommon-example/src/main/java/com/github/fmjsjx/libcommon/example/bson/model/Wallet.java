@@ -10,6 +10,7 @@ import org.bson.BsonInt64;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.fmjsjx.libcommon.bson.BsonUtil;
 import com.github.fmjsjx.libcommon.bson.DotNotation;
 import com.github.fmjsjx.libcommon.bson.model.ObjectModel;
@@ -22,7 +23,7 @@ public class Wallet extends ObjectModel<Wallet> {
     private final Player parent;
 
     private long coinTotal;
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    @JsonIgnore
     private long coinUsed;
     private long diamond;
     private int ad;
@@ -43,6 +44,7 @@ public class Wallet extends ObjectModel<Wallet> {
         }
     }
 
+    @JsonIgnore
     public long getCoinUsed() {
         return coinUsed;
     }

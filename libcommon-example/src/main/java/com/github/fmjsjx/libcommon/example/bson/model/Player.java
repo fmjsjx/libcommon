@@ -10,6 +10,7 @@ import org.bson.BsonInt32;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.fmjsjx.libcommon.bson.BsonUtil;
 import com.github.fmjsjx.libcommon.bson.model.DefaultMapModel;
 import com.github.fmjsjx.libcommon.bson.model.RootModel;
@@ -26,11 +27,11 @@ public class Player extends RootModel<Player> {
     private final DefaultMapModel<String, Equipment, Player> equipments = DefaultMapModel.stringKeys(this, "eqm", Equipment::new);
     private final SimpleMapModel<Integer, Integer, Player> items = SimpleMapModel.integerKeys(this, "itm", SimpleValueTypes.INTEGER);
     private final CashInfo cash = new CashInfo(this);
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    @JsonIgnore
     private int updateVersion;
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    @JsonIgnore
     private LocalDateTime createTime;
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    @JsonIgnore
     private LocalDateTime updateTime;
 
     public int getUid() {
@@ -60,6 +61,7 @@ public class Player extends RootModel<Player> {
         return cash;
     }
 
+    @JsonIgnore
     public int getUpdateVersion() {
         return updateVersion;
     }
@@ -77,6 +79,7 @@ public class Player extends RootModel<Player> {
         return updateVersion;
     }
 
+    @JsonIgnore
     public LocalDateTime getCreateTime() {
         return createTime;
     }
@@ -88,6 +91,7 @@ public class Player extends RootModel<Player> {
         }
     }
 
+    @JsonIgnore
     public LocalDateTime getUpdateTime() {
         return updateTime;
     }
