@@ -7,11 +7,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for random.
  */
 public class RandomUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(RandomUtil.class);
 
     /**
      * This interface imposes a weight on the objects of each class that implements
@@ -32,7 +38,19 @@ public class RandomUtil {
         private static final Random instance = new Random();
     }
 
+    private static final boolean useThreadLocal;
+
+    static {
+        var propertyKey = "libcommon.util.random.useThreadLocal";
+        var value = SystemPropertyUtil.get(propertyKey);
+        logger.debug("-D{}: {}", propertyKey, value);
+        useThreadLocal = SystemPropertyUtil.getBoolean(propertyKey, true);
+    }
+
     private static final Random defaultRandom() {
+        if (useThreadLocal) {
+            return ThreadLocalRandom.current();
+        }
         return DefaultRandomInstanceHolder.instance;
     }
 
