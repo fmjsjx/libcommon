@@ -66,6 +66,32 @@ objects:
     type: int
     required: true
     increase: true
+  methods:
+  - name: coin
+    type: long
+    formula: coinTotal - coinUsed
+  - name: ago
+    type: LocalDate
+    args:
+    - int days
+    imports:
+    - java.time.LocalDate
+    formula: LocalDate.now().minusDays(days)
+  - name: testMethodCode
+    type: ZonedDateTime
+    args:
+    - LocalDateTime time
+    - ZoneId zone
+    annotations:
+    - '@JsonIgnore'
+    imports:
+    - java.time.LocalDateTime
+    - java.time.ZonedDateTime
+    - java.time.ZoneId
+    - com.fasterxml.jackson.annotation.JsonIgnore
+    code: |-
+      var zoned = time.atZone(zone);
+      return zoned;
 - name: Equipment
   type: map-value
   key: string

@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,6 +60,11 @@ public class TestModel {
             player.setCreateTime(now);
             player.setUpdateTime(now);
 
+            assertEquals(4800, player.getWallet().coin());
+            assertEquals(LocalDate.now().minusDays(3), player.getWallet().ago(3));
+            var znow = ZonedDateTime.now();
+            assertEquals(znow, player.getWallet().testMethodCode(znow.toLocalDateTime(), ZoneId.systemDefault()));
+            
             var bson = player.toBson();
             assertNotNull(bson);
             assertEquals(8, bson.size());

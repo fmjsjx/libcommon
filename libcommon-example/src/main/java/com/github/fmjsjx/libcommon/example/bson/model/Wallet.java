@@ -1,5 +1,9 @@
 package com.github.fmjsjx.libcommon.example.bson.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,6 +187,20 @@ public class Wallet extends ObjectModel<Wallet> {
     @Override
     protected int deletedSize() {
         return 0;
+    }
+
+    public long coin() {
+        return coinTotal - coinUsed;
+    }
+
+    public LocalDate ago(int days) {
+        return LocalDate.now().minusDays(days);
+    }
+
+    @JsonIgnore
+    public ZonedDateTime testMethodCode(LocalDateTime time, ZoneId zone) {
+        var zoned = time.atZone(zone);
+        return zoned;
     }
 
     @Override

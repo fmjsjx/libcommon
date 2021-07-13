@@ -2,7 +2,8 @@ require 'set'
 require 'yaml'
 
 
-def fill_imports(code, super_class, fields)
+def fill_imports(code, super_class, cfg)
+  fields = cfg['fields']
   javas = Set.new
   orgs = Set.new
   coms = Set.new ["com.github.fmjsjx.libcommon.bson.model.#{super_class}"]
@@ -81,6 +82,24 @@ def fill_imports(code, super_class, fields)
   if fields.any? { |field| field['type'] == 'object-id' }
     coms << 'org.bson.types.ObjectId'
     coms << 'org.bson.BsonObjectId'
+  end
+  methods = cfg['methods']
+  unless methods.nil?
+    methods.each do |method|
+      if method.has_key?('imports')
+        method['imports'].each do |imp|
+          if imp.start_with?('java')
+            javas << imp
+          elsif imp.start_with?('org.')
+            orgs << imp
+          elsif imp.start_with?('com.')
+            coms << imp
+          else
+            others << imp
+          end
+        end
+      end
+    end
   end
   javas.sort.each { |v| code << "import #{v};\n" }
   code << "\n"
@@ -834,9 +853,35 @@ def boxed_jtype(value)
   end
 end
 
+def fill_methods(code, cfg)
+  if cfg.has_key?('methods')
+    cfg['methods'].each do |method|
+      if method.has_key?('annotations')
+        method['annotations'].each do |annotation|
+          code << tabs(1, "#{annotation}\n")
+        end
+      end
+      args = method['args']
+      if args.nil?
+        code << tabs(1, "public #{method['type']} #{method['name']}() {\n")
+      else
+        code << tabs(1, "public #{method['type']} #{method['name']}(#{args.join(', ')}) {\n")  
+      end
+      if method.has_key?('code')
+        method['code'].lines.each do |line|
+          code << tabs(2, "#{line.strip}\n")
+        end
+      else
+        code << tabs(2, "return #{method['formula']};\n")
+      end
+      code << tabs(1, "}\n\n")
+    end
+  end
+end
+
 def generate_root(cfg)
   code = "package #{cfg['package']};\n\n"
-  fill_imports(code, 'RootModel', cfg['fields'])
+  fill_imports(code, 'RootModel', cfg)
   code << "public class #{cfg['name']} extends RootModel<#{cfg['name']}> {\n\n"
   fill_fields(code, cfg)
   fill_xetters(code, cfg)
@@ -849,6 +894,7 @@ def generate_root(cfg)
   fill_to_sub_update(code, cfg)
   fill_to_delete(code, cfg)
   fill_deleted_size(code, cfg)
+  fill_methods(code, cfg)
   fill_to_string(code, cfg)
   code << "}\n"
 end
@@ -867,7 +913,7 @@ end
 
 def generate_object(cfg)
   code = "package #{cfg['package']};\n\n"
-  fill_imports(code, 'ObjectModel', cfg['fields'])
+  fill_imports(code, 'ObjectModel', cfg)
   code << "public class #{cfg['name']} extends ObjectModel<#{cfg['name']}> {\n\n"
   static_xpath = all_object(cfg)
   if static_xpath
@@ -906,13 +952,14 @@ def generate_object(cfg)
   fill_to_sub_update(code, cfg)
   fill_to_delete(code, cfg)
   fill_deleted_size(code, cfg)
+  fill_methods(code, cfg)
   fill_to_string(code, cfg)
   code << "}\n"
 end
 
 def generate_map_value(cfg)
   code = "package #{cfg['package']};\n\n"
-  fill_imports(code, 'DefaultMapValueModel', cfg['fields'])
+  fill_imports(code, 'DefaultMapValueModel', cfg)
   code << "public class #{cfg['name']} extends DefaultMapValueModel<#{boxed_jtype(cfg['key'])}, #{cfg['name']}> {\n\n"
   fill_fields(code, cfg)
   fill_xetters(code, cfg)
@@ -924,6 +971,7 @@ def generate_map_value(cfg)
   fill_to_sub_update(code, cfg)
   fill_to_delete(code, cfg)
   fill_deleted_size(code, cfg)
+  fill_methods(code, cfg)
   fill_to_string(code, cfg)
   code << "}\n"
 end
