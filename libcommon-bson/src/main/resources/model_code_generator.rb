@@ -31,6 +31,7 @@ def fill_imports(code, super_class, cfg)
   if fields.any? { |field| field['type'] == 'date' }
     javas << 'java.time.LocalDate'
     coms << 'com.github.fmjsjx.libcommon.util.DateTimeUtil'
+    orgs << 'org.bson.BsonInt32'
   end
   if fields.any? { |field| field['type'] == 'int' }
     orgs << 'org.bson.BsonInt32'
@@ -58,12 +59,9 @@ def fill_imports(code, super_class, cfg)
     coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleValueTypes'
     if fields.any? { |field| field['type'] == 'simple-map' and field['value'] == 'datetime' }
       javas << 'java.time.LocalDateTime'
-      coms << 'com.github.fmjsjx.libcommon.util.DateTimeUtil'
     end
     if fields.any? { |field| field['type'] == 'simple-map' and field['value'] == 'date' }
       javas << 'java.time.LocalDate'
-      orgs << 'org.bson.BsonInt32'
-      coms << 'com.github.fmjsjx.libcommon.util.DateTimeUtil'
     end
   end
   if fields.any? { |field| field['type'] == 'simple-list' }
@@ -71,12 +69,9 @@ def fill_imports(code, super_class, cfg)
     coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleValueTypes'
     if fields.any? { |field| field['type'] == 'simple-list' and field['value'] == 'datetime' }
       javas << 'java.time.LocalDateTime'
-      coms << 'com.github.fmjsjx.libcommon.util.DateTimeUtil'
     end
     if fields.any? { |field| field['type'] == 'simple-list' and field['value'] == 'date' }
       javas << 'java.time.LocalDate'
-      orgs << 'org.bson.BsonInt32'
-      coms << 'com.github.fmjsjx.libcommon.util.DateTimeUtil'
     end
   end
   if fields.any? { |field| field['type'] == 'object-id' }
