@@ -47,4 +47,16 @@ public interface SimpleValueType<V> {
         return (V) obj;
     }
 
+    /**
+     * Converts value from model type to storage type.
+     * 
+     * @param value the value
+     * @return the converted value
+     * 
+     * @since 2.3
+     */
+    default Object toStorage(V value) {
+        return value;
+    }
+
 }

@@ -194,7 +194,8 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
     @Override
     public Document toDocument() {
         var doc = new Document();
-        map.forEach((k, v) -> doc.append(k.toString(), v));
+        var valueType = this.valueType;
+        map.forEach((k, v) -> doc.append(k.toString(), valueType.toStorage(v)));
         return doc;
     }
 
@@ -213,13 +214,12 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
         });
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void load(Document src) {
         map.clear();
         src.forEach((k, v) -> {
             try {
-                map.put(parseKey(k), (V) v);
+                map.put(parseKey(k), valueType.cast(v));
             } catch (Exception e) {
                 if (logger.isWarnEnabled()) {
                     logger.warn("Loading data failed on {}: {}", xpath().resolve(k), v);
@@ -231,7 +231,7 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
 
     @Override
     protected void appendUpdates(List<Bson> updates, K key, V value) {
-        updates.add(Updates.set(xpath().resolve(key.toString()).value(), value));
+        updates.add(Updates.set(xpath().resolve(key.toString()).value(), valueType.toStorage(value)));
     }
 
     @Override

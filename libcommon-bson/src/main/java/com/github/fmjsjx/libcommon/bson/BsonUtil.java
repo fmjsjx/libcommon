@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -700,16 +701,7 @@ public class BsonUtil {
      * @since 2.1
      */
     public static final Optional<LocalDateTime> embeddedDateTime(BsonDocument document, List<Object> keys) {
-        return embedded(document, keys).map(value -> {
-            if (value.isDateTime()) {
-                return LocalDateTime.ofInstant(Instant.ofEpochMilli(((BsonDateTime) value).getValue()),
-                        ZoneId.systemDefault());
-            } else if (value.isTimestamp()) {
-                return DateTimeUtil.local(((BsonTimestamp) value).getTime());
-            }
-            throw new ClassCastException(
-                    String.format("The value is not a BsonDateTime or BsonTimstamp (%s)", value.getClass().getName()));
-        });
+        return embedded(document, keys).map(BsonUtil::toLocalDateTime);
     }
 
     /**
@@ -736,15 +728,7 @@ public class BsonUtil {
      */
     public static final Optional<ZonedDateTime> embeddedDateTime(ZoneId zone, BsonDocument document,
             List<Object> keys) {
-        return embedded(document, keys).map(value -> {
-            if (value.isDateTime()) {
-                return ZonedDateTime.ofInstant(Instant.ofEpochMilli(((BsonDateTime) value).getValue()), zone);
-            } else if (value.isTimestamp()) {
-                return DateTimeUtil.zoned(((BsonTimestamp) value).getTime(), zone);
-            }
-            throw new ClassCastException(
-                    String.format("The value is not a BsonDateTime or BsonTimstamp (%s)", value.getClass().getName()));
-        });
+        return embedded(document, keys).map(value -> toZonedDateTime(value, zone));
     }
 
     /**
@@ -845,14 +829,7 @@ public class BsonUtil {
         if (value == null || value.isNull()) {
             return Optional.empty();
         }
-        if (value.isDateTime()) {
-            return Optional.of(LocalDateTime.ofInstant(Instant.ofEpochMilli(((BsonDateTime) value).getValue()),
-                    ZoneId.systemDefault()));
-        } else if (value.isTimestamp()) {
-            return Optional.of(DateTimeUtil.local(((BsonTimestamp) value).getTime()));
-        }
-        throw new ClassCastException(
-                String.format("The value is not a BsonDateTime or BsonTimestamp (%s)", value.getClass().getName()));
+        return Optional.of(BsonUtil.toLocalDateTime(value));
     }
 
     /**
@@ -1183,6 +1160,7 @@ public class BsonUtil {
      * @param document the source document
      * @param key      the key
      * @return an {@code Optional<BsonArray>}
+     * 
      * @since 2.2
      */
     public static final Optional<BsonArray> arrayValue(BsonDocument document, String key) {
@@ -1191,6 +1169,104 @@ public class BsonUtil {
             return Optional.empty();
         }
         return Optional.of(value.asArray());
+    }
+
+    /**
+     * Converts the specified {@link BsonValue} to {@link LocalDateTime} with the
+     * system default time-zone.
+     * 
+     * @param value the {@code BsonValue}
+     * @return a {@code LocalDateTime}
+     * 
+     * @since 2.3
+     */
+    public static final LocalDateTime toLocalDateTime(BsonValue value) {
+        return toLocalDateTime(value, ZoneId.systemDefault());
+    }
+
+    /**
+     * 
+     * Converts the specified {@link BsonValue} to {@link LocalDateTime}.
+     * 
+     * @param value the {@code BsonValue}
+     * @param zone  the time zone
+     * @return a {@code LocalDateTime}
+     * 
+     * @since 2.3
+     */
+    public static final LocalDateTime toLocalDateTime(BsonValue value, ZoneId zone) {
+        if (value.isDateTime()) {
+            return LocalDateTime.ofInstant(Instant.ofEpochMilli(((BsonDateTime) value).getValue()), zone);
+        } else if (value.isTimestamp()) {
+            return DateTimeUtil.local(((BsonTimestamp) value).getTime());
+        }
+        throw new ClassCastException(
+                String.format("The value is not a BsonDateTime or BsonTimstamp (%s)", value.getClass().getName()));
+    }
+
+    /**
+     * Converts the specified {@link BsonValue} to {@link ZonedDateTime} with the
+     * system default time-zone.
+     * 
+     * @param value the {@code BsonValue}
+     * @return a {@code ZonedDateTime}
+     * 
+     * @since 2.3
+     */
+    public static final ZonedDateTime toZonedDateTime(BsonValue value) {
+        return toZonedDateTime(value, ZoneId.systemDefault());
+    }
+
+    /**
+     * Converts the specified {@link BsonValue} to {@link ZonedDateTime}.
+     * 
+     * @param value the {@code BsonValue}
+     * @param zone  the time zone
+     * @return a {@code ZonedDateTime}
+     * 
+     * @since 2.3
+     */
+    public static final ZonedDateTime toZonedDateTime(BsonValue value, ZoneId zone) {
+        if (value.isDateTime()) {
+            return ZonedDateTime.ofInstant(Instant.ofEpochMilli(((BsonDateTime) value).getValue()), zone);
+        } else if (value.isTimestamp()) {
+            return DateTimeUtil.zoned(((BsonTimestamp) value).getTime(), zone);
+        }
+        throw new ClassCastException(
+                String.format("The value is not a BsonDateTime or BsonTimstamp (%s)", value.getClass().getName()));
+    }
+
+    /**
+     * Converts the specified {@link BsonValue} to {@link OffsetDateTime} with the
+     * system default time-zone.
+     * 
+     * @param value the {@code BsonValue}
+     * @param zone  the time zone
+     * @return a {@code OffsetDateTime}
+     * 
+     * @since 2.3
+     */
+    public static final OffsetDateTime toOffsetDateTime(BsonValue value) {
+        return toOffsetDateTime(value, ZoneId.systemDefault());
+    }
+
+    /**
+     * Converts the specified {@link BsonValue} to {@link OffsetDateTime}.
+     * 
+     * @param value the {@code BsonValue}
+     * @param zone  the time zone
+     * @return a {@code OffsetDateTime}
+     * 
+     * @since 2.3
+     */
+    public static final OffsetDateTime toOffsetDateTime(BsonValue value, ZoneId zone) {
+        if (value.isDateTime()) {
+            return OffsetDateTime.ofInstant(Instant.ofEpochMilli(((BsonDateTime) value).getValue()), zone);
+        } else if (value.isTimestamp()) {
+            return DateTimeUtil.offset(((BsonTimestamp) value).getTime(), zone);
+        }
+        throw new ClassCastException(
+                String.format("The value is not a BsonDateTime or BsonTimstamp (%s)", value.getClass().getName()));
     }
 
     private BsonUtil() {

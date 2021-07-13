@@ -1,5 +1,9 @@
 package com.github.fmjsjx.libcommon.bson.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 import org.bson.BsonBoolean;
 import org.bson.BsonDouble;
 import org.bson.BsonInt32;
@@ -9,6 +13,8 @@ import org.bson.BsonNumber;
 import org.bson.BsonString;
 import org.bson.BsonValue;
 
+import com.github.fmjsjx.libcommon.bson.BsonUtil;
+import com.github.fmjsjx.libcommon.util.DateTimeUtil;
 import com.mongodb.Function;
 
 /**
@@ -50,7 +56,103 @@ public final class SimpleValueTypes {
     public static final SimpleValueType<Boolean> BOOLEAN = new SimpleValueSimpleType<>(Boolean.class,
             v -> v.asBoolean().getValue(), BsonBoolean::valueOf);
 
-    static final class SimpleValueNumberType<V extends Number> implements SimpleValueType<V> {
+    /**
+     * Type LocalDateTime.
+     * 
+     * @since 2.3
+     */
+    public static final SimpleValueType<LocalDateTime> DATETIME = new SimpleValueType<>() {
+
+        @Override
+        public Class<LocalDateTime> type() {
+            return LocalDateTime.class;
+        }
+
+        @Override
+        public BsonValue toBson(LocalDateTime value) {
+            if (value == null) {
+                return BsonNull.VALUE;
+            }
+            return BsonUtil.toBsonDateTime(value);
+        }
+
+        @Override
+        public LocalDateTime parse(BsonValue value) {
+            if (value == null || value.isNull()) {
+                return null;
+            }
+            return BsonUtil.toLocalDateTime(value);
+        }
+
+        @Override
+        public LocalDateTime cast(Object obj) {
+            if (obj instanceof Date) {
+                return DateTimeUtil.local((Date) obj);
+            }
+            return SimpleValueType.super.cast(obj);
+        }
+
+        @Override
+        public Object toStorage(LocalDateTime value) {
+            if (value == null) {
+                return null;
+            }
+            return DateTimeUtil.toLegacyDate(value);
+        }
+
+    };
+
+    /**
+     * Type LocalDate.
+     * 
+     * @since 2.3
+     */
+    public static final SimpleValueType<LocalDate> DATE = new SimpleValueType<>() {
+
+        @Override
+        public Class<LocalDate> type() {
+            return LocalDate.class;
+        }
+
+        @Override
+        public LocalDate parse(BsonValue value) {
+            if (value == null || value.isNull()) {
+                return null;
+            }
+            if (value instanceof BsonNumber) {
+                return DateTimeUtil.toDate(((BsonNumber) value).intValue());
+            }
+            throw new ClassCastException(
+                    String.format("The value is not a BsonNumber (%s)", value.getClass().getName()));
+        }
+
+        @Override
+        public BsonValue toBson(LocalDate value) {
+            if (value == null) {
+                return BsonNull.VALUE;
+            }
+            return new BsonInt32(DateTimeUtil.toNumber(value));
+        }
+
+        @Override
+        public LocalDate cast(Object obj) {
+            if (obj instanceof Number) {
+                return DateTimeUtil.toDate(((Number) obj).intValue());
+            }
+            return SimpleValueType.super.cast(obj);
+        }
+
+        @Override
+        public Object toStorage(LocalDate value) {
+            if (value == null) {
+                return null;
+            }
+            return DateTimeUtil.toNumber(value);
+        }
+
+    };
+
+    static final class SimpleValueNumberType<V> implements SimpleValueType<V> {
 
         private final Class<V> type;
         private final Function<BsonNumber, V> parser;

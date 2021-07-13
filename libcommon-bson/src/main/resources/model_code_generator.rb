@@ -27,6 +27,10 @@ def fill_imports(code, super_class, fields)
     javas << 'java.time.LocalDateTime'
     coms << 'com.github.fmjsjx.libcommon.util.DateTimeUtil'
   end
+  if fields.any? { |field| field['type'] == 'date' }
+    javas << 'java.time.LocalDate'
+    coms << 'com.github.fmjsjx.libcommon.util.DateTimeUtil'
+  end
   if fields.any? { |field| field['type'] == 'int' }
     orgs << 'org.bson.BsonInt32'
   end
@@ -42,7 +46,7 @@ def fill_imports(code, super_class, fields)
   if fields.any? { |field| field['type'] == 'string' }
     orgs << 'org.bson.BsonString'
   end
-  if fields.any? { |field| %w(string datetime object-id).include? field['type']}
+  if fields.any? { |field| %w(string datetime date object-id).include? field['type']}
     coms << 'com.github.fmjsjx.libcommon.util.ObjectUtil'
   end
   if fields.any? { |field| field['type'] == 'map' }
@@ -51,10 +55,28 @@ def fill_imports(code, super_class, fields)
   if fields.any? { |field| field['type'] == 'simple-map' }
     coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleMapModel'
     coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleValueTypes'
+    if fields.any? { |field| field['type'] == 'simple-map' and field['value'] == 'datetime' }
+      javas << 'java.time.LocalDateTime'
+      coms << 'com.github.fmjsjx.libcommon.util.DateTimeUtil'
+    end
+    if fields.any? { |field| field['type'] == 'simple-map' and field['value'] == 'date' }
+      javas << 'java.time.LocalDate'
+      orgs << 'org.bson.BsonInt32'
+      coms << 'com.github.fmjsjx.libcommon.util.DateTimeUtil'
+    end
   end
   if fields.any? { |field| field['type'] == 'simple-list' }
     coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleListModel'
     coms << 'com.github.fmjsjx.libcommon.bson.model.SimpleValueTypes'
+    if fields.any? { |field| field['type'] == 'simple-list' and field['value'] == 'datetime' }
+      javas << 'java.time.LocalDateTime'
+      coms << 'com.github.fmjsjx.libcommon.util.DateTimeUtil'
+    end
+    if fields.any? { |field| field['type'] == 'simple-list' and field['value'] == 'date' }
+      javas << 'java.time.LocalDate'
+      orgs << 'org.bson.BsonInt32'
+      coms << 'com.github.fmjsjx.libcommon.util.DateTimeUtil'
+    end
   end
   if fields.any? { |field| field['type'] == 'object-id' }
     coms << 'org.bson.types.ObjectId'
@@ -88,6 +110,12 @@ def fill_fields(code, cfg, parent=nil)
     default_value = field['default']
     code << tabs(1, "private static final LocalDateTime default#{camcel_name(field['name'])} = LocalDateTime.parse(\"#{default_value}\");\n\n")
   end
+  fields.select do |field|
+    field['type'] == 'date' && !field['required'] && field.has_key?('default') && ['today','now'].none?(field['default'])
+  end.each do |field|
+    default_value = field['default']
+    code << tabs(1, "private static final LocalDate default#{camcel_name(field['name'])} = LocalDate.parse(\"#{default_value}\");\n\n")
+  end
   fields.each do |field|
     next if field['virtual']
     if field['json-ignore']
@@ -113,7 +141,7 @@ def fill_fields(code, cfg, parent=nil)
     when 'simple-map'
       key_type = field['key']
       value_type = boxed_jtype(field['value'])
-      map_value_type = map_value_type(field['value'])
+      map_value_type = simple_value_type(field['value'])
       case key_type
       when 'string'
         code << tabs(1, "private final SimpleMapModel<String, #{value_type}, #{name}> #{field['name']} = SimpleMapModel.stringKeys(this, \"#{field['bname']}\", #{map_value_type});\n")
@@ -126,7 +154,7 @@ def fill_fields(code, cfg, parent=nil)
       end
     when 'simple-list'
       value_type = boxed_jtype(field['value'])
-      map_value_type = map_value_type(field['value'])
+      map_value_type = simple_value_type(field['value'])
       code << tabs(1, "private final SimpleListModel<#{value_type}, #{name}> #{field['name']} = new SimpleListModel<>(this, \"#{field['bname']}\", #{map_value_type});\n")
     else
       code << tabs(1, "private #{jtype(field_type)} #{field['name']};\n")
@@ -135,7 +163,7 @@ def fill_fields(code, cfg, parent=nil)
   code << "\n"
 end
 
-def map_value_type(type)
+def simple_value_type(type)
   case type
   when 'int'
     'SimpleValueTypes.INTEGER'
@@ -147,6 +175,10 @@ def map_value_type(type)
     'SimpleValueTypes.DOUBLE'
   when 'string'
     'SimpleValueTypes.STRING'
+  when 'datetime'
+    'SimpleValueTypes.DATETIME'
+  when 'date'
+    'SimpleValueTypes.DATE'
   else
     raise "unsupported simple map value type `#{type}`"
   end
@@ -320,6 +352,14 @@ def fill_to_bson(code, cfg, bson_type='BsonDocument')
         code << tabs(3, "bson.append(\"#{bname}\", BsonUtil.toBsonDateTime(#{name}));\n")
         code << tabs(2, "}\n")
       end
+    when type == 'date'
+      if field['required']
+        code << tabs(2, "bson.append(\"#{bname}\", new BsonInt32(DateTimeUtil.toNumber(#{name})));\n")
+      else
+        code << tabs(2, "if (#{name} != null) {\n")
+        code << tabs(3, "bson.append(\"#{bname}\", new BsonInt32(DateTimeUtil.toNumber(#{name})));\n")
+        code << tabs(2, "}\n")
+      end
     when type == 'object-id'
       if field['required']
         code << tabs(2, "bson.append(\"#{bname}\", new BsonObjectId(#{name}));\n")
@@ -354,6 +394,14 @@ def fill_to_document(code, cfg)
       else
         code << tabs(2, "if (#{name} != null) {\n")
         code << tabs(3, "doc.append(\"#{bname}\", DateTimeUtil.toLegacyDate(#{name}));\n")
+        code << tabs(2, "}\n")
+      end
+    when type == 'date'
+      if field['required']
+        code << tabs(2, "doc.append(\"#{bname}\", DateTimeUtil.toNumber(#{name}));\n")
+      else
+        code << tabs(2, "if (#{name} != null) {\n")
+        code << tabs(3, "doc.append(\"#{bname}\", DateTimeUtil.toNumber(#{name}));\n")
         code << tabs(2, "}\n")
       end
     else
@@ -443,6 +491,22 @@ def fill_load_document(code, cfg)
       else
         default_value = "default#{camcel_name(field['name'])}"
         code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(#{default_value});\n")
+      end
+    when 'date'
+      if field['required']
+        code << tabs(2, "#{name} = DateTimeUtil.toDate(BsonUtil.intValue(src, \"#{bname}\").getAsInt());\n");
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").stream().mapToObj(DateTimeUtil::toDate).findFirst().orElseGet(#{field['default-lambda']});\n")
+      elsif field['default'].nil?
+        code << tabs(2, "var #{name}OptionalInt = BsonUtil.intValue(src, \"#{bname}\");\n")
+        code << tabs(2, "#{name} = #{name}OptionalInt.isEmpty() ? null : DateTimeUtil.toDate(#{name}OptionalInt.getAsInt());\n");
+      elsif field['default'] == 'today' || field['default'] == 'now'
+        code << tabs(2, "var #{name}OptionalInt = BsonUtil.intValue(src, \"#{bname}\");\n")
+        code << tabs(2, "#{name} = #{name}OptionalInt.isEmpty() ? LocalDate.now() : DateTimeUtil.toDate(#{name}OptionalInt.getAsInt());\n");
+      else
+        default_value = "default#{camcel_name(field['name'])}"
+        code << tabs(2, "var #{name}OptionalInt = BsonUtil.intValue(src, \"#{bname}\");\n")
+        code << tabs(2, "#{name} = #{name}OptionalInt.isEmpty() ? #{default_value} : DateTimeUtil.toDate(#{name}OptionalInt.getAsInt());\n");
       end
     when 'object-id'
       if field['required']
@@ -539,6 +603,22 @@ def fill_load_bson(code, cfg)
         default_value = "default#{camcel_name(field['name'])}"
         code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(#{default_value});\n")
       end
+    when 'date'
+      if field['required']
+        code << tabs(2, "#{name} = DateTimeUtil.toDate(BsonUtil.intValue(src, \"#{bname}\").getAsInt());\n");
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").stream().mapToObj(DateTimeUtil::toDate).findFirst().orElseGet(#{field['default-lambda']});\n")
+      elsif field['default'].nil?
+        code << tabs(2, "var #{name}OptionalInt = BsonUtil.intValue(src, \"#{bname}\");\n")
+        code << tabs(2, "#{name} = #{name}OptionalInt.isEmpty() ? null : DateTimeUtil.toDate(#{name}OptionalInt.getAsInt());\n");
+      elsif field['default'] == 'today' || field['default'] == 'now'
+        code << tabs(2, "var #{name}OptionalInt = BsonUtil.intValue(src, \"#{bname}\");\n")
+        code << tabs(2, "#{name} = #{name}OptionalInt.isEmpty() ? LocalDate.now() : DateTimeUtil.toDate(#{name}OptionalInt.getAsInt());\n");
+      else
+        default_value = "default#{camcel_name(field['name'])}"
+        code << tabs(2, "var #{name}OptionalInt = BsonUtil.intValue(src, \"#{bname}\");\n")
+        code << tabs(2, "#{name} = #{name}OptionalInt.isEmpty() ? #{default_value} : DateTimeUtil.toDate(#{name}OptionalInt.getAsInt());\n");
+      end
     when 'object-id'
       if field['required']
         code << tabs(2, "#{name} = BsonUtil.objectIdValue(src, \"#{bname}\").get();\n")
@@ -585,6 +665,10 @@ def fill_append_updates(code, cfg)
       code << tabs(2, "if (updatedFields.get(#{index + 1})) {\n")
       code << tabs(3, "updates.add(Updates.set(#{xpath}, BsonUtil.toBsonDateTime(#{name})));\n")
       code << tabs(2, "}\n")
+    when type == 'date'
+      code << tabs(2, "if (updatedFields.get(#{index + 1})) {\n")
+      code << tabs(3, "updates.add(Updates.set(#{xpath}, DateTimeUtil.toNumber(#{name})));\n")
+      code << tabs(2, "}\n")
     else
       code << tabs(2, "if (updatedFields.get(#{index + 1})) {\n")
       code << tabs(3, "updates.add(Updates.set(#{xpath}, #{name}));\n")
@@ -611,7 +695,7 @@ def fill_to_sub_update(code, cfg)
   code << tabs(1, "public Object toSubUpdate() {\n")
   if cfg['fields'].count { |field| not field['json-ignore'] } > 0
     code << tabs(2, "var update = new LinkedHashMap<>();\n")
-    if cfg['fields'].any? { |field| %w(object map simple-map simple-list).none? field['type'] }
+    if cfg['fields'].any? { |field| %w(object map simple-map simple-list).none?(field['type']) and not field['json-ignore'] }
       code << tabs(2, "var updatedFields = this.updatedFields;\n")
     end
     cfg['fields'].each_with_index do |field, index|
@@ -718,6 +802,8 @@ def jtype(value)
     'String'
   when 'datetime'
     'LocalDateTime'
+  when 'date'
+    'LocalDate'
   when 'object-id'
     'ObjectId'
   else
@@ -739,6 +825,8 @@ def boxed_jtype(value)
     'String'
   when 'datetime'
     'LocalDateTime'
+  when 'date'
+    'LocalDate'
   when 'object-id'
     'ObjectId'
   else
@@ -826,11 +914,6 @@ def generate_map_value(cfg)
   code = "package #{cfg['package']};\n\n"
   fill_imports(code, 'DefaultMapValueModel', cfg['fields'])
   code << "public class #{cfg['name']} extends DefaultMapValueModel<#{boxed_jtype(cfg['key'])}, #{cfg['name']}> {\n\n"
-  # code << tabs(1, "public static final #{cfg['name']} of(Document document) {\n")
-  # code << tabs(2, "var obj = new #{cfg['name']}();\n")
-  # code << tabs(2, "obj.load(document);\n")
-  # code << tabs(2, "return obj;\n")
-  # code << tabs(1, "}\n\n")
   fill_fields(code, cfg)
   fill_xetters(code, cfg)
   fill_to_bson(code, cfg)

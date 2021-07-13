@@ -1,10 +1,12 @@
 package com.github.fmjsjx.libcommon.example.bson.model;
 
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bson.BsonDocument;
+import org.bson.BsonInt32;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -15,6 +17,9 @@ import com.github.fmjsjx.libcommon.bson.model.ObjectModel;
 import com.github.fmjsjx.libcommon.bson.model.SimpleListModel;
 import com.github.fmjsjx.libcommon.bson.model.SimpleMapModel;
 import com.github.fmjsjx.libcommon.bson.model.SimpleValueTypes;
+import com.github.fmjsjx.libcommon.util.DateTimeUtil;
+import com.github.fmjsjx.libcommon.util.ObjectUtil;
+import com.mongodb.client.model.Updates;
 
 public class CashInfo extends ObjectModel<CashInfo> {
 
@@ -26,6 +31,10 @@ public class CashInfo extends ObjectModel<CashInfo> {
     private final SimpleListModel<Integer, CashInfo> cards = new SimpleListModel<>(this, "cs", SimpleValueTypes.INTEGER);
     @JsonIgnore
     private final SimpleListModel<Integer, CashInfo> orderIds = new SimpleListModel<>(this, "ois", SimpleValueTypes.INTEGER);
+    @JsonIgnore
+    private LocalDate testDate;
+    @JsonIgnore
+    private final SimpleMapModel<Integer, LocalDate, CashInfo> testDateMap = SimpleMapModel.integerKeys(this, "tdm", SimpleValueTypes.DATE);
 
     public CashInfo(Player parent) {
         this.parent = parent;
@@ -44,6 +53,23 @@ public class CashInfo extends ObjectModel<CashInfo> {
         return orderIds;
     }
 
+    @JsonIgnore
+    public LocalDate getTestDate() {
+        return testDate;
+    }
+
+    public void setTestDate(LocalDate testDate) {
+        if (ObjectUtil.isNotEquals(this.testDate, testDate)) {
+            this.testDate = testDate;
+            updatedFields.set(4);
+        }
+    }
+
+    @JsonIgnore
+    public SimpleMapModel<Integer, LocalDate, CashInfo> getTestDateMap() {
+        return testDateMap;
+    }
+
     @Override
     public Player parent() {
         return parent;
@@ -56,7 +82,10 @@ public class CashInfo extends ObjectModel<CashInfo> {
 
     @Override
     public boolean updated() {
-        return stages.updated() || cards.updated() || orderIds.updated();
+        if (stages.updated() || cards.updated() || orderIds.updated() || testDateMap.updated()) {
+            return true;
+        }
+        return super.updated();
     }
 
     @Override
@@ -69,6 +98,10 @@ public class CashInfo extends ObjectModel<CashInfo> {
         if (!orderIds.nil()) {
             bson.append("ois", orderIds.toBson());
         }
+        if (testDate != null) {
+            bson.append("tsd", new BsonInt32(DateTimeUtil.toNumber(testDate)));
+        }
+        bson.append("tdm", testDateMap.toBson());
         return bson;
     }
 
@@ -78,6 +111,10 @@ public class CashInfo extends ObjectModel<CashInfo> {
         doc.append("stg", stages.toDocument());
         cards.values().ifPresent(list -> doc.append("cs", list));
         orderIds.values().ifPresent(list -> doc.append("ois", list));
+        if (testDate != null) {
+            doc.append("tsd", DateTimeUtil.toNumber(testDate));
+        }
+        doc.append("tdm", testDateMap.toDocument());
         return doc;
     }
 
@@ -86,6 +123,9 @@ public class CashInfo extends ObjectModel<CashInfo> {
         BsonUtil.documentValue(src, "stg").ifPresentOrElse(stages::load, stages::clear);
         BsonUtil.listValue(src, "cs").ifPresentOrElse(cards::load, cards::clear);
         BsonUtil.listValue(src, "ois").ifPresentOrElse(orderIds::load, orderIds::clear);
+        var testDateOptionalInt = BsonUtil.intValue(src, "tsd");
+        testDate = testDateOptionalInt.isEmpty() ? null : DateTimeUtil.toDate(testDateOptionalInt.getAsInt());
+        BsonUtil.documentValue(src, "tdm").ifPresentOrElse(testDateMap::load, testDateMap::clear);
     }
 
     @Override
@@ -93,10 +133,14 @@ public class CashInfo extends ObjectModel<CashInfo> {
         BsonUtil.documentValue(src, "stg").ifPresentOrElse(stages::load, stages::clear);
         BsonUtil.arrayValue(src, "cs").ifPresentOrElse(cards::load, cards::clear);
         BsonUtil.arrayValue(src, "ois").ifPresentOrElse(orderIds::load, orderIds::clear);
+        var testDateOptionalInt = BsonUtil.intValue(src, "tsd");
+        testDate = testDateOptionalInt.isEmpty() ? null : DateTimeUtil.toDate(testDateOptionalInt.getAsInt());
+        BsonUtil.documentValue(src, "tdm").ifPresentOrElse(testDateMap::load, testDateMap::clear);
     }
 
     @Override
     protected void appendFieldUpdates(List<Bson> updates) {
+        var updatedFields = this.updatedFields;
         var stages = this.stages;
         if (stages.updated()) {
             stages.appendUpdates(updates);
@@ -109,6 +153,13 @@ public class CashInfo extends ObjectModel<CashInfo> {
         if (orderIds.updated()) {
             orderIds.appendUpdates(updates);
         }
+        if (updatedFields.get(4)) {
+            updates.add(Updates.set(xpath().resolve("tsd").value(), DateTimeUtil.toNumber(testDate)));
+        }
+        var testDateMap = this.testDateMap;
+        if (testDateMap.updated()) {
+            testDateMap.appendUpdates(updates);
+        }
     }
 
     @Override
@@ -116,6 +167,7 @@ public class CashInfo extends ObjectModel<CashInfo> {
         stages.reset();
         cards.reset();
         orderIds.reset();
+        testDateMap.reset();
     }
 
     @Override
@@ -159,7 +211,7 @@ public class CashInfo extends ObjectModel<CashInfo> {
 
     @Override
     public String toString() {
-        return "CashInfo(" + "stages=" + stages + ", " + "cards=" + cards + ", " + "orderIds=" + orderIds + ")";
+        return "CashInfo(" + "stages=" + stages + ", " + "cards=" + cards + ", " + "orderIds=" + orderIds + ", " + "testDate=" + testDate + ", " + "testDateMap=" + testDateMap + ")";
     }
 
 }

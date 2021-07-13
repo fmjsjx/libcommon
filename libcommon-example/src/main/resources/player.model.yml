@@ -103,3 +103,13 @@ objects:
     type: simple-list
     value: int
     json-ignore: true
+  - name: testDate
+    bname: tsd
+    type: date
+    json-ignore: true
+  - name: testDateMap
+    bname: tdm
+    type: simple-map
+    key: int
+    value: date
+    json-ignore: true
