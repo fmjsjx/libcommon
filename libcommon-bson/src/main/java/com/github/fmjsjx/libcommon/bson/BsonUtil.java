@@ -1241,7 +1241,6 @@ public class BsonUtil {
      * system default time-zone.
      * 
      * @param value the {@code BsonValue}
-     * @param zone  the time zone
      * @return a {@code OffsetDateTime}
      * 
      * @since 2.3
