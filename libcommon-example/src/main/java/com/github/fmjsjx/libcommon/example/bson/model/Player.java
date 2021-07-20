@@ -146,10 +146,10 @@ public class Player extends RootModel<Player> {
     @Override
     public void load(Document src) {
         uid = BsonUtil.intValue(src, "_id").getAsInt();
-        wallet.load(BsonUtil.documentValue(src, "wt").orElseGet(Document::new));
+        BsonUtil.documentValue(src, "wt").ifPresentOrElse(wallet::load, wallet::reset);
         BsonUtil.documentValue(src, "eqm").ifPresentOrElse(equipments::load, equipments::clear);
         BsonUtil.documentValue(src, "itm").ifPresentOrElse(items::load, items::clear);
-        cash.load(BsonUtil.documentValue(src, "cs").orElseGet(Document::new));
+        BsonUtil.documentValue(src, "cs").ifPresentOrElse(cash::load, cash::reset);
         updateVersion = BsonUtil.intValue(src, "_uv").orElse(0);
         createTime = BsonUtil.dateTimeValue(src, "_ct").get();
         updateTime = BsonUtil.dateTimeValue(src, "_ut").orElseGet(LocalDateTime::now);
@@ -159,10 +159,10 @@ public class Player extends RootModel<Player> {
     @Override
     public void load(BsonDocument src) {
         uid = BsonUtil.intValue(src, "_id").getAsInt();
-        wallet.load(BsonUtil.documentValue(src, "wt").orElseGet(BsonDocument::new));
+        BsonUtil.documentValue(src, "wt").ifPresentOrElse(wallet::load, wallet::reset);
         BsonUtil.documentValue(src, "eqm").ifPresentOrElse(equipments::load, equipments::clear);
         BsonUtil.documentValue(src, "itm").ifPresentOrElse(items::load, items::clear);
-        cash.load(BsonUtil.documentValue(src, "cs").orElseGet(BsonDocument::new));
+        BsonUtil.documentValue(src, "cs").ifPresentOrElse(cash::load, cash::reset);
         updateVersion = BsonUtil.intValue(src, "_uv").orElse(0);
         createTime = BsonUtil.dateTimeValue(src, "_ct").get();
         updateTime = BsonUtil.dateTimeValue(src, "_ut").orElseGet(LocalDateTime::now);
