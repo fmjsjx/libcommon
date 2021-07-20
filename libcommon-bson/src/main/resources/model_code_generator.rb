@@ -441,7 +441,7 @@ def fill_load_document(code, cfg)
     type = field['type']
     case type
     when 'object'
-      code << tabs(2, "#{name}.load(BsonUtil.documentValue(src, \"#{bname}\").orElseGet(Document::new));\n")
+      code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresent(#{name}::load, #{name}::reset);\n")
     when 'map'
       code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
     when 'simple-map'
@@ -552,7 +552,7 @@ def fill_load_bson(code, cfg)
     type = field['type']
     case type
     when 'object'
-      code << tabs(2, "#{name}.load(BsonUtil.documentValue(src, \"#{bname}\").orElseGet(BsonDocument::new));\n")
+      code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::reset);\n")
     when 'map'
       code << tabs(2, "BsonUtil.documentValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
     when 'simple-map'
