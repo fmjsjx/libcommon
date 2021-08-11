@@ -9,7 +9,10 @@ import org.bson.BsonNull;
 import org.bson.BsonValue;
 import org.bson.conversions.Bson;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fmjsjx.libcommon.util.ObjectUtil;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
 import com.mongodb.client.model.Updates;
 
 /**
@@ -71,6 +74,34 @@ public final class SimpleListModel<E, P extends BsonModel> extends ListModel<E, 
             list.add(valueType.cast(value));
         }
         super.list = list;
+    }
+
+    @Override
+    public void load(Any src) {
+        if (src.valueType() == ValueType.ARRAY) {
+            var list = new ArrayList<E>(src.size());
+            var valueType = this.valueType;
+            for (var value : src) {
+                list.add(valueType.parse(value));
+            }
+            super.list = list;
+        } else {
+            super.list = new ArrayList<>();
+        }
+    }
+
+    @Override
+    public void load(JsonNode src) {
+        if (src.isArray()) {
+            var list = new ArrayList<E>(src.size());
+            var valueType = this.valueType;
+            for (var value : src) {
+                list.add(valueType.parse(value));
+            }
+            super.list = list;
+        } else {
+            super.list = new ArrayList<>();
+        }
     }
 
     @Override
@@ -139,6 +170,23 @@ public final class SimpleListModel<E, P extends BsonModel> extends ListModel<E, 
     @Override
     public int deletedSize() {
         return updated && nil() ? 1 : 0;
+    }
+
+    @Override
+    public List<?> toData() {
+        var list = this.list;
+        if (list == null) {
+            return null;
+        }
+        if (list.isEmpty()) {
+            return new ArrayList<>();
+        }
+        var data = new ArrayList<>(list.size());
+        var valueType = this.valueType;
+        for (var value : list) {
+            data.add(valueType.toData(value));
+        }
+        return data;
     }
 
 }

@@ -34,5 +34,10 @@ abstract class AbstractBsonModel implements BsonModel {
      * @return the number of the deleted field size on this model
      */
     protected abstract int deletedSize();
+    
+    @Override
+    public boolean deleted() {
+        return deletedSize() > 0;
+    }
 
 }

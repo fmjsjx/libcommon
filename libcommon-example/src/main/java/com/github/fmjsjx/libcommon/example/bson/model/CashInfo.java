@@ -11,6 +11,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fmjsjx.libcommon.bson.BsonUtil;
 import com.github.fmjsjx.libcommon.bson.DotNotation;
 import com.github.fmjsjx.libcommon.bson.model.ObjectModel;
@@ -19,6 +20,8 @@ import com.github.fmjsjx.libcommon.bson.model.SimpleMapModel;
 import com.github.fmjsjx.libcommon.bson.model.SimpleValueTypes;
 import com.github.fmjsjx.libcommon.util.DateTimeUtil;
 import com.github.fmjsjx.libcommon.util.ObjectUtil;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
 import com.mongodb.client.model.Updates;
 
 public class CashInfo extends ObjectModel<CashInfo> {
@@ -119,6 +122,23 @@ public class CashInfo extends ObjectModel<CashInfo> {
     }
 
     @Override
+    public Map<String, ?> toData() {
+        var data = new LinkedHashMap<String, Object>();
+        data.put("stg", stages.toData());
+        if (!cards.nil()) {
+            data.put("cs", cards.toData());
+        }
+        if (!orderIds.nil()) {
+            data.put("ois", orderIds.toData());
+        }
+        if (testDate != null) {
+            data.put("tsd", DateTimeUtil.toNumber(testDate));
+        }
+        data.put("tdm", testDateMap.toData());
+        return data;
+    }
+
+    @Override
     public void load(Document src) {
         BsonUtil.documentValue(src, "stg").ifPresentOrElse(stages::load, stages::clear);
         BsonUtil.listValue(src, "cs").ifPresentOrElse(cards::load, cards::clear);
@@ -136,6 +156,34 @@ public class CashInfo extends ObjectModel<CashInfo> {
         var testDateOptionalInt = BsonUtil.intValue(src, "tsd");
         testDate = testDateOptionalInt.isEmpty() ? null : DateTimeUtil.toDate(testDateOptionalInt.getAsInt());
         BsonUtil.documentValue(src, "tdm").ifPresentOrElse(testDateMap::load, testDateMap::clear);
+    }
+
+    @Override
+    public void load(Any src) {
+        if (src.valueType() != ValueType.OBJECT) {
+            reset();
+            return;
+        }
+        BsonUtil.objectValue(src, "stg").ifPresentOrElse(stages::load, stages::clear);
+        BsonUtil.arrayValue(src, "cs").ifPresentOrElse(cards::load, cards::clear);
+        BsonUtil.arrayValue(src, "ois").ifPresentOrElse(orderIds::load, orderIds::clear);
+        var testDateOptionalInt = BsonUtil.intValue(src, "tsd");
+        testDate = testDateOptionalInt.isEmpty() ? null : DateTimeUtil.toDate(testDateOptionalInt.getAsInt());
+        BsonUtil.objectValue(src, "tdm").ifPresentOrElse(testDateMap::load, testDateMap::clear);
+    }
+
+    @Override
+    public void load(JsonNode src) {
+        if (!src.isObject()) {
+            reset();
+            return;
+        }
+        BsonUtil.objectValue(src, "stg").ifPresentOrElse(stages::load, stages::clear);
+        BsonUtil.arrayValue(src, "cs").ifPresentOrElse(cards::load, cards::clear);
+        BsonUtil.arrayValue(src, "ois").ifPresentOrElse(orderIds::load, orderIds::clear);
+        var testDateOptionalInt = BsonUtil.intValue(src, "tsd");
+        testDate = testDateOptionalInt.isEmpty() ? null : DateTimeUtil.toDate(testDateOptionalInt.getAsInt());
+        BsonUtil.objectValue(src, "tdm").ifPresentOrElse(testDateMap::load, testDateMap::clear);
     }
 
     @Override

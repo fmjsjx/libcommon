@@ -82,6 +82,11 @@ public class LongHashSet extends AbstractSet<Long> implements LongSet {
     }
 
     @Override
+    public boolean add(Long e) {
+        return add(e.longValue());
+    }
+    
+    @Override
     public boolean remove(long value) {
         return map.remove(value) == PRESENT;
     }

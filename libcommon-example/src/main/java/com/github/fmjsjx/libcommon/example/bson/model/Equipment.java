@@ -10,9 +10,12 @@ import org.bson.BsonString;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fmjsjx.libcommon.bson.BsonUtil;
 import com.github.fmjsjx.libcommon.bson.model.DefaultMapValueModel;
 import com.github.fmjsjx.libcommon.util.ObjectUtil;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
 import com.mongodb.client.model.Updates;
 
 public class Equipment extends DefaultMapValueModel<String, Equipment> {
@@ -106,6 +109,17 @@ public class Equipment extends DefaultMapValueModel<String, Equipment> {
     }
 
     @Override
+    public Map<String, ?> toData() {
+        var data = new LinkedHashMap<String, Object>();
+        data.put("id", id);
+        data.put("rid", refId);
+        data.put("atk", atk);
+        data.put("def", def);
+        data.put("hp", hp);
+        return data;
+    }
+
+    @Override
     public void load(Document src) {
         id = BsonUtil.stringValue(src, "id").get();
         refId = BsonUtil.intValue(src, "rid").getAsInt();
@@ -116,6 +130,32 @@ public class Equipment extends DefaultMapValueModel<String, Equipment> {
 
     @Override
     public void load(BsonDocument src) {
+        id = BsonUtil.stringValue(src, "id").get();
+        refId = BsonUtil.intValue(src, "rid").getAsInt();
+        atk = BsonUtil.intValue(src, "atk").getAsInt();
+        def = BsonUtil.intValue(src, "def").getAsInt();
+        hp = BsonUtil.intValue(src, "hp").getAsInt();
+    }
+
+    @Override
+    public void load(Any src) {
+        if (src.valueType() != ValueType.OBJECT) {
+            reset();
+            return;
+        }
+        id = BsonUtil.stringValue(src, "id").get();
+        refId = BsonUtil.intValue(src, "rid").getAsInt();
+        atk = BsonUtil.intValue(src, "atk").getAsInt();
+        def = BsonUtil.intValue(src, "def").getAsInt();
+        hp = BsonUtil.intValue(src, "hp").getAsInt();
+    }
+
+    @Override
+    public void load(JsonNode src) {
+        if (!src.isObject()) {
+            reset();
+            return;
+        }
         id = BsonUtil.stringValue(src, "id").get();
         refId = BsonUtil.intValue(src, "rid").getAsInt();
         atk = BsonUtil.intValue(src, "atk").getAsInt();

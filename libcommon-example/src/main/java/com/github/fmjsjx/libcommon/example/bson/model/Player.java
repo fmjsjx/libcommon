@@ -11,6 +11,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fmjsjx.libcommon.bson.BsonUtil;
 import com.github.fmjsjx.libcommon.bson.model.DefaultMapModel;
 import com.github.fmjsjx.libcommon.bson.model.RootModel;
@@ -18,6 +19,8 @@ import com.github.fmjsjx.libcommon.bson.model.SimpleMapModel;
 import com.github.fmjsjx.libcommon.bson.model.SimpleValueTypes;
 import com.github.fmjsjx.libcommon.util.DateTimeUtil;
 import com.github.fmjsjx.libcommon.util.ObjectUtil;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
 import com.mongodb.client.model.Updates;
 
 public class Player extends RootModel<Player> {
@@ -144,6 +147,22 @@ public class Player extends RootModel<Player> {
     }
 
     @Override
+    public Map<String, ?> toData() {
+        var data = new LinkedHashMap<String, Object>();
+        data.put("_id", uid);
+        data.put("wt", wallet.toData());
+        data.put("eqm", equipments.toData());
+        data.put("itm", items.toData());
+        data.put("cs", cash.toData());
+        data.put("_uv", updateVersion);
+        data.put("_ct", DateTimeUtil.toEpochMilli(createTime));
+        if (updateTime != null) {
+            data.put("_ut", DateTimeUtil.toEpochMilli(updateTime));
+        }
+        return data;
+    }
+
+    @Override
     public void load(Document src) {
         uid = BsonUtil.intValue(src, "_id").getAsInt();
         BsonUtil.documentValue(src, "wt").ifPresentOrElse(wallet::load, wallet::reset);
@@ -163,6 +182,40 @@ public class Player extends RootModel<Player> {
         BsonUtil.documentValue(src, "eqm").ifPresentOrElse(equipments::load, equipments::clear);
         BsonUtil.documentValue(src, "itm").ifPresentOrElse(items::load, items::clear);
         BsonUtil.documentValue(src, "cs").ifPresentOrElse(cash::load, cash::reset);
+        updateVersion = BsonUtil.intValue(src, "_uv").orElse(0);
+        createTime = BsonUtil.dateTimeValue(src, "_ct").get();
+        updateTime = BsonUtil.dateTimeValue(src, "_ut").orElseGet(LocalDateTime::now);
+        reset();
+    }
+
+    @Override
+    public void load(Any src) {
+        if (src.valueType() != ValueType.OBJECT) {
+            reset();
+            return;
+        }
+        uid = BsonUtil.intValue(src, "_id").getAsInt();
+        BsonUtil.objectValue(src, "wt").ifPresentOrElse(wallet::load, wallet::reset);
+        BsonUtil.objectValue(src, "eqm").ifPresentOrElse(equipments::load, equipments::clear);
+        BsonUtil.objectValue(src, "itm").ifPresentOrElse(items::load, items::clear);
+        BsonUtil.objectValue(src, "cs").ifPresentOrElse(cash::load, cash::reset);
+        updateVersion = BsonUtil.intValue(src, "_uv").orElse(0);
+        createTime = BsonUtil.dateTimeValue(src, "_ct").get();
+        updateTime = BsonUtil.dateTimeValue(src, "_ut").orElseGet(LocalDateTime::now);
+        reset();
+    }
+
+    @Override
+    public void load(JsonNode src) {
+        if (!src.isObject()) {
+            reset();
+            return;
+        }
+        uid = BsonUtil.intValue(src, "_id").getAsInt();
+        BsonUtil.objectValue(src, "wt").ifPresentOrElse(wallet::load, wallet::reset);
+        BsonUtil.objectValue(src, "eqm").ifPresentOrElse(equipments::load, equipments::clear);
+        BsonUtil.objectValue(src, "itm").ifPresentOrElse(items::load, items::clear);
+        BsonUtil.objectValue(src, "cs").ifPresentOrElse(cash::load, cash::reset);
         updateVersion = BsonUtil.intValue(src, "_uv").orElse(0);
         createTime = BsonUtil.dateTimeValue(src, "_ct").get();
         updateTime = BsonUtil.dateTimeValue(src, "_ut").orElseGet(LocalDateTime::now);

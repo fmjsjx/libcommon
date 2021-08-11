@@ -11,6 +11,10 @@ import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
+
 /**
  * The default implementation of map model.
  *
@@ -132,6 +136,41 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
     }
 
     @Override
+    public void load(Any src) {
+        clear0();
+        if (src.valueType() == ValueType.OBJECT) {
+            src.asMap().forEach((k, v) -> {
+                if (v.valueType() == ValueType.OBJECT) {
+                    var key = parseKey(k);
+                    var value = valueFactory.get().parent(this).key(key);
+                    value.load(v);
+                    map.put(key, value);
+                }
+                // skip other type values
+            });
+        }
+    }
+
+    @Override
+    public void load(JsonNode src) {
+        clear0();
+        if (src.isObject()) {
+            for (var iter = src.fields(); iter.hasNext();) {
+                var entry = iter.next();
+                var k = entry.getKey();
+                var v = entry.getValue();
+                if (v.isObject()) {
+                    var key = parseKey(k);
+                    var value = valueFactory.get().parent(this).key(key);
+                    value.load(v);
+                    map.put(key, value);
+                }
+                // skip other type values
+            }
+        }
+    }
+
+    @Override
     protected void appendUpdates(List<Bson> updates, K key, V value) {
         value.appendUpdates(updates);
     }
@@ -223,6 +262,17 @@ public final class DefaultMapModel<K, V extends DefaultMapValueModel<K, V>, P ex
             delete.put(key, 1);
         }
         return delete;
+    }
+
+    @Override
+    public Map<K, ?> toData() {
+        var map = super.map;
+        if (map.isEmpty()) {
+            return new LinkedHashMap<>();
+        }
+        var data = new LinkedHashMap<K, Object>(Math.max(8, map.size() << 1));
+        map.forEach((k, v) -> data.put(k, v.toData()));
+        return data;
     }
 
 }

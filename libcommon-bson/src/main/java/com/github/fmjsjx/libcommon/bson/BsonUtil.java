@@ -35,10 +35,12 @@ import org.bson.Document;
 import org.bson.types.Decimal128;
 import org.bson.types.ObjectId;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fmjsjx.libcommon.json.JsonException;
 import com.github.fmjsjx.libcommon.util.DateTimeUtil;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
 
 /**
  * Utility class for BSON.
@@ -1266,6 +1268,413 @@ public class BsonUtil {
         }
         throw new ClassCastException(
                 String.format("The value is not a BsonDateTime or BsonTimstamp (%s)", value.getClass().getName()));
+    }
+
+    /**
+     * Gets the object value in an {@link Any}.
+     * 
+     * @param any the source {@link Any}
+     * @param key the key
+     * @return an {@code Optional<Any>}
+     * @since 2.4
+     */
+    public static final Optional<Any> objectValue(Any any, String key) {
+        var value = any.get(key);
+        if (value == null || value.valueType() == ValueType.INVALID || value.valueType() == ValueType.NULL) {
+            return Optional.empty();
+        }
+        if (value.valueType() == ValueType.OBJECT) {
+            return Optional.of(value);
+        }
+        throw new ClassCastException(String.format("The value is not a OBJECT (%s)", value.valueType().name()));
+    }
+
+    /**
+     * Gets the boolean value in an {@link Any}.
+     * 
+     * @param any the source {@link Any}
+     * @param key the key
+     * @return an {@code Optional<Boolean>}
+     * @since 2.4
+     */
+    public static final Optional<Boolean> booleanValue(Any any, String key) {
+        var value = any.get(key);
+        if (value == null || value.valueType() == ValueType.INVALID || value.valueType() == ValueType.NULL) {
+            return Optional.empty();
+        }
+        if (value.valueType() == ValueType.BOOLEAN) {
+            return Optional.of(value.toBoolean());
+        }
+        throw new ClassCastException(String.format("The value is not a BOOLEAN (%s)", value.valueType().name()));
+    }
+
+    /**
+     * Gets the boolean value in an {@link Any}.
+     * 
+     * @param any the source {@link Any}
+     * @param key the key
+     * @return an {@code Optional<String>}
+     * @since 2.4
+     */
+    public static final Optional<String> stringValue(Any any, String key) {
+        var value = any.get(key);
+        if (value == null || value.valueType() == ValueType.INVALID || value.valueType() == ValueType.NULL) {
+            return Optional.empty();
+        }
+        if (value.valueType() == ValueType.STRING) {
+            return Optional.of(value.toString());
+        }
+        throw new ClassCastException(String.format("The value is not a STRING (%s)", value.valueType().name()));
+    }
+
+    /**
+     * Gets the array value in an {@link Any}.
+     * 
+     * @param any the source {@link Any}
+     * @param key the key
+     * @return an {@code Optional<Any>}
+     * @since 2.4
+     */
+    public static final Optional<Any> arrayValue(Any any, String key) {
+        var value = any.get(key);
+        if (value == null || value.valueType() == ValueType.INVALID || value.valueType() == ValueType.NULL) {
+            return Optional.empty();
+        }
+        if (value.valueType() == ValueType.ARRAY) {
+            return Optional.of(value);
+        }
+        throw new ClassCastException(String.format("The value is not a ARRAY (%s)", value.valueType().name()));
+    }
+
+    /**
+     * Gets the {@code int} value in an {@link Any}.
+     * 
+     * @param any the source {@link Any}
+     * @param key the key
+     * @return an {@code OptionalInt}
+     * @since 2.4
+     */
+    public static final OptionalInt intValue(Any any, String key) {
+        var value = any.get(key);
+        if (value == null || value.valueType() == ValueType.INVALID || value.valueType() == ValueType.NULL) {
+            return OptionalInt.empty();
+        }
+        if (value.valueType() == ValueType.NUMBER) {
+            return OptionalInt.of(value.toInt());
+        }
+        throw new ClassCastException(String.format("The value is not a NUMBER (%s)", value.valueType().name()));
+    }
+
+    /**
+     * Gets the {@code long} value in an {@link Any}.
+     * 
+     * @param any the source {@link Any}
+     * @param key the key
+     * @return an {@code OptionalLong}
+     * @since 2.4
+     */
+    public static final OptionalLong longValue(Any any, String key) {
+        var value = any.get(key);
+        if (value == null || value.valueType() == ValueType.INVALID || value.valueType() == ValueType.NULL) {
+            return OptionalLong.empty();
+        }
+        if (value.valueType() == ValueType.NUMBER) {
+            return OptionalLong.of(value.toLong());
+        }
+        throw new ClassCastException(String.format("The value is not a NUMBER (%s)", value.valueType().name()));
+    }
+
+    /**
+     * Gets the {@code double} value in an {@link Any}.
+     * 
+     * @param any the source {@link Any}
+     * @param key the key
+     * @return an {@code OptionalDouble}
+     * @since 2.4
+     */
+    public static final OptionalDouble doubleValue(Any any, String key) {
+        var value = any.get(key);
+        if (value == null || value.valueType() == ValueType.INVALID || value.valueType() == ValueType.NULL) {
+            return OptionalDouble.empty();
+        }
+        if (value.valueType() == ValueType.NUMBER) {
+            return OptionalDouble.of(value.toDouble());
+        }
+        throw new ClassCastException(String.format("The value is not a NUMBER (%s)", value.valueType().name()));
+    }
+
+    /**
+     * Gets the {@code LocalDateTime} value in an {@link Any}.
+     * 
+     * @param any the source {@link Any}
+     * @param key the key
+     * @return an {@code Optional<LocalDateTime>}
+     * @since 2.4
+     */
+    public static final Optional<LocalDateTime> dateTimeValue(Any any, String key) {
+        var value = any.get(key);
+        if (value == null || value.valueType() == ValueType.INVALID || value.valueType() == ValueType.NULL) {
+            return Optional.empty();
+        }
+        if (value.valueType() == ValueType.NUMBER) {
+            return Optional.of(DateTimeUtil.ofEpochMilli(value.toLong()));
+        }
+        throw new ClassCastException(String.format("The value is not a NUMBER (%s)", value.valueType().name()));
+    }
+
+    /**
+     * Gets the {@code ZonedDateTime} value in an {@link Any}.
+     * 
+     * @param zone the zone to combine with, not null
+     * @param any  the source {@link Any}
+     * @param key  the key
+     * @return an {@code Optional<ZonedDateTime>}
+     * @since 2.4
+     */
+    public static final Optional<ZonedDateTime> dateTimeValue(ZoneId zone, Any any, String key) {
+        var value = any.get(key);
+        if (value == null || value.valueType() == ValueType.INVALID || value.valueType() == ValueType.NULL) {
+            return Optional.empty();
+        }
+        if (value.valueType() == ValueType.NUMBER) {
+            return Optional.of(DateTimeUtil.ofEpochMilli(value.toLong(), zone));
+        }
+        throw new ClassCastException(String.format("The value is not a NUMBER (%s)", value.valueType().name()));
+    }
+
+    /**
+     * 
+     * Gets the {@code ObjectId} value in an {@link Any} with key {@code "_id"}.
+     * 
+     * @param any the source {@link Any}
+     * @return an {@code Optional<ObjectId>}
+     * @since 2.4
+     */
+    public static final Optional<ObjectId> objectIdValue(Any any) {
+        return objectIdValue(any, "_id");
+    }
+
+    /**
+     * Gets the {@code ObjectId} value in an {@link Any}.
+     * 
+     * @param any the source {@link Any}
+     * @param key the key
+     * @return an {@code Optional<ObjectId>}
+     * @since 2.4
+     */
+    public static final Optional<ObjectId> objectIdValue(Any any, String key) {
+        var value = any.get(key);
+        if (value == null || value.valueType() == ValueType.INVALID || value.valueType() == ValueType.NULL) {
+            return Optional.empty();
+        }
+        if (value.valueType() == ValueType.STRING) {
+            return Optional.of(new ObjectId(value.toString()));
+        }
+        throw new ClassCastException(String.format("The value is not a STRING (%s)", value.valueType().name()));
+    }
+
+    /**
+     * Gets the object value in an {@link JsonNode}.
+     * 
+     * @param node the source {@link JsonNode}
+     * @param key  the key
+     * @return an {@code Optional<JsonNode>}
+     * @since 2.4
+     */
+    public static final Optional<JsonNode> objectValue(JsonNode node, String key) {
+        var value = node.get(key);
+        if (value == null || value.isNull()) {
+            return Optional.empty();
+        }
+        if (value.isObject()) {
+            return Optional.of(value);
+        }
+        throw new ClassCastException(String.format("The value is not a OBJECT (%s)", value.getNodeType().name()));
+    }
+
+    /**
+     * Gets the boolean value in an {@link JsonNode}.
+     * 
+     * @param node the source {@link JsonNode}
+     * @param key  the key
+     * @return an {@code Optional<Boolean>}
+     * @since 2.4
+     */
+    public static final Optional<Boolean> booleanValue(JsonNode node, String key) {
+        var value = node.get(key);
+        if (value == null || value.isNull()) {
+            return Optional.empty();
+        }
+        if (value.isBoolean()) {
+            return Optional.of(value.booleanValue());
+        }
+        throw new ClassCastException(String.format("The value is not a BOOLEAN (%s)", value.getNodeType().name()));
+    }
+
+    /**
+     * Gets the array value in an {@link JsonNode}.
+     * 
+     * @param node the source {@link JsonNode}
+     * @param key  the key
+     * @return an {@code Optional<JsonNode>}
+     * @since 2.4
+     */
+    public static final Optional<JsonNode> arrayValue(JsonNode node, String key) {
+        var value = node.get(key);
+        if (value == null || value.isNull()) {
+            return Optional.empty();
+        }
+        if (value.isArray()) {
+            return Optional.of(value);
+        }
+        throw new ClassCastException(String.format("The value is not a ARRAY (%s)", value.getNodeType().name()));
+    }
+
+    /**
+     * Gets the array value in an {@link JsonNode}.
+     * 
+     * @param node the source {@link JsonNode}
+     * @param key  the key
+     * @return an {@code Optional<String>}
+     * @since 2.4
+     */
+    public static final Optional<String> stringValue(JsonNode node, String key) {
+        var value = node.get(key);
+        if (value == null || value.isNull()) {
+            return Optional.empty();
+        }
+        if (value.isTextual()) {
+            return Optional.of(value.textValue());
+        }
+        throw new ClassCastException(String.format("The value is not a STRING (%s)", value.getNodeType().name()));
+    }
+
+    /**
+     * Gets the {@code int} value in an {@link JsonNode}.
+     * 
+     * @param node the source {@link JsonNode}
+     * @param key  the key
+     * @return an {@code OptionalInt}
+     * @since 2.4
+     */
+    public static final OptionalInt intValue(JsonNode node, String key) {
+        var value = node.get(key);
+        if (value == null || value.isNull()) {
+            return OptionalInt.empty();
+        }
+        if (value.isNumber()) {
+            return OptionalInt.of(value.intValue());
+        }
+        throw new ClassCastException(String.format("The value is not a NUMBER (%s)", value.getNodeType().name()));
+    }
+
+    /**
+     * Gets the {@code long} value in an {@link JsonNode}.
+     * 
+     * @param node the source {@link JsonNode}
+     * @param key  the key
+     * @return an {@code OptionalLong}
+     * @since 2.4
+     */
+    public static final OptionalLong longValue(JsonNode node, String key) {
+        var value = node.get(key);
+        if (value == null || value.isNull()) {
+            return OptionalLong.empty();
+        }
+        if (value.isNumber()) {
+            return OptionalLong.of(value.longValue());
+        }
+        throw new ClassCastException(String.format("The value is not a NUMBER (%s)", value.getNodeType().name()));
+    }
+
+    /**
+     * Gets the {@code double} value in an {@link JsonNode}.
+     * 
+     * @param node the source {@link JsonNode}
+     * @param key  the key
+     * @return an {@code OptionalDouble}
+     * @since 2.4
+     */
+    public static final OptionalDouble doubleValue(JsonNode node, String key) {
+        var value = node.get(key);
+        if (value == null || value.isNull()) {
+            return OptionalDouble.empty();
+        }
+        if (value.isNumber()) {
+            return OptionalDouble.of(value.doubleValue());
+        }
+        throw new ClassCastException(String.format("The value is not a NUMBER (%s)", value.getNodeType().name()));
+    }
+
+    /**
+     * Gets the {@code LocalDateTime} value in an {@link JsonNode}.
+     * 
+     * @param node the source {@link JsonNode}
+     * @param key  the key
+     * @return an {@code Optional<LocalDateTime>}
+     * @since 2.4
+     */
+    public static final Optional<LocalDateTime> dateTimeValue(JsonNode node, String key) {
+        var value = node.get(key);
+        if (value == null || value.isNull()) {
+            return Optional.empty();
+        }
+        if (value.isNumber()) {
+            return Optional.of(DateTimeUtil.ofEpochMilli(value.longValue()));
+        }
+        throw new ClassCastException(String.format("The value is not a NUMBER (%s)", value.getNodeType().name()));
+    }
+
+    /**
+     * Gets the {@code ZonedDateTime} value in an {@link JsonNode}.
+     * 
+     * @param zone the zone to combine with, not null
+     * @param node the source {@link JsonNode}
+     * @param key  the key
+     * @return an {@code Optional<ZonedDateTime>}
+     * @since 2.4
+     */
+    public static final Optional<ZonedDateTime> dateTimeValue(ZoneId zone, JsonNode node, String key) {
+        var value = node.get(key);
+        if (value == null || value.isNull()) {
+            return Optional.empty();
+        }
+        if (value.isNumber()) {
+            return Optional.of(DateTimeUtil.ofEpochMilli(value.longValue(), zone));
+        }
+        throw new ClassCastException(String.format("The value is not a NUMBER (%s)", value.getNodeType().name()));
+    }
+
+    /**
+     * 
+     * Gets the {@code ObjectId} value in an {@link JsonNode} with key
+     * {@code "_id"}.
+     * 
+     * @param node the source {@link JsonNode}
+     * @return an {@code Optional<ObjectId>}
+     * @since 2.4
+     */
+    public static final Optional<ObjectId> objectIdValue(JsonNode node) {
+        return objectIdValue(node, "_id");
+    }
+
+    /**
+     * Gets the {@code ObjectId} value in an {@link JsonNode}.
+     * 
+     * @param node the source {@link JsonNode}
+     * @param key  the key
+     * @return an {@code Optional<ObjectId>}
+     * @since 2.4
+     */
+    public static final Optional<ObjectId> objectIdValue(JsonNode node, String key) {
+        var value = node.get(key);
+        if (value == null || value.isNull()) {
+            return Optional.empty();
+        }
+        if (value.isTextual()) {
+            return Optional.of(new ObjectId(value.textValue()));
+        }
+        throw new ClassCastException(String.format("The value is not a STRING (%s)", value.getNodeType().name()));
     }
 
     private BsonUtil() {

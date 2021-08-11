@@ -16,6 +16,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.bson.BsonArray;
@@ -64,7 +65,7 @@ public class TestModel {
             assertEquals(LocalDate.now().minusDays(3), player.getWallet().ago(3));
             var znow = ZonedDateTime.now();
             assertEquals(znow, player.getWallet().testMethodCode(znow.toLocalDateTime(), ZoneId.systemDefault()));
-            
+
             var bson = player.toBson();
             assertNotNull(bson);
             assertEquals(8, bson.size());
@@ -217,6 +218,71 @@ public class TestModel {
             assertEquals(4, BsonUtil.embeddedInt(doc, "cs", "ois", 4).getAsInt());
             assertEquals(DateTimeUtil.toNumber(today), BsonUtil.embeddedInt(doc, "cs", "tdm", "1").getAsInt());
             assertEquals(DateTimeUtil.toNumber(today), BsonUtil.embeddedInt(doc, "cs", "tsd").getAsInt());
+        } catch (Exception e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    public void testToData() {
+        try {
+            var player = new Player();
+            player.setUid(123);
+            player.getWallet().setCoinTotal(5000);
+            player.getWallet().setCoinUsed(200);
+            player.getWallet().setDiamond(10);
+            var equipment = new Equipment();
+            equipment.setId("12345678-1234-5678-9abc-123456789abc");
+            equipment.setRefId(1);
+            equipment.setAtk(10);
+            equipment.setDef(0);
+            equipment.setHp(0);
+            player.getEquipments().put("12345678-1234-5678-9abc-123456789abc", equipment);
+            player.getItems().put(2001, 5);
+            player.getCash().getCards().values(List.of(1, 2, 3, 4));
+            player.getCash().getOrderIds().values(List.of(0, 1, 2, 3, 4));
+            var today = LocalDate.now();
+            player.getCash().getTestDateMap().put(1, today);
+            var now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+            player.setCreateTime(now);
+            player.setUpdateTime(now);
+
+            var data = player.toData();
+            assertEquals(8, data.size());
+            var json = Jackson2Library.getInstance().dumpsToString(data);
+            var map = new LinkedHashMap<String, Object>();
+            map.put("_id", 123);
+            var wt = new LinkedHashMap<String, Object>();
+            map.put("wt", wt);
+            wt.put("ct", 5000);
+            wt.put("cu", 200);
+            wt.put("d", 10);
+            wt.put("ad", 0);
+            var eqm = new LinkedHashMap<String, Object>();
+            map.put("eqm", eqm);
+            var eq = new LinkedHashMap<String, Object>();
+            eqm.put("12345678-1234-5678-9abc-123456789abc", eq);
+            eq.put("id", "12345678-1234-5678-9abc-123456789abc");
+            eq.put("rid", 1);
+            eq.put("atk", 10);
+            eq.put("def", 0);
+            eq.put("hp", 0);
+            var itm = new LinkedHashMap<Integer, Object>();
+            map.put("itm", itm);
+            itm.put(2001, 5);
+            var cs = new LinkedHashMap<String, Object>();
+            map.put("cs", cs);
+            cs.put("stg", new LinkedHashMap<>());
+            cs.put("cs", new ArrayList<>(List.of(1, 2, 3, 4)));
+            cs.put("ois", new ArrayList<>(List.of(0, 1, 2, 3, 4)));
+            var tdm = new LinkedHashMap<String, Object>();
+            cs.put("tdm", tdm);
+            tdm.put("1", DateTimeUtil.toNumber(today));
+            map.put("_uv", 0);
+            map.put("_ct", DateTimeUtil.toEpochMilli(now));
+            map.put("_ut", DateTimeUtil.toEpochMilli(now));
+            var expected = Jackson2Library.getInstance().dumpsToString(map);
+            assertEquals(expected, json);
         } catch (Exception e) {
             fail(e);
         }
@@ -468,6 +534,174 @@ public class TestModel {
             assertEquals(date, Date.from(player.getCreateTime().atZone(zone).toInstant()));
             assertEquals(date, Date.from(player.getUpdateTime().atZone(zone).toInstant()));
 
+        } catch (Exception e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    public void testLoadAny() {
+        var now = LocalDateTime.now();
+        var today = now.toLocalDate();
+        var map = new LinkedHashMap<String, Object>();
+        map.put("_id", 123);
+        var wt = new LinkedHashMap<String, Object>();
+        map.put("wt", wt);
+        wt.put("ct", 5000);
+        wt.put("cu", 200);
+        wt.put("d", 10);
+        wt.put("ad", 2);
+        var eqm = new LinkedHashMap<String, Object>();
+        map.put("eqm", eqm);
+        var eqData = new LinkedHashMap<String, Object>();
+        eqm.put("12345678-1234-5678-9abc-123456789abc", eqData);
+        eqData.put("id", "12345678-1234-5678-9abc-123456789abc");
+        eqData.put("rid", 1);
+        eqData.put("atk", 12);
+        eqData.put("def", 2);
+        eqData.put("hp", 100);
+        var itm = new LinkedHashMap<Integer, Object>();
+        map.put("itm", itm);
+        itm.put(2001, 5);
+        var cs = new LinkedHashMap<String, Object>();
+        map.put("cs", cs);
+        cs.put("stg", new LinkedHashMap<>());
+        cs.put("cs", new ArrayList<>(List.of(1, 2, 3, 4)));
+        cs.put("ois", new ArrayList<>(List.of(0, 1, 2, 3, 4)));
+        cs.put("tsd", DateTimeUtil.toNumber(today));
+        var tdm = new LinkedHashMap<String, Object>();
+        cs.put("tdm", tdm);
+        tdm.put("1", DateTimeUtil.toNumber(today));
+        map.put("_uv", 1);
+        map.put("_ct", DateTimeUtil.toEpochMilli(now));
+        map.put("_ut", DateTimeUtil.toEpochMilli(now));
+        var json = Jackson2Library.getInstance().dumpsToString(map);
+        var any = JsoniterLibrary.getInstance().loads(json);
+        try {
+            var player = new Player();
+            player.load(any);
+            assertFalse(player.updated());
+            assertEquals(123, player.getUid());
+            assertEquals(player, player.getWallet().parent());
+            assertEquals(5000, player.getWallet().getCoinTotal());
+            assertEquals(200, player.getWallet().getCoinUsed());
+            assertEquals(4800, player.getWallet().getCoin());
+            assertEquals(10, player.getWallet().getDiamond());
+            assertEquals(2, player.getWallet().getAd());
+            assertEquals(1, player.getEquipments().size());
+            assertEquals(player, player.getEquipments().parent());
+            var eq = player.getEquipments().get("12345678-1234-5678-9abc-123456789abc");
+            assertTrue(eq.isPresent());
+            assertEquals(player.getEquipments(), eq.get().parent());
+            assertEquals("12345678-1234-5678-9abc-123456789abc", eq.get().key());
+            assertEquals("12345678-1234-5678-9abc-123456789abc", eq.get().getId());
+            assertEquals(1, eq.get().getRefId());
+            assertEquals(12, eq.get().getAtk());
+            assertEquals(2, eq.get().getDef());
+            assertEquals(100, eq.get().getHp());
+            assertEquals(1, player.getItems().size());
+            assertEquals(player, player.getItems().parent());
+            assertEquals(5, player.getItems().get(2001).get());
+            assertEquals(0, player.getCash().getStages().size());
+            assertEquals("cs.stg.1", player.getCash().getStages().xpath().resolve("1").value());
+            assertEquals(4, player.getCash().getCards().size());
+            assertFalse(player.getCash().getCards().nil());
+            assertFalse(player.getCash().getCards().empty());
+            assertArrayEquals(new int[] { 1, 2, 3, 4 },
+                    player.getCash().getCards().values().get().stream().mapToInt(Integer::intValue).toArray());
+            assertEquals(5, player.getCash().getOrderIds().size());
+            assertFalse(player.getCash().getOrderIds().nil());
+            assertFalse(player.getCash().getOrderIds().empty());
+            assertArrayEquals(new int[] { 0, 1, 2, 3, 4 },
+                    player.getCash().getOrderIds().values().get().stream().mapToInt(Integer::intValue).toArray());
+            assertEquals(today, player.getCash().getTestDate());
+            assertEquals(1, player.getCash().getTestDateMap().size());
+            assertEquals(today, player.getCash().getTestDateMap().get(1).get());
+            assertEquals(1, player.getUpdateVersion());
+        } catch (Exception e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    public void testLoadJsonNode() {
+        var now = LocalDateTime.now();
+        var today = now.toLocalDate();
+        var map = new LinkedHashMap<String, Object>();
+        map.put("_id", 123);
+        var wt = new LinkedHashMap<String, Object>();
+        map.put("wt", wt);
+        wt.put("ct", 5000);
+        wt.put("cu", 200);
+        wt.put("d", 10);
+        wt.put("ad", 2);
+        var eqm = new LinkedHashMap<String, Object>();
+        map.put("eqm", eqm);
+        var eqData = new LinkedHashMap<String, Object>();
+        eqm.put("12345678-1234-5678-9abc-123456789abc", eqData);
+        eqData.put("id", "12345678-1234-5678-9abc-123456789abc");
+        eqData.put("rid", 1);
+        eqData.put("atk", 12);
+        eqData.put("def", 2);
+        eqData.put("hp", 100);
+        var itm = new LinkedHashMap<Integer, Object>();
+        map.put("itm", itm);
+        itm.put(2001, 5);
+        var cs = new LinkedHashMap<String, Object>();
+        map.put("cs", cs);
+        cs.put("stg", new LinkedHashMap<>());
+        cs.put("cs", new ArrayList<>(List.of(1, 2, 3, 4)));
+        cs.put("ois", new ArrayList<>(List.of(0, 1, 2, 3, 4)));
+        cs.put("tsd", DateTimeUtil.toNumber(today));
+        var tdm = new LinkedHashMap<String, Object>();
+        cs.put("tdm", tdm);
+        tdm.put("1", DateTimeUtil.toNumber(today));
+        map.put("_uv", 1);
+        map.put("_ct", DateTimeUtil.toEpochMilli(now));
+        map.put("_ut", DateTimeUtil.toEpochMilli(now));
+        var json = Jackson2Library.getInstance().dumpsToString(map);
+        var jsonNode = Jackson2Library.getInstance().loads(json);
+        try {
+            var player = new Player();
+            player.load(jsonNode);
+            assertFalse(player.updated());
+            assertEquals(123, player.getUid());
+            assertEquals(player, player.getWallet().parent());
+            assertEquals(5000, player.getWallet().getCoinTotal());
+            assertEquals(200, player.getWallet().getCoinUsed());
+            assertEquals(4800, player.getWallet().getCoin());
+            assertEquals(10, player.getWallet().getDiamond());
+            assertEquals(2, player.getWallet().getAd());
+            assertEquals(1, player.getEquipments().size());
+            assertEquals(player, player.getEquipments().parent());
+            var eq = player.getEquipments().get("12345678-1234-5678-9abc-123456789abc");
+            assertTrue(eq.isPresent());
+            assertEquals(player.getEquipments(), eq.get().parent());
+            assertEquals("12345678-1234-5678-9abc-123456789abc", eq.get().key());
+            assertEquals("12345678-1234-5678-9abc-123456789abc", eq.get().getId());
+            assertEquals(1, eq.get().getRefId());
+            assertEquals(12, eq.get().getAtk());
+            assertEquals(2, eq.get().getDef());
+            assertEquals(100, eq.get().getHp());
+            assertEquals(1, player.getItems().size());
+            assertEquals(player, player.getItems().parent());
+            assertEquals(5, player.getItems().get(2001).get());
+            assertEquals(0, player.getCash().getStages().size());
+            assertEquals("cs.stg.1", player.getCash().getStages().xpath().resolve("1").value());
+            assertEquals(4, player.getCash().getCards().size());
+            assertFalse(player.getCash().getCards().nil());
+            assertFalse(player.getCash().getCards().empty());
+            assertArrayEquals(new int[] { 1, 2, 3, 4 },
+                    player.getCash().getCards().values().get().stream().mapToInt(Integer::intValue).toArray());
+            assertEquals(5, player.getCash().getOrderIds().size());
+            assertFalse(player.getCash().getOrderIds().nil());
+            assertFalse(player.getCash().getOrderIds().empty());
+            assertArrayEquals(new int[] { 0, 1, 2, 3, 4 },
+                    player.getCash().getOrderIds().values().get().stream().mapToInt(Integer::intValue).toArray());
+            assertEquals(today, player.getCash().getTestDate());
+            assertEquals(1, player.getCash().getTestDateMap().size());
+            assertEquals(today, player.getCash().getTestDateMap().get(1).get());
+            assertEquals(1, player.getUpdateVersion());
         } catch (Exception e) {
             fail(e);
         }

@@ -15,9 +15,12 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fmjsjx.libcommon.bson.BsonUtil;
 import com.github.fmjsjx.libcommon.bson.DotNotation;
 import com.github.fmjsjx.libcommon.bson.model.ObjectModel;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
 import com.mongodb.client.model.Updates;
 
 public class Wallet extends ObjectModel<Wallet> {
@@ -124,6 +127,16 @@ public class Wallet extends ObjectModel<Wallet> {
     }
 
     @Override
+    public Map<String, ?> toData() {
+        var data = new LinkedHashMap<String, Object>();
+        data.put("ct", coinTotal);
+        data.put("cu", coinUsed);
+        data.put("d", diamond);
+        data.put("ad", ad);
+        return data;
+    }
+
+    @Override
     public void load(Document src) {
         coinTotal = BsonUtil.longValue(src, "ct").getAsLong();
         coinUsed = BsonUtil.longValue(src, "cu").getAsLong();
@@ -133,6 +146,30 @@ public class Wallet extends ObjectModel<Wallet> {
 
     @Override
     public void load(BsonDocument src) {
+        coinTotal = BsonUtil.longValue(src, "ct").getAsLong();
+        coinUsed = BsonUtil.longValue(src, "cu").getAsLong();
+        diamond = BsonUtil.longValue(src, "d").getAsLong();
+        ad = BsonUtil.intValue(src, "ad").getAsInt();
+    }
+
+    @Override
+    public void load(Any src) {
+        if (src.valueType() != ValueType.OBJECT) {
+            reset();
+            return;
+        }
+        coinTotal = BsonUtil.longValue(src, "ct").getAsLong();
+        coinUsed = BsonUtil.longValue(src, "cu").getAsLong();
+        diamond = BsonUtil.longValue(src, "d").getAsLong();
+        ad = BsonUtil.intValue(src, "ad").getAsInt();
+    }
+
+    @Override
+    public void load(JsonNode src) {
+        if (!src.isObject()) {
+            reset();
+            return;
+        }
         coinTotal = BsonUtil.longValue(src, "ct").getAsLong();
         coinUsed = BsonUtil.longValue(src, "cu").getAsLong();
         diamond = BsonUtil.longValue(src, "d").getAsLong();

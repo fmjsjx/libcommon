@@ -160,4 +160,8 @@ public abstract class ListModel<E, Parent extends BsonModel, Self extends ListMo
     public String toString() {
         return getClass().getSimpleName() + "(" + list + ")";
     }
+    
+    @Override
+    public abstract List<?> toData();
+    
 }

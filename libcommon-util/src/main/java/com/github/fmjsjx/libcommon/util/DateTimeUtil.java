@@ -349,6 +349,85 @@ public class DateTimeUtil {
         return OffsetDateTime.ofInstant(date.toInstant(), zone);
     }
 
+    /**
+     * Converts and returns the specified date-time to the number of milliseconds
+     * from the epoch of 1970-01-01T00:00:00.000Z in the default time-zone.
+     * 
+     * @param dateTime the date-time to be converted
+     * @return the specified date-time to the number of milliseconds from the epoch
+     *         of 1970-01-01T00:00:00.000Z in the default time-zone
+     * @since 2.4
+     */
+    public static final long toEpochMilli(LocalDateTime dateTime) {
+        return toEpochMilli(dateTime, zone());
+    }
+
+    /**
+     * Converts and returns the specified date-time to the number of milliseconds
+     * from the epoch of 1970-01-01T00:00:00.000Z in the specified time-zone.
+     * 
+     * @param dateTime the date-time to be converted
+     * @param zone     the time-zone
+     * @return the specified date-time to the number of milliseconds from the epoch
+     *         of 1970-01-01T00:00:00.000Z in the specified time-zone
+     * @since 2.4
+     */
+    public static final long toEpochMilli(LocalDateTime dateTime, ZoneId zone) {
+        return dateTime.atZone(zone).toInstant().toEpochMilli();
+    }
+
+    /**
+     * Converts and returns the specified date-time to the number of milliseconds
+     * from the epoch of 1970-01-01T00:00:00.000Z in the specified time-zone offset.
+     * 
+     * @param dateTime the date-time to be converted
+     * @param offset   the time-zone offset
+     * @return the specified date-time to the number of milliseconds from the epoch
+     *         of 1970-01-01T00:00:00.000Z in the specified time-zone offset
+     * @since 2.4
+     */
+    public static final long toEpochMilli(LocalDateTime dateTime, ZoneOffset offset) {
+        return dateTime.atOffset(offset).toInstant().toEpochMilli();
+    }
+
+    /**
+     * Obtains an instance of {@link LocalDateTime} using milliseconds from the
+     * epoch of 1970-01-01T00:00:00.000Z in the default time-zone.
+     * 
+     * @param epochMilli the number of milliseconds from 1970-01-01T00:00:00.000Z
+     * @return the local date-time
+     * @since 2.4
+     */
+    public static final LocalDateTime ofEpochMilli(long epochMilli) {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMilli), zone());
+    }
+
+    /**
+     * Obtains an instance of {@link ZonedDateTime} using milliseconds from the
+     * epoch of 1970-01-01T00:00:00.000Z and the specified zone ID.
+     * 
+     * @param epochMilli the number of milliseconds from 1970-01-01T00:00:00.000Z
+     * @param zone       the time-zone, which may be an offset, not null
+     * @return the zoned date-time
+     * @since 2.4
+     */
+    public static final ZonedDateTime ofEpochMilli(long epochMilli, ZoneId zone) {
+        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(epochMilli), zone);
+    }
+
+    /**
+     * Obtains an instance of {@link OffsetDateTime} using milliseconds from the
+     * epoch of 1970-01-01T00:00:00.000Z and the specified zone ID.
+     * 
+     * @param epochMilli the number of milliseconds from 1970-01-01T00:00:00.000Z
+     * @param zone       the time-zone, which may be an offset, not null
+     * @return the offset date-time
+     * @since 2.4
+     */
+    public static final OffsetDateTime ofEpochMilli(long epochMilli, ZoneOffset offset) {
+        return OffsetDateTime.ofInstant(Instant.ofEpochMilli(epochMilli), offset);
+    }
+
     private DateTimeUtil() {
     }
 

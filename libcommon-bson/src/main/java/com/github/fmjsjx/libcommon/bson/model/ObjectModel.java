@@ -2,6 +2,7 @@ package com.github.fmjsjx.libcommon.bson.model;
 
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.conversions.Bson;
 
@@ -93,5 +94,8 @@ public abstract class ObjectModel<Self extends ObjectModel<Self>> extends Abstra
      * @return a new sub update object for this model
      */
     protected abstract Object toSubUpdate();
+
+    @Override
+    public abstract Map<String, ?> toData();
 
 }

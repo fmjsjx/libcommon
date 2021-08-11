@@ -7,7 +7,9 @@ import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fmjsjx.libcommon.bson.DotNotation;
+import com.jsoniter.any.Any;
 
 /**
  * The top interface for BSON model.
@@ -31,6 +33,16 @@ public interface BsonModel {
     Document toDocument();
 
     /**
+     * Creates and returns a new data object for this model.
+     * <p>
+     * Type of the returned object may be Map or List.
+     * 
+     * @return a new data object for this model
+     * @since 2.4
+     */
+    Object toData();
+
+    /**
      * Load data from the source {@link BsonDocument}
      * 
      * @param src the source {@code BsonDocument}
@@ -44,6 +56,22 @@ public interface BsonModel {
      * @param src the source {@code Document}
      */
     void load(Document src);
+
+    /**
+     * Load data from the source data {@link Any}.
+     * 
+     * @param src the source data {@code Any}
+     * @since 2.4
+     */
+    void load(Any src);
+
+    /**
+     * Load data from the source data {@link JsonNode}.
+     * 
+     * @param src the source data {@code JsonNode}
+     * @since 2.4
+     */
+    void load(JsonNode src);
 
     /**
      * Appends the updates of this model into the given list.
@@ -94,5 +122,15 @@ public interface BsonModel {
      * @return a new delete object for this model
      */
     Object toDelete();
+
+    /**
+     * Returns {@code true} if any value of this model has been deleted in context,
+     * {@code false} otherwise.
+     * 
+     * @return {@code true} if any value of this model has been deleted in context,
+     *         {@code false} otherwise
+     * @since 2.4
+     */
+    boolean deleted();
 
 }

@@ -83,6 +83,11 @@ public class IntHashSet extends AbstractSet<Integer> implements IntSet {
     }
 
     @Override
+    public boolean add(Integer e) {
+        return add(e.intValue());
+    }
+    
+    @Override
     public boolean remove(int value) {
         return map.remove(value) == PRESENT;
     }

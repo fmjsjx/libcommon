@@ -15,6 +15,9 @@ def fill_imports(code, super_class, cfg)
   orgs << 'org.bson.Document'
   orgs << 'org.bson.conversions.Bson'
   coms << 'com.github.fmjsjx.libcommon.bson.BsonUtil'
+  coms << 'com.fasterxml.jackson.databind.JsonNode'
+  coms << 'com.jsoniter.ValueType'
+  coms << 'com.jsoniter.any.Any'
   if fields.any? { |field| %w(object map simple-map simple-list).none? field['type'] }
     coms << 'com.mongodb.client.model.Updates'
   end
@@ -426,9 +429,59 @@ def fill_to_document(code, cfg)
   code << tabs(1, "}\n\n")
 end
 
+def fill_to_data(code, cfg)
+  code << tabs(1, "@Override\n")
+  code << tabs(1, "public Map<String, ?> toData() {\n")
+  code << tabs(2, "var data = new LinkedHashMap<String, Object>();\n")
+  cfg['fields'].each do |field|
+    next if field['virtual']
+    name = field['name']
+    bname = field['bname']
+    type = field['type']
+    case
+    when %w(object map simple-map).include?(type)
+      code << tabs(2, "data.put(\"#{bname}\", #{name}.toData());\n")
+    when type == 'simple-list'
+      code << tabs(2, "if (!#{name}.nil()) {\n")
+      code << tabs(3, "data.put(\"#{bname}\", #{name}.toData());\n")
+      code << tabs(2, "}\n")
+    when type == 'datetime'
+      if field['required']
+        code << tabs(2, "data.put(\"#{bname}\", DateTimeUtil.toEpochMilli(#{name}));\n")
+      else
+        code << tabs(2, "if (#{name} != null) {\n")
+        code << tabs(3, "data.put(\"#{bname}\", DateTimeUtil.toEpochMilli(#{name}));\n")
+        code << tabs(2, "}\n")
+      end
+    when type == 'date'
+      if field['required']
+        code << tabs(2, "data.put(\"#{bname}\", DateTimeUtil.toNumber(#{name}));\n")
+      else
+        code << tabs(2, "if (#{name} != null) {\n")
+        code << tabs(3, "data.put(\"#{bname}\", DateTimeUtil.toNumber(#{name}));\n")
+        code << tabs(2, "}\n")
+      end
+    when type == 'object-id'
+      if field['required']
+        code << tabs(2, "data.put(\"#{bname}\", #{name}.toHexString());\n")
+      else
+        code << tabs(2, "if (#{name} != null) {\n")
+        code << tabs(3, "data.put(\"#{bname}\", #{name}.toHexString());\n")
+        code << tabs(2, "}\n")
+      end
+    else
+      code << tabs(2, "data.put(\"#{bname}\", #{name});\n")
+    end
+  end
+  code << tabs(2, "return data;\n")
+  code << tabs(1, "}\n\n")
+end
+
 def fill_load(code, cfg)
   fill_load_document(code, cfg)
   fill_load_bson(code, cfg)
+  fill_load_any(code, cfg)
+  fill_load_json_node(code, cfg)
 end
 
 def fill_load_document(code, cfg)
@@ -594,6 +647,236 @@ def fill_load_bson(code, cfg)
       else
         default_value = field.has_key?('default') ? field['default'].to_s == 'true' : false
         code << tabs(2, "#{name} = BsonUtil.<BsonBoolean>embedded(src, \"#{bname}\").orElse(BsonBoolean.#{default_value.to_s.upcase}).getValue();\n")
+      end
+    when 'string'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").get();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      else
+        default_value = field.has_key?('default') ? field['default'] : ''
+        code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").orElse(\"#{default_value}\");\n")
+      end
+    when 'datetime'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").get();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      elsif field['default'].nil?
+        code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(null);\n")
+      elsif field['default'] == 'now'
+        code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElseGet(LocalDateTime::now);\n")
+      else
+        default_value = "default#{camcel_name(field['name'])}"
+        code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(#{default_value});\n")
+      end
+    when 'date'
+      if field['required']
+        code << tabs(2, "#{name} = DateTimeUtil.toDate(BsonUtil.intValue(src, \"#{bname}\").getAsInt());\n");
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").stream().mapToObj(DateTimeUtil::toDate).findFirst().orElseGet(#{field['default-lambda']});\n")
+      elsif field['default'].nil?
+        code << tabs(2, "var #{name}OptionalInt = BsonUtil.intValue(src, \"#{bname}\");\n")
+        code << tabs(2, "#{name} = #{name}OptionalInt.isEmpty() ? null : DateTimeUtil.toDate(#{name}OptionalInt.getAsInt());\n");
+      elsif field['default'] == 'today' || field['default'] == 'now'
+        code << tabs(2, "var #{name}OptionalInt = BsonUtil.intValue(src, \"#{bname}\");\n")
+        code << tabs(2, "#{name} = #{name}OptionalInt.isEmpty() ? LocalDate.now() : DateTimeUtil.toDate(#{name}OptionalInt.getAsInt());\n");
+      else
+        default_value = "default#{camcel_name(field['name'])}"
+        code << tabs(2, "var #{name}OptionalInt = BsonUtil.intValue(src, \"#{bname}\");\n")
+        code << tabs(2, "#{name} = #{name}OptionalInt.isEmpty() ? #{default_value} : DateTimeUtil.toDate(#{name}OptionalInt.getAsInt());\n");
+      end
+    when 'object-id'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.objectIdValue(src, \"#{bname}\").get();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.objectIdValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      elsif field['default'].nil?
+        code << tabs(2, "#{name} = BsonUtil.objectIdValue(src, \"#{bname}\").orElse(null);\n")
+      elsif field['default'] == 'generated'
+        code << tabs(2, "#{name} = BsonUtil.objectIdValue(src, \"#{bname}\").orElseGet(ObjectId::new);\n")
+      else
+        code << tabs(2, "#{name} = BsonUtil.objectIdValue(src, \"#{bname}\").orElseGet(() -> new ObjectId(\"#{field['default']}\"));\n")
+      end
+    end
+  end
+  if cfg['type'] == 'root'
+    code << tabs(2, "reset();\n")
+  end
+  code << tabs(1, "}\n\n")
+end
+
+def fill_load_any(code, cfg)
+  code << tabs(1, "@Override\n")
+  code << tabs(1, "public void load(Any src) {\n")
+  code << tabs(2, "if (src.valueType() != ValueType.OBJECT) {\n")
+  code << tabs(3, "reset();\n")
+  code << tabs(3, "return;\n")
+  code << tabs(2, "}\n")
+  cfg['fields'].each do |field|
+    next if field['virtual']
+    name = field['name']
+    bname = field['bname']
+    type = field['type']
+    case type
+    when 'object'
+      code << tabs(2, "BsonUtil.objectValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::reset);\n")
+    when 'map'
+      code << tabs(2, "BsonUtil.objectValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
+    when 'simple-map'
+      code << tabs(2, "BsonUtil.objectValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
+    when 'simple-list'
+      code << tabs(2, "BsonUtil.arrayValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
+    when 'int'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").getAsInt();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      else
+        default_value = field.has_key?('default') ? field['default'] : 0
+        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").orElse(#{default_value});\n")
+      end
+    when 'long'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").getAsLong();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      else
+        default_value = field.has_key?('default') ? field['default'] : 0
+        code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").orElse(#{default_value}L);\n")
+      end
+    when 'double'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").getAsDouble();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      else
+        default_value = field.has_key?('default') ? field['default'] : 0
+        code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").orElse(#{default_value});\n")
+      end
+    when 'bool'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.booleanValue(src, \"#{bname}\").get();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.booleanValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      else
+        default_value = field.has_key?('default') ? field['default'].to_s == 'true' : false
+        code << tabs(2, "#{name} = BsonUtil.booleanValue(src, \"#{bname}\").orElse(#{default_value.to_s.downcase});\n")
+      end
+    when 'string'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").get();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      else
+        default_value = field.has_key?('default') ? field['default'] : ''
+        code << tabs(2, "#{name} = BsonUtil.stringValue(src, \"#{bname}\").orElse(\"#{default_value}\");\n")
+      end
+    when 'datetime'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").get();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      elsif field['default'].nil?
+        code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(null);\n")
+      elsif field['default'] == 'now'
+        code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElseGet(LocalDateTime::now);\n")
+      else
+        default_value = "default#{camcel_name(field['name'])}"
+        code << tabs(2, "#{name} = BsonUtil.dateTimeValue(src, \"#{bname}\").orElse(#{default_value});\n")
+      end
+    when 'date'
+      if field['required']
+        code << tabs(2, "#{name} = DateTimeUtil.toDate(BsonUtil.intValue(src, \"#{bname}\").getAsInt());\n");
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").stream().mapToObj(DateTimeUtil::toDate).findFirst().orElseGet(#{field['default-lambda']});\n")
+      elsif field['default'].nil?
+        code << tabs(2, "var #{name}OptionalInt = BsonUtil.intValue(src, \"#{bname}\");\n")
+        code << tabs(2, "#{name} = #{name}OptionalInt.isEmpty() ? null : DateTimeUtil.toDate(#{name}OptionalInt.getAsInt());\n");
+      elsif field['default'] == 'today' || field['default'] == 'now'
+        code << tabs(2, "var #{name}OptionalInt = BsonUtil.intValue(src, \"#{bname}\");\n")
+        code << tabs(2, "#{name} = #{name}OptionalInt.isEmpty() ? LocalDate.now() : DateTimeUtil.toDate(#{name}OptionalInt.getAsInt());\n");
+      else
+        default_value = "default#{camcel_name(field['name'])}"
+        code << tabs(2, "var #{name}OptionalInt = BsonUtil.intValue(src, \"#{bname}\");\n")
+        code << tabs(2, "#{name} = #{name}OptionalInt.isEmpty() ? #{default_value} : DateTimeUtil.toDate(#{name}OptionalInt.getAsInt());\n");
+      end
+    when 'object-id'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.objectIdValue(src, \"#{bname}\").get();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.objectIdValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      elsif field['default'].nil?
+        code << tabs(2, "#{name} = BsonUtil.objectIdValue(src, \"#{bname}\").orElse(null);\n")
+      elsif field['default'] == 'generated'
+        code << tabs(2, "#{name} = BsonUtil.objectIdValue(src, \"#{bname}\").orElseGet(ObjectId::new);\n")
+      else
+        code << tabs(2, "#{name} = BsonUtil.objectIdValue(src, \"#{bname}\").orElseGet(() -> new ObjectId(\"#{field['default']}\"));\n")
+      end
+    end
+  end
+  if cfg['type'] == 'root'
+    code << tabs(2, "reset();\n")
+  end
+  code << tabs(1, "}\n\n")
+end
+
+def fill_load_json_node(code, cfg)
+  code << tabs(1, "@Override\n")
+  code << tabs(1, "public void load(JsonNode src) {\n")
+  code << tabs(2, "if (!src.isObject()) {\n")
+  code << tabs(3, "reset();\n")
+  code << tabs(3, "return;\n")
+  code << tabs(2, "}\n")
+  cfg['fields'].each do |field|
+    next if field['virtual']
+    name = field['name']
+    bname = field['bname']
+    type = field['type']
+    case type
+    when 'object'
+      code << tabs(2, "BsonUtil.objectValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::reset);\n")
+    when 'map'
+      code << tabs(2, "BsonUtil.objectValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
+    when 'simple-map'
+      code << tabs(2, "BsonUtil.objectValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
+    when 'simple-list'
+      code << tabs(2, "BsonUtil.arrayValue(src, \"#{bname}\").ifPresentOrElse(#{name}::load, #{name}::clear);\n")
+    when 'int'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").getAsInt();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      else
+        default_value = field.has_key?('default') ? field['default'] : 0
+        code << tabs(2, "#{name} = BsonUtil.intValue(src, \"#{bname}\").orElse(#{default_value});\n")
+      end
+    when 'long'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").getAsLong();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      else
+        default_value = field.has_key?('default') ? field['default'] : 0
+        code << tabs(2, "#{name} = BsonUtil.longValue(src, \"#{bname}\").orElse(#{default_value}L);\n")
+      end
+    when 'double'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").getAsDouble();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      else
+        default_value = field.has_key?('default') ? field['default'] : 0
+        code << tabs(2, "#{name} = BsonUtil.doubleValue(src, \"#{bname}\").orElse(#{default_value});\n")
+      end
+    when 'bool'
+      if field['required']
+        code << tabs(2, "#{name} = BsonUtil.booleanValue(src, \"#{bname}\").get();\n")
+      elsif field.has_key?('default-lambda')
+        code << tabs(2, "#{name} = BsonUtil.booleanValue(src, \"#{bname}\").orElseGet(#{field['default-lambda']});\n")
+      else
+        default_value = field.has_key?('default') ? field['default'].to_s == 'true' : false
+        code << tabs(2, "#{name} = BsonUtil.booleanValue(src, \"#{bname}\").orElse(#{default_value.to_s.downcase});\n")
       end
     when 'string'
       if field['required']
@@ -883,6 +1166,7 @@ def generate_root(cfg)
   fill_updated(code, cfg)
   fill_to_bson(code, cfg)
   fill_to_document(code, cfg)
+  fill_to_data(code, cfg)
   fill_load(code, cfg)
   fill_append_updates(code, cfg)
   fill_reset_children(code, cfg)
@@ -941,6 +1225,7 @@ def generate_object(cfg)
   fill_updated(code, cfg)
   fill_to_bson(code, cfg)
   fill_to_document(code, cfg)
+  fill_to_data(code, cfg)
   fill_load(code, cfg)
   fill_append_updates(code, cfg)
   fill_reset_children(code, cfg)
@@ -960,6 +1245,7 @@ def generate_map_value(cfg)
   fill_xetters(code, cfg)
   fill_to_bson(code, cfg)
   fill_to_document(code, cfg)
+  fill_to_data(code, cfg)
   fill_load(code, cfg)
   fill_append_updates(code, cfg)
   fill_reset_children(code, cfg)

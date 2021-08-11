@@ -12,6 +12,9 @@ import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
 import com.mongodb.client.model.Updates;
 
 /**
@@ -230,6 +233,43 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
     }
 
     @Override
+    public void load(Any src) {
+        map.clear();
+        if (src.valueType() == ValueType.OBJECT) {
+            src.asMap().forEach((k, v) -> {
+                try {
+                    map.put(parseKey(k), valueType.parse(v));
+                } catch (Exception e) {
+                    if (logger.isWarnEnabled()) {
+                        logger.warn("Loading data failed on {}: {}", xpath().resolve(k), v);
+                    }
+                    // skip unsupported type values
+                }
+            });
+        }
+    }
+
+    @Override
+    public void load(JsonNode src) {
+        map.clear();
+        if (src.isObject()) {
+            for (var iter = src.fields(); iter.hasNext();) {
+                var entry = iter.next();
+                var k = entry.getKey();
+                var v = entry.getValue();
+                try {
+                    map.put(parseKey(k), valueType.parse(v));
+                } catch (Exception e) {
+                    if (logger.isWarnEnabled()) {
+                        logger.warn("Loading data failed on {}: {}", xpath().resolve(k), v);
+                    }
+                    // skip unsupported type values
+                }
+            }
+        }
+    }
+
+    @Override
     protected void appendUpdates(List<Bson> updates, K key, V value) {
         updates.add(Updates.set(xpath().resolve(key.toString()).value(), valueType.toStorage(value)));
     }
@@ -309,6 +349,18 @@ public final class SimpleMapModel<K, V, P extends BsonModel> extends MapModel<K,
             delete.put(key, 1);
         }
         return delete;
+    }
+
+    @Override
+    public Map<K, ?> toData() {
+        var map = super.map;
+        if (map.isEmpty()) {
+            return new LinkedHashMap<>();
+        }
+        var data = new LinkedHashMap<K, Object>(Math.max(8, map.size() << 1));
+        var valueType = this.valueType;
+        map.forEach((k, v) -> data.put(k, valueType.toData(v)));
+        return data;
     }
 
 }
