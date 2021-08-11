@@ -420,7 +420,7 @@ public class DateTimeUtil {
      * epoch of 1970-01-01T00:00:00.000Z and the specified zone ID.
      * 
      * @param epochMilli the number of milliseconds from 1970-01-01T00:00:00.000Z
-     * @param zone       the time-zone, which may be an offset, not null
+     * @param offset     the time-zone offset
      * @return the offset date-time
      * @since 2.4
      */
