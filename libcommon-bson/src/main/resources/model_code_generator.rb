@@ -302,7 +302,7 @@ def fill_xetters(code, cfg)
         code << tabs(1, "}\n\n")
       end
       if field['add'] == true
-        code << tabs(1, "public #{value_type} increase#{camcel}(#{value_type} #{name}Value) {\n")
+        code << tabs(1, "public #{value_type} add#{camcel}(#{value_type} #{name}Value) {\n")
         code << tabs(2, "var #{name} = this.#{name} += #{name}Value;\n")
         code << tabs(2, "updatedFields.set(#{index + 1});\n")
         if field.has_key? 'relations'
