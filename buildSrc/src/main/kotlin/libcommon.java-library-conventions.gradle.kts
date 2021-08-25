@@ -35,6 +35,7 @@ dependencies {
         implementation("org.jruby:jruby:9.2.19.0")
         implementation("org.jruby:jruby-core:9.2.19.0")
         implementation("org.jruby:jruby-stdlib:9.2.19.0")
+        implementation("org.yaml:snakeyaml:1.29")
     }
     // log4j2
     implementation(platform("org.apache.logging.log4j:log4j-bom:2.14.1"))
