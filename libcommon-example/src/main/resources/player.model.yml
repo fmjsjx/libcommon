@@ -48,11 +48,13 @@ objects:
     bname: ct
     type: long
     required: true
+    add: true
   - name: coinUsed
     bname: cu
     type: long
     required: true
     json-ignore: true
+    add: true
   - name: coin
     virtual: true
     type: long
@@ -62,6 +64,7 @@ objects:
     bname: d
     type: long
     required: true
+    add: true
   - name: ad
     type: int
     required: true

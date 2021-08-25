@@ -20,6 +20,12 @@ import com.mongodb.client.model.Updates;
 
 public class Equipment extends DefaultMapValueModel<String, Equipment> {
 
+    public static final String BNAME_ID = "id";
+    public static final String BNAME_REF_ID = "rid";
+    public static final String BNAME_ATK = "atk";
+    public static final String BNAME_DEF = "def";
+    public static final String BNAME_HP = "hp";
+
     private String id;
     private int refId;
     private int atk;

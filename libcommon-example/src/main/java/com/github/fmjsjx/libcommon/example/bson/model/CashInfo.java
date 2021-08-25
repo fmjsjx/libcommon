@@ -26,6 +26,12 @@ import com.mongodb.client.model.Updates;
 
 public class CashInfo extends ObjectModel<CashInfo> {
 
+    public static final String BNAME_STAGES = "stg";
+    public static final String BNAME_CARDS = "cs";
+    public static final String BNAME_ORDER_IDS = "ois";
+    public static final String BNAME_TEST_DATE = "tsd";
+    public static final String BNAME_TEST_DATE_MAP = "tdm";
+
     private static final DotNotation XPATH = DotNotation.of("cs");
 
     private final Player parent;

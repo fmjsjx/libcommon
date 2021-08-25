@@ -25,6 +25,15 @@ import com.mongodb.client.model.Updates;
 
 public class Player extends RootModel<Player> {
 
+    public static final String BNAME_UID = "_id";
+    public static final String BNAME_WALLET = "wt";
+    public static final String BNAME_EQUIPMENTS = "eqm";
+    public static final String BNAME_ITEMS = "itm";
+    public static final String BNAME_CASH = "cs";
+    public static final String BNAME_UPDATE_VERSION = "_uv";
+    public static final String BNAME_CREATE_TIME = "_ct";
+    public static final String BNAME_UPDATE_TIME = "_ut";
+
     private int uid;
     private final Wallet wallet = new Wallet(this);
     private final DefaultMapModel<String, Equipment, Player> equipments = DefaultMapModel.stringKeys(this, "eqm", Equipment::new);

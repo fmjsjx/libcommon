@@ -25,6 +25,11 @@ import com.mongodb.client.model.Updates;
 
 public class Wallet extends ObjectModel<Wallet> {
 
+    public static final String BNAME_COIN_TOTAL = "ct";
+    public static final String BNAME_COIN_USED = "cu";
+    public static final String BNAME_DIAMOND = "d";
+    public static final String BNAME_AD = "ad";
+
     private static final DotNotation XPATH = DotNotation.of("wt");
 
     private final Player parent;
@@ -51,6 +56,13 @@ public class Wallet extends ObjectModel<Wallet> {
         }
     }
 
+    public long addCoinTotal(long n) {
+        var coinTotal = this.coinTotal += n;
+        updatedFields.set(1);
+        updatedFields.set(3);
+        return coinTotal;
+    }
+
     @JsonIgnore
     public long getCoinUsed() {
         return coinUsed;
@@ -62,6 +74,13 @@ public class Wallet extends ObjectModel<Wallet> {
             updatedFields.set(2);
             updatedFields.set(3);
         }
+    }
+
+    public long addCoinUsed(long n) {
+        var coinUsed = this.coinUsed += n;
+        updatedFields.set(2);
+        updatedFields.set(3);
+        return coinUsed;
     }
 
     public long getCoin() {
@@ -77,6 +96,12 @@ public class Wallet extends ObjectModel<Wallet> {
             this.diamond = diamond;
             updatedFields.set(4);
         }
+    }
+
+    public long addDiamond(long n) {
+        var diamond = this.diamond += n;
+        updatedFields.set(4);
+        return diamond;
     }
 
     public int getAd() {

@@ -115,6 +115,26 @@ def tabs(n, value = '')
   ' ' * 4 * n + value
 end
 
+def fill_static_fields(code, cfg)
+  fields = cfg['fields']
+  any_fields = false
+  fields.each do |field|
+    next if field['virtual']
+    name = field['name']
+    field_name = to_const_field_name(name)
+    code << tabs(1, "public static final String BNAME_#{field_name} = \"#{field['bname']}\";\n")
+    any_fields = true
+  end
+  if any_fields
+    code << "\n"
+  end
+end
+
+def to_const_field_name(name)
+  field_name = name.gsub(/[A-Z]/) do |match| "_#{match}" end
+  field_name.upcase
+end
+
 def fill_fields(code, cfg, parent=nil)
   name = cfg['name']
   fields = cfg['fields']
@@ -292,7 +312,7 @@ def fill_xetters(code, cfg)
         code << tabs(2, "updatedFields.set(#{index + 1});\n")
         if field.has_key? 'relations'
           field['relations'].each do |i|
-            code << tabs(3, "updatedFields.set(#{i});\n")
+            code << tabs(2, "updatedFields.set(#{i});\n")
           end
         end
         if cfg['type'] == 'map-value'
@@ -302,12 +322,16 @@ def fill_xetters(code, cfg)
         code << tabs(1, "}\n\n")
       end
       if field['add'] == true
-        code << tabs(1, "public #{value_type} add#{camcel}(#{value_type} #{name}Value) {\n")
-        code << tabs(2, "var #{name} = this.#{name} += #{name}Value;\n")
+        arg_name = 'n'
+        if name == arg_name
+          arg_name = 'value'
+        end
+        code << tabs(1, "public #{value_type} add#{camcel}(#{value_type} #{arg_name}) {\n")
+        code << tabs(2, "var #{name} = this.#{name} += #{arg_name};\n")
         code << tabs(2, "updatedFields.set(#{index + 1});\n")
         if field.has_key? 'relations'
           field['relations'].each do |i|
-            code << tabs(3, "updatedFields.set(#{i});\n")
+            code << tabs(2, "updatedFields.set(#{i});\n")
           end
         end
         if cfg['type'] == 'map-value'
@@ -1193,6 +1217,7 @@ def generate_root(cfg)
   code = "package #{cfg['package']};\n\n"
   fill_imports(code, 'RootModel', cfg)
   code << "public class #{cfg['name']} extends RootModel<#{cfg['name']}> {\n\n"
+  fill_static_fields(code, cfg)
   fill_fields(code, cfg)
   fill_xetters(code, cfg)
   fill_updated(code, cfg)
@@ -1227,6 +1252,7 @@ def generate_object(cfg)
   code = "package #{cfg['package']};\n\n"
   fill_imports(code, 'ObjectModel', cfg)
   code << "public class #{cfg['name']} extends ObjectModel<#{cfg['name']}> {\n\n"
+  fill_static_fields(code, cfg)
   static_xpath = all_object(cfg)
   if static_xpath
     parent = cfg['parent']
@@ -1275,6 +1301,7 @@ def generate_map_value(cfg)
   code = "package #{cfg['package']};\n\n"
   fill_imports(code, 'DefaultMapValueModel', cfg)
   code << "public class #{cfg['name']} extends DefaultMapValueModel<#{boxed_jtype(cfg['key'])}, #{cfg['name']}> {\n\n"
+  fill_static_fields(code, cfg)
   fill_fields(code, cfg)
   fill_xetters(code, cfg)
   fill_to_bson(code, cfg)
