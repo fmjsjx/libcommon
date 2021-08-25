@@ -163,6 +163,26 @@ public class Equipment extends DefaultMapValueModel<String, Equipment> {
         hp = BsonUtil.intValue(src, "hp").getAsInt();
     }
 
+    public boolean idUpdated() {
+        return updatedFields.get(1);
+    }
+
+    public boolean refIdUpdated() {
+        return updatedFields.get(2);
+    }
+
+    public boolean atkUpdated() {
+        return updatedFields.get(3);
+    }
+
+    public boolean defUpdated() {
+        return updatedFields.get(4);
+    }
+
+    public boolean hpUpdated() {
+        return updatedFields.get(5);
+    }
+
     @Override
     protected void appendFieldUpdates(List<Bson> updates) {
         var updatedFields = this.updatedFields;

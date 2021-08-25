@@ -222,6 +222,38 @@ public class Player extends RootModel<Player> {
         reset();
     }
 
+    public boolean uidUpdated() {
+        return updatedFields.get(1);
+    }
+
+    public boolean walletUpdated() {
+        return wallet.updated();
+    }
+
+    public boolean equipmentsUpdated() {
+        return equipments.updated();
+    }
+
+    public boolean itemsUpdated() {
+        return items.updated();
+    }
+
+    public boolean cashUpdated() {
+        return cash.updated();
+    }
+
+    public boolean updateVersionUpdated() {
+        return updatedFields.get(6);
+    }
+
+    public boolean createTimeUpdated() {
+        return updatedFields.get(7);
+    }
+
+    public boolean updateTimeUpdated() {
+        return updatedFields.get(8);
+    }
+
     @Override
     protected void appendFieldUpdates(List<Bson> updates) {
         var updatedFields = this.updatedFields;

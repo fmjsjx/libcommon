@@ -13,7 +13,6 @@ public abstract class AbstractContainerModel<Parent extends BsonModel> extends A
 
     protected final Parent parent;
     protected final String name;
-    protected final DotNotation xpath;
 
     /**
      * Constructs a new {@link AbstractContainerModel} with the specified parent and
@@ -25,7 +24,6 @@ public abstract class AbstractContainerModel<Parent extends BsonModel> extends A
     protected AbstractContainerModel(Parent parent, String name) {
         this.parent = parent;
         this.name = name;
-        this.xpath = parent.xpath().resolve(name);
     }
 
     /**
@@ -44,7 +42,7 @@ public abstract class AbstractContainerModel<Parent extends BsonModel> extends A
 
     @Override
     public DotNotation xpath() {
-        return xpath;
+        return parent.xpath().resolve(name);
     }
 
     /**

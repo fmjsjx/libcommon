@@ -176,6 +176,26 @@ public class Wallet extends ObjectModel<Wallet> {
         ad = BsonUtil.intValue(src, "ad").getAsInt();
     }
 
+    public boolean coinTotalUpdated() {
+        return updatedFields.get(1);
+    }
+
+    public boolean coinUsedUpdated() {
+        return updatedFields.get(2);
+    }
+
+    public boolean coinUpdated() {
+        return updatedFields.get(3);
+    }
+
+    public boolean diamondUpdated() {
+        return updatedFields.get(4);
+    }
+
+    public boolean adUpdated() {
+        return updatedFields.get(5);
+    }
+
     @Override
     protected void appendFieldUpdates(List<Bson> updates) {
         var updatedFields = this.updatedFields;

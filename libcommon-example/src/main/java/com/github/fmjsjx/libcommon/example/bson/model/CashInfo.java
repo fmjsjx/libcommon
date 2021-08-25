@@ -186,6 +186,26 @@ public class CashInfo extends ObjectModel<CashInfo> {
         BsonUtil.objectValue(src, "tdm").ifPresentOrElse(testDateMap::load, testDateMap::clear);
     }
 
+    public boolean stagesUpdated() {
+        return stages.updated();
+    }
+
+    public boolean cardsUpdated() {
+        return cards.updated();
+    }
+
+    public boolean orderIdsUpdated() {
+        return orderIds.updated();
+    }
+
+    public boolean testDateUpdated() {
+        return updatedFields.get(4);
+    }
+
+    public boolean testDateMapUpdated() {
+        return testDateMap.updated();
+    }
+
     @Override
     protected void appendFieldUpdates(List<Bson> updates) {
         var updatedFields = this.updatedFields;

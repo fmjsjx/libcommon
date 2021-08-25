@@ -301,6 +301,21 @@ def fill_xetters(code, cfg)
         code << tabs(2, "return #{name};\n")
         code << tabs(1, "}\n\n")
       end
+      if field['add'] == true
+        code << tabs(1, "public #{value_type} increase#{camcel}(#{value_type} #{name}Value) {\n")
+        code << tabs(2, "var #{name} = this.#{name} += #{name}Value;\n")
+        code << tabs(2, "updatedFields.set(#{index + 1});\n")
+        if field.has_key? 'relations'
+          field['relations'].each do |i|
+            code << tabs(3, "updatedFields.set(#{i});\n")
+          end
+        end
+        if cfg['type'] == 'map-value'
+          code << tabs(2, "emitUpdated();\n")
+        end
+        code << tabs(2, "return #{name};\n")
+        code << tabs(1, "}\n\n")
+      end
     end
   end
 end
@@ -936,6 +951,23 @@ def fill_load_json_node(code, cfg)
   code << tabs(1, "}\n\n")
 end
 
+def fill_fields_updated(code, cfg)
+  cfg['fields'].each_with_index do |field, index|
+    name = field['name']
+    type = field['type']
+    case
+    when %w(object map simple-map simple-list).include?(type) then
+      code << tabs(1, "public boolean #{name}Updated() {\n")
+      code << tabs(2, "return #{name}.updated();\n")
+      code << tabs(1, "}\n\n")
+    else
+      code << tabs(1, "public boolean #{name}Updated() {\n")
+      code << tabs(2, "return updatedFields.get(#{index + 1});\n")
+      code << tabs(1, "}\n\n")
+    end
+  end
+end
+
 def fill_append_updates(code, cfg)
   code << tabs(1, "@Override\n")
   code << tabs(1, "protected void appendFieldUpdates(List<Bson> updates) {\n")
@@ -1168,6 +1200,7 @@ def generate_root(cfg)
   fill_to_document(code, cfg)
   fill_to_data(code, cfg)
   fill_load(code, cfg)
+  fill_fields_updated(code, cfg)
   fill_append_updates(code, cfg)
   fill_reset_children(code, cfg)
   fill_to_sub_update(code, cfg)
@@ -1227,6 +1260,7 @@ def generate_object(cfg)
   fill_to_document(code, cfg)
   fill_to_data(code, cfg)
   fill_load(code, cfg)
+  fill_fields_updated(code, cfg)
   fill_append_updates(code, cfg)
   fill_reset_children(code, cfg)
   fill_to_sub_update(code, cfg)
@@ -1247,6 +1281,7 @@ def generate_map_value(cfg)
   fill_to_document(code, cfg)
   fill_to_data(code, cfg)
   fill_load(code, cfg)
+  fill_fields_updated(code, cfg)
   fill_append_updates(code, cfg)
   fill_reset_children(code, cfg)
   fill_to_sub_update(code, cfg)
