@@ -10,6 +10,7 @@ dependencies {
         api(project(":libcommon-aliyunons"))
         api(project(":libcommon-bson"))
         api(project(":libcommon-collection"))
+        api(project(":libcommon-function"))
         api(project(":libcommon-jdbc"))
         api(project(":libcommon-json"))
         api(project(":libcommon-json-dsljson"))
