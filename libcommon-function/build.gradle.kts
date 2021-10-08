@@ -7,8 +7,6 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api")
 
-    api(project(":libcommon-function"))
-
     testImplementation("org.junit.jupiter:junit-jupiter-api")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
@@ -17,7 +15,7 @@ dependencies {
 
 }
 
-description = "libcommon/Util"
+description = "libcommon/Function"
 
 tasks.test {
     // Use junit platform for unit tests.
@@ -37,7 +35,7 @@ publishing {
                 }
             }
             pom {
-                name.set("libcommon/Util")
+                name.set("libcommon/Function")
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {
