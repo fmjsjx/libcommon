@@ -14,9 +14,11 @@ The [`libcommon-util`](libcommon-util) module provides some common utility class
 
 ### ~~libcommon-bson~~ (deprecated since 2.5, added since 2.0)
 
-The [~~`libcommon-bson`~~](libcommon-bson) was deprecated since 2.5 and may be removed on higher version(e.g. 3.x).
+**The [~~`libcommon-bson`~~](libcommon-bson) was deprecated since 2.5 and may be removed on higher version(e.g. 3.x).**
 
-The [`libcommon-bson`](libcommon-bson) module provides a ORM like model framework for BSON/MongoDB. 
+**Please use [`bson-model`](https://github.com/fmjsjx/bson-model) instead.**
+
+The [~~`libcommon-bson`~~](libcommon-bson) module provides a ORM like model framework for BSON/MongoDB. 
 
 ### libcommon-collection
 
