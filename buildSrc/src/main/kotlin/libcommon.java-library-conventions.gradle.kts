@@ -38,7 +38,7 @@ dependencies {
         implementation("org.yaml:snakeyaml:1.29")
     }
     // log4j2
-    implementation(platform("org.apache.logging.log4j:log4j-bom:2.14.1"))
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.15.0"))
 
 }
 
