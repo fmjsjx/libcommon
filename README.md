@@ -4,6 +4,93 @@ A set of some common useful libraries.
 
 > Members of libraries always based on JDK 11+.
 
+
+## Add Dependencies
+
+### Add Maven Dependencies
+`pom.xml`
+```xml
+...
+  <dependencyManagement>
+    <dependencies>
+      ...
+      <!-- BOM -->
+      <dependency>
+        <groupId>com.github.fmjsjx</groupId>
+        <artifactId>libcommon-bom</artifactId>
+        <version>2.5.5</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      ...
+    </dependencies>
+  </dependencyManagement>
+...
+  <dependencies>
+    ...
+    <!-- Common Utility -->
+    <dependency>
+      <groupId>com.github.fmjsjx</groupId>
+      <artifactId>libcommon-util</artifactId>
+    </dependency>
+    <!-- JSON library based on Jackson2 -->
+    <dependency>
+      <groupId>com.github.fmjsjx</groupId>
+      <artifactId>libcommon-json-jackson2</artifactId>
+    </dependency>
+    <!-- JSON library based on Json-Iter -->
+    <dependency>
+      <groupId>com.github.fmjsjx</groupId>
+      <artifactId>libcommon-json-jsoniter</artifactId>
+    </dependency>
+    ...
+  </dependencies>
+...
+```
+
+### Add Gradle Dependencies
+
+#### Groovy DSL
+```groovy
+...
+repositories {
+    mavenCentral
+}
+
+dependencies {
+    // BOM
+    implementation platform('com.github.fmjsjx:libcommon-bom:2.5.5')
+    // Common Utility
+    implementation 'com.github.fmjsjx:libcommon-util'
+    // JSON library based on Jackson2
+    implementation 'com.github.fmjsjx:libcommon-json-jackson2'
+    // JSON library based on Json-Iter
+    implementation 'com.github.fmjsjx:libcommon-json-jsoniter'
+    ...
+}
+...
+```
+#### Kotlin DSL
+```kotlin
+...
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // BOM
+    implementation(platform("com.github.fmjsjx:libcommon-bom:2.5.5"))
+    // Common Utility
+    implementation("com.github.fmjsjx:libcommon-util")
+    // JSON library based on Jackson2
+    implementation("com.github.fmjsjx:libcommon-json-jackson2")
+    // JSON library based on Json-Iter
+    implementation("com.github.fmjsjx:libcommon-json-jsoniter")
+    ...
+}
+...
+```
+
 ## Modules
 
 There are a number of modules in LibCommon, here is a quick overview:
