@@ -1,3 +1,9 @@
+pluginManagement {
+    repositories {
+        maven(url = "https://maven.aliyun.com/repository/gradle-plugin")
+    }
+}
+
 rootProject.name = "libcommon"
 include(":libcommon-aliyunons")
 include(":libcommon-bom")
