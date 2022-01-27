@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.IntFunction;
 
 /**
  * This class implements {@link ListSet} interface backed by an
@@ -69,6 +70,30 @@ public abstract class AbstractListSet<E> extends AbstractSet<E> implements ListS
     @Override
     public Iterator<E> iterator() {
         return internalList.iterator();
+    }
+
+    /**
+     * @since 2.6.1
+     */
+    @Override
+    public Object[] toArray() {
+        return internalList.toArray();
+    }
+
+    /**
+     * @since 2.6.1
+     */
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return internalList.toArray(a);
+    }
+
+    /**
+     * @since 2.6.1
+     */
+    @Override
+    public <T> T[] toArray(IntFunction<T[]> generator) {
+        return internalList.toArray(generator);
     }
 
 }
