@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -111,16 +112,52 @@ final class ImmutableCollections {
     }
 
     @SuppressWarnings("serial")
+    static final class ListSet12<E> extends AbstractImmutableListSet<E> implements Serializable {
+
+        final List<E> internalList;
+        final int size;
+
+        ListSet12(E e0) {
+            internalList = List.of(e0);
+            size = 1;
+        }
+
+        ListSet12(E e0, E e1) {
+            if (e0.equals(Objects.requireNonNull(e1))) { // implicit null check of e0
+                throw new IllegalArgumentException("duplicate element: " + e0);
+            }
+            internalList = List.of(e0, e1);
+            size = 2;
+        }
+
+        @Override
+        public List<E> internalList() {
+            return internalList;
+        }
+
+        @Override
+        public int size() {
+            return size;
+        }
+
+    }
+
+    @SuppressWarnings("serial")
     static final class ListSetN<E> extends AbstractImmutableListSet<E> implements Serializable {
 
         static ListSetN<?> EMPTY_LIST_SET = new ListSetN<>();
 
         final List<E> internalList;
 
+        ListSetN(E[] input, boolean distinct) {
+            internalList = input.length == 0 ? List.of()
+                    : (distinct ? Arrays.stream(input).distinct().collect(Collectors.toUnmodifiableList())
+                            : List.of(input));
+        }
+
         @SafeVarargs
         ListSetN(E... input) {
-            internalList = input.length == 0 ? List.of()
-                    : Arrays.stream(input).distinct().collect(Collectors.toUnmodifiableList());
+            this(input, true);
         }
 
         @Override

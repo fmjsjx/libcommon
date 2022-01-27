@@ -2,6 +2,7 @@ package com.github.fmjsjx.libcommon.collection;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -35,6 +36,29 @@ public interface ListSet<E> extends Set<E> {
     }
 
     /**
+     * Returns an unmodifiable {@link ListSet} containing one element.
+     * 
+     * @param <E> the {@code ListSet}'s element type
+     * @param e1  the single element
+     * @return a {@code ListSet} containing the specified element
+     */
+    static <E> ListSet<E> of(E e1) {
+        return new ImmutableCollections.ListSet12<>(e1);
+    }
+
+    /**
+     * Returns an unmodifiable {@link ListSet} containing two elements.
+     * 
+     * @param <E> the {@code ListSet}'s element type
+     * @param e1  the first element
+     * @param e2  the second element
+     * @return a {@code ListSet} containing the specified elements
+     */
+    static <E> ListSet<E> of(E e1, E e2) {
+        return new ImmutableCollections.ListSet12<>(e1, e2);
+    }
+
+    /**
      * Returns an unmodifiable {@link ListSet} containing an arbitrary number of
      * elements.
      * 
@@ -44,10 +68,21 @@ public interface ListSet<E> extends Set<E> {
      */
     @SafeVarargs
     static <E> ListSet<E> of(E... elements) {
-        if (elements.length == 0) {
-            return of();
+        switch (elements.length) {
+        case 0:
+            return ImmutableCollections.emptyListSet();
+        case 1:
+            return new ImmutableCollections.ListSet12<>(elements[0]);
+        case 2:
+            var e0 = elements[0];
+            var e1 = elements[1];
+            if (e0.equals(Objects.requireNonNull(e1))) { // implicit null check of e0
+                return new ImmutableCollections.ListSet12<>(e0);
+            }
+            return new ImmutableCollections.ListSet12<>(e0, e1);
+        default:
+            return new ImmutableCollections.ListSetN<>(elements);
         }
-        return new ImmutableCollections.ListSetN<>(elements);
     }
 
     /**
@@ -64,6 +99,8 @@ public interface ListSet<E> extends Set<E> {
     static <E> ListSet<E> copyOf(Collection<? extends E> coll) {
         if (coll instanceof ImmutableCollections.AbstractImmutableListSet) {
             return (ListSet<E>) coll;
+        } else if (coll instanceof Set) {
+            return (ListSet<E>) new ImmutableCollections.ListSetN<>(coll.toArray(), false);
         } else {
             return (ListSet<E>) of(coll.toArray());
         }
