@@ -18,7 +18,7 @@ A set of some common useful libraries.
       <dependency>
         <groupId>com.github.fmjsjx</groupId>
         <artifactId>libcommon-bom</artifactId>
-        <version>2.5.5</version>
+        <version>2.6.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -59,7 +59,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation platform('com.github.fmjsjx:libcommon-bom:2.5.5')
+    implementation platform('com.github.fmjsjx:libcommon-bom:2.6.0')
     // Common Utility
     implementation 'com.github.fmjsjx:libcommon-util'
     // JSON library based on Jackson2
@@ -79,7 +79,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation(platform("com.github.fmjsjx:libcommon-bom:2.5.5"))
+    implementation(platform("com.github.fmjsjx:libcommon-bom:2.6.0"))
     // Common Utility
     implementation("com.github.fmjsjx:libcommon-util")
     // JSON library based on Jackson2
