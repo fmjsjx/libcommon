@@ -11,16 +11,16 @@ repositories {
 
 dependencies {
     // netty-bom
-    api(platform("io.netty:netty-bom:4.1.73.Final"))
+    api(platform("io.netty:netty-bom:4.1.74.Final"))
     // junit-bom
-    testImplementation(platform("org.junit:junit-bom:5.7.0"))
+    testImplementation(platform("org.junit:junit-bom:5.8.2"))
     // jackson2-bom
     api(platform("com.fasterxml.jackson:jackson-bom:2.13.1"))
     // rocketmq
     api(platform("org.apache.rocketmq:rocketmq-all:4.9.2"))
 
     constraints {
-        implementation("org.slf4j:slf4j-api:1.7.32")
+        implementation("org.slf4j:slf4j-api:1.7.36")
         implementation("ch.qos.logback:logback-classic:1.2.10")
         api("io.lettuce:lettuce-core:6.1.6.RELEASE")
         api("com.dslplatform:dsl-json-java8:1.9.9")
