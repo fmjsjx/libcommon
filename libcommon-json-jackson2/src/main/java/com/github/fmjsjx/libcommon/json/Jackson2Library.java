@@ -12,11 +12,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.fmjsjx.libcommon.util.KotlinUtil;
+import com.github.fmjsjx.libcommon.util.ReflectUtil;
 
 /**
  * The implementation of {@link JsonLibrary} using Jackson2.
@@ -56,9 +57,32 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     }
 
     private static final ObjectMapper createDefaultObjectMapper() {
-        return new ObjectMapper().setSerializationInclusion(Include.NON_ABSENT)
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).registerModule(new Jdk8Module())
-                .registerModule(new JavaTimeModule());
+        var mapper = new ObjectMapper().setSerializationInclusion(Include.NON_ABSENT)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        ReflectUtil.<Module>findForName("com.fasterxml.jackson.datatype.jdk8.Jdk8Module").ifPresent(moduleClass -> {
+            try {
+                mapper.registerModule(moduleClass.getDeclaredConstructor().newInstance());
+            } catch (Exception e) {
+                // jackson-module-jdk8 not available
+            }
+        });
+        ReflectUtil.<Module>findForName(" com.fasterxml.jackson.datatype.jsr310.JavaTimeModule").ifPresent(moduleClass -> {
+            try {
+                mapper.registerModule(moduleClass.getDeclaredConstructor().newInstance());
+            } catch (Exception e) {
+                // jackson-module-jsr310 not available
+            }
+        });
+        if (KotlinUtil.isKotlinPresent()) {
+            ReflectUtil.<Module>findForName("com.fasterxml.jackson.module.kotlin.KotlinModule").ifPresent(moduleClass -> {
+                try {
+                    mapper.registerModule(moduleClass.getDeclaredConstructor().newInstance());
+                } catch (Exception e) {
+                    // jackson-module-kotlin not available
+                }
+            });
+        }
+        return mapper;
     }
 
     /**

@@ -6,12 +6,13 @@ plugins {
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
-    
+
     api(project(":libcommon-json"))
+    implementation(project(":libcommon-util"))
 
     api("com.fasterxml.jackson.core:jackson-databind")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
 
