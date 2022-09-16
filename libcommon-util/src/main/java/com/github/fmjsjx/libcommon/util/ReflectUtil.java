@@ -19,6 +19,7 @@ public class ReflectUtil {
      * @param <T>       the type of the returned class
      * @param className the fully qualified name of the desired class
      * @return an {@code Optional<Class<T>>}
+     * @see Class#forName(String)
      */
     public static final <T> Optional<Class<T>> findForName(String className) {
         try {
@@ -31,14 +32,52 @@ public class ReflectUtil {
     }
 
     /**
+     * Finds and returns the Class object associated with the class or interface
+     * with the given string name, using the given class loader.
+     *
+     * @param <T>         the type of the returned class
+     * @param className   the fully qualified name of the desired class
+     * @param initialize  if {@code true} the class will be initialized
+     * @param classLoader class loader from which the class must be loaded
+     * @return an {@code Optional<Class<T>>}
+     * @see Class#forName(String, boolean, ClassLoader)
+     * @since 2.7
+     */
+    public static final <T> Optional<Class<T>> findForName(String className, boolean initialize, ClassLoader classLoader) {
+        try {
+            @SuppressWarnings("unchecked")
+            var clazz = (Class<T>) Class.forName(className, initialize, classLoader);
+            return Optional.of(clazz);
+        } catch (ClassNotFoundException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Finds and returns the Class object associated with the class or interface
+     * with the given string name, using the given class loader. Invoking this
+     * method is equivalent to:<pre>{@code
+     * ReflectUtil.findForName(className, false, classLoader);
+     * }</pre>
+     *
+     * @param <T>         the type of the returned class
+     * @param className   the fully qualified name of the desired class
+     * @param classLoader class loader from which the class must be loaded
+     * @return an {@code Optional<Class<T>>}
+     * @see #findForName(String, boolean, ClassLoader)
+     * @since 2.7
+     */
+    public static final <T> Optional<Class<T>> findForName(String className, ClassLoader classLoader) {
+        return findForName(className, false, classLoader);
+    }
+
+    /**
      * Returns {@code true} if has the class or interface with the given string
      * name, {@code false} otherwise.
      * <p>
-     * This method is equivalence to:
-     * 
-     * <pre>
-     *   {@code findForName(className).isPresent()};
-     * </pre>
+     * This method is equivalence to:<pre>{@code
+     * findForName(className).isPresent();
+     * }</pre>
      * 
      * @param className the fully qualified name of the desired class
      * @return {@code true} if has the class or interface with the given string
@@ -47,6 +86,25 @@ public class ReflectUtil {
      */
     public static final boolean hasClassForName(String className) {
         return findForName(className).isPresent();
+    }
+
+    /**
+     * Returns {@code true} if has the class or interface with the given string
+     * name using the given class loader, {@code false} otherwise.
+     * <p>
+     * This method is equivalence to:<pre>{@code
+     * findForName(className, classLoader).isPresent();
+     * }</pre>
+     *
+     * @param className the fully qualified name of the desired class
+     * @param classLoader class loader from which the class must be loaded
+     * @return {@code true} if has the class or interface with the given string
+     *         name, {@code false} otherwise
+     * @see #findForName(String, ClassLoader)
+     * @since 2.7
+     */
+    public static final boolean hasClassForName(String className, ClassLoader classLoader) {
+        return findForName(className, classLoader).isPresent();
     }
 
     /**
