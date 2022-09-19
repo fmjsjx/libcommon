@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
     // netty-bom
-    api(platform("io.netty:netty-bom:4.1.81.Final"))
+    api(platform("io.netty:netty-bom:4.1.82.Final"))
     // junit-bom
     testImplementation(platform("org.junit:junit-bom:5.9.0"))
     // jackson2-bom
