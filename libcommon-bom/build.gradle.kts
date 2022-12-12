@@ -16,6 +16,7 @@ dependencies {
         api(project(":libcommon-json-dsljson"))
         api(project(":libcommon-json-jackson2"))
         api(project(":libcommon-json-jsoniter"))
+        api(project(":libcommon-kotlin"))
         api(project(":libcommon-redis"))
         api(project(":libcommon-rocketmq"))
         api(project(":libcommon-util"))
