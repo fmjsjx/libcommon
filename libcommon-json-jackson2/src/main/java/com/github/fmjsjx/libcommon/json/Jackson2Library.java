@@ -3,6 +3,9 @@ package com.github.fmjsjx.libcommon.json;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -246,6 +249,60 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     }
 
     /**
+     * @throws Jackson2Exception if any JSON decode error occurs
+     */
+    @Override
+    public <T> T loads(String src, Class<T> type) throws Jackson2Exception {
+        try {
+            return objectMapper.readValue(src, type);
+        } catch (Exception e) {
+            throw new Jackson2Exception(e);
+        }
+    }
+
+    /**
+     * @throws Jackson2Exception if any JSON decode error occurs
+     */
+    @Override
+    public <T> T loads(String src, Type type) throws Jackson2Exception {
+        return loads(src, toJavaType(type));
+    }
+
+    /**
+     * Decodes data from string.
+     *
+     * @param <T>  the type of the data
+     * @param src  the source string
+     * @param type the type of the data
+     * @return a data object as given type
+     * @throws Jackson2Exception if any JSON decode error occurs
+     */
+    public <T> T loads(String src, JavaType type) throws Jackson2Exception {
+        try {
+            return objectMapper.readValue(src, type);
+        } catch (Exception e) {
+            throw new Jackson2Exception(e);
+        }
+    }
+
+    /**
+     * Decodes data from string.
+     *
+     * @param <T>  the type of the data
+     * @param src  the source string
+     * @param type the type of the data
+     * @return a data object as given type
+     * @throws Jackson2Exception if any JSON decode error occurs
+     */
+    public <T> T loads(String src, TypeReference<T> type) throws Jackson2Exception {
+        try {
+            return objectMapper.readValue(src, type);
+        } catch (Exception e) {
+            throw new Jackson2Exception(e);
+        }
+    }
+
+    /**
      * Decodes data from byte array.
      * 
      * @param <T>  the type of the data
@@ -364,6 +421,93 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
+    }
+
+    private static final class TypeReferenceImpl<T> extends TypeReference<T> {
+        
+        private final ParameterizedTypeImpl type;
+        
+        private TypeReferenceImpl(ParameterizedTypeImpl type) {
+            super();
+            this.type = type;
+        }
+
+        @Override
+        public Type getType() {
+            return type;
+        }
+
+        @Override
+        public String toString() {
+            return "TypeReferenceImpl<" + type.getTypeName() + ">";
+        }
+    }
+    
+    /**
+     * Create {@link TypeReference} for {@link List}s.
+     *
+     * @param <T>          the type of the elements
+     * @param elementsType the elements type of the list
+     * @return a {@code TypeReference<List<T>>}
+     * @since 2.8
+     */
+    public <T> TypeReference<List<T>> listTypeReference(Type elementsType) {
+        return new TypeReferenceImpl<>(new ParameterizedTypeImpl(List.class, elementsType));
+    }
+
+    /**
+     * Create {@link TypeReference} for {@link Collection}s.
+     *
+     * @param <T>          the type of the elements
+     * @param <C>          the type of the collection
+     * @param elementsType the elements type of the collection
+     * @return a {@code TypeReference<C>}
+     * @since 2.8
+     */
+    public <T, C extends Collection<T>> TypeReference<C> collectionTypeReference(Type elementsType, Class<? extends Collection<?>> collectionType) {
+        return new TypeReferenceImpl<>(new ParameterizedTypeImpl(collectionType, elementsType));
+    }
+
+    /**
+     * Create {@link TypeReference} for {@link Map}s.
+     *
+     * @param <K>       the type of the key
+     * @param <V>       the type of the value
+     * @param keyType   the type of the key
+     * @param valueType the type of the value
+     * @return a {@code TypeReference<Map<K, V>>}
+     * @since 2.8
+     */
+    public <K, V> TypeReference<Map<K, V>> mapTypeReference(Type keyType, Type valueType) {
+        return new TypeReferenceImpl<>(new ParameterizedTypeImpl(Map.class, keyType, valueType));
+    }
+
+    /**
+     * Create {@link TypeReference} for {@link Map}s.
+     *
+     * @param <K>       the type of the key
+     * @param <V>       the type of the value
+     * @param <M>       the type of the map
+     * @param keyType   the type of the key
+     * @param valueType the type of the value
+     * @param mapType   the type of the map
+     * @return a {@code TypeReference<M>}
+     * @since 2.8
+     */
+    public <K, V, M extends Map<K, V>> TypeReference<M> mapTypeReference(Type keyType, Type valueType, Class<? extends Map<?, ?>> mapType) {
+        return new TypeReferenceImpl<>(new ParameterizedTypeImpl(mapType, keyType, valueType));
+    }
+
+    /**
+     * Create {@link TypeReference}.
+     *
+     * @param <T>           the type
+     * @param rawType       the raw type
+     * @param typeArguments the type arguments
+     * @return a {@code TypeReference<T>}
+     */
+    public <T> TypeReference<T> genericTypeReference(Class<?> rawType, Type... typeArguments) {
+        return new TypeReferenceImpl<>(new ParameterizedTypeImpl(rawType, typeArguments));
     }
 
 }
