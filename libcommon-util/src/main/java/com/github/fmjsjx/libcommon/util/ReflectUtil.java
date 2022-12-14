@@ -1,9 +1,7 @@
 package com.github.fmjsjx.libcommon.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -284,6 +282,66 @@ public class ReflectUtil {
     @SuppressWarnings("unchecked")
     public static final <R extends Type> R getActualTypeArgument(Type parameterizedType, int index) {
         return (R) ((ParameterizedType) parameterizedType).getActualTypeArguments()[index];
+    }
+
+    /**
+     * Invoke the specified {@link Method} against the supplied target object with the supplied arguments.
+     * The target object can be null when invoking a static {@link Method}.
+     *
+     * @param method the method to invoke
+     * @param target the target object to invoke the method on
+     * @param args the invocation arguments
+     * @return the invocation result, if any
+     * @since 2.8
+     */
+    public static final Object invokeMethod(Method method, Object target, Object... args) {
+        try {
+            return method.invoke(target, args);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("Could not access method or field: " + e.getMessage(), e);
+        } catch (InvocationTargetException e) {
+            var ex = e.getTargetException();
+            if (ex instanceof RuntimeException) {
+                throw (RuntimeException) ex;
+            }
+            if (ex instanceof Error) {
+                throw (Error) ex;
+            }
+            throw new UndeclaredThrowableException(ex);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new UndeclaredThrowableException(e);
+        }
+    }
+
+    /**
+     * Retrieve the value of a named attribute, given an annotation instance.
+     *
+     * @param annotation    the annotation instance from which to retrieve the value
+     * @param attributeName the name of the attribute value to retrieve
+     * @return the attribute value, or {@code null} if not found
+     * @since 2.8
+     */
+    public static final Object annotationValue(Annotation annotation, String attributeName) {
+        if (annotation == null || StringUtil.isEmpty(attributeName)) {
+            return null;
+        }
+        try {
+            var method = annotation.annotationType().getDeclaredMethod(attributeName);
+            if (Proxy.isProxyClass(annotation.getClass())) {
+                var handler = Proxy.getInvocationHandler(annotation);
+                try {
+                    return handler.invoke(annotation, method, null);
+                } catch (Throwable e) {
+                    // ignore and fall back to reflection below
+                }
+            }
+            return invokeMethod(method, annotation);
+        } catch (NoSuchMethodException | SecurityException e) {
+            // ignore and returns null
+            return null;
+        }
     }
 
     private ReflectUtil() {

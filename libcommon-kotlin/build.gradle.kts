@@ -1,36 +1,40 @@
 plugins {
-    `java-platform`
+    id("libcommon.java-library-conventions")
     id("libcommon.publish-conventions")
+    kotlin("jvm") version "1.7.22"
 }
 
-description = "libcommon/BOM"
-
 dependencies {
-    constraints {
-        api(project(":libcommon-aliyunons"))
-        api(project(":libcommon-bson"))
-        api(project(":libcommon-collection"))
-        api(project(":libcommon-function"))
-        api(project(":libcommon-jdbc"))
-        api(project(":libcommon-json"))
-        api(project(":libcommon-json-dsljson"))
-        api(project(":libcommon-json-jackson2"))
-        api(project(":libcommon-json-jsoniter"))
-        api(project(":libcommon-kotlin"))
-        api(project(":libcommon-redis"))
-        api(project(":libcommon-rocketmq"))
-        api(project(":libcommon-util"))
-        api(project(":libcommon-yaml"))
-    }
+    implementation("org.slf4j:slf4j-api")
+    implementation(project(":libcommon-util"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl")
+}
+
+description = "libcommon/Kotlin"
+
+tasks.getByName<Test>("test") {
+    useJUnitPlatform()
 }
 
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            from(components["javaPlatform"])
+            from(components["java"])
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
             pom {
-                name.set("libcommon/BOM")
-                description.set("A set of some common useful libraries.")
+                name.set("libcommon/Kotlin")
+                description.set("A set of some common useful libraries for kotlin.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {
                     license {

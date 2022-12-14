@@ -4,6 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import com.jsoniter.JsonIterator;
@@ -223,6 +226,73 @@ public class JsoniterLibrary implements JsonLibrary<Any> {
         } catch (Exception e) {
             throw new JsoniterException(e);
         }
+    }
+
+    /**
+     * Create {@link TypeLiteral} for {@link List}s.
+     *
+     * @param <T>          the type of the elements
+     * @param elementsType the elements type of the list
+     * @return a {@code TypeLiteral<List<T>>}
+     * @since 2.8
+     */
+    public <T> TypeLiteral<List<T>> listTypeLiteral(Type elementsType) {
+        return TypeLiteral.create(new ParameterizedTypeImpl(List.class, elementsType));
+    }
+
+    /**
+     * Create {@link TypeLiteral} for {@link Collection}s.
+     *
+     * @param <T>          the type of the elements
+     * @param <C>          the type of the collection
+     * @param elementsType the elements type of the collection
+     * @return a {@code TypeLiteral<C>}
+     * @since 2.8
+     */
+    public <T, C extends Collection<T>> TypeLiteral<C> collectionTypeLiteral(Type elementsType, Class<? extends Collection<?>> collectionType) {
+        return TypeLiteral.create(new ParameterizedTypeImpl(collectionType, elementsType));
+    }
+
+    /**
+     * Create {@link TypeLiteral} for {@link Map}s.
+     *
+     * @param <K>       the type of the key
+     * @param <V>       the type of the value
+     * @param keyType   the type of the key
+     * @param valueType the type of the value
+     * @return a {@code TypeLiteral<Map<K, V>>}
+     * @since 2.8
+     */
+    public <K, V> TypeLiteral<Map<K, V>> mapTypeLiteral(Type keyType, Type valueType) {
+        return TypeLiteral.create(new ParameterizedTypeImpl(Map.class, keyType, valueType));
+    }
+
+    /**
+     * Create {@link TypeLiteral} for {@link Map}s.
+     *
+     * @param <K>       the type of the key
+     * @param <V>       the type of the value
+     * @param <M>       the type of the map
+     * @param keyType   the type of the key
+     * @param valueType the type of the value
+     * @param mapType   the type of the map
+     * @return a {@code TypeLiteral<M>}
+     * @since 2.8
+     */
+    public <K, V, M extends Map<K, V>> TypeLiteral<M> mapTypeLiteral(Type keyType, Type valueType, Class<? extends Map<?, ?>> mapType) {
+        return TypeLiteral.create(new ParameterizedTypeImpl(mapType, keyType, valueType));
+    }
+
+    /**
+     * Create {@link TypeLiteral}.
+     *
+     * @param <T>           the type
+     * @param rawType       the raw type
+     * @param typeArguments the type arguments
+     * @return a {@code TypeLiteral<T>}
+     */
+    public <T> TypeLiteral<T> genericTypeLiteral(Class<?> rawType, Type... typeArguments) {
+        return TypeLiteral.create(new ParameterizedTypeImpl(rawType, typeArguments));
     }
 
 }
