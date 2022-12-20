@@ -2,6 +2,8 @@ package com.github.fmjsjx.libcommon.prometheus.exports;
 
 import io.prometheus.client.CollectorRegistry;
 
+import java.util.List;
+
 /**
  * Registers the default Hotspot collectors.
  * <p>
@@ -12,8 +14,8 @@ import io.prometheus.client.CollectorRegistry;
  * <pre>
  * {@code
  *   DefaultExports.initialize();
- *   // or set custom labels
- *   DefaultExports.initialize(new DefaultCustomLabelsProvider(List.of("application"), List.of("example-app")));
+ *   // or with custom labels
+ *   DefaultExports.initialize(List.of("application"), List.of("example-app"));
  * }
  * </pre>
  */
@@ -34,26 +36,48 @@ public class DefaultExports {
      * registry. It is safe to call this method multiple times, as
      * this will only register the collectors once.
      *
+     * @param customLabelNames  the custom label names
+     * @param customLabelValues the custom label values
+     */
+    public static synchronized void initialize(List<String> customLabelNames, List<String> customLabelValues) {
+        initialize(new DefaultCustomLabelsProvider(customLabelNames, customLabelValues));
+    }
+
+    /**
+     * Register the default Hotspot collectors with the default
+     * registry. It is safe to call this method multiple times, as
+     * this will only register the collectors once.
+     *
      * @param customLabelsProvider a {@link CustomLabelsProvider}
      */
     public static synchronized void initialize(CustomLabelsProvider customLabelsProvider) {
+        initialize(customLabelsProvider, CollectorRegistry.defaultRegistry);
+    }
+
+
+    /**
+     * Register the default Hotspot collectors with the default
+     * registry. It is safe to call this method multiple times, as
+     * this will only register the collectors once.
+     *
+     * @param customLabelsProvider a {@link CustomLabelsProvider}
+     * @param registry             the registry of Collectors
+     */
+    public static synchronized void initialize(CustomLabelsProvider customLabelsProvider, CollectorRegistry registry) {
         if (!initialized) {
-            register(customLabelsProvider, CollectorRegistry.defaultRegistry);
+            register(customLabelsProvider, registry);
             initialized = true;
         }
     }
 
-    /**
-     * Register the default Hotspot collectors with the given registry.
-     */
-    public static void register(CustomLabelsProvider customLabelsProvider, CollectorRegistry registry) {
+    private static void register(CustomLabelsProvider customLabelsProvider, CollectorRegistry registry) {
 //        new StandardExports().register(registry);
 //        new MemoryPoolsExports().register(registry);
 //        new MemoryAllocationExports().register(registry);
 //        new BufferPoolsExports().register(registry);
 //        new GarbageCollectorExports().register(registry);
 //        new ThreadExports().register(registry);
-//        new ClassLoadingExports().register(registry);
+        new ClassLoadingExports(customLabelsProvider).register(registry);
         new VersionInfoExports(customLabelsProvider).register(registry);
     }
 
