@@ -20,6 +20,8 @@ dependencies {
     api(platform("org.apache.rocketmq:rocketmq-all:4.9.4"))
     // kotlin coroutines
     api(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4"))
+    // prometheus
+    api(platform("io.prometheus:simpleclient_bom:0.16.0"))
 
     constraints {
         implementation("org.slf4j:slf4j-api:1.7.36")
