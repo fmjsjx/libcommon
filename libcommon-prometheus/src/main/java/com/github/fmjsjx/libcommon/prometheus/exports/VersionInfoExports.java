@@ -5,6 +5,7 @@ import io.prometheus.client.Info;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Exports JVM version info.
@@ -54,6 +55,11 @@ public final class VersionInfoExports extends Collector {
      */
     public VersionInfoExports(CustomLabelsProvider customLabelsProvider) {
         this.customLabelsProvider = Objects.requireNonNull(customLabelsProvider, "customLabelsProvider must not be null");
+        Stream.of("version", "vendor", "runtime")
+                .filter(v -> this.customLabelsProvider.labelNames().contains(v))
+                .findFirst().ifPresent(name -> {
+                    throw new IllegalArgumentException("VersionInfoExports cannot have a custom label name: " + name);
+                });
     }
 
     @Override

@@ -35,4 +35,23 @@ public class VersionInfoExportsTests {
         assertEquals(1.0, sample.value);
     }
 
+    @Test
+    public void testIllegalLabelName() {
+        try {
+            new VersionInfoExports(List.of("version"), List.of("test"));
+        } catch (IllegalArgumentException e) {
+            assertEquals("VersionInfoExports cannot have a custom label name: version", e.getMessage());
+        }
+        try {
+            new VersionInfoExports(List.of("vendor"), List.of("test"));
+        } catch (IllegalArgumentException e) {
+            assertEquals("VersionInfoExports cannot have a custom label name: vendor", e.getMessage());
+        }
+        try {
+            new VersionInfoExports(List.of("runtime"), List.of("test"));
+        } catch (IllegalArgumentException e) {
+            assertEquals("VersionInfoExports cannot have a custom label name: runtime", e.getMessage());
+        }
+    }
+
 }
