@@ -32,7 +32,6 @@ public class VersionInfoExportsTests {
         assertEquals("runtime", sample.labelNames.get(1));
         assertEquals("vendor", sample.labelNames.get(2));
         assertEquals("version", sample.labelNames.get(3));
-        assertEquals(1.0, sample.value);
     }
 
     @Test

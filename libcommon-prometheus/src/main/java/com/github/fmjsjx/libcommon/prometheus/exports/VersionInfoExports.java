@@ -13,16 +13,14 @@ import java.util.stream.Stream;
  * Example usage:
  * <pre>
  * {@code
- * new VersionInfoExports().register();
- *
- * new VersionInfoExports(List.of("application"), List.of("example-app")).register();
+ *   new VersionInfoExports().register();
+ *   // or with custom labels
+ *   new VersionInfoExports(List.of("application"), List.of("example-app")).register();
  * }
  * </pre>
  * Metrics being exported:
  * <pre>
  *   jvm_info{runtime="Java(TM) SE Runtime Environment",vendor="Oracle Corporation",version="11.0.17+10-LTS-269",} 1.0
- *
- *   jvm_info{application="example-app",runtime="Java(TM) SE Runtime Environment",vendor="Oracle Corporation",version="11.0.17+10-LTS-269",} 1.0
  * </pre>
  */
 public final class VersionInfoExports extends Collector {
