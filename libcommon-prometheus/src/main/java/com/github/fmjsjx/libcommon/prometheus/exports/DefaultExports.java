@@ -1,0 +1,60 @@
+package com.github.fmjsjx.libcommon.prometheus.exports;
+
+import io.prometheus.client.CollectorRegistry;
+
+/**
+ * Registers the default Hotspot collectors.
+ * <p>
+ * This is intended to avoid users having to add in new
+ * registrations every time a new exporter is added.
+ * <p>
+ * Example usage:
+ * <pre>
+ * {@code
+ *   DefaultExports.initialize();
+ *   // or set custom labels
+ *   DefaultExports.initialize(new DefaultCustomLabelsProvider(List.of("application"), List.of("example-app")));
+ * }
+ * </pre>
+ */
+public class DefaultExports {
+    private static boolean initialized = false;
+
+    /**
+     * Register the default Hotspot collectors with the default
+     * registry. It is safe to call this method multiple times, as
+     * this will only register the collectors once.
+     */
+    public static synchronized void initialize() {
+        initialize(EmptyCustomLabelsProvider.getInstance());
+    }
+
+    /**
+     * Register the default Hotspot collectors with the default
+     * registry. It is safe to call this method multiple times, as
+     * this will only register the collectors once.
+     *
+     * @param customLabelsProvider a {@link CustomLabelsProvider}
+     */
+    public static synchronized void initialize(CustomLabelsProvider customLabelsProvider) {
+        if (!initialized) {
+            register(customLabelsProvider, CollectorRegistry.defaultRegistry);
+            initialized = true;
+        }
+    }
+
+    /**
+     * Register the default Hotspot collectors with the given registry.
+     */
+    public static void register(CustomLabelsProvider customLabelsProvider, CollectorRegistry registry) {
+//        new StandardExports().register(registry);
+//        new MemoryPoolsExports().register(registry);
+//        new MemoryAllocationExports().register(registry);
+//        new BufferPoolsExports().register(registry);
+//        new GarbageCollectorExports().register(registry);
+//        new ThreadExports().register(registry);
+//        new ClassLoadingExports().register(registry);
+        new VersionInfoExports(customLabelsProvider).register(registry);
+    }
+
+}
