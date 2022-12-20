@@ -75,7 +75,7 @@ public class ClassLoadingExports extends Collector {
      * {@code customLabelsProvider} given.
      *
      * @param customLabelsProvider the {@link CustomLabelsProvider}
-     * @param clBean               a {@link ClassLoadingMXBean}
+     * @param clBean               the {@link ClassLoadingMXBean}
      */
     public ClassLoadingExports(CustomLabelsProvider customLabelsProvider, ClassLoadingMXBean clBean) {
         this.customLabelsProvider = Objects.requireNonNull(customLabelsProvider, "customLabelsProvider must not be null");
