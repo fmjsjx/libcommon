@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.github.fmjsjx"
-version = "2.8.1-SNAPSHOT"
+version = "2.9.0-SNAPSHOT"
 
 publishing {
     repositories {
