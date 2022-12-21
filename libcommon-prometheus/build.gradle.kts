@@ -7,8 +7,6 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
 
     api("io.prometheus:simpleclient")
-    api("io.prometheus:simpleclient_hotspot")
-    api("io.prometheus:simpleclient_common")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
