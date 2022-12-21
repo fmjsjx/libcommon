@@ -71,7 +71,7 @@ public class DefaultExports {
     }
 
     private static void register(CustomLabelsProvider customLabelsProvider, CollectorRegistry registry) {
-//        new StandardExports(customLabelsProvider).register(registry);
+        new StandardExports(customLabelsProvider).register(registry);
         new MemoryPoolsExports(customLabelsProvider).register(registry);
         new MemoryAllocationExports(customLabelsProvider).register(registry);
         new BufferPoolsExports(customLabelsProvider).register(registry);
