@@ -59,4 +59,14 @@ public class BufferPoolsExportsTests {
         }));
     }
 
+    @Test
+    public void testIllegalLabelName() {
+        try {
+            new BufferPoolsExports(List.of("pool"), List.of("test"));
+            fail("Should throws IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            assertEquals("BufferPoolsExports cannot have a custom label name: pool", e.getMessage());
+        }
+    }
+
 }

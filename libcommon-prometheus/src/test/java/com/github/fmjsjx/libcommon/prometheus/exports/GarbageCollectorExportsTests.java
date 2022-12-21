@@ -31,4 +31,14 @@ public class GarbageCollectorExportsTests {
         }));
     }
 
+    @Test
+    public void testIllegalLabelName() {
+        try {
+            new GarbageCollectorExports(List.of("gc"), List.of("test"));
+            fail("Should throws IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            assertEquals("GarbageCollectorExports cannot have a custom label name: gc", e.getMessage());
+        }
+    }
+
 }
