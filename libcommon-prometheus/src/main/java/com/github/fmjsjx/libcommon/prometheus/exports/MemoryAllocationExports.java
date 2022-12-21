@@ -137,7 +137,6 @@ public class MemoryAllocationExports extends Collector {
                 diff2 = 0;
             }
             long increase = diff1 + diff2;
-            System.err.println("last: " + last + ", before: " + before + ", after: " + after + ", increase: " + increase);
             if (increase > 0) {
                 var customLabelValues = customLabelsProvider.labelValues();
                 var labels = customLabelValues.toArray(new String[customLabelValues.size() + 1]);
