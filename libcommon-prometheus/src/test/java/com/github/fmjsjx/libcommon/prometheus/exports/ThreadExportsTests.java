@@ -74,7 +74,6 @@ public class ThreadExportsTests {
         assertEquals("application", sample.labelNames.get(0));
         assertEquals("test", sample.labelValues.get(0));
 
-
         metricFamilySamples = mfs.get(4);
         assertEquals("jvm_threads_deadlocked", metricFamilySamples.name);
         assertEquals(Collector.Type.GAUGE, metricFamilySamples.type);
