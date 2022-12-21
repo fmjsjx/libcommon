@@ -153,8 +153,8 @@ The [`libcommon-util`](libcommon-util) module provides additional utility functi
 
 ### libcommon-aliyunons
 
-The [`libcommon-util`](libcommon-util) module provides additional utility functions for [`ALIYUN Open Services/RocketMQ`](https://help.aliyun.com/product/29530.html).
+The [`libcommon-aliyunons`](libcommon-aliyunons) module provides additional utility functions for [`ALIYUN Open Services/RocketMQ`](https://help.aliyun.com/product/29530.html).
 
 ### libcommon-rocketmq
 
-The [`libcommon-util`](libcommon-util) module provides additional utility functions for [`RocketMQ`](https://rocketmq.apache.org/).
+The [`libcommon-rocketmq`](libcommon-rocketmq) module provides additional utility functions for [`RocketMQ`](https://rocketmq.apache.org/).
