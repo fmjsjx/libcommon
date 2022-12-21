@@ -29,7 +29,6 @@ public class GarbageCollectorExportsTests {
             assertEquals("test", sample.labelValues.get(0));
             assertEquals("gc", sample.labelNames.get(1));
         }));
-        System.err.println(metricFamilySamples);
     }
 
 }

@@ -74,7 +74,7 @@ public class DefaultExports {
 //        new StandardExports().register(registry);
 //        new MemoryPoolsExports().register(registry);
 //        new MemoryAllocationExports().register(registry);
-//        new BufferPoolsExports().register(registry);
+        new BufferPoolsExports(customLabelsProvider).register(registry);
         new GarbageCollectorExports(customLabelsProvider).register(registry);
         new ThreadExports(customLabelsProvider).register(registry);
         new ClassLoadingExports(customLabelsProvider).register(registry);
