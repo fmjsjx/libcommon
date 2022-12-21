@@ -4,6 +4,8 @@ package com.github.fmjsjx.libcommon.prometheus.exports;
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import io.prometheus.client.Predicate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
@@ -12,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import static io.prometheus.client.SampleNameFilter.ALLOW_ALL;
 
@@ -43,7 +44,7 @@ public class BufferPoolsExports extends Collector {
     private static final String JVM_BUFFER_POOL_CAPACITY_BYTES = "jvm_buffer_pool_capacity_bytes";
     private static final String JVM_BUFFER_POOL_USED_BUFFERS = "jvm_buffer_pool_used_buffers";
 
-    private static final Logger LOGGER = Logger.getLogger(io.prometheus.client.hotspot.BufferPoolsExports.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(BufferPoolsExports.class.getName());
 
     private final CustomLabelsProvider customLabelsProvider;
     private final List<Object> bufferPoolMXBeans = new ArrayList<>();
@@ -91,9 +92,9 @@ public class BufferPoolsExports extends Collector {
             getCount = bufferPoolMXBeanClass.getMethod("getCount");
 
         } catch (ClassNotFoundException e) {
-            LOGGER.fine("BufferPoolMXBean not available, no metrics for buffer pools will be exported");
+            LOGGER.debug("BufferPoolMXBean not available, no metrics for buffer pools will be exported");
         } catch (NoSuchMethodException e) {
-            LOGGER.fine("Can not get necessary accessor from BufferPoolMXBean: " + e.getMessage());
+            LOGGER.debug("Can not get necessary accessor from BufferPoolMXBean: " + e.getMessage());
         }
     }
 
@@ -103,13 +104,13 @@ public class BufferPoolsExports extends Collector {
             var getPlatformMXBeansMethod = ManagementFactory.class.getMethod("getPlatformMXBeans", Class.class);
             return (List<Object>) getPlatformMXBeansMethod.invoke(null, bufferPoolMXBeanClass);
         } catch (NoSuchMethodException e) {
-            LOGGER.fine("ManagementFactory.getPlatformMXBeans not available, no metrics for buffer pools will be exported");
+            LOGGER.debug("ManagementFactory.getPlatformMXBeans not available, no metrics for buffer pools will be exported");
             return Collections.emptyList();
         } catch (IllegalAccessException e) {
-            LOGGER.fine("ManagementFactory.getPlatformMXBeans not accessible, no metrics for buffer pools will be exported");
+            LOGGER.debug("ManagementFactory.getPlatformMXBeans not accessible, no metrics for buffer pools will be exported");
             return Collections.emptyList();
         } catch (InvocationTargetException e) {
-            LOGGER.warning("ManagementFactory.getPlatformMXBeans could not be invoked, no metrics for buffer pools will be exported");
+            LOGGER.warn("ManagementFactory.getPlatformMXBeans could not be invoked, no metrics for buffer pools will be exported");
             return Collections.emptyList();
         }
     }
@@ -166,7 +167,7 @@ public class BufferPoolsExports extends Collector {
         try {
             return (Long) method.invoke(pool);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            LOGGER.fine("Couldn't call " + method.getName() + ": " + e.getMessage());
+            LOGGER.debug("Couldn't call " + method.getName() + ": " + e.getMessage());
         }
         return 0L;
     }
@@ -175,7 +176,7 @@ public class BufferPoolsExports extends Collector {
         try {
             return (String) getName.invoke(pool);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            LOGGER.fine("Couldn't call getName " + e.getMessage());
+            LOGGER.debug("Couldn't call getName " + e.getMessage());
         }
         return "<unknown>";
     }
