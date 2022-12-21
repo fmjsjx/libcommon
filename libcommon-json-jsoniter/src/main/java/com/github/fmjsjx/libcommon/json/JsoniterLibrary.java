@@ -243,9 +243,10 @@ public class JsoniterLibrary implements JsonLibrary<Any> {
     /**
      * Create {@link TypeLiteral} for {@link Collection}s.
      *
-     * @param <T>          the type of the elements
-     * @param <C>          the type of the collection
-     * @param elementsType the elements type of the collection
+     * @param <T>            the type of the elements
+     * @param <C>            the type of the collection
+     * @param elementsType   the elements type of the collection
+     * @param collectionType the type of the collection
      * @return a {@code TypeLiteral<C>}
      * @since 2.8
      */

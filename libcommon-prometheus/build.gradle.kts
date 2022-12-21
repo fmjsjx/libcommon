@@ -1,37 +1,39 @@
 plugins {
-    `java-platform`
+    id("libcommon.java-library-conventions")
     id("libcommon.publish-conventions")
 }
 
-description = "libcommon/BOM"
-
 dependencies {
-    constraints {
-        api(project(":libcommon-aliyunons"))
-        api(project(":libcommon-bson"))
-        api(project(":libcommon-collection"))
-        api(project(":libcommon-function"))
-        api(project(":libcommon-jdbc"))
-        api(project(":libcommon-json"))
-        api(project(":libcommon-json-dsljson"))
-        api(project(":libcommon-json-jackson2"))
-        api(project(":libcommon-json-jsoniter"))
-        api(project(":libcommon-kotlin"))
-        api(project(":libcommon-prometheus"))
-        api(project(":libcommon-redis"))
-        api(project(":libcommon-rocketmq"))
-        api(project(":libcommon-util"))
-        api(project(":libcommon-yaml"))
-    }
+    implementation("org.slf4j:slf4j-api")
+
+    api("io.prometheus:simpleclient")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl")
+}
+
+description = "libcommon/Prometheus"
+
+tasks.getByName<Test>("test") {
+    useJUnitPlatform()
 }
 
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            from(components["javaPlatform"])
+            from(components["java"])
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
             pom {
-                name.set("libcommon/BOM")
-                description.set("A set of some common useful libraries.")
+                name.set("libcommon/Prometheus")
+                description.set("A set of some useful libraries for Prometheus.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {
                     license {

@@ -18,7 +18,7 @@ A set of some common useful libraries.
       <dependency>
         <groupId>com.github.fmjsjx</groupId>
         <artifactId>libcommon-bom</artifactId>
-        <version>2.6.2</version>
+        <version>2.9.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -59,7 +59,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation platform('com.github.fmjsjx:libcommon-bom:2.6.2')
+    implementation platform('com.github.fmjsjx:libcommon-bom:2.9.0')
     // Common Utility
     implementation 'com.github.fmjsjx:libcommon-util'
     // JSON library based on Jackson2
@@ -79,7 +79,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation(platform("com.github.fmjsjx:libcommon-bom:2.6.2"))
+    implementation(platform("com.github.fmjsjx:libcommon-bom:2.9.0"))
     // Common Utility
     implementation("com.github.fmjsjx:libcommon-util")
     // JSON library based on Jackson2
@@ -130,6 +130,14 @@ The [`libcommon-json-jsoniter`](libcommon-json-jsoniter) module provides an impl
 ### libcommon-json-dsljson
 
 The [`libcommon-json-dsljson`](libcommon-json-dsljson) module provides an implementation of [`libcommon-json`](libcommon-json) based on [`DSL-JSON`](https://github.com/ngs-doo/dsl-json).
+
+### libcommon-kotlin
+
+The [`libcommon-kotlin`](libcommon-kotlin) module provides some utilitiy class for [**Kotlin**](https://kotlinlang.org/).
+
+### libcommon-prometheus
+
+The [`libcommon-prometheus`](libcommon-prometheus) module provides Hotspot JVM metrics exports, that allow users set custom labels, based on [**prometheus**](https://prometheus.io).
 
 ### libcommon-yaml
 
