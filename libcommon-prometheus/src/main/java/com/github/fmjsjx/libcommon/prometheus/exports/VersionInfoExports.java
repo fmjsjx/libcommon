@@ -53,8 +53,7 @@ public final class VersionInfoExports extends Collector {
      */
     public VersionInfoExports(CustomLabelsProvider customLabelsProvider) {
         this.customLabelsProvider = Objects.requireNonNull(customLabelsProvider, "customLabelsProvider must not be null");
-        Stream.of("version", "vendor", "runtime")
-                .filter(v -> this.customLabelsProvider.labelNames().contains(v))
+        Stream.of("version", "vendor", "runtime").filter(customLabelsProvider.labelNames()::contains)
                 .findFirst().ifPresent(name -> {
                     throw new IllegalArgumentException("VersionInfoExports cannot have a custom label name: " + name);
                 });
