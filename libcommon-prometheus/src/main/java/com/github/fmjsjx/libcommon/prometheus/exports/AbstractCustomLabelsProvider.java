@@ -14,10 +14,20 @@ public abstract class AbstractCustomLabelsProvider implements CustomLabelsProvid
 
     private final List<String> labelNames;
 
+    /**
+     * Constructs instance with specified {@code labelNames} given.
+     *
+     * @param labelNames the label names
+     */
     protected AbstractCustomLabelsProvider(String... labelNames) {
         this(List.of(labelNames));
     }
 
+    /**
+     * Constructs instance with specified {@code labelNames} given.
+     *
+     * @param labelNames the label names
+     */
     protected AbstractCustomLabelsProvider(List<String> labelNames) {
         this.labelNames = List.copyOf(Objects.requireNonNull(labelNames, "labelNames must not be null"));
     }

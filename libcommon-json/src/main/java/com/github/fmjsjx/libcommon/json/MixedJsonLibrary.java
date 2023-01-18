@@ -7,10 +7,18 @@ import java.lang.reflect.Type;
  * A mixed implementation of {@link JsonLibrary}.
  *
  * @param <JSON> the type of dynamic JSON object
+ * @see JsonEncoder
+ * @see JsonDecoder
  */
 public class MixedJsonLibrary<JSON> implements JsonLibrary<JSON> {
 
+    /**
+     * The encoder.
+     */
     protected final JsonEncoder encoder;
+    /**
+     * The decoder.
+     */
     protected final JsonDecoder<JSON> decoder;
 
     /**

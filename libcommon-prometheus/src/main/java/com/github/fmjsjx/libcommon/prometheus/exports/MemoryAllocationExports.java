@@ -151,6 +151,11 @@ public class MemoryAllocationExports extends Collector {
         }
     }
 
+    /**
+     * Returns a list of {@link GarbageCollectorMXBean} objects in the Java virtual machine.
+     *
+     * @return a list of {@code GarbageCollectorMXBean} objects.
+     */
     protected List<GarbageCollectorMXBean> getGarbageCollectorMXBeans() {
         return ManagementFactory.getGarbageCollectorMXBeans();
     }

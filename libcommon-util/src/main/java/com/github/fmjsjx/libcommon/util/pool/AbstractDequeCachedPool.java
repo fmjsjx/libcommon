@@ -16,9 +16,21 @@ import java.util.Optional;
  */
 public abstract class AbstractDequeCachedPool<E, Q extends Deque<E>> implements CachedPool<E> {
 
+    /**
+     * The deque.
+     */
     protected final Q deque;
+    /**
+     * The limit size.
+     */
     protected final int limit;
 
+    /**
+     * Constructs new instance with specified {@code deque} and the specified {@code limit} given.
+     *
+     * @param deque the deque
+     * @param limit the limit size
+     */
     protected AbstractDequeCachedPool(Q deque, int limit) {
         if (limit <= 0) {
             throw new IllegalArgumentException("limit must be a positive integer");

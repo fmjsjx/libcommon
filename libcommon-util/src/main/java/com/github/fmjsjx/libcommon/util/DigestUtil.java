@@ -6,6 +6,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
+/**
+ * The utility class for digests.
+ */
 public class DigestUtil {
 
     /**
@@ -33,6 +36,11 @@ public class DigestUtil {
         // May add others...
         ;
 
+        /**
+         * Get the {@link DigestAlgorithm} from the specified {@code algorithm} name given.
+         * @param algorithm the algorithms name
+         * @return the {@code DigestAlgorithm}
+         */
         public static final DigestAlgorithm fromAlgorithm(String algorithm) {
             return switch (algorithm) {
                 case "MD5" -> MD5;

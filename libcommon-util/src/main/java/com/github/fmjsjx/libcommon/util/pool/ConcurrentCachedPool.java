@@ -13,6 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ConcurrentCachedPool<E> extends AbstractDequeCachedPool<E, ConcurrentLinkedDeque<E>> {
 
+    /**
+     * The estimated size.
+     */
     protected final AtomicInteger estimatedSize = new AtomicInteger();
 
     /**

@@ -11,7 +11,13 @@ public class TooManyRetryException extends RocketMQException {
     @Serial
     private static final long serialVersionUID = 7143769630958281001L;
 
+    /**
+     * The history causes.
+     */
     private final Iterable<Throwable> causes;
+    /**
+     * The retry times.
+     */
     private final int retryTimes;
 
     /**
