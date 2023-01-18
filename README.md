@@ -2,7 +2,7 @@
 
 A set of some common useful libraries.
 
-> Members of libraries always based on JDK 11+.
+> Since 3.0, members of libraries always based on JDK 17.
 
 
 ## Add Dependencies
@@ -18,7 +18,7 @@ A set of some common useful libraries.
       <dependency>
         <groupId>com.github.fmjsjx</groupId>
         <artifactId>libcommon-bom</artifactId>
-        <version>2.9.0</version>
+        <version>3.0.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -59,7 +59,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation platform('com.github.fmjsjx:libcommon-bom:2.9.0')
+    implementation platform('com.github.fmjsjx:libcommon-bom:3.0.0')
     // Common Utility
     implementation 'com.github.fmjsjx:libcommon-util'
     // JSON library based on Jackson2
@@ -79,7 +79,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation(platform("com.github.fmjsjx:libcommon-bom:2.9.0"))
+    implementation(platform("com.github.fmjsjx:libcommon-bom:3.0.0"))
     // Common Utility
     implementation("com.github.fmjsjx:libcommon-util")
     // JSON library based on Jackson2
@@ -98,14 +98,6 @@ There are a number of modules in LibCommon, here is a quick overview:
 ### libcommon-util
 
 The [`libcommon-util`](libcommon-util) module provides some common utility classes.
-
-### ~~libcommon-bson~~ (deprecated since 2.5, added since 2.0)
-
-**The [~~`libcommon-bson`~~](libcommon-bson) was deprecated since 2.5 and may be removed on higher version(e.g. 3.x).**
-
-**Please use [`bson-model`](https://github.com/fmjsjx/bson-model) instead.**
-
-The [~~`libcommon-bson`~~](libcommon-bson) module provides a ORM like model framework for BSON/MongoDB. 
 
 ### libcommon-collection
 
