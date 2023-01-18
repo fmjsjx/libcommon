@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.jdbc;
 
+import java.io.Serial;
 import java.sql.SQLException;
 
 /**
@@ -7,6 +8,7 @@ import java.sql.SQLException;
  */
 public class SQLRuntimeException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 3175714205735380275L;
 
     /**

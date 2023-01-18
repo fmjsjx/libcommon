@@ -1,10 +1,13 @@
 package com.github.fmjsjx.libcommon.rocketmq;
 
+import java.io.Serial;
+
 /**
  * Base exception for RocketMQ.
  */
 public class RocketMQException extends Exception {
 
+    @Serial
     private static final long serialVersionUID = -7361335888820087842L;
 
     /**

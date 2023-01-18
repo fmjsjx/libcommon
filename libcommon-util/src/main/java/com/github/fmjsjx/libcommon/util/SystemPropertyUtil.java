@@ -1,7 +1,5 @@
 package com.github.fmjsjx.libcommon.util;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -47,33 +45,12 @@ public class SystemPropertyUtil {
      *
      * @param key the key
      * @param def the default value
-     * @return the property value. {@code def} if there's no such property or if an
+     * @return the property value. {@code def} if there's no such property or if
      *         access to the specified property is not allowed.
      */
     public static String get(final String key, String def) {
         Objects.requireNonNull(key, "key must not be null");
-
-        String value = null;
-        try {
-            if (System.getSecurityManager() == null) {
-                value = System.getProperty(key);
-            } else {
-                value = AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty(key);
-                    }
-                });
-            }
-        } catch (SecurityException e) {
-            logger.warn("Unable to retrieve a system property '{}'; default values will be used.", key, e);
-        }
-
-        if (value == null) {
-            return def;
-        }
-
-        return value;
+        return System.getProperty(key, def);
     }
 
     /**
@@ -83,7 +60,7 @@ public class SystemPropertyUtil {
      *
      * @param key the key
      * @param def the default value
-     * @return the property value. {@code def} if there's no such property or if an
+     * @return the property value. {@code def} if there's no such property or if
      *         access to the specified property is not allowed.
      */
     public static boolean getBoolean(String key, boolean def) {
@@ -118,7 +95,7 @@ public class SystemPropertyUtil {
      *
      * @param key the key
      * @param def the default value
-     * @return the property value. {@code def} if there's no such property or if an
+     * @return the property value. {@code def} if there's no such property or if
      *         access to the specified property is not allowed.
      */
     public static int getInt(String key, int def) {
@@ -147,7 +124,7 @@ public class SystemPropertyUtil {
      *
      * @param key the key
      * @param def the default value
-     * @return the property value. {@code def} if there's no such property or if an
+     * @return the property value. {@code def} if there's no such property or if
      *         access to the specified property is not allowed.
      */
     public static long getLong(String key, long def) {

@@ -1,10 +1,13 @@
 package com.github.fmjsjx.libcommon.json;
 
+import java.io.Serial;
+
 /**
  * A runtime exception threw by a JSON encoder/decoder.
  */
 public class JsonException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 4234828639293246052L;
 
     /**

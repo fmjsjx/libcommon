@@ -2,6 +2,7 @@ package com.github.fmjsjx.libcommon.json;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -27,6 +28,7 @@ public class JsoniterLibrary implements JsonLibrary<Any> {
      */
     public static final class JsoniterException extends JsonException {
 
+        @Serial
         private static final long serialVersionUID = 2322005891481582607L;
 
         /**

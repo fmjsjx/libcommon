@@ -6,11 +6,9 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.jsoniter.JsonIterator;
 import com.jsoniter.ValueType;
 import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
-import com.jsoniter.spi.Decoder;
 import com.jsoniter.spi.Encoder;
 import com.jsoniter.spi.JsonException;
 import com.jsoniter.spi.JsoniterSpi;
@@ -90,21 +88,16 @@ public class Jdk8OptionalSupport {
                     }
 
                 });
-                JsoniterSpi.registerTypeDecoder(OptionalInt.class, new Decoder() {
-
-                    @Override
-                    public Object decode(JsonIterator iter) throws IOException {
-                        ValueType valueType = iter.whatIsNext();
-                        if (valueType == ValueType.NUMBER) {
-                            return OptionalInt.of(iter.readInt());
-                        } else if (valueType == ValueType.NULL) {
-                            iter.skip();
-                            return OptionalInt.empty();
-                        } else {
-                            throw new JsonException("expect int, but found " + valueType);
-                        }
+                JsoniterSpi.registerTypeDecoder(OptionalInt.class, iter -> {
+                    ValueType valueType = iter.whatIsNext();
+                    if (valueType == ValueType.NUMBER) {
+                        return OptionalInt.of(iter.readInt());
+                    } else if (valueType == ValueType.NULL) {
+                        iter.skip();
+                        return OptionalInt.empty();
+                    } else {
+                        throw new JsonException("expect int, but found " + valueType);
                     }
-
                 });
             } else {
                 throw new IllegalStateException("OptionalIntSupport.enable can only be called once");
@@ -159,21 +152,16 @@ public class Jdk8OptionalSupport {
                     }
 
                 });
-                JsoniterSpi.registerTypeDecoder(OptionalLong.class, new Decoder() {
-
-                    @Override
-                    public Object decode(JsonIterator iter) throws IOException {
-                        ValueType valueType = iter.whatIsNext();
-                        if (valueType == ValueType.NUMBER) {
-                            return OptionalLong.of(iter.readLong());
-                        } else if (valueType == ValueType.NULL) {
-                            iter.skip();
-                            return OptionalLong.empty();
-                        } else {
-                            throw new JsonException("expect long, but found " + valueType);
-                        }
+                JsoniterSpi.registerTypeDecoder(OptionalLong.class, iter -> {
+                    ValueType valueType = iter.whatIsNext();
+                    if (valueType == ValueType.NUMBER) {
+                        return OptionalLong.of(iter.readLong());
+                    } else if (valueType == ValueType.NULL) {
+                        iter.skip();
+                        return OptionalLong.empty();
+                    } else {
+                        throw new JsonException("expect long, but found " + valueType);
                     }
-
                 });
             } else {
                 throw new IllegalStateException("OptionalLongSupport.enable can only be called once");
@@ -229,21 +217,16 @@ public class Jdk8OptionalSupport {
                     }
 
                 });
-                JsoniterSpi.registerTypeDecoder(OptionalDouble.class, new Decoder() {
-
-                    @Override
-                    public Object decode(JsonIterator iter) throws IOException {
-                        ValueType valueType = iter.whatIsNext();
-                        if (valueType == ValueType.NUMBER) {
-                            return OptionalDouble.of(iter.readDouble());
-                        } else if (valueType == ValueType.NULL) {
-                            iter.skip();
-                            return OptionalDouble.empty();
-                        } else {
-                            throw new JsonException("expect double, but found " + valueType);
-                        }
+                JsoniterSpi.registerTypeDecoder(OptionalDouble.class, iter -> {
+                    ValueType valueType = iter.whatIsNext();
+                    if (valueType == ValueType.NUMBER) {
+                        return OptionalDouble.of(iter.readDouble());
+                    } else if (valueType == ValueType.NULL) {
+                        iter.skip();
+                        return OptionalDouble.empty();
+                    } else {
+                        throw new JsonException("expect double, but found " + valueType);
                     }
-
                 });
             } else {
                 throw new IllegalStateException("OptionalDoubleSupport.enable can only be called once");

@@ -155,14 +155,11 @@ public class RandomUtil {
      */
     public static final int randomOne(int[] values) {
         var length = values.length;
-        switch (length) {
-        case 0:
-            throw new IllegalArgumentException("values must not be empty");
-        case 1:
-            return values[0];
-        default:
-            return values[randomInt(length)];
-        }
+        return switch (length) {
+            case 0 -> throw new IllegalArgumentException("values must not be empty");
+            case 1 -> values[0];
+            default -> values[randomInt(length)];
+        };
     }
 
     /**
@@ -173,14 +170,11 @@ public class RandomUtil {
      */
     public static final long randomOne(long[] values) {
         var length = values.length;
-        switch (length) {
-        case 0:
-            throw new IllegalArgumentException("values must not be empty");
-        case 1:
-            return values[0];
-        default:
-            return values[randomInt(length)];
-        }
+        return switch (length) {
+            case 0 -> throw new IllegalArgumentException("values must not be empty");
+            case 1 -> values[0];
+            default -> values[randomInt(length)];
+        };
     }
 
     /**
@@ -192,14 +186,11 @@ public class RandomUtil {
      */
     public static final <T> T randomOne(T[] values) {
         var length = values.length;
-        switch (length) {
-        case 0:
-            throw new IllegalArgumentException("values must not be empty");
-        case 1:
-            return values[0];
-        default:
-            return values[randomInt(length)];
-        }
+        return switch (length) {
+            case 0 -> throw new IllegalArgumentException("values must not be empty");
+            case 1 -> values[0];
+            default -> values[randomInt(length)];
+        };
     }
 
     /**
@@ -212,14 +203,11 @@ public class RandomUtil {
     public static final <T> T randomOne(List<T> values) {
         Objects.requireNonNull(values, "values must not be null");
         var size = values.size();
-        switch (size) {
-        case 0:
-            throw new IllegalArgumentException("values must not be empty");
-        case 1:
-            return values.get(0);
-        default:
-            return values.get(randomInt(size));
-        }
+        return switch (size) {
+            case 0 -> throw new IllegalArgumentException("values must not be empty");
+            case 1 -> values.get(0);
+            default -> values.get(randomInt(size));
+        };
     }
 
     /**

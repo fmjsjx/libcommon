@@ -34,18 +34,13 @@ public class DigestUtil {
         ;
 
         public static final DigestAlgorithm fromAlgorithm(String algorithm) {
-            switch (algorithm) {
-            case "MD5":
-                return MD5;
-            case "SHA-1":
-                return SHA1;
-            case "SHA-256":
-                return SHA256;
-            case "SHA-512":
-                return SHA512;
-            default:
-                throw new NoSuchElementException("no such algorithm `" + algorithm + "`");
-            }
+            return switch (algorithm) {
+                case "MD5" -> MD5;
+                case "SHA-1" -> SHA1;
+                case "SHA-256" -> SHA256;
+                case "SHA-512" -> SHA512;
+                default -> throw new NoSuchElementException("no such algorithm `" + algorithm + "`");
+            };
         }
 
         private final String algorithm;
@@ -133,8 +128,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code MD5} digest using the specified array of
      * bytes, starting at the specified offset.
-     * 
-     * 
+     *
      * @param input  the array of bytes
      * @param offset the offset to start from in the array of bytes
      * @param len    the number of bytes to use, starting at
@@ -180,8 +174,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code MD5} digest using the specified array of
      * bytes, starting at the specified offset.
-     * 
-     * 
+     *
      * @param input  the array of bytes
      * @param offset the offset to start from in the array of bytes
      * @param len    the number of bytes to use, starting at
@@ -243,8 +236,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-1} digest using the specified array of
      * bytes, starting at the specified offset.
-     * 
-     * 
+     *
      * @param input  the array of bytes
      * @param offset the offset to start from in the array of bytes
      * @param len    the number of bytes to use, starting at
@@ -290,8 +282,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-1} digest using the specified array of
      * bytes, starting at the specified offset.
-     * 
-     * 
+     *
      * @param input  the array of bytes
      * @param offset the offset to start from in the array of bytes
      * @param len    the number of bytes to use, starting at
@@ -353,8 +344,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-256} digest using the specified array
      * of bytes, starting at the specified offset.
-     * 
-     * 
+     *
      * @param input  the array of bytes
      * @param offset the offset to start from in the array of bytes
      * @param len    the number of bytes to use, starting at
@@ -401,8 +391,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-256} digest using the specified array
      * of bytes, starting at the specified offset.
-     * 
-     * 
+     *
      * @param input  the array of bytes
      * @param offset the offset to start from in the array of bytes
      * @param len    the number of bytes to use, starting at
@@ -469,8 +458,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-512} digest using the specified array
      * of bytes, starting at the specified offset.
-     * 
-     * 
+     *
      * @param input  the array of bytes
      * @param offset the offset to start from in the array of bytes
      * @param len    the number of bytes to use, starting at
@@ -525,8 +513,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-512} digest using the specified array
      * of bytes, starting at the specified offset.
-     * 
-     * 
+     *
      * @param input  the array of bytes
      * @param offset the offset to start from in the array of bytes
      * @param len    the number of bytes to use, starting at
@@ -575,8 +562,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the digest using the specified array of bytes,
      * starting at the specified offset.
-     * 
-     * 
+     *
      * @param input  the array of bytes
      * @param offset the offset to start from in the array of bytes
      * @param len    the number of bytes to use, starting at
@@ -646,8 +632,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the digest using the specified array of bytes,
      * starting at the specified offset.
-     * 
-     * 
+     *
      * @param input  the array of bytes
      * @param offset the offset to start from in the array of bytes
      * @param len    the number of bytes to use, starting at

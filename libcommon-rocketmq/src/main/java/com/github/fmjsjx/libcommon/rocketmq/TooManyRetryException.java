@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.rocketmq;
 
+import java.io.Serial;
 import java.util.Collection;
 
 /**
@@ -7,6 +8,7 @@ import java.util.Collection;
  */
 public class TooManyRetryException extends RocketMQException {
 
+    @Serial
     private static final long serialVersionUID = 7143769630958281001L;
 
     private final Iterable<Throwable> causes;
