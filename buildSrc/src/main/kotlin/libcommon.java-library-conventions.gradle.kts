@@ -51,17 +51,19 @@ dependencies {
 
 }
 
+val javaVersion = 17
+
 java {
     withSourcesJar()
     withJavadocJar()
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
 }
 
 tasks.compileJava {
     options.encoding = "UTF-8"
-    options.release.set(17)
+    options.release.set(javaVersion)
 }
 
 tasks.javadoc {
