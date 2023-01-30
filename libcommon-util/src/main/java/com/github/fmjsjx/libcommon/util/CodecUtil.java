@@ -148,7 +148,7 @@ public class CodecUtil {
             throw new ArrayIndexOutOfBoundsException("remaining length must >= 8 but was " + remaining);
         }
         return ((src[offset] & 0xffL) << 56) | ((src[offset + 1] & 0xffL) << 48) | ((src[offset + 2] & 0xffL) << 40)
-                | ((src[offset + 3] & 0xffL) << 32) | ((src[offset + 4] & 0xff) << 24)
+                | ((src[offset + 3] & 0xffL) << 32) | ((src[offset + 4] & 0xffL) << 24)
                 | ((src[offset + 5] & 0xff) << 16) | ((src[offset + 6] & 0xff) << 8) | (src[offset + 7] & 0xff);
     }
 

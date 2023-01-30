@@ -118,7 +118,7 @@ public class RedisUtil {
         return redis.<R>evalsha(script.sha1(), script.outputType(), keys).<CompletionStage<R>>handle((r, e) -> {
             if (e != null) {
                 if (e instanceof RedisNoScriptException) {
-                    return redis.<R>eval(script.script(), script.outputType(), keys);
+                    return redis.eval(script.script(), script.outputType(), keys);
                 }
                 return CompletableFuture.failedStage(e);
             }
@@ -144,7 +144,7 @@ public class RedisUtil {
         return redis.<R>evalsha(script.sha1(), script.outputType(), keys, values).<CompletionStage<R>>handle((r, e) -> {
             if (e != null) {
                 if (e instanceof RedisNoScriptException) {
-                    return redis.<R>eval(script.script(), script.outputType(), keys, values);
+                    return redis.eval(script.script(), script.outputType(), keys, values);
                 }
                 return CompletableFuture.failedStage(e);
             }
@@ -297,9 +297,9 @@ public class RedisUtil {
             var delayMillis = Math.min(eachWait, maxWait);
             var delayedExecutor = CompletableFuture.delayedExecutor(delayMillis, TimeUnit.MILLISECONDS);
             var remainingWait = maxWait - eachWait;
-            return CompletableFuture.supplyAsync(() -> {
-                return tryLock(redis, key, value, timeout, remainingWait, eachWait);
-            }, delayedExecutor).thenCompose(Function.identity());
+            return CompletableFuture
+                    .supplyAsync(() -> tryLock(redis, key, value, timeout, remainingWait, eachWait), delayedExecutor)
+                    .thenCompose(Function.identity());
         });
     }
 
@@ -347,9 +347,9 @@ public class RedisUtil {
             var delayMillis = Math.min(eachWait, maxWait);
             var delayedExecutor = delayedExecutor(delayMillis, executor);
             var remainingWait = maxWait - eachWait;
-            return CompletableFuture.supplyAsync(() -> {
-                return tryLock(redis, key, value, timeout, remainingWait, eachWait, executor);
-            }, delayedExecutor).thenCompose(Function.identity());
+            return CompletableFuture
+                    .supplyAsync(() -> tryLock(redis, key, value, timeout, remainingWait, eachWait, executor), delayedExecutor)
+                    .thenCompose(Function.identity());
         }, executor);
     }
 

@@ -41,14 +41,28 @@ public class StandardExports extends Collector {
     private final RuntimeMXBean runtimeBean;
     private final boolean linux;
 
+    /**
+     * Constructs new {@link StandardExports} instance without custom labels.
+     */
     public StandardExports() {
         this(EmptyCustomLabelsProvider.getInstance());
     }
 
+    /**
+     * Constructs new {@link StandardExports} instance with custom labels.
+     *
+     * @param customLabelNames  custom label names
+     * @param customLabelValues custom label values
+     */
     public StandardExports(List<String> customLabelNames, List<String> customLabelValues) {
         this(new DefaultCustomLabelsProvider(customLabelNames, customLabelValues));
     }
 
+    /**
+     * Constructs new {@link StandardExports} instance with custom labels.
+     *
+     * @param customLabelsProvider the custom labels provider
+     */
     public StandardExports(CustomLabelsProvider customLabelsProvider) {
         this(customLabelsProvider, new StatusReader(),
                 ManagementFactory.getOperatingSystemMXBean(),

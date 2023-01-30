@@ -120,16 +120,14 @@ public final class KotlinReflectionUtil {
     }
 
     private static final Stream<? extends KFunction<?>> toKFunctionStream(KCallable<?> it) {
-        if (it instanceof KMutableProperty<?>) {
-            var property = (KMutableProperty<?>) it;
+        if (it instanceof KMutableProperty<?> property) {
             return Stream.of(property.getGetter(), property.getSetter());
         }
-        if (it instanceof KProperty<?>) {
-            var property = (KProperty<?>) it;
+        if (it instanceof KProperty<?> property) {
             return Stream.of(property.getGetter());
         }
-        if (it instanceof KFunction<?>) {
-            return Stream.of((KFunction<?>) it);
+        if (it instanceof KFunction<?> func) {
+            return Stream.of(func);
         }
         return Stream.empty();
     }

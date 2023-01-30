@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Container class for immutable collections.
@@ -111,7 +110,6 @@ final class ImmutableCollections {
         return (ListSet<E>) ListSetN.EMPTY_LIST_SET;
     }
 
-    @SuppressWarnings("serial")
     static final class ListSet12<E> extends AbstractImmutableListSet<E> implements Serializable {
 
         final List<E> internalList;
@@ -142,7 +140,6 @@ final class ImmutableCollections {
 
     }
 
-    @SuppressWarnings("serial")
     static final class ListSetN<E> extends AbstractImmutableListSet<E> implements Serializable {
 
         static ListSetN<?> EMPTY_LIST_SET = new ListSetN<>();
@@ -151,7 +148,7 @@ final class ImmutableCollections {
 
         ListSetN(E[] input, boolean distinct) {
             internalList = input.length == 0 ? List.of()
-                    : (distinct ? Arrays.stream(input).distinct().collect(Collectors.toUnmodifiableList())
+                    : (distinct ? Arrays.stream(input).distinct().toList()
                             : List.of(input));
         }
 

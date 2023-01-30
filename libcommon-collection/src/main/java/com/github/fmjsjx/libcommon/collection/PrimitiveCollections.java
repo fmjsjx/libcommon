@@ -69,13 +69,7 @@ public class PrimitiveCollections {
         return EmptyLongSet.INSTANCE;
     }
 
-    private static final class UnmodifiableIntSet implements IntSet {
-
-        private final IntSet s;
-
-        private UnmodifiableIntSet(IntSet s) {
-            this.s = s;
-        }
+    private record UnmodifiableIntSet(IntSet s) implements IntSet {
 
         @Override
         public int size() {
@@ -162,13 +156,7 @@ public class PrimitiveCollections {
             return s.intStream();
         }
 
-        private class IteratorImpl implements Iterator<Integer> {
-
-            final Iterator<Integer> iter;
-
-            private IteratorImpl(Iterator<Integer> iter) {
-                this.iter = iter;
-            }
+        private record IteratorImpl(Iterator<Integer> iter) implements Iterator<Integer> {
 
             @Override
             public boolean hasNext() {
@@ -278,13 +266,7 @@ public class PrimitiveCollections {
 
     }
 
-    private static final class UnmodifiableLongSet implements LongSet {
-
-        private final LongSet s;
-
-        private UnmodifiableLongSet(LongSet s) {
-            this.s = s;
-        }
+    private record UnmodifiableLongSet(LongSet s) implements LongSet {
 
         @Override
         public int size() {
@@ -371,13 +353,7 @@ public class PrimitiveCollections {
             return s.longStream();
         }
 
-        private class IteratorImpl implements Iterator<Long> {
-
-            final Iterator<Long> iter;
-
-            private IteratorImpl(Iterator<Long> iter) {
-                this.iter = iter;
-            }
+        private record IteratorImpl(Iterator<Long> iter) implements Iterator<Long> {
 
             @Override
             public boolean hasNext() {

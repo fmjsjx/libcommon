@@ -82,21 +82,12 @@ public interface LuaScript<R> {
     @SuppressWarnings("unchecked")
     static <R> LuaScript<R> of(String script, ScriptOutputType outputType) {
         var sha1 = DigestUtil.sha1AsHex(script);
-        switch (outputType) {
-        case BOOLEAN:
-            return (LuaScript<R>) new DefaultLuaScript<>(script, sha1, outputType, Boolean.class);
-        case INTEGER:
-            return (LuaScript<R>) new DefaultLuaScript<>(script, sha1, outputType, Long.class);
-        case MULTI:
-            return (LuaScript<R>) new DefaultLuaScript<>(script, sha1, outputType, List.class);
-        case STATUS:
-            return (LuaScript<R>) new DefaultLuaScript<>(script, sha1, outputType, String.class);
-        case VALUE:
-            return (LuaScript<R>) new DefaultLuaScript<>(script, sha1, outputType, String.class);
-        default:
-            // can't reach this line
-            return (LuaScript<R>) new DefaultLuaScript<>(script, sha1, outputType, null);
-        }
+        return (LuaScript<R>) switch (outputType) {
+            case BOOLEAN -> new DefaultLuaScript<>(script, sha1, outputType, Boolean.class);
+            case INTEGER -> new DefaultLuaScript<>(script, sha1, outputType, Long.class);
+            case MULTI -> new DefaultLuaScript<>(script, sha1, outputType, List.class);
+            case STATUS, VALUE -> new DefaultLuaScript<>(script, sha1, outputType, String.class);
+        };
     }
 
     /**

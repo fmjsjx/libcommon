@@ -110,8 +110,7 @@ public class DateTimeUtil {
      * @return the offset date-time
      */
     public static final OffsetDateTime offset(long epochSecond, ZoneId zone) {
-        if (zone instanceof ZoneOffset) {
-            var offset = (ZoneOffset) zone;
+        if (zone instanceof ZoneOffset offset) {
             return OffsetDateTime.of(local(epochSecond, offset), offset);
         }
         return OffsetDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), zone);

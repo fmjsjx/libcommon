@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.aliyunons;
 
+import java.io.Serial;
 import java.util.Collection;
 
 /**
@@ -7,9 +8,16 @@ import java.util.Collection;
  */
 public class TooManyRetryException extends ONSException {
 
+    @Serial
     private static final long serialVersionUID = 2093368191526503232L;
 
+    /**
+     * The history causes.
+     */
     private final Iterable<Throwable> causes;
+    /**
+     * The retry times.
+     */
     private final int retryTimes;
 
     /**

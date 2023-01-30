@@ -35,14 +35,11 @@ public class ChecksumUtil {
          * @return a {@code CheckType}
          */
         public static final CheckType forName(String name) {
-            switch (name) {
-            case "CRC-32":
-                return CRC_32;
-            case "CRC-32C":
-                return CRC_32C;
-            default:
-                throw new NoSuchElementException("No such CheckType for name " + name);
-            }
+            return switch (name) {
+                case "CRC-32" -> CRC_32;
+                case "CRC-32C" -> CRC_32C;
+                default -> throw new NoSuchElementException("No such CheckType for name " + name);
+            };
         }
 
         private final String typeName;
@@ -113,7 +110,7 @@ public class ChecksumUtil {
      */
     @SuppressWarnings("unchecked")
     public static final <T extends Checksum> WrappedChecksum<T> wrappedChecksum(CheckType checkType) {
-        return new WrappedChecksum<T>(checkType, (T) checkType.get());
+        return new WrappedChecksum<>(checkType, (T) checkType.get());
     }
 
     private static final WrappedChecksum<CRC32> wrappedCRC32() {

@@ -89,6 +89,11 @@ public class Jackson2YamlLibrary implements YamlLibrary<JsonNode> {
 
     private final YAMLMapper yamlMapper;
 
+    /**
+     * Constructs a new {@link Jackson2YamlLibrary} with the specified {@link YAMLMapper} given.
+     *
+     * @param yamlMapper the {@link YAMLMapper}
+     */
     public Jackson2YamlLibrary(YAMLMapper yamlMapper) {
         this.yamlMapper = Objects.requireNonNull(yamlMapper, "yamlMapper must not be null");
     }

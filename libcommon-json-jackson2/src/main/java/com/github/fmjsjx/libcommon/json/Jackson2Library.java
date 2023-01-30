@@ -2,6 +2,7 @@ package com.github.fmjsjx.libcommon.json;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
@@ -32,6 +33,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      */
     public static final class Jackson2Exception extends JsonException {
 
+        @Serial
         private static final long serialVersionUID = -3634220857125631467L;
 
         /**

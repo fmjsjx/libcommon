@@ -20,8 +20,16 @@ import java.util.function.IntFunction;
  */
 public abstract class AbstractListSet<E> extends AbstractSet<E> implements ListSet<E> {
 
+    /**
+     * The list for internal use.
+     */
     protected final List<E> internalList;
 
+    /**
+     * Constructs {@link AbstractListSet} instances with the specified {@code internalList} given.
+     *
+     * @param internalList the list for internal use
+     */
     protected AbstractListSet(List<E> internalList) {
         this.internalList = Objects.requireNonNull(internalList, "internalList must not be null");
     }

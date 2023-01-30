@@ -9,10 +9,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
-import com.jsoniter.spi.Decoder;
 import com.jsoniter.spi.Encoder;
 import com.jsoniter.spi.JsoniterSpi;
 
@@ -98,12 +96,9 @@ public class Jdk8TimeSupport {
                         return Any.wrap(formatter.format((LocalDateTime) obj));
                     }
                 });
-                JsoniterSpi.registerTypeDecoder(LocalDateTime.class, new Decoder() {
-                    @Override
-                    public Object decode(JsonIterator iter) throws IOException {
-                        String value = iter.readString();
-                        return value == null ? null : LocalDateTime.parse(value, formatter);
-                    }
+                JsoniterSpi.registerTypeDecoder(LocalDateTime.class, iter -> {
+                    String value = iter.readString();
+                    return value == null ? null : LocalDateTime.parse(value, formatter);
                 });
             } else {
                 throw new IllegalStateException("LocalDateTimeSupport.enable can only be called once");
@@ -158,12 +153,9 @@ public class Jdk8TimeSupport {
                         return Any.wrap(formatter.format((LocalDate) obj));
                     }
                 });
-                JsoniterSpi.registerTypeDecoder(LocalDate.class, new Decoder() {
-                    @Override
-                    public Object decode(JsonIterator iter) throws IOException {
-                        String value = iter.readString();
-                        return value == null ? null : LocalDate.parse(value, formatter);
-                    }
+                JsoniterSpi.registerTypeDecoder(LocalDate.class, iter -> {
+                    String value = iter.readString();
+                    return value == null ? null : LocalDate.parse(value, formatter);
                 });
             } else {
                 throw new IllegalStateException("LocalDateSupport.enable can only be called once");
@@ -218,12 +210,9 @@ public class Jdk8TimeSupport {
                         return Any.wrap(formatter.format((LocalTime) obj));
                     }
                 });
-                JsoniterSpi.registerTypeDecoder(LocalTime.class, new Decoder() {
-                    @Override
-                    public Object decode(JsonIterator iter) throws IOException {
-                        String value = iter.readString();
-                        return value == null ? null : LocalTime.parse(value, formatter);
-                    }
+                JsoniterSpi.registerTypeDecoder(LocalTime.class, iter -> {
+                    String value = iter.readString();
+                    return value == null ? null : LocalTime.parse(value, formatter);
                 });
             } else {
                 throw new IllegalStateException("LocalTimeSupport.enable can only be called once");
@@ -278,12 +267,9 @@ public class Jdk8TimeSupport {
                         return Any.wrap(formatter.format((OffsetDateTime) obj));
                     }
                 });
-                JsoniterSpi.registerTypeDecoder(OffsetDateTime.class, new Decoder() {
-                    @Override
-                    public Object decode(JsonIterator iter) throws IOException {
-                        String value = iter.readString();
-                        return value == null ? null : OffsetDateTime.parse(value, formatter);
-                    }
+                JsoniterSpi.registerTypeDecoder(OffsetDateTime.class, iter -> {
+                    String value = iter.readString();
+                    return value == null ? null : OffsetDateTime.parse(value, formatter);
                 });
             } else {
                 throw new IllegalStateException("OffsetDateTimeSupport.enable can only be called once");
@@ -335,12 +321,9 @@ public class Jdk8TimeSupport {
                         return Any.wrap(formatter.format((ZonedDateTime) obj));
                     }
                 });
-                JsoniterSpi.registerTypeDecoder(ZonedDateTime.class, new Decoder() {
-                    @Override
-                    public Object decode(JsonIterator iter) throws IOException {
-                        String value = iter.readString();
-                        return value == null ? null : ZonedDateTime.parse(value, formatter);
-                    }
+                JsoniterSpi.registerTypeDecoder(ZonedDateTime.class, iter -> {
+                    String value = iter.readString();
+                    return value == null ? null : ZonedDateTime.parse(value, formatter);
                 });
             } else {
                 throw new IllegalStateException("ZonedDateTimeSupport.enable can only be called once");

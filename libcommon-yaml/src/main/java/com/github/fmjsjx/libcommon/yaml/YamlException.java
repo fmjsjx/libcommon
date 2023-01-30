@@ -2,11 +2,14 @@ package com.github.fmjsjx.libcommon.yaml;
 
 import com.github.fmjsjx.libcommon.json.JsonException;
 
+import java.io.Serial;
+
 /**
  * A runtime exception threw by a YAML encoder/decoder.
  */
 public class YamlException extends JsonException {
 
+    @Serial
     private static final long serialVersionUID = 3898138564693760208L;
 
     /**

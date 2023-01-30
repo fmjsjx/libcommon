@@ -68,21 +68,20 @@ public interface ListSet<E> extends Set<E> {
      */
     @SafeVarargs
     static <E> ListSet<E> of(E... elements) {
-        switch (elements.length) {
-        case 0:
-            return ImmutableCollections.emptyListSet();
-        case 1:
-            return new ImmutableCollections.ListSet12<>(elements[0]);
-        case 2:
-            var e0 = elements[0];
-            var e1 = elements[1];
-            if (e0.equals(Objects.requireNonNull(e1))) { // implicit null check of e0
-                return new ImmutableCollections.ListSet12<>(e0);
+        return switch (elements.length) {
+            case 0 -> ImmutableCollections.emptyListSet();
+
+            case 1 -> new ImmutableCollections.ListSet12<>(elements[0]);
+
+            case 2 -> {
+                var e0 = elements[0];
+                var e1 = elements[1];
+                // implicit null check of e0
+                yield e0.equals(Objects.requireNonNull(e1)) ? new ImmutableCollections.ListSet12<>(e0)
+                        : new ImmutableCollections.ListSet12<>(e0, e1);
             }
-            return new ImmutableCollections.ListSet12<>(e0, e1);
-        default:
-            return new ImmutableCollections.ListSetN<>(elements);
-        }
+            default -> new ImmutableCollections.ListSetN<>(elements);
+        };
     }
 
     /**
