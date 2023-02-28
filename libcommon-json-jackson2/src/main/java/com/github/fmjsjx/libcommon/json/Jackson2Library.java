@@ -140,7 +140,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     }
 
     private final ObjectMapper objectMapper;
-    private TypeReferenceFactory typeReferenceFactory = DefaultTypeReferenceFactory.globalInstance();
+    private TypeReferenceFactory typeReferenceFactory = TypeReferenceFactory.getDefault();
 
     /**
      * Creates a new {@link Jackson2Library} with the specified

@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author MJ Fang
  * @see TypeReferenceFactory
- * @see SimpleTypeReferenceFactory
  * @since 3.1
  */
 public class DefaultTypeReferenceFactory implements TypeReferenceFactory {
@@ -34,7 +33,7 @@ public class DefaultTypeReferenceFactory implements TypeReferenceFactory {
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypeReference<T> create(ParameterizedType type) {
-        return (TypeReference<T>) typeReferences.computeIfAbsent(type, TypeReferenceImpl::new);
+        return (TypeReference<T>) typeReferences.computeIfAbsent(type, TypeReferenceFactory.simple());
     }
 
 }
