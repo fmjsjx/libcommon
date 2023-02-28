@@ -1,21 +1,29 @@
 plugins {
     id("libcommon.java-library-conventions")
+    id("libcommon.kotlin-library-conventions")
     id("libcommon.publish-conventions")
 }
 
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
-    
     implementation(project(":libcommon-util"))
-    
     api("io.lettuce:lettuce-core")
 
+    compileOnlyApi("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    compileOnlyApi("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
+    compileOnlyApi("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    compileOnlyApi("io.projectreactor.kotlin:reactor-kotlin-extensions")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api")
-
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-
     testImplementation("org.apache.logging.log4j:log4j-slf4j-impl")
+    testImplementation("io.mockk:mockk")
+
+    testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    testImplementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
 }
 

@@ -22,6 +22,8 @@ dependencies {
     api(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4"))
     // prometheus
     api(platform("io.prometheus:simpleclient_bom:0.16.0"))
+    // kotlin
+    api(platform("org.jetbrains.kotlin:kotlin-bom:1.8.10"))
 
     constraints {
         implementation("org.slf4j:slf4j-api:2.0.6")
@@ -42,9 +44,6 @@ dependencies {
         implementation("org.jruby:jruby-core:$jrubyVersion")
         implementation("org.jruby:jruby-stdlib:$jrubyVersion")
         implementation("org.yaml:snakeyaml:1.33")
-        val kotlinVersion = "1.8.10"
-        implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     }
     // log4j2
     implementation(platform("org.apache.logging.log4j:log4j-bom:2.20.0"))
