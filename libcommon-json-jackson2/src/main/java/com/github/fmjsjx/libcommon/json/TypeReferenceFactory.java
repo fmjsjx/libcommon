@@ -20,7 +20,7 @@ public interface TypeReferenceFactory extends Function<ParameterizedType, TypeRe
      *
      * @return the singleton instance of the simple implementation of {@code TypeReferenceFactory}.
      */
-    static TypeReferenceFactory simple() {
+    static TypeReferenceFactory getSimple() {
         return TypeReferenceImpl::new;
     }
 

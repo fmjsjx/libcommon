@@ -33,7 +33,7 @@ public class DefaultTypeReferenceFactory implements TypeReferenceFactory {
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypeReference<T> create(ParameterizedType type) {
-        return (TypeReference<T>) typeReferences.computeIfAbsent(type, TypeReferenceFactory.simple());
+        return (TypeReference<T>) typeReferences.computeIfAbsent(type, TypeReferenceFactory.getSimple());
     }
 
 }
