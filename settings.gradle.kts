@@ -14,6 +14,7 @@ pluginManagement {
 rootProject.name = "libcommon"
 include(":libcommon-aliyunons")
 include(":libcommon-bom")
+include(":libcommon-bson")
 include(":libcommon-collection")
 include(":libcommon-function")
 include(":libcommon-jdbc")
