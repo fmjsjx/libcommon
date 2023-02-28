@@ -9,7 +9,7 @@ A set of some common useful libraries.
 
 ### Add Maven Dependencies
 `pom.xml`
-```xml
+```
 ...
   <dependencyManagement>
     <dependencies>
@@ -18,7 +18,7 @@ A set of some common useful libraries.
       <dependency>
         <groupId>com.github.fmjsjx</groupId>
         <artifactId>libcommon-bom</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.0-RC1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -51,7 +51,7 @@ A set of some common useful libraries.
 ### Add Gradle Dependencies
 
 #### Groovy DSL
-```groovy
+```
 ...
 repositories {
     mavenCentral
@@ -59,7 +59,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation platform('com.github.fmjsjx:libcommon-bom:3.0.0')
+    implementation platform('com.github.fmjsjx:libcommon-bom:3.1.0-RC1')
     // Common Utility
     implementation 'com.github.fmjsjx:libcommon-util'
     // JSON library based on Jackson2
@@ -71,7 +71,7 @@ dependencies {
 ...
 ```
 #### Kotlin DSL
-```kotlin
+```
 ...
 repositories {
     mavenCentral()
@@ -79,7 +79,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation(platform("com.github.fmjsjx:libcommon-bom:3.0.0"))
+    implementation(platform("com.github.fmjsjx:libcommon-bom:3.1.0-RC1"))
     // Common Utility
     implementation("com.github.fmjsjx:libcommon-util")
     // JSON library based on Jackson2
@@ -150,3 +150,7 @@ The [`libcommon-aliyunons`](libcommon-aliyunons) module provides additional util
 ### libcommon-rocketmq
 
 The [`libcommon-rocketmq`](libcommon-rocketmq) module provides additional utility functions for [`RocketMQ`](https://rocketmq.apache.org/).
+
+### libcommon-bson
+
+The [`libcommon-bson`](libcommon-bson) module provides some additional kotlin extensions for [`BSON`](https://www.mongodb.com/basics/bson).
