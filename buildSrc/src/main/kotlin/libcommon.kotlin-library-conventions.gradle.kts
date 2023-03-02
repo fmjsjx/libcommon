@@ -7,7 +7,7 @@ plugins {
 dependencies {
     // kotlin
     val kotlinVersion = "1.8.10"
-    implementation("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion")
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
 
     constraints {
         // reactor-kotlin-extensions

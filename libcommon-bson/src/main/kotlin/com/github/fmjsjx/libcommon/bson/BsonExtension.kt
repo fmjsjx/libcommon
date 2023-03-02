@@ -7,6 +7,8 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.*
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.jvm.Throws
 
 
@@ -65,6 +67,9 @@ fun <T : Number> T.toDecimal128() =
         is Int -> Decimal128(this.toLong())
         is Byte -> Decimal128(this.toLong())
         is Short -> Decimal128(this.toLong())
+        is Decimal128 -> this
+        is AtomicInteger -> Decimal128(this.toLong())
+        is AtomicLong -> Decimal128(this.toLong())
         else -> Decimal128(BigDecimal(toString()))
     }
 
@@ -104,6 +109,27 @@ fun ObjectId?.toBsonObjectIdOrNull(): BsonValue = this?.toBsonObjectId() ?: Bson
 fun <T : Any> T.toBsonString() = BsonString(toString())
 
 /**
+ * Extension to construct a new [BsonString] instance with this char array.
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun CharArray.toBsonString() = BsonString(concatToString())
+
+/**
+ * Extension to construct a new [BsonBoolean] instance with this [Boolean].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun Boolean.toBsonBoolean(): BsonBoolean = BsonBoolean.valueOf(this)
+
+/**
+ * Extension to construct a new [BsonBoolean] instance or the singleton [BsonNull] instance with this [Boolean].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun Boolean?.toBsonBooleanOtNull(): BsonValue = this?.toBsonBoolean() ?: BsonNull.VALUE
+
+/**
  * Extension to construct a new [BsonString] instance or the singleton [BsonNull] instance with this object.
  * @author MJ Fang
  * @since 3.1
@@ -123,6 +149,20 @@ fun UUID.toBsonBinary() = BsonBinary(this)
  * @since 3.1
  */
 fun UUID?.toBsonBinaryOrNull(): BsonValue = this?.toBsonBinary() ?: BsonNull.VALUE
+
+/**
+ * Extension to construct a new [BsonBinary] instance with this [ByteArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun ByteArray.toBsonBinary() = BsonBinary(this)
+
+/**
+ * Extension to construct a new [BsonBinary] instance or the singleton [BsonNull] instance with this [ByteArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun ByteArray?.toBsonBinaryOrNull(): BsonValue = this?.toBsonBinary() ?: BsonNull.VALUE
 
 /**
  * Extension to construct a new [BsonDateTime] instance with this [ZonedDateTime].
@@ -224,6 +264,90 @@ inline fun <E : Any?> Array<E>.toBsonArray(transform: (E) -> BsonValue) = mapTo(
  */
 inline fun <E : Any?> Array<E>?.toBsonArrayOrNull(transform: (E) -> BsonValue): BsonValue =
     this?.toBsonArray(transform) ?: BsonNull.VALUE
+
+/**
+ * Extension to construct a new [BsonArray] instance with this [ShortArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun ShortArray.toBsonArray() = mapTo(BsonArray(size), Number::toBsonInt32)
+
+/**
+ * Extension to construct a new [BsonArray] instance or the singleton [BsonNull] instance with this [ShortArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun ShortArray?.toBsonArrayOrNull(): BsonValue = this?.toBsonArray() ?: BsonNull.VALUE
+
+/**
+ * Extension to construct a new [BsonArray] instance with this [IntArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun IntArray.toBsonArray() = mapTo(BsonArray(size), Number::toBsonInt32)
+
+/**
+ * Extension to construct a new [BsonArray] instance or the singleton [BsonNull] instance with this [IntArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun IntArray?.toBsonArrayOrNull(): BsonValue = this?.toBsonArray() ?: BsonNull.VALUE
+
+/**
+ * Extension to construct a new [BsonArray] instance with this [LongArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun LongArray.toBsonArray() = mapTo(BsonArray(size), Number::toBsonInt64)
+
+/**
+ * Extension to construct a new [BsonArray] instance or the singleton [BsonNull] instance with this [LongArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun LongArray?.toBsonArrayOrNull(): BsonValue = this?.toBsonArray() ?: BsonNull.VALUE
+
+/**
+ * Extension to construct a new [BsonArray] instance with this [DoubleArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun DoubleArray.toBsonArray() = mapTo(BsonArray(size), Number::toBsonDouble)
+
+/**
+ * Extension to construct a new [BsonArray] instance or the singleton [BsonNull] instance with this [DoubleArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun DoubleArray?.toBsonArrayOrNull(): BsonValue = this?.toBsonArray() ?: BsonNull.VALUE
+
+/**
+ * Extension to construct a new [BsonArray] instance with this [FloatArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun FloatArray.toBsonArray() = mapTo(BsonArray(size), Number::toBsonDouble)
+
+/**
+ * Extension to construct a new [BsonArray] instance or the singleton [BsonNull] instance with this [FloatArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun FloatArray?.toBsonArrayOrNull(): BsonValue = this?.toBsonArray() ?: BsonNull.VALUE
+
+/**
+ * Extension to construct a new [BsonArray] instance with this [BooleanArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun BooleanArray.toBsonArray() = mapTo(BsonArray(size), Boolean::toBsonBoolean)
+
+/**
+ * Extension to construct a new [BsonArray] instance or the singleton [BsonNull] instance with this [BooleanArray].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun BooleanArray?.toBsonArrayOrNull(): BsonValue = this?.toBsonArray() ?: BsonNull.VALUE
 
 /**
  * Extension to convert to [Int] value from this [BsonValue].

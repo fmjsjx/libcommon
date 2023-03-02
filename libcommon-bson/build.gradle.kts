@@ -6,7 +6,9 @@ plugins {
 
 dependencies {
     implementation("org.slf4j:slf4j-api")
+    implementation(project(":libcommon-util"))
     api("org.mongodb:bson")
+    api("org.mongodb:mongodb-driver-core")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
