@@ -6,7 +6,6 @@ import org.bson.conversions.Bson;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.github.fmjsjx.libcommon.bson.BsonValueUtil.*;
 
@@ -36,7 +35,7 @@ public class ExpressionOperators {
      * @return the $abs arithmetic expression operator
      */
     public static final Bson add(Iterable<?> expressions) {
-        var array = new BsonArray();
+        var array = new BsonArray(expressions instanceof Collection<?> collection ? collection.size() : 10);
         for (var expression : expressions) {
             array.add(BsonValueUtil.encode(expression));
         }
@@ -147,7 +146,7 @@ public class ExpressionOperators {
      * @return the $multiply arithmetic expression operator
      */
     public static final Bson multiply(Object... expressions) {
-        var array = new BsonArray();
+        var array = new BsonArray(expressions.length);
         for (var expression : expressions) {
             array.add(BsonValueUtil.encode(expression));
         }
@@ -339,30 +338,6 @@ public class ExpressionOperators {
     }
 
     /**
-     * Creates a $filter array expression operator.
-     *
-     * @param input an expression that resolves to an array
-     * @param cond  an expression that resolves to a boolean value used to determine if an element should be included in the output array
-     * @param as    a name for the variable that represents each individual element of the input array
-     * @return the $filter array expression operator
-     */
-    public static final Bson filter(Object input, Object cond, String as) {
-        return filter(input, cond, as, null);
-    }
-
-    /**
-     * Creates a $filter array expression operator.
-     *
-     * @param input an expression that resolves to an array
-     * @param cond  an expression that resolves to a boolean value used to determine if an element should be included in the output array
-     * @param limit an umber expression that restricts the number of matching array elements that $filter returns
-     * @return the $filter array expression operator
-     */
-    public static final Bson filter(Object input, Object cond, Object limit) {
-        return filter(input, cond, null, limit);
-    }
-
-    /**
      * Creates a $first array expression operator.
      *
      * @param expression can be any valid expression as long as it resolves to an array, null or missing
@@ -486,10 +461,11 @@ public class ExpressionOperators {
      * @return the $map array expression operator
      */
     public static final Bson map(Object input, String as, Object in) {
-        var doc = new BsonDocument(4).append("input", encode(input)).append("in", encode(in));
+        var doc = new BsonDocument(4).append("input", encode(input));
         if (as != null) {
             doc.append("as", new BsonString(as));
         }
+        doc.append("in", encode(in));
         return operator("$map", doc);
     }
 
@@ -558,6 +534,19 @@ public class ExpressionOperators {
     }
 
     /**
+     * Creates a $range array expression operator.
+     *
+     * @param start an integer that specifies the start of the sequence, can be any valid expression that resolves to an
+     *              integer
+     * @param end   an integer that specifies the exclusive upper limit of the sequence, can be any valid expression
+     *              that resolves to an integer
+     * @return the $range array expression operator
+     */
+    public static final Bson range(Object start, Object end) {
+        return range(start, end, null);
+    }
+
+    /**
      * Creates a $reduce array expression operator.
      *
      * @param input        can be any valid expression that resolves to an array
@@ -606,7 +595,19 @@ public class ExpressionOperators {
             params.add(encode(position));
         }
         params.add(encode(n));
-        return operator("$range", params);
+        return operator("$slice", params);
+    }
+
+    /**
+     * Creates a $slice array expression operator.
+     *
+     * @param array any valid expression as long as it resolves to an array.
+     * @param n     any valid expression as long as it resolves to an integer, if {@code position} is specified,
+     *              {@code n} must resolve to a positive integer
+     * @return the $slice array expression operator
+     */
+    public static final Bson slice(Object array, Object n) {
+        return slice(array, null, n);
     }
 
     /**
@@ -681,8 +682,13 @@ public class ExpressionOperators {
      * @param inputs an array of expressions that resolve to arrays
      * @return the $zip array expression operator
      */
-    public static final Bson zip(Objects... inputs) {
-        return zip(false, null, (Object[]) inputs);
+    public static final Bson zip(Object... inputs) {
+        var arrays = new BsonArray(inputs.length);
+        for (var input : inputs) {
+            arrays.add(encode(input));
+        }
+        var doc = new BsonDocument(4).append("inputs", arrays);
+        return operator("$zip", doc);
     }
 
     /**
@@ -713,6 +719,16 @@ public class ExpressionOperators {
      */
     public static final Bson or(Object... expressions) {
         return operator("$or", encodeList(expressions));
+    }
+
+    /**
+     * Creates an $expr operator.
+     *
+     * @param expression can be any valid aggregation expression
+     * @return the $expr operator
+     */
+    public static final Bson expr(Object expression) {
+        return operator("$expr", expression);
     }
 
     /**
@@ -813,10 +829,7 @@ public class ExpressionOperators {
      * @return the $cond conditional expression operator
      */
     public static final Bson cond(Object ifExpression, Object thenExpression, Object elseExpression) {
-        var doc = new BsonDocument(4).append("if", encode(ifExpression))
-                .append("then", encode(thenExpression))
-                .append("else", encode(elseExpression));
-        return operator("$cond", doc);
+        return operator("$cond", encodeList(ifExpression, thenExpression, elseExpression));
     }
 
     /**
@@ -874,11 +887,11 @@ public class ExpressionOperators {
         /**
          * Creates a $cond conditional expression operator.
          *
-         * @param expression the else expression
+         * @param elseExpression the else expression
          * @return the $cond conditional expression operator
          */
-        public Bson onElse(Object expression) {
-            return cond(ifExpression, thenExpression, expression);
+        public Bson build(Object elseExpression) {
+            return cond(ifExpression, thenExpression, elseExpression);
         }
 
     }
@@ -1318,6 +1331,31 @@ public class ExpressionOperators {
     }
 
     /**
+     * Creates a $dateSubtract date expression operator.
+     *
+     * @param startDate the beginning date, in UTC, for the addition operation, can be any expression that resolves to
+     *                  a Date, a Timestamp, or an ObjectID
+     * @param unit      the unit used to measure the amount of time added to the startDate
+     * @param amount    the number of units added to the startDate, can be an expression that resolves to an integer or
+     *                  long
+     * @return the $dateSubtract date expression operator
+     */
+    public static final Bson dateSubtract(Object startDate, Object unit, Object amount) {
+        return dateSubtract(startDate, unit, amount, null);
+    }
+
+    /**
+     * Creates a $dateToParts date expression operator.
+     *
+     * @param date the input date for which to return parts,  can be any expression that resolves to a Date, a
+     *             Timestamp, or an ObjectID
+     * @return the $dateToParts date expression operator
+     */
+    public static final Bson dateToParts(Object date) {
+        return dateToParts(date, null, null);
+    }
+
+    /**
      * Creates a $dateToParts date expression operator.
      *
      * @param date     the input date for which to return parts,  can be any expression that resolves to a Date, a
@@ -1365,9 +1403,10 @@ public class ExpressionOperators {
      * @param format   optional, the date format specification, can be any string literal, containing 0 or more format
      *                 specifiers
      * @param timezone optional, the timezone of the operation result
+     * @param onError  optional, the value to return if the date is null or missing
      * @return the $dateToString date expression operator
      */
-    public static final Bson dateToString(Object date, Object format, Object timezone) {
+    public static final Bson dateToString(Object date, Object format, Object timezone, Object onError) {
         var doc = new BsonDocument(8)
                 .append("date", encode(date));
         if (format != null) {
@@ -1376,8 +1415,24 @@ public class ExpressionOperators {
         if (timezone != null) {
             doc.append("timezone", encode(timezone));
         }
+        if (onError != null) {
+            doc.append("onError", encode(onError));
+        }
         return operator("$dateToString", doc);
     }
+
+    /**
+     * Creates a $dateTrunc date expression operator.
+     *
+     * @param date        the date to truncate, specified in UTC, can be any expression that resolves to a Date, a
+     *                    Timestamp, or an ObjectID
+     * @param unit        the unit of time
+     * @return the $dateTrunc date expression operator
+     */
+    public static final Bson dateTrunc(Object date, Object unit) {
+        return dateTrunc(date, unit, null, null, null);
+    }
+
 
     /**
      * Creates a $dateTrunc date expression operator.
@@ -1401,11 +1456,10 @@ public class ExpressionOperators {
         if (timezone != null) {
             doc.append("timezone", encode(timezone));
         }
+        if (startOfWeek != null) {
+            doc.append("startOfWeek", encode(startOfWeek));
+        }
         return operator("$dateTrunc", doc);
-    }
-
-    private static final Bson datePortion(String name, Object date) {
-        return operator(name, encode(date));
     }
 
     private static final Bson datePortion(String name, Object date, Object timezone) {
@@ -1425,7 +1479,7 @@ public class ExpressionOperators {
      * @return the $dayOfMonth date expression operator
      */
     public static final Bson dayOfMonth(Object date) {
-        return datePortion("$dayOfMonth", date);
+        return operator("$dayOfMonth", date);
     }
 
     /**
@@ -1448,7 +1502,7 @@ public class ExpressionOperators {
      * @return the $dayOfWeek date expression operator
      */
     public static final Bson dayOfWeek(Object date) {
-        return datePortion("$dayOfWeek", date);
+        return operator("$dayOfWeek", date);
     }
 
     /**
@@ -1471,7 +1525,7 @@ public class ExpressionOperators {
      * @return the $dayOfYear date expression operator
      */
     public static final Bson dayOfYear(Object date) {
-        return datePortion("$dayOfYear", date);
+        return operator("$dayOfYear", date);
     }
 
     /**
@@ -1494,7 +1548,7 @@ public class ExpressionOperators {
      * @return the $hour date expression operator
      */
     public static final Bson hour(Object date) {
-        return datePortion("$hour", date);
+        return operator("$hour", date);
     }
 
     /**
@@ -1517,7 +1571,7 @@ public class ExpressionOperators {
      * @return the $isoDayOfWeek date expression operator
      */
     public static final Bson isoDayOfWeek(Object date) {
-        return datePortion("$isoDayOfWeek", date);
+        return operator("$isoDayOfWeek", date);
     }
 
     /**
@@ -1540,7 +1594,7 @@ public class ExpressionOperators {
      * @return the $isoWeek date expression operator
      */
     public static final Bson isoWeek(Object date) {
-        return datePortion("$isoWeek", date);
+        return operator("$isoWeek", date);
     }
 
     /**
@@ -1563,7 +1617,7 @@ public class ExpressionOperators {
      * @return the $isoWeekYear date expression operator
      */
     public static final Bson isoWeekYear(Object date) {
-        return datePortion("$isoWeekYear", date);
+        return operator("$isoWeekYear", date);
     }
 
     /**
@@ -1586,7 +1640,7 @@ public class ExpressionOperators {
      * @return the $millisecond date expression operator
      */
     public static final Bson millisecond(Object date) {
-        return datePortion("$millisecond", date);
+        return operator("$millisecond", date);
     }
 
     /**
@@ -1609,7 +1663,7 @@ public class ExpressionOperators {
      * @return the $minute date expression operator
      */
     public static final Bson minute(Object date) {
-        return datePortion("$minute", date);
+        return operator("$minute", date);
     }
 
     /**
@@ -1632,7 +1686,7 @@ public class ExpressionOperators {
      * @return the $month date expression operator
      */
     public static final Bson month(Object date) {
-        return datePortion("$month", date);
+        return operator("$month", date);
     }
 
     /**
@@ -1655,7 +1709,7 @@ public class ExpressionOperators {
      * @return the $second date expression operator
      */
     public static final Bson second(Object date) {
-        return datePortion("$second", date);
+        return operator("$second", date);
     }
 
     /**
@@ -1677,7 +1731,7 @@ public class ExpressionOperators {
      * @return the $toDate date expression operator
      */
     public static final Bson toDate(Object expression) {
-        return datePortion("$toDate", expression);
+        return operator("$toDate", expression);
     }
 
     /**
@@ -1688,7 +1742,7 @@ public class ExpressionOperators {
      * @return the $week date expression operator
      */
     public static final Bson week(Object date) {
-        return datePortion("$week", date);
+        return operator("$week", date);
     }
 
     /**
@@ -1711,7 +1765,7 @@ public class ExpressionOperators {
      * @return the $year date expression operator
      */
     public static final Bson year(Object date) {
-        return datePortion("$year", date);
+        return operator("$year", date);
     }
 
     /**
@@ -1761,7 +1815,7 @@ public class ExpressionOperators {
      * @return the $getField miscellaneous operator
      */
     public static final Bson getField(Object field) {
-        return operator("$getField", encode(field));
+        return operator("$getField", field);
     }
 
     /**
@@ -1780,17 +1834,7 @@ public class ExpressionOperators {
      * @return the $sampleRate miscellaneous operator
      */
     public static final Bson sampleRate(Object expression) {
-        return operator("$sampleRate", encode(expression));
-    }
-
-    /**
-     * Creates a $mergeObjects object expression operator.
-     *
-     * @param expression can be any valid expression that resolves to a document
-     * @return the $mergeObjects object expression operator
-     */
-    public static final Bson mergeObjects(Object expression) {
-        return operator("$mergeObjects", encode(expression));
+        return operator("$sampleRate", expression);
     }
 
     /**
@@ -1800,7 +1844,7 @@ public class ExpressionOperators {
      * @return the $mergeObjects object expression operator
      */
     public static final Bson mergeObjects(Iterable<?> expressions) {
-        return operator("$mergeObjects", encode(expressions));
+        return operator("$mergeObjects", expressions);
     }
 
     /**
@@ -1934,7 +1978,7 @@ public class ExpressionOperators {
      * @return the $setIntersection set expression operator
      */
     public static final Bson setIntersection(Iterable<?> expressions) {
-        return operator("$setIntersection", encode(expressions));
+        return operator("$setIntersection", expressions);
     }
 
     /**
@@ -1965,7 +2009,7 @@ public class ExpressionOperators {
      * @return the $setUnion set expression operator
      */
     public static final Bson setUnion(Iterable<?> expressions) {
-        return operator("$setUnion", encode(expressions));
+        return operator("$setUnion", expressions);
     }
 
     /**
@@ -1985,7 +2029,7 @@ public class ExpressionOperators {
      * @return the $concat string expression operator
      */
     public static final Bson concat(Iterable<?> expressions) {
-        return operator("$concat", encode(expressions));
+        return operator("$concat", expressions);
     }
 
     private static final Bson indexOf(String name, Object string, Object subString, Object start, Object end) {
@@ -2037,6 +2081,16 @@ public class ExpressionOperators {
             doc.append("chars", encode(chars));
         }
         return operator(name, doc);
+    }
+
+    /**
+     * Creates a $ltrim string expression operator.
+     *
+     * @param input the string to trim, can be any valid expression that resolves to a string
+     * @return the $ltrim string expression operator
+     */
+    public static final Bson ltrim(Object input) {
+        return ltrim(input, null);
     }
 
     /**
@@ -2140,6 +2194,16 @@ public class ExpressionOperators {
      * Creates a $rtrim string expression operator.
      *
      * @param input the string to trim, can be any valid expression that resolves to a string
+     * @return the $rtrim string expression operator
+     */
+    public static final Bson rtrim(Object input) {
+        return rtrim(input, null);
+    }
+
+    /**
+     * Creates a $rtrim string expression operator.
+     *
+     * @param input the string to trim, can be any valid expression that resolves to a string
      * @param chars optional, the character(s) to trim from the beginning of the input,  can be any valid expression
      *              that resolves to a string
      * @return the $rtrim string expression operator
@@ -2167,7 +2231,7 @@ public class ExpressionOperators {
      * @return the $strLenBytes string expression operator
      */
     public static final Bson strLenBytes(Object string) {
-        return operator("$strLenBytes", encode(string));
+        return operator("$strLenBytes", string);
     }
 
     /**
@@ -2177,7 +2241,7 @@ public class ExpressionOperators {
      * @return the $strLenCP string expression operator
      */
     public static final Bson strLenCP(Object string) {
-        return operator("$strLenCP", encode(string));
+        return operator("$strLenCP", string);
     }
 
     /**
@@ -2234,7 +2298,7 @@ public class ExpressionOperators {
      * @return the $toLower string expression operator
      */
     public static final Bson toLower(Object string) {
-        return operator("$toLower", encode(string));
+        return operator("$toLower", string);
     }
 
     /**
@@ -2244,7 +2308,17 @@ public class ExpressionOperators {
      * @return the $toString string expression operator
      */
     public static final Bson toString(Object expression) {
-        return operator("$toString", encode(expression));
+        return operator("$toString", expression);
+    }
+
+    /**
+     * Creates a $trim string expression operator.
+     *
+     * @param input the string to trim, can be any valid expression that resolves to a string
+     * @return the $trim string expression operator
+     */
+    public static final Bson trim(Object input) {
+        return trim(input, null);
     }
 
     /**
@@ -2266,7 +2340,7 @@ public class ExpressionOperators {
      * @return the $toUpper string expression operator
      */
     public static final Bson toUpper(Object string) {
-        return operator("$toUpper", encode(string));
+        return operator("$toUpper", string);
     }
 
     /**
@@ -2276,7 +2350,7 @@ public class ExpressionOperators {
      * @return the $meta text expression operator
      */
     public static final Bson meta(Object metaDataKeyword) {
-        return operator("$meta", encode(metaDataKeyword));
+        return operator("$meta", metaDataKeyword);
     }
 
     /**
@@ -2286,7 +2360,7 @@ public class ExpressionOperators {
      * @return the $tsIncrement timestamp expression operator
      */
     public static final Bson tsIncrement(Object expression) {
-        return operator("$tsIncrement", encode(expression));
+        return operator("$tsIncrement", expression);
     }
 
     /**
@@ -2296,10 +2370,425 @@ public class ExpressionOperators {
      * @return the $tsSecond timestamp expression operator
      */
     public static final Bson tsSecond(Object expression) {
-        return operator("$tsSecond", encode(expression));
+        return operator("$tsSecond", expression);
+    }
+
+    /**
+     * Creates a $sin trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $sin trigonometry expression operator
+     */
+    public static final Bson sin(Object expression) {
+        return operator("$sin", expression);
+    }
+
+    /**
+     * Creates a $cos trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $cos trigonometry expression operator
+     */
+    public static final Bson cos(Object expression) {
+        return operator("$cos", expression);
+    }
+
+    /**
+     * Creates a $tan trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $tan trigonometry expression operator
+     */
+    public static final Bson tan(Object expression) {
+        return operator("$tan", expression);
+    }
+
+    /**
+     * Creates an $asin trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $asin trigonometry expression operator
+     */
+    public static final Bson asin(Object expression) {
+        return operator("$asin", expression);
+    }
+
+    /**
+     * Creates an $acos trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $acos trigonometry expression operator
+     */
+    public static final Bson acos(Object expression) {
+        return operator("$acos", expression);
+    }
+
+    /**
+     * Creates an $atan trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $atan trigonometry expression operator
+     */
+    public static final Bson atan(Object expression) {
+        return operator("$atan", expression);
+    }
+
+    /**
+     * Creates an $atan2 trigonometry expression operator.
+     *
+     * @param expression1 must resolve to a number
+     * @param expression2 must resolve to a number
+     * @return the $atan2 trigonometry expression operator
+     */
+    public static final Bson atan2(Object expression1, Object expression2) {
+        return operator("$atan2", encodeList(expression1, expression2));
+    }
+
+    /**
+     * Creates an $asinh trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $asinh trigonometry expression operator
+     */
+    public static final Bson asinh(Object expression) {
+        return operator("$asinh", expression);
+    }
+
+    /**
+     * Creates an $acosh trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $acosh trigonometry expression operator
+     */
+    public static final Bson acosh(Object expression) {
+        return operator("$acosh", expression);
+    }
+
+    /**
+     * Creates an $atanh trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $atanh trigonometry expression operator
+     */
+    public static final Bson atanh(Object expression) {
+        return operator("$atanh", expression);
+    }
+
+    /**
+     * Creates a $sinh trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $sinh trigonometry expression operator
+     */
+    public static final Bson sinh(Object expression) {
+        return operator("$sinh", expression);
+    }
+
+    /**
+     * Creates a $cosh trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $cosh trigonometry expression operator
+     */
+    public static final Bson cosh(Object expression) {
+        return operator("$cosh", expression);
+    }
+
+    /**
+     * Creates a $tanh trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $tanh trigonometry expression operator
+     */
+    public static final Bson tanh(Object expression) {
+        return operator("$tanh", expression);
+    }
+
+    /**
+     * Creates a $degreesToRadians trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $degreesToRadians trigonometry expression operator
+     */
+    public static final Bson degreesToRadians(Object expression) {
+        return operator("$degreesToRadians", expression);
+    }
+
+    /**
+     * Creates a $radiansToDegrees trigonometry expression operator.
+     *
+     * @param expression must resolve to a number
+     * @return the $radiansToDegrees trigonometry expression operator
+     */
+    public static final Bson radiansToDegrees(Object expression) {
+        return operator("$radiansToDegrees", expression);
+    }
+
+    /**
+     * Creates a $convert type expression operator.
+     *
+     * @param input can be any valid expression
+     * @param to    a specified type
+     * @return the $convert type expression operator
+     */
+    public static final Bson convert(Object input, Object to) {
+        return convert(input, to, null, null);
+    }
+
+    /**
+     * Creates a $convert type expression operator.
+     *
+     * @param input   can be any valid expression
+     * @param to      the specified type
+     * @param onError optional, the value to return on encountering an error during conversion
+     * @param onNull  optional, the value to return if the input is null or missing
+     * @return the $convert type expression operator
+     */
+    public static final Bson convert(Object input, Object to, Object onError, Object onNull) {
+        var doc = new BsonDocument(8)
+                .append("input", encode(input))
+                .append("to", encode(to));
+        if (onError != null) {
+            doc.append("onError", encode(onError));
+        }
+        if (onNull != null) {
+            doc.append("onNull", encode(onNull));
+        }
+        return operator("$convert", doc);
+    }
+
+    /**
+     * Creates a $isNumber type expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $isNumber type expression operator
+     */
+    public static final Bson isNumber(Object expression) {
+        return operator("$isNumber", expression);
+    }
+
+    /**
+     * Creates a $toBool type expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $toBool type expression operator
+     */
+    public static final Bson toBool(Object expression) {
+        return operator("$toBool", expression);
+    }
+
+    /**
+     * Creates a $toDecimal type expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $toDecimal type expression operator
+     */
+    public static final Bson toDecimal(Object expression) {
+        return operator("$toDecimal", expression);
+    }
+
+    /**
+     * Creates a $toDouble type expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $toDouble type expression operator
+     */
+    public static final Bson toDouble(Object expression) {
+        return operator("$toDouble", expression);
+    }
+
+    /**
+     * Creates a $toInt type expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $toInt type expression operator
+     */
+    public static final Bson toInt(Object expression) {
+        return operator("$toInt", expression);
+    }
+
+    /**
+     * Creates a $toLong type expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $toLong type expression operator
+     */
+    public static final Bson toLong(Object expression) {
+        return operator("$toLong", expression);
+    }
+
+    /**
+     * Creates a $toObjectId type expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $toObjectId type expression operator
+     */
+    public static final Bson toObjectId(Object expression) {
+        return operator("$toObjectId", expression);
+    }
+
+    /**
+     * Creates a $type type expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $type type expression operator
+     */
+    public static final Bson type(Object expression) {
+        return operator("$type", expression);
+    }
+
+    /**
+     * Creates an $avg expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $avg expression operator
+     */
+    public static final Bson avg(Object expression) {
+        return operator("$avg", expression);
+    }
+
+    /**
+     * Creates an $avg expression operator.
+     *
+     * @param expressions can be any valid expressions
+     * @return the $avg expression operator
+     */
+    public static final Bson avg(Object... expressions) {
+        return operator("$avg", encodeList(expressions));
+    }
+
+    /**
+     * Creates a $max expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $max expression operator
+     */
+    public static final Bson max(Object expression) {
+        return operator("$max", expression);
+    }
+
+    /**
+     * Creates a $max expression operator.
+     *
+     * @param expressions can be any valid expressions
+     * @return the $max expression operator
+     */
+    public static final Bson max(Object... expressions) {
+        return operator("$max", encodeList(expressions));
+    }
+
+    /**
+     * Creates a $min expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $min expression operator
+     */
+    public static final Bson min(Object expression) {
+        return operator("$min", expression);
+    }
+
+    /**
+     * Creates a $min expression operator.
+     *
+     * @param expressions can be any valid expressions
+     * @return the $min expression operator
+     */
+    public static final Bson min(Object... expressions) {
+        return operator("$min", encodeList(expressions));
+    }
+
+    /**
+     * Creates a $stdDevPop expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $stdDevPop expression operator
+     */
+    public static final Bson stdDevPop(Object expression) {
+        return operator("$stdDevPop", expression);
+    }
+
+    /**
+     * Creates a $stdDevPop expression operator.
+     *
+     * @param expressions can be any valid expressions
+     * @return the $stdDevPop expression operator
+     */
+    public static final Bson stdDevPop(Object... expressions) {
+        return operator("$stdDevPop", encodeList(expressions));
+    }
+
+    /**
+     * Creates a $stdDevSamp expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $stdDevSamp expression operator
+     */
+    public static final Bson stdDevSamp(Object expression) {
+        return operator("$stdDevSamp", expression);
+    }
+
+    /**
+     * Creates a $stdDevSamp expression operator.
+     *
+     * @param expressions can be any valid expressions
+     * @return the $stdDevSamp expression operator
+     */
+    public static final Bson stdDevSamp(Object... expressions) {
+        return operator("$stdDevSamp", encodeList(expressions));
+    }
+
+    /**
+     * Creates a $sum expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $sum expression operator
+     */
+    public static final Bson sum(Object expression) {
+        return operator("$sum", expression);
+    }
+
+    /**
+     * Creates a $sum expression operator.
+     *
+     * @param expressions can be any valid expressions
+     * @return the $sum expression operator
+     */
+    public static final Bson sum(Object... expressions) {
+        return operator("$sum", encodeList(expressions));
+    }
+
+    /**
+     * Creates a $let variable expression operator.
+     *
+     * @param vars assignment block for the variables accessible in the {@code in} expression
+     * @param in   the expression to evaluate
+     * @return the $let variable expression operator
+     */
+    public static final Bson let(Object vars, Object in) {
+        var doc = new BsonDocument(4)
+                .append("vars", encode(vars))
+                .append("in", encode(in));
+        return operator("$let", doc);
+    }
+
+    /**
+     * Creates a $let variable expression operator.
+     *
+     * @param in   the expression to evaluate
+     * @param vars assignment block for the variables accessible in the {@code in} expression
+     * @return the $let variable expression operator
+     */
+    @SafeVarargs
+    public static final Bson let(Object in, Map.Entry<String, ?>... vars) {
+        var doc = new BsonDocument(vars.length << 1);
+        for (var v : vars) {
+            doc.put(v.getKey(), encode(v.getValue()));
+        }
+        return let(doc, in);
     }
 
     private ExpressionOperators() {
+
     }
 
 }

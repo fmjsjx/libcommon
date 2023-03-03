@@ -68,6 +68,7 @@ public class BsonValueUtil {
                     Map.entry(OffsetDateTime.class, v -> new BsonDateTime(((OffsetDateTime) v).toInstant().toEpochMilli())),
                     Map.entry(DateUnit.class, v -> ((DateUnit) v).toBsonString()),
                     Map.entry(MetaDataKeyword.class, v -> ((MetaDataKeyword) v).toBsonString()),
+                    Map.entry(BsonType.class, v -> new BsonInt32(((BsonType) v).getValue())),
                     Map.entry(DayOfWeek.class, startOfWeeks::get),
                     Map.entry(byte[].class, v -> new BsonBinary((byte[]) v)),
                     Map.entry(UUID.class, v -> new BsonBinary((UUID) v)),
