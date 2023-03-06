@@ -17,7 +17,7 @@ import java.util.function.Function;
  * A utility class for {@link BsonValue}s.
  *
  * @author MJ Fang
- * @see 3.1
+ * @since 3.1
  */
 public class BsonValueUtil {
 
