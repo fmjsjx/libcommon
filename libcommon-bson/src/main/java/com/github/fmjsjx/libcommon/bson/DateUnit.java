@@ -10,14 +10,41 @@ import org.bson.BsonString;
  */
 public enum DateUnit {
 
+    /**
+     * year
+     */
     YEAR,
+    /**
+     * quarter
+     */
     QUARTER,
+    /**
+     * week
+     */
     WEEK,
+    /**
+     * month
+     */
     MONTH,
+    /**
+     * day
+     */
     DAY,
+    /**
+     * hour
+     */
     HOUR,
+    /**
+     * minute
+     */
     MINUTE,
+    /**
+     * second
+     */
     SECOND,
+    /**
+     * millisecond
+     */
     MILLISECOND,
     ;
 

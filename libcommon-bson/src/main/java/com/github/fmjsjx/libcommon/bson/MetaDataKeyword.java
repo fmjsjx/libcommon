@@ -10,7 +10,13 @@ import org.bson.BsonString;
  */
 public enum MetaDataKeyword {
 
+    /**
+     * {@code "testScore"}
+     */
     TEXT_SCORE("textScore"),
+    /**
+     * {@code "indexKey"}
+     */
     INDEX_KEY("indexKey"),
     ;
 
