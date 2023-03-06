@@ -4,16 +4,22 @@ plugins {
     id("libcommon.publish-conventions")
 }
 
+java {
+    registerFeature("kotlinSupport") {
+        usingSourceSet(sourceSets["main"])
+    }
+}
+
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
     implementation(project(":libcommon-util"))
     api("io.lettuce:lettuce-core")
 
-    compileOnlyApi("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    compileOnlyApi("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
-    compileOnlyApi("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    compileOnlyApi("io.projectreactor.kotlin:reactor-kotlin-extensions")
+    "kotlinSupportApi"("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    "kotlinSupportApi"("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
+    "kotlinSupportApi"("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    "kotlinSupportApi"("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")

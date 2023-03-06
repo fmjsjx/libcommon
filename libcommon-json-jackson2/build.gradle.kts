@@ -4,6 +4,12 @@ plugins {
     id("libcommon.publish-conventions")
 }
 
+java {
+    registerFeature("kotlinSupport") {
+        usingSourceSet(sourceSets["main"])
+    }
+}
+
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
@@ -14,6 +20,7 @@ dependencies {
     api("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    "kotlinSupportImplementation"("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
 
