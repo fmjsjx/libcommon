@@ -9,6 +9,7 @@ dependencies {
     constraints {
         api(project(":libcommon-aliyunons"))
         api(project(":libcommon-bson"))
+        api(project(":libcommon-bson-kotlin"))
         api(project(":libcommon-collection"))
         api(project(":libcommon-function"))
         api(project(":libcommon-jdbc"))
