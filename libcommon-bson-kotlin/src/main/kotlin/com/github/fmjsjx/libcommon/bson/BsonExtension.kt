@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.bson
 
+import com.github.fmjsjx.libcommon.util.DateTimeUtil
 import org.bson.*
 import org.bson.types.Decimal128
 import org.bson.types.ObjectId
@@ -197,7 +198,7 @@ fun OffsetDateTime?.toBsonDateTimeOrNull(): BsonValue = this?.toBsonDateTime() ?
  * @author MJ Fang
  * @since 3.1
  */
-fun LocalDateTime.toBsonDateTime() = atZone(ZoneId.systemDefault()).toBsonDateTime()
+fun LocalDateTime.toBsonDateTime() = BsonDateTime(DateTimeUtil.toEpochMilli(this))
 
 /**
  * Extension to construct a new [BsonDateTime] instance or the singleton [BsonNull] instance with this [LocalDateTime].
