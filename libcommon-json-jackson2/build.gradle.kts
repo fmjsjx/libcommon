@@ -3,12 +3,6 @@ plugins {
     id("libcommon.publish-conventions")
 }
 
-java {
-    registerFeature("kotlinSupport") {
-        usingSourceSet(sourceSets["main"])
-    }
-}
-
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
