@@ -6,14 +6,12 @@ plugins {
 
 dependencies {
     implementation("org.slf4j:slf4j-api")
-    implementation(project(":libcommon-util"))
-    api("org.mongodb:bson")
+    api(project(":libcommon-bson"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.apache.logging.log4j:log4j-slf4j-impl")
     testImplementation("io.mockk:mockk")
-    testImplementation(project(":libcommon-bson"))
 }
 
 description = "libcommon/BSON Kotlin"
