@@ -14,6 +14,8 @@ dependencies {
     api(platform("io.netty:netty-bom:4.1.89.Final"))
     // junit-bom
     testImplementation(platform("org.junit:junit-bom:5.9.2"))
+    // mockito
+    testImplementation(platform("org.mockito:mockito-bom:5.1.1"))
     // jackson2-bom
     api(platform("com.fasterxml.jackson:jackson-bom:2.14.2"))
     // rocketmq

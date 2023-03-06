@@ -1,6 +1,5 @@
 plugins {
     id("libcommon.java-library-conventions")
-    id("libcommon.kotlin-library-conventions")
     id("libcommon.publish-conventions")
 }
 
@@ -13,7 +12,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.apache.logging.log4j:log4j-slf4j-impl")
-    testImplementation("io.mockk:mockk")
 }
 
 description = "libcommon/BSON"

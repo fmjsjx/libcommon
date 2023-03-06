@@ -236,7 +236,11 @@ public class ExpressionOperators {
      * @return the $arrayElemAt array expression operator
      */
     public static final Bson arrayElemAt(Iterable<?> array, Object idx) {
-        return arrayElemAt((BsonValue) BsonExtensionKt.toBsonArray(array, BsonValueUtil::encode), idx);
+        var bsonArray = new BsonArray(array instanceof Collection<?> collection ? collection.size() : 10);
+        for (var a : array) {
+            bsonArray.add(BsonValueUtil.encode(a));
+        }
+        return arrayElemAt((Object) bsonArray, idx);
     }
 
     /**
@@ -247,7 +251,7 @@ public class ExpressionOperators {
      * @return the $arrayElemAt array expression operator
      */
     public static final Bson arrayElemAt(Object idx, Object... array) {
-        return arrayElemAt((BsonValue) BsonExtensionKt.toBsonArray(array, BsonValueUtil::encode), idx);
+        return arrayElemAt(BsonValueUtil.encodeList(array), idx);
     }
 
     /**

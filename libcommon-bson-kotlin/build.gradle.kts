@@ -1,37 +1,24 @@
 plugins {
     id("libcommon.java-library-conventions")
+    id("libcommon.kotlin-library-conventions")
     id("libcommon.publish-conventions")
 }
 
-java {
-    registerFeature("kotlinSupport") {
-        usingSourceSet(sourceSets["main"])
-    }
-}
-
 dependencies {
-
     implementation("org.slf4j:slf4j-api")
-
-    api(project(":libcommon-json"))
     implementation(project(":libcommon-util"))
-
-    api("com.fasterxml.jackson.core:jackson-databind")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    api("org.mongodb:bson")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
-
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-
     testImplementation("org.apache.logging.log4j:log4j-slf4j-impl")
-
+    testImplementation("io.mockk:mockk")
+    testImplementation(project(":libcommon-bson"))
 }
 
-description = "libcommon/JSON Jackson2"
+description = "libcommon/BSON Kotlin"
 
-tasks.test {
-    // Use junit platform for unit tests.
+tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
@@ -48,7 +35,7 @@ publishing {
                 }
             }
             pom {
-                name.set("libcommon/JSON Jackson2")
+                name.set("libcommon/BSON Kotlin")
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {
