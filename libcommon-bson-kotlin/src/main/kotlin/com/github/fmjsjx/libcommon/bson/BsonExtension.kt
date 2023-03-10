@@ -504,8 +504,84 @@ fun <T : BsonValue> T.stringValueOrNull(): String? =
         BsonType.INT64 -> (this as BsonInt64).value.toString()
         BsonType.DECIMAL128 -> (this as BsonDecimal128).value.toString()
         BsonType.OBJECT_ID -> (this as BsonObjectId).value.toString()
+        BsonType.BINARY -> (this as BsonBinary).run {
+            when (type) {
+                BsonBinarySubType.UUID_STANDARD.value -> asUuid().toString()
+                BsonBinarySubType.UUID_LEGACY.value -> asUuid(UuidRepresentation.JAVA_LEGACY).toString()
+                else -> null
+            }
+        }
+
         else -> null
     }
+
+/**
+ * Extension to convert to [ByteArray] value from this [BsonValue].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun <T : BsonValue> T.byteArrayValue(copy: Boolean = true): ByteArray = if (bsonType == BsonType.BINARY) {
+    this as BsonBinary
+    if (copy) {
+        data.copyOf()
+    } else {
+        data
+    }
+} else {
+    throw IllegalStateException("Value expected to be of type BINARY is of unexpected type $bsonType")
+}
+
+/**
+ * Extension to convert to [ByteArray] value from this [BsonValue].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun <T : BsonValue> T.byteArrayValueOrNull(copy: Boolean = true): ByteArray? = if (bsonType == BsonType.BINARY) {
+    this as BsonBinary
+    if (BsonBinarySubType.isUuid(type)) {
+        null
+    } else {
+        if (copy) {
+            data.copyOf()
+        } else {
+            data
+        }
+    }
+} else {
+    null
+}
+
+/**
+ * Extension to convert to [UUID] value from this [BsonValue].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun <T : BsonValue> T.uuidValue(): UUID = if (bsonType == BsonType.BINARY) {
+    this as BsonBinary
+    when (type) {
+        BsonBinarySubType.UUID_STANDARD.value -> asUuid()
+        BsonBinarySubType.UUID_LEGACY.value -> asUuid(UuidRepresentation.JAVA_LEGACY)
+        else -> throw IllegalStateException("Value expected to be of sub type UUID is of unexpected type $type")
+    }
+} else {
+    throw IllegalStateException("Value expected to be of type BINARY is of unexpected type $bsonType")
+}
+
+/**
+ * Extension to convert to [UUID] value from this [BsonValue].
+ * @author MJ Fang
+ * @since 3.1
+ */
+fun <T : BsonValue> T.uuidValueOrNull(): UUID? = if (bsonType == BsonType.BINARY) {
+    this as BsonBinary
+    when (type) {
+        BsonBinarySubType.UUID_STANDARD.value -> asUuid()
+        BsonBinarySubType.UUID_LEGACY.value -> asUuid(UuidRepresentation.JAVA_LEGACY)
+        else -> null
+    }
+} else {
+    null
+}
 
 /**
  * Extension to convert to [ZonedDateTime] value from this [BsonValue].
