@@ -8,3 +8,11 @@ repositories {
     }
     gradlePluginPortal()
 }
+
+dependencies {
+    val kotlinVersion = "1.8.10"
+    implementation(plugin("org.jetbrains.kotlin.jvm" ,kotlinVersion))
+    implementation(plugin("org.jetbrains.kotlin.kapt" ,kotlinVersion))
+}
+
+fun plugin(id: String, version: String) = "$id:$id.gradle.plugin:$version"

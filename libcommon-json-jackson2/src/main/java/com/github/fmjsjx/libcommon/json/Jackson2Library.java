@@ -140,6 +140,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     }
 
     private final ObjectMapper objectMapper;
+    private TypeReferenceFactory typeReferenceFactory = TypeReferenceFactory.getDefault();
 
     /**
      * Creates a new {@link Jackson2Library} with the specified
@@ -165,6 +166,18 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      */
     public ObjectMapper objectMapper() {
         return objectMapper;
+    }
+
+    /**
+     * Set the typeReferenceFactory.
+     *
+     * @param typeReferenceFactory the {@link TypeReferenceFactory}
+     * @return this object
+     * @since 3.1
+     */
+    public Jackson2Library typeReferenceFactory(TypeReferenceFactory typeReferenceFactory) {
+        this.typeReferenceFactory = Objects.requireNonNull(typeReferenceFactory, "typeReferenceFactory must not be null");
+        return this;
     }
 
     /**
@@ -425,26 +438,6 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
         }
     }
 
-    private static final class TypeReferenceImpl<T> extends TypeReference<T> {
-        
-        private final ParameterizedTypeImpl type;
-        
-        private TypeReferenceImpl(ParameterizedTypeImpl type) {
-            super();
-            this.type = type;
-        }
-
-        @Override
-        public Type getType() {
-            return type;
-        }
-
-        @Override
-        public String toString() {
-            return "TypeReferenceImpl<" + type.getTypeName() + ">";
-        }
-    }
-    
     /**
      * Create {@link TypeReference} for {@link List}s.
      *
@@ -454,7 +447,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      * @since 2.8
      */
     public <T> TypeReference<List<T>> listTypeReference(Type elementsType) {
-        return new TypeReferenceImpl<>(new ParameterizedTypeImpl(List.class, elementsType));
+        return typeReferenceFactory.create(new ParameterizedTypeImpl(List.class, elementsType));
     }
 
     /**
@@ -468,7 +461,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      * @since 2.8
      */
     public <T, C extends Collection<T>> TypeReference<C> collectionTypeReference(Type elementsType, Class<? extends Collection<?>> collectionType) {
-        return new TypeReferenceImpl<>(new ParameterizedTypeImpl(collectionType, elementsType));
+        return typeReferenceFactory.create(new ParameterizedTypeImpl(collectionType, elementsType));
     }
 
     /**
@@ -482,7 +475,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      * @since 2.8
      */
     public <K, V> TypeReference<Map<K, V>> mapTypeReference(Type keyType, Type valueType) {
-        return new TypeReferenceImpl<>(new ParameterizedTypeImpl(Map.class, keyType, valueType));
+        return typeReferenceFactory.create(new ParameterizedTypeImpl(Map.class, keyType, valueType));
     }
 
     /**
@@ -498,7 +491,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      * @since 2.8
      */
     public <K, V, M extends Map<K, V>> TypeReference<M> mapTypeReference(Type keyType, Type valueType, Class<? extends Map<?, ?>> mapType) {
-        return new TypeReferenceImpl<>(new ParameterizedTypeImpl(mapType, keyType, valueType));
+        return typeReferenceFactory.create(new ParameterizedTypeImpl(mapType, keyType, valueType));
     }
 
     /**
@@ -510,7 +503,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      * @return a {@code TypeReference<T>}
      */
     public <T> TypeReference<T> genericTypeReference(Class<?> rawType, Type... typeArguments) {
-        return new TypeReferenceImpl<>(new ParameterizedTypeImpl(rawType, typeArguments));
+        return typeReferenceFactory.create(new ParameterizedTypeImpl(rawType, typeArguments));
     }
 
 }

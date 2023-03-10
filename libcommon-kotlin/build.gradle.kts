@@ -1,7 +1,7 @@
 plugins {
     id("libcommon.java-library-conventions")
     id("libcommon.publish-conventions")
-    kotlin("jvm") version "1.7.22"
+    id("libcommon.kotlin-library-conventions")
 }
 
 dependencies {
