@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.jsoniter.JsonIterator;
+import com.jsoniter.ValueType;
 import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
 import com.jsoniter.spi.Config;
@@ -39,6 +40,16 @@ public class JsoniterLibrary implements JsonLibrary<Any> {
          */
         public JsoniterException(String message, Throwable cause) {
             super(message, cause);
+        }
+
+        /**
+         * Creates a new {@link JsoniterException} with the specified message.
+         *
+         * @param message the message
+         * @since 3.2
+         */
+        public JsoniterException(String message) {
+            super(message);
         }
 
         /**
@@ -293,9 +304,94 @@ public class JsoniterLibrary implements JsonLibrary<Any> {
      * @param rawType       the raw type
      * @param typeArguments the type arguments
      * @return a {@code TypeLiteral<T>}
+     * @since 2.8
      */
     public <T> TypeLiteral<T> genericTypeLiteral(Class<?> rawType, Type... typeArguments) {
         return TypeLiteral.create(new ParameterizedTypeImpl(rawType, typeArguments));
+    }
+
+    /**
+     * Decodes {@link Any} as the specified type from a string.
+     *
+     * @param src  the source string
+     * @param type the value type
+     * @param <T>  the type of the result
+     * @return the {@code Any} instance
+     * @throws JsoniterException if the source can't be decoded as the specified type
+     * @since 3.2
+     */
+    public <T extends Any> T loadsAsType(String src, ValueType type) throws JsoniterException {
+        return loadsAsType(src.getBytes(StandardCharsets.UTF_8), type);
+    }
+
+    /**
+     * Decodes {@link Any} as the specified type from a byte array.
+     *
+     * @param src  the source byte array
+     * @param type the value type
+     * @param <T>  the type of the result
+     * @return the {@code Any} instance
+     * @throws JsoniterException if the source can't be decoded as the specified type
+     * @since 3.2
+     */
+    public <T extends Any> T loadsAsType(byte[] src, ValueType type) throws JsoniterException {
+        T any = loads(src);
+        if (any.valueType() != type) {
+            throw new JsoniterException("JSON value expected be " + type + " but was " + any.valueType());
+        }
+        return any;
+    }
+
+    /**
+     * Decodes {@link Any} as an object from a string.
+     *
+     * @param src  the source string
+     * @param <T>  the type of the result
+     * @return the {@code Any} instance
+     * @throws JsoniterException if the source can't be decoded as an object
+     * @since 3.2
+     */
+    public <T extends Any> T loadsObject(String src) throws JsoniterException {
+        return loadsAsType(src, ValueType.OBJECT);
+    }
+
+    /**
+     * Decodes {@link Any} as an object from a byte array.
+     *
+     * @param src  the source byte array
+     * @param <T>  the type of the result
+     * @return the {@code Any} instance
+     * @throws JsoniterException if the source can't be decoded as an object
+     * @since 3.2
+     */
+    public <T extends Any> T loadsObject(byte[] src) throws JsoniterException {
+        return loadsAsType(src, ValueType.OBJECT);
+    }
+
+    /**
+     * Decodes {@link Any} as an array from a string.
+     *
+     * @param src  the source string
+     * @param <T>  the type of the result
+     * @return the {@code Any} instance
+     * @throws JsoniterException if the source can't be decoded as an array
+     * @since 3.2
+     */
+    public <T extends Any> T loadsArray(String src) throws JsoniterException {
+        return loadsAsType(src, ValueType.ARRAY);
+    }
+
+    /**
+     * Decodes {@link Any} as an array from a byte array.
+     *
+     * @param src  the source byte array
+     * @param <T>  the type of the result
+     * @return the {@code Any} instance
+     * @throws JsoniterException if the source can't be decoded as an array
+     * @since 3.2
+     */
+    public <T extends Any> T loadsArray(byte[] src) throws JsoniterException {
+        return loadsAsType(src, ValueType.ARRAY);
     }
 
 }

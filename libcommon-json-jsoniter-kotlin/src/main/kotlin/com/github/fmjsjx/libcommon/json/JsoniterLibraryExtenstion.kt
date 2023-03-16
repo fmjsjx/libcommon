@@ -70,6 +70,27 @@ infix fun <T> CharSequence.parseJsoniter(type: Type): T = jsoniterLibrary.loads(
 fun CharSequence.parseJsoniter(): JsonAny = jsoniterLibrary.loads(toString())
 
 /**
+ * Extension to decodes dynamic JSON object from string.
+ * @author MJ Fang
+ * @since 3.2
+ */
+infix fun CharSequence.parseJsoniterAsType(type: ValueType): JsonAny = jsoniterLibrary.loadsAsType(toString(), type)
+
+/**
+ * Extension to decodes dynamic JSON object from string.
+ * @author MJ Fang
+ * @since 3.2
+ */
+fun CharSequence.parseJsoniterObject(): JsonAny = jsoniterLibrary.loadsObject(toString())
+
+/**
+ * Extension to decodes dynamic JSON object from string.
+ * @author MJ Fang
+ * @since 3.2
+ */
+fun CharSequence.parseJsoniterArray(): JsonAny = jsoniterLibrary.loadsArray(toString())
+
+/**
  * Extension to decodes data from byte array leveraging reified type parameters.
  * @author MJ Fang
  * @since 3.1
@@ -103,6 +124,27 @@ infix fun <T> ByteArray.parseJsoniter(type: Type): T = jsoniterLibrary.loads(thi
  * @since 3.1
  */
 fun ByteArray.parseJsoniter(): JsonAny = jsoniterLibrary.loads(this)
+
+/**
+ * Extension to decodes dynamic JSON object from byte array.
+ * @author MJ Fang
+ * @since 3.2
+ */
+infix fun ByteArray.parseJsoniterAsType(type: ValueType): JsonAny = jsoniterLibrary.loadsAsType(this, type)
+
+/**
+ * Extension to decodes dynamic JSON object from byte array.
+ * @author MJ Fang
+ * @since 3.2
+ */
+fun ByteArray.parseJsoniterObject(): JsonAny = jsoniterLibrary.loadsObject(this)
+
+/**
+ * Extension to decodes dynamic JSON object from byte array.
+ * @author MJ Fang
+ * @since 3.2
+ */
+fun ByteArray.parseJsoniterArray(): JsonAny = jsoniterLibrary.loadsArray(this)
 
 /**
  * Extension for [JsoniterLibrary.listTypeLiteral] leveraging reified type parameters.
