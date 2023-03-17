@@ -1,24 +1,109 @@
 package com.github.fmjsjx.libcommon.bson;
 
 import org.bson.*;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static com.github.fmjsjx.libcommon.bson.BsonValueUtil.*;
 
+
 /**
- * A factory for expression operators.
+ * A factory for MongoDB BSON operators.
  *
  * @author MJ Fang
- * @since 3.1
- * @deprecated since 3.2, please use {@link Operators} instead
+ * @since 3.2
  */
-@Deprecated
-public class ExpressionOperators {
+public class Operators {
 
+    private interface Operator extends Bson {
+
+        String operator();
+
+        <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry);
+
+        @Override
+        default <TDocument> BsonDocument toBsonDocument(Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            var writer = new BsonDocumentWriter(new BsonDocument(1));
+            writer.writeStartDocument();
+            writer.writeName(operator());
+            writeOperatorValue(writer, documentClass, codecRegistry);
+            return writer.getDocument();
+        }
+
+    }
+
+    private record SimpleOperator(String operator, Object expression) implements Operator {
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            encodeValue(writer, expression, codecRegistry);
+        }
+
+    }
+
+    private record SimpleArrayOperator(String operator, Object... expressions) implements Operator {
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartArray();
+            for (var expression : expressions) {
+                encodeValue(writer, expression, codecRegistry);
+            }
+            writer.writeEndArray();
+        }
+    }
+
+    private record SimpleIterableOperator(String operator, Iterable<?> expressions) implements Operator {
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartArray();
+            for (var expression : expressions) {
+                encodeValue(writer, expression, codecRegistry);
+            }
+            writer.writeEndArray();
+        }
+    }
+
+    private record SimpleDocumentOperator1(String operator, String name, Object expression) implements Operator {
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName(name);
+            encodeValue(writer, expression, codecRegistry);
+            writer.writeEndDocument();
+        }
+    }
+
+    private record SimpleDocumentOperator2(String operator, String name1, Object expression1, String name2,
+                                           Object expression2) implements Operator {
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName(name1);
+            encodeValue(writer, expression1, codecRegistry);
+            writer.writeName(name2);
+            encodeValue(writer, expression2, codecRegistry);
+            writer.writeEndDocument();
+        }
+    }
+
+    private record SimpleDocumentOperator3(String operator, String name1, Object expression1, String name2,
+                                           Object expression2, String name3, Object expression3) implements Operator {
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName(name1);
+            encodeValue(writer, expression1, codecRegistry);
+            writer.writeName(name2);
+            encodeValue(writer, expression2, codecRegistry);
+            writer.writeName(name3);
+            encodeValue(writer, expression3, codecRegistry);
+            writer.writeEndDocument();
+        }
+
+    }
 
     /**
      * Creates an $abs arithmetic expression operator.
@@ -27,7 +112,7 @@ public class ExpressionOperators {
      * @return the $abs arithmetic expression operator
      */
     public static final Bson abs(Object expression) {
-        return operator("$abs", expression);
+        return new SimpleOperator("$abs", expression);
     }
 
     /**
@@ -37,11 +122,7 @@ public class ExpressionOperators {
      * @return the $abs arithmetic expression operator
      */
     public static final Bson add(Iterable<?> expressions) {
-        var array = new BsonArray(expressions instanceof Collection<?> collection ? collection.size() : 10);
-        for (var expression : expressions) {
-            array.add(BsonValueUtil.encode(expression));
-        }
-        return operator("$add", array);
+        return new SimpleIterableOperator("$add", expressions);
     }
 
     /**
@@ -51,11 +132,7 @@ public class ExpressionOperators {
      * @return the $abs arithmetic expression operator
      */
     public static final Bson add(Object... expressions) {
-        var array = new BsonArray();
-        for (var expression : expressions) {
-            array.add(BsonValueUtil.encode(expression));
-        }
-        return operator("$add", array);
+        return new SimpleArrayOperator("$add", expressions);
     }
 
     /**
@@ -65,7 +142,7 @@ public class ExpressionOperators {
      * @return the $ceil arithmetic expression operator
      */
     public static final Bson ceil(Object expression) {
-        return operator("$ceil", expression);
+        return new SimpleOperator("$ceil", expression);
     }
 
     /**
@@ -76,7 +153,7 @@ public class ExpressionOperators {
      * @return the $divide arithmetic expression operator
      */
     public static final Bson divide(Object dividend, Object divisor) {
-        return operator("$divide", BsonValueUtil.encodeList(dividend, divisor));
+        return new SimpleArrayOperator("$divide", dividend, divisor);
     }
 
     /**
@@ -86,7 +163,7 @@ public class ExpressionOperators {
      * @return the $exp arithmetic expression operator
      */
     public static final Bson exp(Object expression) {
-        return operator("$exp", expression);
+        return new SimpleOperator("$exp", expression);
     }
 
     /**
@@ -96,7 +173,7 @@ public class ExpressionOperators {
      * @return the $floor arithmetic expression operator
      */
     public static final Bson floor(Object expression) {
-        return operator("$floor", expression);
+        return new SimpleOperator("$floor", expression);
     }
 
     /**
@@ -106,7 +183,7 @@ public class ExpressionOperators {
      * @return the $ln arithmetic expression operator
      */
     public static final Bson ln(Object expression) {
-        return operator("$ln", expression);
+        return new SimpleOperator("$ln", expression);
     }
 
     /**
@@ -117,7 +194,7 @@ public class ExpressionOperators {
      * @return the $log arithmetic expression operator
      */
     public static final Bson log(Object number, Object base) {
-        return operator("$log", BsonValueUtil.encodeList(number, base));
+        return new SimpleArrayOperator("$log", number, base);
     }
 
     /**
@@ -127,7 +204,7 @@ public class ExpressionOperators {
      * @return the $log10 arithmetic expression operator
      */
     public static final Bson log10(Object expression) {
-        return operator("$log10", expression);
+        return new SimpleOperator("$log10", expression);
     }
 
     /**
@@ -138,7 +215,7 @@ public class ExpressionOperators {
      * @return the $mod arithmetic expression operator
      */
     public static final Bson mod(Object dividend, Object divisor) {
-        return operator("$mod", BsonValueUtil.encodeList(dividend, divisor));
+        return new SimpleArrayOperator("$mod", dividend, divisor);
     }
 
     /**
@@ -148,11 +225,7 @@ public class ExpressionOperators {
      * @return the $multiply arithmetic expression operator
      */
     public static final Bson multiply(Object... expressions) {
-        var array = new BsonArray(expressions.length);
-        for (var expression : expressions) {
-            array.add(BsonValueUtil.encode(expression));
-        }
-        return operator("$multiply", array);
+        return new SimpleArrayOperator("$multiply", expressions);
     }
 
     /**
@@ -163,7 +236,7 @@ public class ExpressionOperators {
      * @return the $round arithmetic expression operator
      */
     public static final Bson round(Object number, Object place) {
-        return operator("$round", BsonValueUtil.encodeList(number, place));
+        return new SimpleArrayOperator("$round", number, place);
     }
 
     /**
@@ -183,7 +256,7 @@ public class ExpressionOperators {
      * @return the $sqrt arithmetic expression operator
      */
     public static final Bson sqrt(Object expression) {
-        return operator("$sqrt", expression);
+        return new SimpleOperator("$sqrt", expression);
     }
 
     /**
@@ -194,7 +267,7 @@ public class ExpressionOperators {
      * @return the $subtract arithmetic expression operator
      */
     public static final Bson subtract(Object expression1, Object expression2) {
-        return operator("$subtract", BsonValueUtil.encodeList(expression1, expression2));
+        return new SimpleArrayOperator("$subtract", expression1, expression2);
     }
 
     /**
@@ -205,7 +278,7 @@ public class ExpressionOperators {
      * @return the $trunc arithmetic expression operator
      */
     public static final Bson trunc(Object number, Object place) {
-        return operator("$trunc", BsonValueUtil.encodeList(number, place));
+        return new SimpleArrayOperator("$trunc", number, place);
     }
 
     /**
@@ -218,7 +291,6 @@ public class ExpressionOperators {
         return trunc(number, 0);
     }
 
-
     /**
      * Creates an $arrayElemAt array expression operator.
      *
@@ -227,7 +299,28 @@ public class ExpressionOperators {
      * @return the $arrayElemAt array expression operator
      */
     public static final Bson arrayElemAt(Object array, Object idx) {
-        return operator("$arrayElemAt", BsonValueUtil.encodeList(array, idx));
+        return new SimpleArrayOperator("$arrayElemAt", array, idx);
+    }
+
+    private record ArrayElemAtOperator(Iterable<?> array, Object idx) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$arrayElemAt";
+        }
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartArray();
+            writer.writeStartArray();
+            for (var v : array) {
+                encodeValue(writer, v, codecRegistry);
+            }
+            writer.writeEndArray();
+            encodeValue(writer, idx, codecRegistry);
+            writer.writeEndArray();
+        }
+
     }
 
     /**
@@ -238,11 +331,7 @@ public class ExpressionOperators {
      * @return the $arrayElemAt array expression operator
      */
     public static final Bson arrayElemAt(Iterable<?> array, Object idx) {
-        var bsonArray = new BsonArray(array instanceof Collection<?> collection ? collection.size() : 10);
-        for (var a : array) {
-            bsonArray.add(BsonValueUtil.encode(a));
-        }
-        return arrayElemAt((Object) bsonArray, idx);
+        return new ArrayElemAtOperator(array, idx);
     }
 
     /**
@@ -253,7 +342,7 @@ public class ExpressionOperators {
      * @return the $arrayElemAt array expression operator
      */
     public static final Bson arrayElemAt(Object idx, Object... array) {
-        return arrayElemAt(BsonValueUtil.encodeList(array), idx);
+        return arrayElemAt(Arrays.asList(array), idx);
     }
 
     /**
@@ -263,7 +352,7 @@ public class ExpressionOperators {
      * @return the $arrayToObject array expression operator
      */
     public static final Bson arrayToObject(Object expression) {
-        return operator("$arrayToObject", expression);
+        return new SimpleOperator("$arrayToObject", expression);
     }
 
     /**
@@ -273,16 +362,39 @@ public class ExpressionOperators {
      * @return the $arrayToObject array expression operator
      */
     public static final Bson arrayToObject(Map.Entry<?, ?>... entries) {
-        var expression = new BsonArray(1);
-        var values = new BsonArray(entries.length);
-        expression.add(values);
-        for (var entry : entries) {
-            var value = new BsonArray(2);
-            value.add(encode(entry.getKey()));
-            value.add(encode(entry.getValue()));
-            values.add(value);
+        return new ArrayToObjectOperator(false, entries);
+    }
+
+    private record ArrayToObjectOperator(boolean literal, Map.Entry<?, ?>... entries) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$arrayToObject";
         }
-        return arrayToObject(expression);
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            if (literal) {
+                writer.writeStartDocument();
+                writer.writeName("$literal");
+            } else {
+                writer.writeStartArray();
+            }
+            writer.writeStartArray();
+            for (var v : entries) {
+                writer.writeStartArray();
+                encodeValue(writer, v.getKey(), codecRegistry);
+                encodeValue(writer, v.getValue(), codecRegistry);
+                writer.writeEndArray();
+            }
+            writer.writeEndArray();
+            if (literal) {
+                writer.writeEndDocument();
+            } else {
+                writer.writeEndArray();
+            }
+        }
+
     }
 
     /**
@@ -292,14 +404,7 @@ public class ExpressionOperators {
      * @return the $arrayToObject array expression operator
      */
     public static final Bson arrayToObjectLiteral(Map.Entry<?, ?>... entries) {
-        var values = new BsonArray(entries.length);
-        for (var entry : entries) {
-            var value = new BsonArray(2);
-            value.add(encode(entry.getKey()));
-            value.add(encode(entry.getValue()));
-            values.add(value);
-        }
-        return arrayToObject(literal(values));
+        return new ArrayToObjectOperator(true, entries);
     }
 
     /**
@@ -309,7 +414,17 @@ public class ExpressionOperators {
      * @return the $concatArrays array expression operator
      */
     public static final Bson concatArrays(Object... arrays) {
-        return operator("$concatArrays", encodeList(arrays));
+        return new SimpleArrayOperator("$concatArrays", arrays);
+    }
+
+    /**
+     * Creates an $concatArrays array expression operator.
+     *
+     * @param arrays the arrays
+     * @return the $concatArrays array expression operator
+     */
+    public static final Bson concatArrays(Iterable<?> arrays) {
+        return new SimpleIterableOperator("$concatArrays", arrays);
     }
 
     /**
@@ -322,14 +437,34 @@ public class ExpressionOperators {
      * @return the $filter array expression operator
      */
     public static final Bson filter(Object input, Object cond, String as, Object limit) {
-        var doc = new BsonDocument(8).append("input", encode(input)).append("cond", encode(cond));
-        if (as != null) {
-            doc.append("as", new BsonString(as));
+        return new FilterOperator(input, cond, as, limit);
+    }
+
+    private record FilterOperator(Object input, Object cond, String as, Object limit) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$filter";
         }
-        if (limit != null) {
-            doc.append("limit", encode(limit));
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName("input");
+            encodeValue(writer, input, codecRegistry);
+            writer.writeName("cond");
+            encodeValue(writer, cond, codecRegistry);
+            if (as != null) {
+                writer.writeName("as");
+                encodeValue(writer, as, codecRegistry);
+            }
+            if (limit != null) {
+                writer.writeName("limit");
+                encodeValue(writer, limit, codecRegistry);
+            }
+            writer.writeEndDocument();
         }
-        return operator("$filter", doc);
+
     }
 
     /**
@@ -350,7 +485,7 @@ public class ExpressionOperators {
      * @return the $first array expression operator
      */
     public static final Bson first(Object expression) {
-        return operator("$first", expression);
+        return new SimpleOperator("$first", expression);
     }
 
     /**
@@ -361,7 +496,7 @@ public class ExpressionOperators {
      * @return the $firstN array expression operator
      */
     public static final Bson firstN(Object n, Object input) {
-        return operator("$firstN", new BsonDocument(4).append("n", encode(n)).append("input", encode(input)));
+        return new SimpleDocumentOperator2("$firstN", "n", n, "input", input);
     }
 
     /**
@@ -372,7 +507,7 @@ public class ExpressionOperators {
      * @return the $in array expression operator
      */
     public static final Bson in(Object expression, Object arrayExpression) {
-        return operator("$in", encodeList(expression, arrayExpression));
+        return new SimpleArrayOperator("$in", expression, arrayExpression);
     }
 
     /**
@@ -388,20 +523,21 @@ public class ExpressionOperators {
      */
     public static final Bson indexOfArray(Object array, Object search, Object start, Object end) {
         var len = end != null ? 4 : (start != null ? 3 : 2);
-        var params = new BsonArray(len);
-        params.add(encode(array));
-        params.add(encode(search));
+        var expressions = new ArrayList<>(len);
+        expressions.add(array);
+        expressions.add(search);
         if (start != null) {
-            params.add(encode(start));
+            expressions.add(start);
         }
         if (end != null) {
             if (start == null) {
-                params.add(new BsonInt32(0));
+                expressions.add(0);
             }
-            params.add(encode(end));
+            expressions.add(end);
         }
-        return operator("$indexOfArray", params);
+        return new SimpleIterableOperator("$indexOfArray", expressions);
     }
+
 
     /**
      * Creates a $indexOfArray array expression operator.
@@ -434,7 +570,7 @@ public class ExpressionOperators {
      * @return the $isArray array expression operator
      */
     public static final Bson isArray(Object expression) {
-        return operator("$isArray", expression);
+        return new SimpleOperator("$isArray", expression);
     }
 
     /**
@@ -444,7 +580,7 @@ public class ExpressionOperators {
      * @return the $last array expression operator
      */
     public static final Bson last(Object expression) {
-        return operator("$last", expression);
+        return new SimpleOperator("$last", expression);
     }
 
     /**
@@ -455,7 +591,7 @@ public class ExpressionOperators {
      * @return the $lastN array expression operator
      */
     public static final Bson lastN(Object n, Object input) {
-        return operator("$lastN", new BsonDocument(4).append("n", encode(n)).append("input", encode(input)));
+        return new SimpleDocumentOperator2("$lastN", "n", n, "input", input);
     }
 
     /**
@@ -467,12 +603,30 @@ public class ExpressionOperators {
      * @return the $map array expression operator
      */
     public static final Bson map(Object input, String as, Object in) {
-        var doc = new BsonDocument(4).append("input", encode(input));
-        if (as != null) {
-            doc.append("as", new BsonString(as));
+        return new MapOperator(input, as, in);
+    }
+
+    private record MapOperator(Object input, String as, Object in) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$map";
         }
-        doc.append("in", encode(in));
-        return operator("$map", doc);
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName("input");
+            encodeValue(writer, input, codecRegistry);
+            if (as != null) {
+                writer.writeName("as");
+                encodeValue(writer, as, codecRegistry);
+            }
+            writer.writeName("in");
+            encodeValue(writer, in, codecRegistry);
+            writer.writeEndDocument();
+        }
+
     }
 
     /**
@@ -494,7 +648,7 @@ public class ExpressionOperators {
      * @return the $maxN array expression operator
      */
     public static final Bson maxN(Object n, Object input) {
-        return operator("$maxN", new BsonDocument(4).append("n", encode(n)).append("input", encode(input)));
+        return new SimpleDocumentOperator2("$maxN", "n", n, "input", input);
     }
 
     /**
@@ -505,7 +659,7 @@ public class ExpressionOperators {
      * @return the $minN array expression operator
      */
     public static final Bson minN(Object n, Object input) {
-        return operator("$minN", new BsonDocument(4).append("n", encode(n)).append("input", encode(input)));
+        return new SimpleDocumentOperator2("$minN", "n", n, "input", input);
     }
 
     /**
@@ -515,7 +669,7 @@ public class ExpressionOperators {
      * @return the $objectToArray array expression operator
      */
     public static final Bson objectToArray(Object object) {
-        return operator("$objectToArray", object);
+        return new SimpleOperator("$objectToArray", object);
     }
 
     /**
@@ -530,13 +684,13 @@ public class ExpressionOperators {
      * @return the $range array expression operator
      */
     public static final Bson range(Object start, Object end, Object step) {
-        var params = new BsonArray(step == null ? 2 : 3);
-        params.add(encode(start));
-        params.add(encode(end));
+        var params = new ArrayList<>(step == null ? 2 : 3);
+        params.add(start);
+        params.add(end);
         if (step != null) {
-            params.add(encode(step));
+            params.add(step);
         }
-        return operator("$range", params);
+        return new SimpleIterableOperator("$range", params);
     }
 
     /**
@@ -561,8 +715,7 @@ public class ExpressionOperators {
      * @return the $reduce array expression operator
      */
     public static final Bson reduce(Object input, Object initialValue, Object in) {
-        var doc = new BsonDocument(4).append("input", encode(input)).append("initialValue", encode(initialValue)).append("in", encode(in));
-        return operator("$reduce", doc);
+        return new SimpleDocumentOperator3("$reduce", "input", input, "initialValue", initialValue, "in", in);
     }
 
     /**
@@ -572,7 +725,7 @@ public class ExpressionOperators {
      * @return the $reverseArray array expression operator
      */
     public static final Bson reverseArray(Object array) {
-        return operator("$reverseArray", array);
+        return new SimpleOperator("$reverseArray", array);
     }
 
     /**
@@ -582,7 +735,7 @@ public class ExpressionOperators {
      * @return the $size array expression operator
      */
     public static final Bson size(Object expression) {
-        return operator("$size", expression);
+        return new SimpleOperator("$size", expression);
     }
 
     /**
@@ -595,13 +748,13 @@ public class ExpressionOperators {
      * @return the $slice array expression operator
      */
     public static final Bson slice(Object array, Object position, Object n) {
-        var params = new BsonArray(position == null ? 2 : 3);
-        params.add(encode(array));
+        var params = new ArrayList<>(position == null ? 2 : 3);
+        params.add(array);
         if (position != null) {
-            params.add(encode(position));
+            params.add(position);
         }
-        params.add(encode(n));
-        return operator("$slice", params);
+        params.add(n);
+        return new SimpleIterableOperator("$slice", params);
     }
 
     /**
@@ -624,8 +777,7 @@ public class ExpressionOperators {
      * @return the $sortArray array expression operator
      */
     public static final Bson sortArray(Object input, Object sortBy) {
-        var doc = new BsonDocument(4).append("input", encode(input)).append("sortBy", encode(sortBy));
-        return operator("$sortArray", doc);
+        return new SimpleDocumentOperator2("$sortArray", "input", input, "sortBy", sortBy);
     }
 
     /**
@@ -638,14 +790,34 @@ public class ExpressionOperators {
      * @return the $zip array expression operator
      */
     public static final Bson zip(Iterable<?> inputs, boolean useLongestLength, Object defaults) {
-        var doc = new BsonDocument(4).append("inputs", encode(inputs));
-        if (useLongestLength) {
-            doc.append("useLongestLength", BsonBoolean.TRUE);
-            if (defaults != null) {
-                doc.append("defaults", encode(defaults));
-            }
+        return new ZipOperator(inputs, useLongestLength, defaults);
+    }
+
+    private record ZipOperator(Iterable<?> inputs, boolean useLongestLength, Object defaults) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$zip";
         }
-        return operator("$zip", doc);
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeStartArray("inputs");
+            for (var input : inputs) {
+                encodeValue(writer, input, codecRegistry);
+            }
+            writer.writeEndArray();
+            if (useLongestLength) {
+                writer.writeBoolean("useLongestLength", true);
+                if (defaults != null) {
+                    writer.writeName("defaults");
+                    encodeValue(writer, defaults, codecRegistry);
+                }
+            }
+            writer.writeEndDocument();
+        }
+
     }
 
     /**
@@ -668,33 +840,7 @@ public class ExpressionOperators {
      * @return the $zip array expression operator
      */
     public static final Bson zip(boolean useLongestLength, Object defaults, Object... inputs) {
-        var arrays = new BsonArray(inputs.length);
-        for (var input : inputs) {
-            arrays.add(encode(input));
-        }
-        var doc = new BsonDocument(4).append("inputs", arrays);
-        if (useLongestLength) {
-            doc.append("useLongestLength", BsonBoolean.TRUE);
-            if (defaults != null) {
-                doc.append("defaults", encode(defaults));
-            }
-        }
-        return operator("$zip", doc);
-    }
-
-    /**
-     * Creates a $zip array expression operator.
-     *
-     * @param inputs an array of expressions that resolve to arrays
-     * @return the $zip array expression operator
-     */
-    public static final Bson zip(Object... inputs) {
-        var arrays = new BsonArray(inputs.length);
-        for (var input : inputs) {
-            arrays.add(encode(input));
-        }
-        var doc = new BsonDocument(4).append("inputs", arrays);
-        return operator("$zip", doc);
+        return zip(Arrays.asList(inputs), useLongestLength, defaults);
     }
 
     /**
@@ -704,7 +850,7 @@ public class ExpressionOperators {
      * @return the $and boolean expression operator
      */
     public static final Bson and(Object... expressions) {
-        return operator("$and", encodeList(expressions));
+        return new SimpleArrayOperator("$and", expressions);
     }
 
     /**
@@ -714,7 +860,7 @@ public class ExpressionOperators {
      * @return the $not boolean expression operator
      */
     public static final Bson not(Object expression) {
-        return operator("$not", encodeList(expression));
+        return new SimpleArrayOperator("$not", expression);
     }
 
     /**
@@ -724,7 +870,7 @@ public class ExpressionOperators {
      * @return the $or boolean expression operator
      */
     public static final Bson or(Object... expressions) {
-        return operator("$or", encodeList(expressions));
+        return new SimpleArrayOperator("$or", expressions);
     }
 
     /**
@@ -734,7 +880,7 @@ public class ExpressionOperators {
      * @return the $expr operator
      */
     public static final Bson expr(Object expression) {
-        return operator("$expr", expression);
+        return new SimpleOperator("$expr", expression);
     }
 
     /**
@@ -746,7 +892,7 @@ public class ExpressionOperators {
      * @return the comparison expression operator
      */
     public static final Bson comparison(String name, Object expression1, Object expression2) {
-        return operator(name, encodeList(expression1, expression2));
+        return new SimpleArrayOperator(name, expression1, expression2);
     }
 
     /**
@@ -835,7 +981,7 @@ public class ExpressionOperators {
      * @return the $cond conditional expression operator
      */
     public static final Bson cond(Object ifExpression, Object thenExpression, Object elseExpression) {
-        return operator("$cond", encodeList(ifExpression, thenExpression, elseExpression));
+        return new SimpleArrayOperator("$cond", ifExpression, thenExpression, elseExpression);
     }
 
     /**
@@ -852,7 +998,7 @@ public class ExpressionOperators {
      * Builder for $cond conditional expression operator.
      *
      * @author MJ Fang
-     * @since 3.1
+     * @since 3.2
      */
     public static final class CondThenBuilder {
 
@@ -878,7 +1024,7 @@ public class ExpressionOperators {
      * Builder for $cond conditional expression operator.
      *
      * @author MJ Fang
-     * @since 3.1
+     * @since 3.2
      */
     public static final class CondElseBuilder {
 
@@ -910,12 +1056,26 @@ public class ExpressionOperators {
      * @return the $ifNull conditional expression operator
      */
     public static final Bson ifNull(Iterable<?> inputExpressions, Object replacementExpression) {
-        var params = new BsonArray(inputExpressions instanceof Collection<?> collection ? collection.size() + 1 : 10);
-        for (var inputExpression : inputExpressions) {
-            params.add(encode(inputExpression));
+        return new IfNullOperator(inputExpressions, replacementExpression);
+    }
+
+    private record IfNullOperator(Iterable<?> inputExpressions, Object replacementExpression) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$ifNull";
         }
-        params.add(encode(replacementExpression));
-        return operator("$ifNull", params);
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartArray();
+            for (var inputExpression : inputExpressions) {
+                encodeValue(writer, inputExpression, codecRegistry);
+            }
+            encodeValue(writer, replacementExpression, codecRegistry);
+            writer.writeEndArray();
+        }
+
     }
 
     /**
@@ -927,13 +1087,10 @@ public class ExpressionOperators {
      * @return the $ifNull conditional expression operator
      */
     public static final Bson ifNull(Object inputExpression, Object replacementExpression, Object... otherInputExpressions) {
-        var params = new BsonArray(otherInputExpressions.length + 2);
-        params.add(encode(inputExpression));
-        for (var otherInputExpression : otherInputExpressions) {
-            params.add(encode(otherInputExpression));
-        }
-        params.add(encode(replacementExpression));
-        return operator("$ifNull", params);
+        var list = new ArrayList<>(otherInputExpressions.length + 1);
+        list.add(inputExpression);
+        Collections.addAll(list, otherInputExpressions);
+        return ifNull(list, replacementExpression);
     }
 
     /**
@@ -959,7 +1116,7 @@ public class ExpressionOperators {
      * Builder for $ifNull conditional expression operator.
      *
      * @author MJ Fang
-     * @since 3.1
+     * @since 3.2
      */
     public static final class IfNullBuilder {
 
@@ -998,29 +1155,48 @@ public class ExpressionOperators {
      * @param defaultExpression the default value expression
      * @return the $switch conditional expression operator
      */
-    public static final Bson switchN(Iterable<?> branches, Object defaultExpression) {
-        var doc = new BsonDocument(4);
-        doc.append("branches", encode(branches));
-        if (defaultExpression != null) {
-            doc.append("default", encode(defaultExpression));
-        }
-        return operator("$switch", doc);
+    public static final Bson switchN(Iterable<Bson> branches, Object defaultExpression) {
+        return new SwitchOperator(branches, defaultExpression);
     }
 
-    /**
-     * Creates a $switch conditional expression operator.
-     *
-     * @param branches          an array of control branch documents
-     * @param defaultExpression the default value expression
-     * @return the $switch conditional expression operator
-     */
-    public static final Bson switchN(BsonArray branches, Object defaultExpression) {
-        var doc = new BsonDocument(4);
-        doc.append("branches", branches);
-        if (defaultExpression != null) {
-            doc.append("default", encode(defaultExpression));
+    private record SwitchOperator(Iterable<Bson> branches, Object defaultExpression) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$switch";
         }
-        return operator("$switch", doc);
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeStartArray("branches");
+            for (var branch : branches) {
+                encodeValue(writer, branch, codecRegistry);
+            }
+            writer.writeEndArray();
+            if (defaultExpression != null) {
+                writer.writeName("default");
+                encodeValue(writer, defaultExpression, codecRegistry);
+            }
+            writer.writeEndDocument();
+        }
+
+    }
+
+    private record BranchExpression(Object caseExpression, Object thenExpression) implements Bson {
+
+        @Override
+        public <TDocument> BsonDocument toBsonDocument(Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            var writer = new BsonDocumentWriter(new BsonDocument());
+            writer.writeStartDocument();
+            writer.writeName("case");
+            encodeValue(writer, caseExpression, codecRegistry);
+            writer.writeName("then");
+            encodeValue(writer, thenExpression, codecRegistry);
+            writer.writeEndDocument();
+            return writer.getDocument();
+        }
+
     }
 
     /**
@@ -1029,30 +1205,31 @@ public class ExpressionOperators {
      * @return the {@code SwitchBuilder} instance
      */
     public static final SwitchBuilder switch0() {
-        return new SwitchBuilder();
+        return new SwitchBuilder(List.of());
     }
 
     /**
-     * Creates a new {@link SwitchBuilder.BranchBuilder} instance.
+     * Creates a new {@link BranchBuilder} instance.
      *
      * @param expression the case expression
      * @return the {@code BranchBuilder} instance
      */
-    public static final SwitchBuilder.BranchBuilder switchCase(Object expression) {
-        return switch0().onCase(expression);
+    public static final BranchBuilder switchCase(Object expression) {
+        return new BranchBuilder(List.of(), expression);
     }
 
     /**
      * Builder for $switch conditional expression operator.
      *
      * @author MJ Fang
-     * @since 3.1
+     * @since 3.2
      */
     public static final class SwitchBuilder {
 
-        private final BsonArray branches = new BsonArray();
+        private final List<Bson> branches;
 
-        private SwitchBuilder() {
+        private SwitchBuilder(List<Bson> branches) {
+            this.branches = List.copyOf(branches);
         }
 
         /**
@@ -1062,7 +1239,7 @@ public class ExpressionOperators {
          * @return the {@code  BranchBuilder} instance
          */
         public BranchBuilder onCase(Object expression) {
-            return new BranchBuilder(expression);
+            return new BranchBuilder(branches, expression);
         }
 
         /**
@@ -1084,34 +1261,34 @@ public class ExpressionOperators {
             return switchN(branches, defaultExpression);
         }
 
+
+    }
+
+    /**
+     * Builder for $switch conditional expression operator.
+     *
+     * @author MJ Fang
+     * @since 3.2
+     */
+    public static final class BranchBuilder {
+
+        private final List<Bson> branches;
+        private final Object caseExpression;
+
+        private BranchBuilder(List<Bson> branches, Object caseExpression) {
+            this.branches = List.copyOf(branches);
+            this.caseExpression = caseExpression;
+        }
+
         /**
-         * Builder for $switch conditional expression operator.
+         * Append branch document and returns self switch builder.
          *
-         * @author MJ Fang
-         * @since 3.1
+         * @param expression the thenExpression
+         * @return the {@code SwitchBuilder}
          */
-        public final class BranchBuilder {
-
-            private final Object caseExpression;
-
-            private BranchBuilder(Object caseExpression) {
-                this.caseExpression = caseExpression;
-            }
-
-            /**
-             * Append branch document and returns self switch builder.
-             *
-             * @param expression the thenExpression
-             * @return the {@code SwitchBuilder}
-             */
-            public SwitchBuilder then(Object expression) {
-                var doc = new BsonDocument(4)
-                        .append("case", encode(caseExpression))
-                        .append("then", encode(expression));
-                branches.add(doc);
-                return SwitchBuilder.this;
-            }
-
+        public SwitchBuilder then(Object expression) {
+            var branch = new BranchExpression(caseExpression, expression);
+            return new SwitchBuilder(Stream.concat(branches.stream(), Stream.of(branch)).toList());
         }
 
     }
@@ -1123,7 +1300,7 @@ public class ExpressionOperators {
      * @return the $binarySize data size operator
      */
     public static final Bson binarySize(Object expression) {
-        return operator("$binarySize", encode(expression));
+        return new SimpleOperator("$binarySize", expression);
     }
 
     /**
@@ -1133,7 +1310,7 @@ public class ExpressionOperators {
      * @return the $bsonSize data size operator
      */
     public static final Bson bsonSize(Object expression) {
-        return operator("$bsonSize", encode(expression));
+        return new SimpleOperator("$bsonSize", expression);
     }
 
     /**
@@ -1148,14 +1325,32 @@ public class ExpressionOperators {
      * @return the $dateAdd date expression operator
      */
     public static final Bson dateAdd(Object startDate, Object unit, Object amount, Object timezone) {
-        var doc = new BsonDocument(8)
-                .append("startDate", encode(startDate))
-                .append("unit", encode(unit))
-                .append("amount", encode(amount));
-        if (timezone != null) {
-            doc.append("timezone", encode(timezone));
+        return new DateAddOperator(startDate, unit, amount, timezone);
+    }
+
+    private record DateAddOperator(Object startDate, Object unit, Object amount, Object timezone) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$dateAdd";
         }
-        return operator("$dateAdd", doc);
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName("startDate");
+            encodeValue(writer, startDate, codecRegistry);
+            writer.writeName("unit");
+            encodeValue(writer, unit, codecRegistry);
+            writer.writeName("amount");
+            encodeValue(writer, amount, codecRegistry);
+            if (timezone != null) {
+                writer.writeName("timezone");
+                encodeValue(writer, timezone, codecRegistry);
+            }
+            writer.writeEndDocument();
+        }
+
     }
 
     /**
@@ -1171,6 +1366,7 @@ public class ExpressionOperators {
     public static final Bson dateAdd(Object startDate, Object unit, Object amount) {
         return dateAdd(startDate, unit, amount, null);
     }
+
 
     /**
      * Creates a $dateDiff date expression operator.
@@ -1199,17 +1395,36 @@ public class ExpressionOperators {
      * @return the $dateDiff date expression operator
      */
     public static final Bson dateDiff(Object startDate, Object endDate, Object unit, Object timezone, Object startOfWeek) {
-        var doc = new BsonDocument(8)
-                .append("startDate", encode(startDate))
-                .append("endDate", encode(endDate))
-                .append("unit", encode(unit));
-        if (timezone != null) {
-            doc.append("timezone", encode(timezone));
+        return new DateDiff(startDate, endDate, unit, timezone, startOfWeek);
+    }
+
+    private record DateDiff(Object startDate, Object endDate, Object unit, Object timezone,
+                            Object startOfWeek) implements Operator {
+        @Override
+        public String operator() {
+            return "$dateDiff";
         }
-        if (startOfWeek != null) {
-            doc.append("startOfWeek", encode(startOfWeek));
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName("startDate");
+            encodeValue(writer, startDate, codecRegistry);
+            writer.writeName("endDate");
+            encodeValue(writer, endDate, codecRegistry);
+            writer.writeName("unit");
+            encodeValue(writer, unit, codecRegistry);
+            if (timezone != null) {
+                writer.writeName("timezone");
+                encodeValue(writer, timezone, codecRegistry);
+            }
+            if (startOfWeek != null) {
+                writer.writeName("startOfWeek");
+                encodeValue(writer, startOfWeek, codecRegistry);
+            }
+            writer.writeEndDocument();
         }
-        return operator("$dateDiff", doc);
+
     }
 
     /**
@@ -1227,33 +1442,57 @@ public class ExpressionOperators {
      */
     public static final Bson dateFromParts(Object year, Object month, Object day, Object hour, Object minute,
                                            Object second, Object millisecond, Object timezone) {
-        var doc = new BsonDocument("year", encode(year));
-        if (month != null) {
-            doc.append("month", encode(month));
-        }
-        if (day != null) {
-            doc.append("day", encode(day));
-        }
-        appendTime(doc, hour, minute, second, millisecond, timezone);
-        return operator("$dateFromParts", doc);
+        return new DateFromPartsOperator(false, year, month, day, hour, minute, second, millisecond, timezone);
     }
 
-    private static final void appendTime(BsonDocument doc, Object hour, Object minute, Object second,
-                                         Object millisecond, Object timezone) {
-        if (hour != null) {
-            doc.append("hour", encode(hour));
+    private record DateFromPartsOperator(boolean iso, Object year, Object monthOrWeek, Object day, Object hour,
+                                         Object minute, Object second, Object millisecond,
+                                         Object timezone) implements Operator {
+        @Override
+        public String operator() {
+            return "$dateFromParts";
         }
-        if (hour != null) {
-            doc.append("minute", encode(minute));
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName(iso ? "isoWeekYear" : "year");
+            encodeValue(writer, year, codecRegistry);
+            if (monthOrWeek != null) {
+                writer.writeName(iso ? "isoWeek" : "month");
+                encodeValue(writer, monthOrWeek, codecRegistry);
+            }
+            if (day != null) {
+                writer.writeName(iso ? "isoDayOfWeek" : "day");
+                encodeValue(writer, day, codecRegistry);
+            }
+            appendTime(writer, codecRegistry, hour, minute, second, millisecond, timezone);
+            writer.writeEndDocument();
         }
+
+    }
+
+    private static final void appendTime(BsonDocumentWriter writer, CodecRegistry codecRegistry, Object hour,
+                                         Object minute, Object second, Object millisecond, Object timezone) {
         if (hour != null) {
-            doc.append("second", encode(second));
+            writer.writeName("hour");
+            encodeValue(writer, hour, codecRegistry);
         }
-        if (hour != null) {
-            doc.append("millisecond", encode(millisecond));
+        if (minute != null) {
+            writer.writeName("minute");
+            encodeValue(writer, minute, codecRegistry);
         }
-        if (hour != null) {
-            doc.append("timezone", encode(timezone));
+        if (second != null) {
+            writer.writeName("second");
+            encodeValue(writer, second, codecRegistry);
+        }
+        if (millisecond != null) {
+            writer.writeName("millisecond");
+            encodeValue(writer, millisecond, codecRegistry);
+        }
+        if (timezone != null) {
+            writer.writeName("timezone");
+            encodeValue(writer, timezone, codecRegistry);
         }
     }
 
@@ -1272,15 +1511,8 @@ public class ExpressionOperators {
      */
     public static final Bson dateFromIsoParts(Object isoWeekYear, Object isoWeek, Object isoDayOfWeek, Object hour,
                                               Object minute, Object second, Object millisecond, Object timezone) {
-        var doc = new BsonDocument("isoWeekYear", encode(isoWeekYear));
-        if (isoWeek != null) {
-            doc.append("isoWeek", encode(isoWeek));
-        }
-        if (isoDayOfWeek != null) {
-            doc.append("isoDayOfWeek", encode(isoDayOfWeek));
-        }
-        appendTime(doc, hour, minute, second, millisecond, timezone);
-        return operator("$dateFromParts", doc);
+        return new DateFromPartsOperator(true, isoWeekYear, isoWeek, isoDayOfWeek, hour, minute, second, millisecond,
+                timezone);
     }
 
     /**
@@ -1296,22 +1528,43 @@ public class ExpressionOperators {
      *                   expression
      * @return the $dateFromString date expression operator
      */
-    public static final Bson dateFromString(Object dateString, Object format, Object timezone, Object onError,
-                                            Object onNull) {
-        var doc = new BsonDocument(8).append("dateString", encode(dateString));
-        if (format != null) {
-            doc.append("format", encode(format));
+    public static final Bson dateFromString(Object dateString, Object format, Object timezone,
+                                            Object onError, Object onNull) {
+        return new DateFromStringOperator(dateString, format, timezone, onError, onNull);
+    }
+
+    private record DateFromStringOperator(Object dateString, Object format, Object timezone, Object onError,
+                                          Object onNull) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$dateFromString";
         }
-        if (timezone != null) {
-            doc.append("timezone", encode(timezone));
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName("dateString");
+            encodeValue(writer, dateString, codecRegistry);
+            if (format != null) {
+                writer.writeName("format");
+                encodeValue(writer, format, codecRegistry);
+            }
+            if (timezone != null) {
+                writer.writeName("timezone");
+                encodeValue(writer, timezone, codecRegistry);
+            }
+            if (onError != null) {
+                writer.writeName("onError");
+                encodeValue(writer, onError, codecRegistry);
+            }
+            if (onNull != null) {
+                writer.writeName("onNull");
+                encodeValue(writer, onNull, codecRegistry);
+            }
+            writer.writeEndDocument();
         }
-        if (onError != null) {
-            doc.append("onError", encode(onError));
-        }
-        if (onNull != null) {
-            doc.append("onNull", encode(onNull));
-        }
-        return operator("$dateFromString", doc);
+
     }
 
     /**
@@ -1326,14 +1579,32 @@ public class ExpressionOperators {
      * @return the $dateSubtract date expression operator
      */
     public static final Bson dateSubtract(Object startDate, Object unit, Object amount, Object timezone) {
-        var doc = new BsonDocument(8)
-                .append("startDate", encode(startDate))
-                .append("unit", encode(unit))
-                .append("amount", encode(amount));
-        if (timezone != null) {
-            doc.append("timezone", encode(timezone));
+        return new DateSubtract(startDate, unit, amount, timezone);
+    }
+
+    private record DateSubtract(Object startDate, Object unit, Object amount, Object timezone) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$dateSubtract";
         }
-        return operator("$dateSubtract", doc);
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName("startDate");
+            encodeValue(writer, startDate, codecRegistry);
+            writer.writeName("unit");
+            encodeValue(writer, unit, codecRegistry);
+            writer.writeName("amount");
+            encodeValue(writer, amount, codecRegistry);
+            if (timezone != null) {
+                writer.writeName("timezone");
+                encodeValue(writer, timezone, codecRegistry);
+            }
+            writer.writeEndDocument();
+        }
+
     }
 
     /**
@@ -1349,6 +1620,7 @@ public class ExpressionOperators {
     public static final Bson dateSubtract(Object startDate, Object unit, Object amount) {
         return dateSubtract(startDate, unit, amount, null);
     }
+
 
     /**
      * Creates a $dateToParts date expression operator.
@@ -1371,14 +1643,7 @@ public class ExpressionOperators {
      * @return the $dateToParts date expression operator
      */
     public static final Bson dateToParts(Object date, Object timezone, Object iso8601) {
-        var doc = new BsonDocument(8).append("date", encode(date));
-        if (timezone != null) {
-            doc.append("timezone", encode(timezone));
-        }
-        if (iso8601 != null) {
-            doc.append("iso8601", encode(iso8601));
-        }
-        return operator("$dateToParts", doc);
+        return new DateToPartsOperator(date, timezone, iso8601);
     }
 
     /**
@@ -1391,14 +1656,32 @@ public class ExpressionOperators {
      * @return the $dateToParts date expression operator
      */
     public static final Bson dateToParts(Object date, Object timezone, boolean iso8601) {
-        var doc = new BsonDocument(iso8601 ? 8 : 4).append("date", encode(date));
-        if (timezone != null) {
-            doc.append("timezone", encode(timezone));
+        return dateToParts(date, timezone, BsonBoolean.valueOf(iso8601));
+    }
+
+    private record DateToPartsOperator(Object date, Object timezone, Object iso8601) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$dateToParts";
         }
-        if (iso8601) {
-            doc.append("iso8601", BsonBoolean.TRUE);
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName("date");
+            encodeValue(writer, date, codecRegistry);
+            if (timezone != null) {
+                writer.writeName("timezone");
+                encodeValue(writer, timezone, codecRegistry);
+            }
+            if (iso8601 != null) {
+                writer.writeName("iso8601");
+                encodeValue(writer, iso8601, codecRegistry);
+            }
+            writer.writeEndDocument();
         }
-        return operator("$dateToParts", doc);
+
     }
 
     /**
@@ -1413,25 +1696,44 @@ public class ExpressionOperators {
      * @return the $dateToString date expression operator
      */
     public static final Bson dateToString(Object date, Object format, Object timezone, Object onError) {
-        var doc = new BsonDocument(8)
-                .append("date", encode(date));
-        if (format != null) {
-            doc.append("format", encode(format));
+        return new DateToStringOperator(date, format, timezone, onError);
+    }
+
+    private record DateToStringOperator(Object dateString, Object format, Object timezone,
+                                        Object onError) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$dateToString";
         }
-        if (timezone != null) {
-            doc.append("timezone", encode(timezone));
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName("date");
+            encodeValue(writer, dateString, codecRegistry);
+            if (format != null) {
+                writer.writeName("format");
+                encodeValue(writer, format, codecRegistry);
+            }
+            if (timezone != null) {
+                writer.writeName("timezone");
+                encodeValue(writer, timezone, codecRegistry);
+            }
+            if (onError != null) {
+                writer.writeName("onError");
+                encodeValue(writer, onError, codecRegistry);
+            }
+            writer.writeEndDocument();
         }
-        if (onError != null) {
-            doc.append("onError", encode(onError));
-        }
-        return operator("$dateToString", doc);
+
     }
 
     /**
      * Creates a $dateTrunc date expression operator.
      *
-     * @param date the date to truncate, specified in UTC, can be any expression that resolves to a Date, a Timestamp,
-     *             or an ObjectID
+     * @param date the date to truncate, specified in UTC, can be any expression that resolves to a Date, a
+     *             Timestamp, or an ObjectID
      * @param unit the unit of time
      * @return the $dateTrunc date expression operator
      */
@@ -1453,28 +1755,39 @@ public class ExpressionOperators {
      * @return the $dateTrunc date expression operator
      */
     public static final Bson dateTrunc(Object date, Object unit, Object binSize, Object timezone, Object startOfWeek) {
-        var doc = new BsonDocument(8)
-                .append("date", encode(date))
-                .append("unit", encode(unit));
-        if (binSize != null) {
-            doc.append("binSize", encode(binSize));
-        }
-        if (timezone != null) {
-            doc.append("timezone", encode(timezone));
-        }
-        if (startOfWeek != null) {
-            doc.append("startOfWeek", encode(startOfWeek));
-        }
-        return operator("$dateTrunc", doc);
+        return new DateTruncOperator(date, unit, binSize, timezone, startOfWeek);
     }
 
-    private static final Bson datePortion(String name, Object date, Object timezone) {
-        var doc = new BsonDocument(4)
-                .append("date", encode(date));
-        if (timezone != null) {
-            doc.append("timezone", encode(timezone));
+    private record DateTruncOperator(Object date, Object unit, Object binSize, Object timezone,
+                                     Object startOfWeek) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$dateTrunc";
         }
-        return operator(name, doc);
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName("date");
+            encodeValue(writer, date, codecRegistry);
+            writer.writeName("unit");
+            encodeValue(writer, unit, codecRegistry);
+            if (binSize != null) {
+                writer.writeName("binSize");
+                encodeValue(writer, binSize, codecRegistry);
+            }
+            if (timezone != null) {
+                writer.writeName("timezone");
+                encodeValue(writer, timezone, codecRegistry);
+            }
+            if (startOfWeek != null) {
+                writer.writeName("startOfWeek");
+                encodeValue(writer, startOfWeek, codecRegistry);
+            }
+            writer.writeEndDocument();
+        }
+
     }
 
     /**
@@ -1485,7 +1798,7 @@ public class ExpressionOperators {
      * @return the $dayOfMonth date expression operator
      */
     public static final Bson dayOfMonth(Object date) {
-        return operator("$dayOfMonth", date);
+        return new SimpleOperator("$dayOfMonth", date);
     }
 
     /**
@@ -1500,6 +1813,11 @@ public class ExpressionOperators {
         return datePortion("$dayOfMonth", date, timezone);
     }
 
+    private static final Bson datePortion(String name, Object date, Object timezone) {
+        return timezone == null ? new SimpleDocumentOperator1(name, "date", date)
+                : new SimpleDocumentOperator2(name, "date", date, "timezone", timezone);
+    }
+
     /**
      * Creates a $dayOfWeek date expression operator.
      *
@@ -1508,7 +1826,7 @@ public class ExpressionOperators {
      * @return the $dayOfWeek date expression operator
      */
     public static final Bson dayOfWeek(Object date) {
-        return operator("$dayOfWeek", date);
+        return new SimpleOperator("$dayOfWeek", date);
     }
 
     /**
@@ -1531,7 +1849,7 @@ public class ExpressionOperators {
      * @return the $dayOfYear date expression operator
      */
     public static final Bson dayOfYear(Object date) {
-        return operator("$dayOfYear", date);
+        return new SimpleOperator("$dayOfYear", date);
     }
 
     /**
@@ -1554,7 +1872,7 @@ public class ExpressionOperators {
      * @return the $hour date expression operator
      */
     public static final Bson hour(Object date) {
-        return operator("$hour", date);
+        return new SimpleOperator("$hour", date);
     }
 
     /**
@@ -1577,7 +1895,7 @@ public class ExpressionOperators {
      * @return the $isoDayOfWeek date expression operator
      */
     public static final Bson isoDayOfWeek(Object date) {
-        return operator("$isoDayOfWeek", date);
+        return new SimpleOperator("$isoDayOfWeek", date);
     }
 
     /**
@@ -1600,7 +1918,7 @@ public class ExpressionOperators {
      * @return the $isoWeek date expression operator
      */
     public static final Bson isoWeek(Object date) {
-        return operator("$isoWeek", date);
+        return new SimpleOperator("$isoWeek", date);
     }
 
     /**
@@ -1623,7 +1941,7 @@ public class ExpressionOperators {
      * @return the $isoWeekYear date expression operator
      */
     public static final Bson isoWeekYear(Object date) {
-        return operator("$isoWeekYear", date);
+        return new SimpleOperator("$isoWeekYear", date);
     }
 
     /**
@@ -1646,7 +1964,7 @@ public class ExpressionOperators {
      * @return the $millisecond date expression operator
      */
     public static final Bson millisecond(Object date) {
-        return operator("$millisecond", date);
+        return new SimpleOperator("$millisecond", date);
     }
 
     /**
@@ -1669,7 +1987,7 @@ public class ExpressionOperators {
      * @return the $minute date expression operator
      */
     public static final Bson minute(Object date) {
-        return operator("$minute", date);
+        return new SimpleOperator("$minute", date);
     }
 
     /**
@@ -1692,7 +2010,7 @@ public class ExpressionOperators {
      * @return the $month date expression operator
      */
     public static final Bson month(Object date) {
-        return operator("$month", date);
+        return new SimpleOperator("$month", date);
     }
 
     /**
@@ -1715,7 +2033,7 @@ public class ExpressionOperators {
      * @return the $second date expression operator
      */
     public static final Bson second(Object date) {
-        return operator("$second", date);
+        return new SimpleOperator("$second", date);
     }
 
     /**
@@ -1737,7 +2055,7 @@ public class ExpressionOperators {
      * @return the $toDate date expression operator
      */
     public static final Bson toDate(Object expression) {
-        return operator("$toDate", expression);
+        return new SimpleOperator("$toDate", expression);
     }
 
     /**
@@ -1748,7 +2066,7 @@ public class ExpressionOperators {
      * @return the $week date expression operator
      */
     public static final Bson week(Object date) {
-        return operator("$week", date);
+        return new SimpleOperator("$week", date);
     }
 
     /**
@@ -1771,7 +2089,7 @@ public class ExpressionOperators {
      * @return the $year date expression operator
      */
     public static final Bson year(Object date) {
-        return operator("$year", date);
+        return new SimpleOperator("$year", date);
     }
 
     /**
@@ -1793,7 +2111,7 @@ public class ExpressionOperators {
      * @return the $literal literal expression operator
      */
     public static final Bson literal(Object expression) {
-        return operator("$literal", expression);
+        return new SimpleOperator("$literal", expression);
     }
 
     /**
@@ -1806,11 +2124,8 @@ public class ExpressionOperators {
      * @return the $getField miscellaneous operator
      */
     public static final Bson getField(Object field, Object input) {
-        var doc = new BsonDocument(4).append("field", encode(field));
-        if (input != null) {
-            doc.append("input", encode(input));
-        }
-        return operator("$getField", doc);
+        return input == null ? new SimpleDocumentOperator1("$getField", "field", field)
+                : new SimpleDocumentOperator2("$getField", "field", field, "input", input);
     }
 
     /**
@@ -1821,7 +2136,7 @@ public class ExpressionOperators {
      * @return the $getField miscellaneous operator
      */
     public static final Bson getField(Object field) {
-        return operator("$getField", field);
+        return new SimpleOperator("$getField", field);
     }
 
     /**
@@ -1830,7 +2145,23 @@ public class ExpressionOperators {
      * @return the $rand miscellaneous operator
      */
     public static final Bson rand() {
-        return operator("$rand", new BsonDocument());
+        return RandOperator.INSTANCE;
+    }
+
+    private record RandOperator() implements Operator {
+
+        private static final RandOperator INSTANCE = new RandOperator();
+
+        @Override
+        public String operator() {
+            return "$rand";
+        }
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeEndDocument();
+        }
     }
 
     /**
@@ -1840,7 +2171,7 @@ public class ExpressionOperators {
      * @return the $sampleRate miscellaneous operator
      */
     public static final Bson sampleRate(Object expression) {
-        return operator("$sampleRate", expression);
+        return new SimpleOperator("$sampleRate", expression);
     }
 
     /**
@@ -1850,7 +2181,7 @@ public class ExpressionOperators {
      * @return the $mergeObjects object expression operator
      */
     public static final Bson mergeObjects(Iterable<?> expressions) {
-        return operator("$mergeObjects", expressions);
+        return new SimpleIterableOperator("$mergeObjects", expressions);
     }
 
     /**
@@ -1860,7 +2191,7 @@ public class ExpressionOperators {
      * @return the $mergeObjects object expression operator
      */
     public static final Bson mergeObjects(Object... expressions) {
-        return operator("$mergeObjects", encodeList(expressions));
+        return new SimpleArrayOperator("$mergeObjects", expressions);
     }
 
     /**
@@ -1874,11 +2205,7 @@ public class ExpressionOperators {
      * @return the $setField object expression operator
      */
     public static final Bson setField(Object field, Object input, Object value) {
-        var doc = new BsonDocument(8)
-                .append("field", encode(field))
-                .append("input", encode(input))
-                .append("value", encode(value));
-        return operator("$setField", doc);
+        return new SimpleDocumentOperator3("$setField", "field", field, "input", input, "value", value);
     }
 
     /**
@@ -1888,7 +2215,7 @@ public class ExpressionOperators {
      * @return the $allElementsTrue set expression operator
      */
     public static final Bson allElementsTrue(Object expression) {
-        return operator("$allElementsTrue", encodeList(expression));
+        return new SimpleArrayOperator("$allElementsTrue", expression);
     }
 
     /**
@@ -1898,7 +2225,26 @@ public class ExpressionOperators {
      * @return the $allElementsTrue set expression operator
      */
     public static final Bson allElementsTrue(Iterable<?> elements) {
-        return allElementsTrue(encode(elements));
+        return new ElementsTrueOperator(true, elements);
+    }
+
+    private record ElementsTrueOperator(boolean all, Iterable<?> elements) implements Operator {
+
+        @Override
+        public String operator() {
+            return all ? "$allElementsTrue" : "$anyElementTrue";
+        }
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartArray();
+            writer.writeStartArray();
+            for (var element : elements) {
+                encodeValue(writer, element, codecRegistry);
+            }
+            writer.writeEndArray();
+            writer.writeEndArray();
+        }
     }
 
     /**
@@ -1908,7 +2254,7 @@ public class ExpressionOperators {
      * @return the $allElementsTrue set expression operator
      */
     public static final Bson allElementsTrue(Object... elements) {
-        return allElementsTrue(encodeList(elements));
+        return allElementsTrue(Arrays.asList(elements));
     }
 
     /**
@@ -1918,7 +2264,7 @@ public class ExpressionOperators {
      * @return the $anyElementTrue set expression operator
      */
     public static final Bson anyElementTrue(Object expression) {
-        return operator("$anyElementTrue", encodeList(expression));
+        return new SimpleArrayOperator("$anyElementTrue", expression);
     }
 
     /**
@@ -1928,7 +2274,7 @@ public class ExpressionOperators {
      * @return the $anyElementTrue set expression operator
      */
     public static final Bson anyElementTrue(Iterable<?> elements) {
-        return anyElementTrue(encode(elements));
+        return new ElementsTrueOperator(false, elements);
     }
 
     /**
@@ -1938,11 +2284,7 @@ public class ExpressionOperators {
      * @return the $anyElementTrue set expression operator
      */
     public static final Bson anyElementTrue(Object... elements) {
-        return anyElementTrue(encodeList(elements));
-    }
-
-    private static final Bson setCompare(String name, Object expression1, Object expression2) {
-        return operator(name, encodeList(expression1, expression2));
+        return anyElementTrue(Arrays.asList(elements));
     }
 
     /**
@@ -1953,7 +2295,7 @@ public class ExpressionOperators {
      * @return the $setDifference set expression operator
      */
     public static final Bson setDifference(Object expression1, Object expression2) {
-        return setCompare("$setDifference", expression1, expression2);
+        return new SimpleArrayOperator("$setDifference", expression1, expression2);
     }
 
     /**
@@ -1964,7 +2306,7 @@ public class ExpressionOperators {
      * @return the $setEquals set expression operator
      */
     public static final Bson setEquals(Object expression1, Object expression2) {
-        return setCompare("$setEquals", expression1, expression2);
+        return new SimpleArrayOperator("$setEquals", expression1, expression2);
     }
 
     /**
@@ -1974,7 +2316,7 @@ public class ExpressionOperators {
      * @return the $setIntersection set expression operator
      */
     public static final Bson setIntersection(Object... expressions) {
-        return operator("$setIntersection", encodeList(expressions));
+        return new SimpleArrayOperator("$setIntersection", expressions);
     }
 
     /**
@@ -1984,7 +2326,7 @@ public class ExpressionOperators {
      * @return the $setIntersection set expression operator
      */
     public static final Bson setIntersection(Iterable<?> expressions) {
-        return operator("$setIntersection", expressions);
+        return new SimpleIterableOperator("$setIntersection", expressions);
     }
 
     /**
@@ -1995,7 +2337,7 @@ public class ExpressionOperators {
      * @return the $setIsSubset set expression operator
      */
     public static final Bson setIsSubset(Object expression1, Object expression2) {
-        return setCompare("$setIsSubset", expression1, expression2);
+        return new SimpleArrayOperator("$setIsSubset", expression1, expression2);
     }
 
     /**
@@ -2005,7 +2347,7 @@ public class ExpressionOperators {
      * @return the $setUnion set expression operator
      */
     public static final Bson setUnion(Object... expressions) {
-        return operator("$setUnion", encodeList(expressions));
+        return new SimpleArrayOperator("$setUnion", expressions);
     }
 
     /**
@@ -2015,7 +2357,7 @@ public class ExpressionOperators {
      * @return the $setUnion set expression operator
      */
     public static final Bson setUnion(Iterable<?> expressions) {
-        return operator("$setUnion", expressions);
+        return new SimpleIterableOperator("$setUnion", expressions);
     }
 
     /**
@@ -2025,7 +2367,7 @@ public class ExpressionOperators {
      * @return the $concat string expression operator
      */
     public static final Bson concat(Object... expressions) {
-        return operator("$concat", encodeList(expressions));
+        return new SimpleArrayOperator("$concat", expressions);
     }
 
     /**
@@ -2035,20 +2377,7 @@ public class ExpressionOperators {
      * @return the $concat string expression operator
      */
     public static final Bson concat(Iterable<?> expressions) {
-        return operator("$concat", expressions);
-    }
-
-    private static final Bson indexOf(String name, Object string, Object subString, Object start, Object end) {
-        var params = new BsonArray(4);
-        params.add(encode(string));
-        params.add(encode(subString));
-        if (start != null) {
-            params.add(encode(start));
-            if (end != null) {
-                params.add(encode(end));
-            }
-        }
-        return operator(name, params);
+        return new SimpleIterableOperator("$concat", expressions);
     }
 
     /**
@@ -2063,7 +2392,24 @@ public class ExpressionOperators {
      * @return the $indexOfBytes string expression operator
      */
     public static final Bson indexOfBytes(Object string, Object subString, Object start, Object end) {
-        return indexOf("$indexOfBytes", string, subString, start, end);
+        return new IndexOfOperator("$indexOfBytes", string, subString, start, end);
+    }
+
+    private record IndexOfOperator(String operator, Object string, Object subString, Object start,
+                                   Object end) implements Operator {
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartArray();
+            encodeValue(writer, string, codecRegistry);
+            encodeValue(writer, subString, codecRegistry);
+            if (start != null) {
+                encodeValue(writer, start, codecRegistry);
+                if (end != null) {
+                    encodeValue(writer, end, codecRegistry);
+                }
+            }
+            writer.writeEndArray();
+        }
     }
 
     /**
@@ -2078,15 +2424,7 @@ public class ExpressionOperators {
      * @return the $indexOfCP string expression operator
      */
     public static final Bson indexOfCP(Object string, Object subString, Object start, Object end) {
-        return indexOf("$indexOfCP", string, subString, start, end);
-    }
-
-    private static final Bson trimOperator(String name, Object input, Object chars) {
-        var doc = new BsonDocument(4).append("input", encode(input));
-        if (chars != null) {
-            doc.append("chars", encode(chars));
-        }
-        return operator(name, doc);
+        return new IndexOfOperator("$indexOfCP", string, subString, start, end);
     }
 
     /**
@@ -2111,12 +2449,9 @@ public class ExpressionOperators {
         return trimOperator("$ltrim", input, chars);
     }
 
-    private static final Bson regexOperator(String name, Object input, Object regex, Object options) {
-        var doc = new BsonDocument(8).append("input", encode(input)).append("regex", encode(regex));
-        if (options != null) {
-            doc.append("options", encode(options));
-        }
-        return operator(name, doc);
+    private static final Bson trimOperator(String operator, Object input, Object chars) {
+        return chars == null ? new SimpleDocumentOperator1(operator, "input", input)
+                : new SimpleDocumentOperator2(operator, "input", input, "chars", chars);
     }
 
     /**
@@ -2130,6 +2465,11 @@ public class ExpressionOperators {
      */
     public static final Bson regexFind(Object input, Object regex, Object options) {
         return regexOperator("$regexFind", input, regex, options);
+    }
+
+    private static final Bson regexOperator(String operator, Object input, Object regex, Object options) {
+        return options == null ? new SimpleDocumentOperator2(operator, "input", input, "regex", regex)
+                : new SimpleDocumentOperator3(operator, "input", input, "regex", regex, "options", options);
     }
 
     /**
@@ -2158,14 +2498,6 @@ public class ExpressionOperators {
         return regexOperator("$regexMatch", input, regex, options);
     }
 
-    private static final Bson replaceOperator(String name, Object input, Object find, Object replacement) {
-        var doc = new BsonDocument(8)
-                .append("input", encode(input))
-                .append("find", encode(find))
-                .append("replacement", encode(replacement));
-        return operator(name, doc);
-    }
-
     /**
      * Creates a $replaceOne string expression operator.
      *
@@ -2179,6 +2511,10 @@ public class ExpressionOperators {
      */
     public static final Bson replaceOne(Object input, Object find, Object replacement) {
         return replaceOperator("$replaceOne", input, find, replacement);
+    }
+
+    private static final Bson replaceOperator(String operator, Object input, Object find, Object replacement) {
+        return new SimpleDocumentOperator3(operator, "input", input, "find", find, "replacement", replacement);
     }
 
     /**
@@ -2227,7 +2563,7 @@ public class ExpressionOperators {
      * @return the $split string expression operator
      */
     public static final Bson split(Object string, Object delimiter) {
-        return operator("$split", encodeList(string, delimiter));
+        return new SimpleArrayOperator("$split", string, delimiter);
     }
 
     /**
@@ -2237,7 +2573,7 @@ public class ExpressionOperators {
      * @return the $strLenBytes string expression operator
      */
     public static final Bson strLenBytes(Object string) {
-        return operator("$strLenBytes", string);
+        return new SimpleOperator("$strLenBytes", string);
     }
 
     /**
@@ -2247,7 +2583,7 @@ public class ExpressionOperators {
      * @return the $strLenCP string expression operator
      */
     public static final Bson strLenCP(Object string) {
-        return operator("$strLenCP", string);
+        return new SimpleOperator("$strLenCP", string);
     }
 
     /**
@@ -2258,7 +2594,7 @@ public class ExpressionOperators {
      * @return the $strcasecmp string expression operator
      */
     public static final Bson strcasecmp(Object expression1, Object expression2) {
-        return operator("$strcasecmp", encodeList(expression1, expression2));
+        return new SimpleArrayOperator("$strcasecmp", expression1, expression2);
     }
 
     /**
@@ -2270,7 +2606,7 @@ public class ExpressionOperators {
      * @return the $substr string expression operator
      */
     public static final Bson substr(Object string, Object start, Object length) {
-        return operator("$substr", encodeList(string, start, length));
+        return new SimpleArrayOperator("$substr", string, start, length);
     }
 
     /**
@@ -2282,7 +2618,7 @@ public class ExpressionOperators {
      * @return the $substrBytes string expression operator
      */
     public static final Bson substrBytes(Object string, Object index, Object count) {
-        return operator("$substrBytes", encodeList(string, index, count));
+        return new SimpleArrayOperator("$substrBytes", string, index, count);
     }
 
     /**
@@ -2294,7 +2630,7 @@ public class ExpressionOperators {
      * @return the $substrCP string expression operator
      */
     public static final Bson substrCP(Object string, Object index, Object count) {
-        return operator("$substrCP", encodeList(string, index, count));
+        return new SimpleArrayOperator("$substrCP", string, index, count);
     }
 
     /**
@@ -2304,7 +2640,7 @@ public class ExpressionOperators {
      * @return the $toLower string expression operator
      */
     public static final Bson toLower(Object string) {
-        return operator("$toLower", string);
+        return new SimpleOperator("$toLower", string);
     }
 
     /**
@@ -2314,7 +2650,7 @@ public class ExpressionOperators {
      * @return the $toString string expression operator
      */
     public static final Bson toString(Object expression) {
-        return operator("$toString", expression);
+        return new SimpleOperator("$toString", expression);
     }
 
     /**
@@ -2346,7 +2682,7 @@ public class ExpressionOperators {
      * @return the $toUpper string expression operator
      */
     public static final Bson toUpper(Object string) {
-        return operator("$toUpper", string);
+        return new SimpleOperator("$toUpper", string);
     }
 
     /**
@@ -2356,7 +2692,7 @@ public class ExpressionOperators {
      * @return the $meta text expression operator
      */
     public static final Bson meta(Object metaDataKeyword) {
-        return operator("$meta", metaDataKeyword);
+        return new SimpleOperator("$meta", metaDataKeyword);
     }
 
     /**
@@ -2366,7 +2702,7 @@ public class ExpressionOperators {
      * @return the $tsIncrement timestamp expression operator
      */
     public static final Bson tsIncrement(Object expression) {
-        return operator("$tsIncrement", expression);
+        return new SimpleOperator("$tsIncrement", expression);
     }
 
     /**
@@ -2376,7 +2712,7 @@ public class ExpressionOperators {
      * @return the $tsSecond timestamp expression operator
      */
     public static final Bson tsSecond(Object expression) {
-        return operator("$tsSecond", expression);
+        return new SimpleOperator("$tsSecond", expression);
     }
 
     /**
@@ -2386,7 +2722,7 @@ public class ExpressionOperators {
      * @return the $sin trigonometry expression operator
      */
     public static final Bson sin(Object expression) {
-        return operator("$sin", expression);
+        return new SimpleOperator("$sin", expression);
     }
 
     /**
@@ -2396,7 +2732,7 @@ public class ExpressionOperators {
      * @return the $cos trigonometry expression operator
      */
     public static final Bson cos(Object expression) {
-        return operator("$cos", expression);
+        return new SimpleOperator("$cos", expression);
     }
 
     /**
@@ -2406,7 +2742,7 @@ public class ExpressionOperators {
      * @return the $tan trigonometry expression operator
      */
     public static final Bson tan(Object expression) {
-        return operator("$tan", expression);
+        return new SimpleOperator("$tan", expression);
     }
 
     /**
@@ -2416,7 +2752,7 @@ public class ExpressionOperators {
      * @return the $asin trigonometry expression operator
      */
     public static final Bson asin(Object expression) {
-        return operator("$asin", expression);
+        return new SimpleOperator("$asin", expression);
     }
 
     /**
@@ -2426,7 +2762,7 @@ public class ExpressionOperators {
      * @return the $acos trigonometry expression operator
      */
     public static final Bson acos(Object expression) {
-        return operator("$acos", expression);
+        return new SimpleOperator("$acos", expression);
     }
 
     /**
@@ -2436,7 +2772,7 @@ public class ExpressionOperators {
      * @return the $atan trigonometry expression operator
      */
     public static final Bson atan(Object expression) {
-        return operator("$atan", expression);
+        return new SimpleOperator("$atan", expression);
     }
 
     /**
@@ -2447,7 +2783,7 @@ public class ExpressionOperators {
      * @return the $atan2 trigonometry expression operator
      */
     public static final Bson atan2(Object expression1, Object expression2) {
-        return operator("$atan2", encodeList(expression1, expression2));
+        return new SimpleArrayOperator("$atan2", expression1, expression2);
     }
 
     /**
@@ -2457,7 +2793,7 @@ public class ExpressionOperators {
      * @return the $asinh trigonometry expression operator
      */
     public static final Bson asinh(Object expression) {
-        return operator("$asinh", expression);
+        return new SimpleOperator("$asinh", expression);
     }
 
     /**
@@ -2467,7 +2803,7 @@ public class ExpressionOperators {
      * @return the $acosh trigonometry expression operator
      */
     public static final Bson acosh(Object expression) {
-        return operator("$acosh", expression);
+        return new SimpleOperator("$acosh", expression);
     }
 
     /**
@@ -2477,7 +2813,7 @@ public class ExpressionOperators {
      * @return the $atanh trigonometry expression operator
      */
     public static final Bson atanh(Object expression) {
-        return operator("$atanh", expression);
+        return new SimpleOperator("$atanh", expression);
     }
 
     /**
@@ -2487,7 +2823,7 @@ public class ExpressionOperators {
      * @return the $sinh trigonometry expression operator
      */
     public static final Bson sinh(Object expression) {
-        return operator("$sinh", expression);
+        return new SimpleOperator("$sinh", expression);
     }
 
     /**
@@ -2497,7 +2833,7 @@ public class ExpressionOperators {
      * @return the $cosh trigonometry expression operator
      */
     public static final Bson cosh(Object expression) {
-        return operator("$cosh", expression);
+        return new SimpleOperator("$cosh", expression);
     }
 
     /**
@@ -2507,7 +2843,7 @@ public class ExpressionOperators {
      * @return the $tanh trigonometry expression operator
      */
     public static final Bson tanh(Object expression) {
-        return operator("$tanh", expression);
+        return new SimpleOperator("$tanh", expression);
     }
 
     /**
@@ -2517,7 +2853,7 @@ public class ExpressionOperators {
      * @return the $degreesToRadians trigonometry expression operator
      */
     public static final Bson degreesToRadians(Object expression) {
-        return operator("$degreesToRadians", expression);
+        return new SimpleOperator("$degreesToRadians", expression);
     }
 
     /**
@@ -2527,7 +2863,7 @@ public class ExpressionOperators {
      * @return the $radiansToDegrees trigonometry expression operator
      */
     public static final Bson radiansToDegrees(Object expression) {
-        return operator("$radiansToDegrees", expression);
+        return new SimpleOperator("$radiansToDegrees", expression);
     }
 
     /**
@@ -2551,16 +2887,34 @@ public class ExpressionOperators {
      * @return the $convert type expression operator
      */
     public static final Bson convert(Object input, Object to, Object onError, Object onNull) {
-        var doc = new BsonDocument(8)
-                .append("input", encode(input))
-                .append("to", encode(to));
-        if (onError != null) {
-            doc.append("onError", encode(onError));
+        return new ConvertOperator(input, to, onError, onNull);
+    }
+
+    private record ConvertOperator(Object input, Object to, Object onError, Object onNull) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$convert";
         }
-        if (onNull != null) {
-            doc.append("onNull", encode(onNull));
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeName("input");
+            encodeValue(writer, input, codecRegistry);
+            writer.writeName("to");
+            encodeValue(writer, to, codecRegistry);
+            if (onError != null) {
+                writer.writeName("onError");
+                encodeValue(writer, onError, codecRegistry);
+            }
+            if (onNull != null) {
+                writer.writeName("onNull");
+                encodeValue(writer, onNull, codecRegistry);
+            }
+            writer.writeEndDocument();
         }
-        return operator("$convert", doc);
+
     }
 
     /**
@@ -2570,7 +2924,7 @@ public class ExpressionOperators {
      * @return the $isNumber type expression operator
      */
     public static final Bson isNumber(Object expression) {
-        return operator("$isNumber", expression);
+        return new SimpleOperator("$isNumber", expression);
     }
 
     /**
@@ -2580,7 +2934,7 @@ public class ExpressionOperators {
      * @return the $toBool type expression operator
      */
     public static final Bson toBool(Object expression) {
-        return operator("$toBool", expression);
+        return new SimpleOperator("$toBool", expression);
     }
 
     /**
@@ -2590,7 +2944,7 @@ public class ExpressionOperators {
      * @return the $toDecimal type expression operator
      */
     public static final Bson toDecimal(Object expression) {
-        return operator("$toDecimal", expression);
+        return new SimpleOperator("$toDecimal", expression);
     }
 
     /**
@@ -2600,7 +2954,7 @@ public class ExpressionOperators {
      * @return the $toDouble type expression operator
      */
     public static final Bson toDouble(Object expression) {
-        return operator("$toDouble", expression);
+        return new SimpleOperator("$toDouble", expression);
     }
 
     /**
@@ -2610,7 +2964,7 @@ public class ExpressionOperators {
      * @return the $toInt type expression operator
      */
     public static final Bson toInt(Object expression) {
-        return operator("$toInt", expression);
+        return new SimpleOperator("$toInt", expression);
     }
 
     /**
@@ -2620,7 +2974,7 @@ public class ExpressionOperators {
      * @return the $toLong type expression operator
      */
     public static final Bson toLong(Object expression) {
-        return operator("$toLong", expression);
+        return new SimpleOperator("$toLong", expression);
     }
 
     /**
@@ -2630,7 +2984,7 @@ public class ExpressionOperators {
      * @return the $toObjectId type expression operator
      */
     public static final Bson toObjectId(Object expression) {
-        return operator("$toObjectId", expression);
+        return new SimpleOperator("$toObjectId", expression);
     }
 
     /**
@@ -2640,7 +2994,7 @@ public class ExpressionOperators {
      * @return the $type type expression operator
      */
     public static final Bson type(Object expression) {
-        return operator("$type", expression);
+        return new SimpleOperator("$type", expression);
     }
 
     /**
@@ -2650,7 +3004,7 @@ public class ExpressionOperators {
      * @return the $avg expression operator
      */
     public static final Bson avg(Object expression) {
-        return operator("$avg", expression);
+        return new SimpleOperator("$avg", expression);
     }
 
     /**
@@ -2660,7 +3014,7 @@ public class ExpressionOperators {
      * @return the $avg expression operator
      */
     public static final Bson avg(Object... expressions) {
-        return operator("$avg", encodeList(expressions));
+        return new SimpleArrayOperator("$avg", expressions);
     }
 
     /**
@@ -2670,7 +3024,7 @@ public class ExpressionOperators {
      * @return the $max expression operator
      */
     public static final Bson max(Object expression) {
-        return operator("$max", expression);
+        return new SimpleOperator("$max", expression);
     }
 
     /**
@@ -2680,7 +3034,7 @@ public class ExpressionOperators {
      * @return the $max expression operator
      */
     public static final Bson max(Object... expressions) {
-        return operator("$max", encodeList(expressions));
+        return new SimpleArrayOperator("$max", expressions);
     }
 
     /**
@@ -2690,7 +3044,7 @@ public class ExpressionOperators {
      * @return the $min expression operator
      */
     public static final Bson min(Object expression) {
-        return operator("$min", expression);
+        return new SimpleOperator("$min", expression);
     }
 
     /**
@@ -2700,7 +3054,7 @@ public class ExpressionOperators {
      * @return the $min expression operator
      */
     public static final Bson min(Object... expressions) {
-        return operator("$min", encodeList(expressions));
+        return new SimpleArrayOperator("$min", expressions);
     }
 
     /**
@@ -2710,7 +3064,7 @@ public class ExpressionOperators {
      * @return the $stdDevPop expression operator
      */
     public static final Bson stdDevPop(Object expression) {
-        return operator("$stdDevPop", expression);
+        return new SimpleOperator("$stdDevPop", expression);
     }
 
     /**
@@ -2720,7 +3074,7 @@ public class ExpressionOperators {
      * @return the $stdDevPop expression operator
      */
     public static final Bson stdDevPop(Object... expressions) {
-        return operator("$stdDevPop", encodeList(expressions));
+        return new SimpleArrayOperator("$stdDevPop", expressions);
     }
 
     /**
@@ -2730,7 +3084,7 @@ public class ExpressionOperators {
      * @return the $stdDevSamp expression operator
      */
     public static final Bson stdDevSamp(Object expression) {
-        return operator("$stdDevSamp", expression);
+        return new SimpleOperator("$stdDevSamp", expression);
     }
 
     /**
@@ -2740,7 +3094,7 @@ public class ExpressionOperators {
      * @return the $stdDevSamp expression operator
      */
     public static final Bson stdDevSamp(Object... expressions) {
-        return operator("$stdDevSamp", encodeList(expressions));
+        return new SimpleArrayOperator("$stdDevSamp", expressions);
     }
 
     /**
@@ -2750,7 +3104,7 @@ public class ExpressionOperators {
      * @return the $sum expression operator
      */
     public static final Bson sum(Object expression) {
-        return operator("$sum", expression);
+        return new SimpleOperator("$sum", expression);
     }
 
     /**
@@ -2760,7 +3114,7 @@ public class ExpressionOperators {
      * @return the $sum expression operator
      */
     public static final Bson sum(Object... expressions) {
-        return operator("$sum", encodeList(expressions));
+        return new SimpleArrayOperator("$sum", expressions);
     }
 
     /**
@@ -2771,10 +3125,7 @@ public class ExpressionOperators {
      * @return the $let variable expression operator
      */
     public static final Bson let(Object vars, Object in) {
-        var doc = new BsonDocument(4)
-                .append("vars", encode(vars))
-                .append("in", encode(in));
-        return operator("$let", doc);
+        return new SimpleDocumentOperator2("$let", "vars", vars, "in", in);
     }
 
     /**
@@ -2786,14 +3137,29 @@ public class ExpressionOperators {
      */
     @SafeVarargs
     public static final Bson let(Object in, Map.Entry<String, ?>... vars) {
-        var doc = new BsonDocument(vars.length << 1);
-        for (var v : vars) {
-            doc.put(v.getKey(), encode(v.getValue()));
-        }
-        return let(doc, in);
+        return new LetOperator(Arrays.asList(vars), in);
     }
 
-    private ExpressionOperators() {
+    private record LetOperator(List<Map.Entry<String, ?>> vars, Object in) implements Operator {
+
+        @Override
+        public String operator() {
+            return "$let";
+        }
+
+        @Override
+        public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
+            writer.writeStartDocument();
+            writer.writeStartDocument("vars");
+            for (var variable : vars) {
+                writer.writeName(variable.getKey());
+                encodeValue(writer, variable.getValue(), codecRegistry);
+            }
+            writer.writeEndDocument();
+            writer.writeName("in");
+            encodeValue(writer, in, codecRegistry);
+            writer.writeEndDocument();
+        }
 
     }
 

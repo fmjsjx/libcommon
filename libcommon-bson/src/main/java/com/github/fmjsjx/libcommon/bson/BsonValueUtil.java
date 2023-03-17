@@ -2,6 +2,9 @@ package com.github.fmjsjx.libcommon.bson;
 
 import com.github.fmjsjx.libcommon.util.DateTimeUtil;
 import org.bson.*;
+import org.bson.codecs.Codec;
+import org.bson.codecs.EncoderContext;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.bson.types.Decimal128;
 
@@ -190,6 +193,27 @@ public class BsonValueUtil {
         return new BsonString(value.toString());
     }
 
+    /**
+     * Encodes value using the specified writer given.
+     *
+     * @param writer        the writer
+     * @param value         the value to be written
+     * @param codecRegistry the {@link CodecRegistry}
+     * @param <TItem>       the type of the value
+     * @author MJ Fang
+     * @since 3.2
+     */
+    @SuppressWarnings("unchecked")
+    public static <TItem> void encodeValue(final BsonDocumentWriter writer, final TItem value, final CodecRegistry codecRegistry) {
+        if (value == null) {
+            writer.writeNull();
+        } else if (value instanceof Bson bson) {
+            codecRegistry.get(BsonDocument.class)
+                    .encode(writer, bson.toBsonDocument(BsonDocument.class, codecRegistry), EncoderContext.builder().build());
+        } else {
+            ((Codec<TItem>) codecRegistry.get(value.getClass())).encode(writer, value, EncoderContext.builder().build());
+        }
+    }
 
     /**
      * Encodes any objects to {@link BsonValue}.

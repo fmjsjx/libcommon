@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.github.fmjsjx.libcommon.bson
 
 import com.github.fmjsjx.libcommon.bson.ExpressionOperators.*
@@ -649,7 +651,7 @@ class ExpressionOperatorsTests {
     }
 
     @Test
-    fun slice() {
+    fun testSlice() {
         assertEquals(
             BsonDocument(
                 "\$slice",

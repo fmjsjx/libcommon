@@ -2,10 +2,12 @@ package com.github.fmjsjx.libcommon.json;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import com.jsoniter.ValueType;
 import org.junit.jupiter.api.Test;
 
 public class JsoniterLibraryTest {
@@ -71,6 +73,29 @@ public class JsoniterLibraryTest {
             
         } catch (Exception e) {
             fail(e);
+        }
+    }
+
+    @Test
+    public void testLoadAsType() {
+        var json = """
+                {"i1":1,"l1":2,"d1":null}""";
+        var o = JsoniterLibrary.getInstance().loadsAsType(json, ValueType.OBJECT);
+        assertEquals(json, o.toString());
+        try {
+            JsoniterLibrary.getInstance().loadsAsType(json, ValueType.ARRAY);
+            fail("Should throw JsoniterException");
+        } catch (JsoniterLibrary.JsoniterException e) {
+            assertEquals("JSON value expected be ARRAY but was OBJECT", e.getMessage());
+        }
+        var bytes = json.getBytes(StandardCharsets.UTF_8);
+        o = JsoniterLibrary.getInstance().loadsAsType(bytes, ValueType.OBJECT);
+        assertEquals(json, o.toString());
+        try {
+            JsoniterLibrary.getInstance().loadsAsType(bytes, ValueType.ARRAY);
+            fail("Should throw JsoniterException");
+        } catch (JsoniterLibrary.JsoniterException e) {
+            assertEquals("JSON value expected be ARRAY but was OBJECT", e.getMessage());
         }
     }
 
