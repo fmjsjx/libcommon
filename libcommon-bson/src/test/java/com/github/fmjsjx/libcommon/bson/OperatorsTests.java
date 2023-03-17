@@ -1160,6 +1160,13 @@ public class OperatorsTests {
                         .build("$default").toBsonDocument()
         );
         assertEquals(
+                3,
+                switch0()
+                        .onCase("$case1").then("$then1")
+                        .onCase("$case2").then("$then2")
+                        .onCase("$case3").then("$then3").branches().size()
+        );
+        assertEquals(
                 new BsonDocument(
                         "$switch",
                         new BsonDocument(
@@ -2666,6 +2673,57 @@ public class OperatorsTests {
                         ).append("in", new BsonString("$in"))
                 ),
                 let("$in", entry("id", "$id"), entry("name", "$name")).toBsonDocument()
+        );
+    }
+
+    @Test
+    public void testSwitchV2() {
+        assertEquals(
+                new BsonDocument(
+                        "$switch",
+                        new BsonDocument(
+                                "branches",
+                                new BsonArray(
+                                        List.of(
+                                                new BsonDocument("case", new BsonString("$case1")).append("then", new BsonString("$then1")),
+                                                new BsonDocument("case", new BsonString("$case2")).append("then", new BsonString("$then2")),
+                                                new BsonDocument("case", new BsonString("$case3")).append("then", new BsonString("$then3"))
+                                        )
+                                )
+                        ).append("default", new BsonString("$default"))
+                ),
+                switchV2()
+                        .branch("$case1", "$then1")
+                        .branch("$case2", "$then2")
+                        .branch("$case3", "$then3")
+                        .build("$default").toBsonDocument()
+        );
+        assertEquals(
+                new BsonDocument(
+                        "$switch",
+                        new BsonDocument(
+                                "branches",
+                                new BsonArray(
+                                        List.of(
+                                                new BsonDocument("case", new BsonString("$case1")).append("then", new BsonString("$then1")),
+                                                new BsonDocument("case", new BsonString("$case2")).append("then", new BsonString("$then2")),
+                                                new BsonDocument("case", new BsonString("$case3")).append("then", new BsonString("$then3"))
+                                        )
+                                )
+                        )
+                ),
+                switchV2()
+                        .branch("$case1", "$then1")
+                        .branch("$case2", "$then2")
+                        .branch("$case3", "$then3")
+                        .build().toBsonDocument()
+        );
+        assertEquals(
+                3,
+                switchV2()
+                        .branch("$case1", "$then1")
+                        .branch("$case2", "$then2")
+                        .branch("$case3", "$then3").branchesCount()
         );
     }
 

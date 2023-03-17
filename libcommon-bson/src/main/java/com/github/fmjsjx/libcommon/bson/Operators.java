@@ -16,7 +16,7 @@ import static com.github.fmjsjx.libcommon.bson.BsonValueUtil.*;
  * @author MJ Fang
  * @since 3.2
  */
-public class Operators {
+public final class Operators {
 
     private interface Operator extends Bson {
 
@@ -1183,22 +1183,6 @@ public class Operators {
 
     }
 
-    private record BranchExpression(Object caseExpression, Object thenExpression) implements Bson {
-
-        @Override
-        public <TDocument> BsonDocument toBsonDocument(Class<TDocument> documentClass, CodecRegistry codecRegistry) {
-            var writer = new BsonDocumentWriter(new BsonDocument());
-            writer.writeStartDocument();
-            writer.writeName("case");
-            encodeValue(writer, caseExpression, codecRegistry);
-            writer.writeName("then");
-            encodeValue(writer, thenExpression, codecRegistry);
-            writer.writeEndDocument();
-            return writer.getDocument();
-        }
-
-    }
-
     /**
      * Creates a new {@link SwitchBuilder} instance.
      *
@@ -1233,6 +1217,15 @@ public class Operators {
         }
 
         /**
+         * Returns the branches.
+         *
+         * @return the branches
+         */
+        public List<Bson> branches() {
+            return branches;
+        }
+
+        /**
          * Creates a new {@link BranchBuilder} instance.
          *
          * @param expression the case expression
@@ -1261,7 +1254,6 @@ public class Operators {
             return switchN(branches, defaultExpression);
         }
 
-
     }
 
     /**
@@ -1287,7 +1279,7 @@ public class Operators {
          * @return the {@code SwitchBuilder}
          */
         public SwitchBuilder then(Object expression) {
-            var branch = new BranchExpression(caseExpression, expression);
+            var branch = Expressions.branch(caseExpression, expression);
             return new SwitchBuilder(Stream.concat(branches.stream(), Stream.of(branch)).toList());
         }
 
@@ -3159,6 +3151,81 @@ public class Operators {
             writer.writeName("in");
             encodeValue(writer, in, codecRegistry);
             writer.writeEndDocument();
+        }
+
+    }
+
+    /**
+     * Creates a new {@link SwitchBuilderV2} instance.
+     *
+     * @return the {@code SwitchBuilderV2} instance
+     * @since 3.3
+     */
+    public static final SwitchBuilderV2 switchV2() {
+        return new SwitchBuilderV2();
+    }
+
+    /**
+     * Version 2 Builder for $switch conditional expression operator.
+     *
+     * @author MJ Fang
+     * @since 3.3
+     */
+    public static final class SwitchBuilderV2 {
+
+        private final List<Bson> branches = new ArrayList<>();
+
+        private SwitchBuilderV2() {
+        }
+
+        /**
+         * Append a branch.
+         *
+         * @param branch the branch
+         * @return this builder
+         */
+        public SwitchBuilderV2 branch(Bson branch) {
+            branches.add(branch);
+            return this;
+        }
+
+        /**
+         * Append a branch.
+         *
+         * @param caseExpression the case expression
+         * @param thenExpression the then expression
+         * @return this builder
+         */
+        public SwitchBuilderV2 branch(Object caseExpression, Object thenExpression) {
+            return branch(Expressions.branch(caseExpression, thenExpression));
+        }
+
+        /**
+         * Returns the count of the branches.
+         *
+         * @return the count of the branches
+         */
+        public int branchesCount() {
+            return branches.size();
+        }
+
+        /**
+         * Creates a $switch conditional expression operator.
+         *
+         * @return the $switch conditional expression operator
+         */
+        public Bson build() {
+            return build(null);
+        }
+
+        /**
+         * Creates a $switch conditional expression operator.
+         *
+         * @param defaultExpression the default expression
+         * @return the $switch conditional expression operator
+         */
+        public Bson build(Object defaultExpression) {
+            return switchN(branches, defaultExpression);
         }
 
     }
