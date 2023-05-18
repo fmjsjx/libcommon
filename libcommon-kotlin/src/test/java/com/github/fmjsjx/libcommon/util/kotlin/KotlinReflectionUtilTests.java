@@ -16,7 +16,6 @@ public class KotlinReflectionUtilTests {
         Assertions.assertTrue(KotlinReflectionUtil.isSupportedKotlinClass(TestData.class));
         Assertions.assertTrue(KotlinReflectionUtil.isSupportedKotlinClass(TestClass2.class));
         Assertions.assertTrue(KotlinReflectionUtil.isSupportedKotlinClass(TestData2.class));
-        Assertions.assertTrue(KotlinReflectionUtil.isSupportedKotlinClass(KotlinTestClass.class));
         Assertions.assertFalse(KotlinReflectionUtil.isSupportedKotlinClass(KotlinReflectionUtilTests.class));
         var testKt = Class.forName("com.github.fmjsjx.libcommon.util.kotlin.TestKt");
         Assertions.assertFalse(KotlinReflectionUtil.isSupportedKotlinClass(testKt));
@@ -28,7 +27,6 @@ public class KotlinReflectionUtilTests {
         Assertions.assertTrue(KotlinReflectionUtil.isDataClass(TestData2.class));
         Assertions.assertFalse(KotlinReflectionUtil.isDataClass(TestClass.class));
         Assertions.assertFalse(KotlinReflectionUtil.isDataClass(TestClass2.class));
-        Assertions.assertFalse(KotlinReflectionUtil.isDataClass(KotlinTestClass.class));
     }
 
     @Test
