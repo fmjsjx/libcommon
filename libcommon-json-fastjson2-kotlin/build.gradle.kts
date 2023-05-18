@@ -1,42 +1,45 @@
 plugins {
-    `java-platform`
+    id("libcommon.java-library-conventions")
+    id("libcommon.kotlin-library-conventions")
     id("libcommon.publish-conventions")
 }
 
-description = "libcommon/BOM"
-
 dependencies {
-    constraints {
-        api(project(":libcommon-aliyunons"))
-        api(project(":libcommon-bson"))
-        api(project(":libcommon-bson-kotlin"))
-        api(project(":libcommon-collection"))
-        api(project(":libcommon-function"))
-        api(project(":libcommon-jdbc"))
-        api(project(":libcommon-json"))
-        api(project(":libcommon-json-dsljson"))
-        api(project(":libcommon-json-fastjson2"))
-        api(project(":libcommon-json-fastjson2-kotlin"))
-        api(project(":libcommon-json-jackson2"))
-        api(project(":libcommon-json-jackson2-kotlin"))
-        api(project(":libcommon-json-jsoniter"))
-        api(project(":libcommon-json-jsoniter-kotlin"))
-        api(project(":libcommon-kotlin"))
-        api(project(":libcommon-prometheus"))
-        api(project(":libcommon-redis"))
-        api(project(":libcommon-redis-kotlin"))
-        api(project(":libcommon-rocketmq"))
-        api(project(":libcommon-util"))
-        api(project(":libcommon-yaml"))
-    }
+
+    implementation("org.slf4j:slf4j-api")
+
+    api(project(":libcommon-json-fastjson2"))
+    api("com.alibaba.fastjson2:fastjson2-kotlin")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+
+    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl")
+
+}
+
+description = "libcommon/JSON Fastjson2 Kotlin"
+
+tasks.test {
+    // Use junit platform for unit tests.
+    useJUnitPlatform()
 }
 
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            from(components["javaPlatform"])
+            from(components["java"])
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
             pom {
-                name.set("libcommon/BOM")
+                name.set("libcommon/JSON Fastjson2 Kotlin")
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {
