@@ -10,10 +10,9 @@ A set of some common useful libraries.
 ### Add Maven Dependencies
 `pom.xml`
 ```
-...
+<pom>
   <dependencyManagement>
     <dependencies>
-      ...
       <!-- BOM -->
       <dependency>
         <groupId>com.github.fmjsjx</groupId>
@@ -22,12 +21,9 @@ A set of some common useful libraries.
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      ...
     </dependencies>
   </dependencyManagement>
-...
   <dependencies>
-    ...
     <!-- Common Utility -->
     <dependency>
       <groupId>com.github.fmjsjx</groupId>
@@ -48,16 +44,15 @@ A set of some common useful libraries.
       <groupId>com.github.fmjsjx</groupId>
       <artifactId>libcommon-json-jsoniter</artifactId>
     </dependency>
-    ...
   </dependencies>
-...
+</pom>
 ```
 
 ### Add Gradle Dependencies
 
 #### Groovy DSL
 ```
-...
+
 repositories {
     mavenCentral
 }
@@ -73,13 +68,11 @@ dependencies {
     implementation 'com.github.fmjsjx:libcommon-json-jackson2'
     // JSON library based on Json-Iter
     implementation 'com.github.fmjsjx:libcommon-json-jsoniter'
-    ...
 }
-...
 ```
 #### Kotlin DSL
 ```
-...
+
 repositories {
     mavenCentral()
 }
@@ -95,9 +88,7 @@ dependencies {
     implementation("com.github.fmjsjx:libcommon-json-jackson2")
     // JSON library based on Json-Iter
     implementation("com.github.fmjsjx:libcommon-json-jsoniter")
-    ...
 }
-...
 ```
 
 ## Modules
