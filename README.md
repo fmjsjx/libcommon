@@ -18,7 +18,7 @@ A set of some common useful libraries.
       <dependency>
         <groupId>com.github.fmjsjx</groupId>
         <artifactId>libcommon-bom</artifactId>
-        <version>3.4.0</version>
+        <version>3.1.0-RC1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -32,11 +32,6 @@ A set of some common useful libraries.
     <dependency>
       <groupId>com.github.fmjsjx</groupId>
       <artifactId>libcommon-util</artifactId>
-    </dependency>
-    <!-- JSON library based on Fastjson2 -->
-    <dependency>
-      <groupId>com.github.fmjsjx</groupId>
-      <artifactId>libcommon-json-fastjson2</artifactId>
     </dependency>
     <!-- JSON library based on Jackson2 -->
     <dependency>
@@ -64,11 +59,9 @@ repositories {
 
 dependencies {
     // BOM
-    implementation platform('com.github.fmjsjx:libcommon-bom:3.4.0')
+    implementation platform('com.github.fmjsjx:libcommon-bom:3.1.0-RC1')
     // Common Utility
     implementation 'com.github.fmjsjx:libcommon-util'
-    // JSON library based on Fastjson2
-    implementation 'com.github.fmjsjx:libcommon-json-fastjson2'
     // JSON library based on Jackson2
     implementation 'com.github.fmjsjx:libcommon-json-jackson2'
     // JSON library based on Json-Iter
@@ -86,11 +79,9 @@ repositories {
 
 dependencies {
     // BOM
-    implementation(platform("com.github.fmjsjx:libcommon-bom:3.4.0"))
+    implementation(platform("com.github.fmjsjx:libcommon-bom:3.1.0-RC1"))
     // Common Utility
     implementation("com.github.fmjsjx:libcommon-util")
-    // JSON library based on Fastjson2
-    implementation("com.github.fmjsjx:libcommon-json-fastjson2")
     // JSON library based on Jackson2
     implementation("com.github.fmjsjx:libcommon-json-jackson2")
     // JSON library based on Json-Iter
@@ -120,29 +111,13 @@ The [`libcommon-function`](libcommon-function) module provides additional functi
 
 The [`libcommon-json`](libcommon-json) module provides a library interface to encode/decode JSON.
 
-### libcommon-json-fastjson2 (v3.4+)
-
-The [`libcommon-json-fastjson2`](libcommon-json-fastjson2) module provides an implementation of [`libcommon-json`](libcommon-json) based on [`Fastjson2`](https://github.com/alibaba/fastjson2).
-
-### libcommon-json-fastjson2-kotlin (v3.4+)
-
-The [`libcommon-json-fastjson2-kotlin`](libcommon-json-fastjson2-kotlin) module provides kotlin support for [`libcommon-json-fastjson2`](libcommon-json-fastjson2).
-
 ### libcommon-json-jackson2
 
 The [`libcommon-json-jackson2`](libcommon-json-jackson2) module provides an implementation of [`libcommon-json`](libcommon-json) based on [`Jackson2`](https://github.com/FasterXML/jackson).
 
-### libcommon-json-jackson2-kotlin (v3.1+)
-
-The [`libcommon-json-jackson2-kotlin`](libcommon-json-jackson2-kotlin) module provides kotlin support for [`libcommon-json-jackson2`](libcommon-json-jackson2).
-
 ### libcommon-json-jsoniter
 
 The [`libcommon-json-jsoniter`](libcommon-json-jsoniter) module provides an implementation of [`libcommon-json`](libcommon-json) based on [`json-iterator`](https://jsoniter.com/).
-
-### libcommon-json-jsoniter-kotlin (v3.1+)
-
-The [`libcommon-json-jsoniter-kotlin`](libcommon-json-jsoniter-kotlin) module provides kotlin support for [`libcommon-json-jsoniter`](libcommon-json-jsoniter).
 
 ### libcommon-json-dsljson
 
