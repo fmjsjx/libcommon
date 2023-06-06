@@ -34,7 +34,7 @@ dependencies {
         api("com.dslplatform:dsl-json-java8:1.10.0")
         api("com.jsoniter:jsoniter:0.9.23")
         api("com.aliyun.openservices:ons-client:2.0.5.Final")
-        val fastjson2Version = "2.0.32"
+        val fastjson2Version = "2.0.33"
         api("com.alibaba.fastjson2:fastjson2:$fastjson2Version")
         api("com.alibaba.fastjson2:fastjson2-kotlin:$fastjson2Version")
         val mongodbVersion = "4.9.1"
