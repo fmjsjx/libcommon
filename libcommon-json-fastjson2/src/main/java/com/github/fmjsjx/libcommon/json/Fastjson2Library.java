@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.json;
 
+import static com.alibaba.fastjson2.JSONWriter.Feature.WriteNonStringKeyAsString;
 import static com.alibaba.fastjson2.TypeReference.parametricType;
 
 import com.alibaba.fastjson2.*;
@@ -107,10 +108,15 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
     }
 
     /**
-     * Creates a new {@link Fastjson2Library} with the default features
+     * Creates a new {@link Fastjson2Library} with the default features.
+     * <p>
+     * Default read features:
+     * <pre>none</pre>
+     * Default write features:
+     * <pre>- {@code WriteNonStringKeyAsString}</pre>
      */
     public Fastjson2Library() {
-        this(new JSONReader.Feature[]{}, new JSONWriter.Feature[]{});
+        this(new JSONReader.Feature[]{}, new JSONWriter.Feature[]{WriteNonStringKeyAsString});
     }
 
     /**

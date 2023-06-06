@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
+import java.util.*;
 
 
 public class Fastjson2LibraryTests {
@@ -131,6 +129,15 @@ public class Fastjson2LibraryTests {
             this.d1 = d1;
         }
 
+    }
+
+    @Test
+    public void testNonStringKey() {
+        Map<Integer, Integer> map = new LinkedHashMap<>();
+        map.put(1, 1);
+        map.put(2, 2);
+        map.put(3, 3);
+        assertEquals("{\"1\":1,\"2\":2,\"3\":3}", Fastjson2Library.getInstance().dumpsToString(map));
     }
 
 }
