@@ -71,7 +71,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
                 // jackson-module-jdk8 not available
             }
         });
-        ReflectUtil.<Module>findForName(" com.fasterxml.jackson.datatype.jsr310.JavaTimeModule").ifPresent(moduleClass -> {
+        ReflectUtil.<Module>findForName("com.fasterxml.jackson.datatype.jsr310.JavaTimeModule").ifPresent(moduleClass -> {
             try {
                 mapper.registerModule(moduleClass.getDeclaredConstructor().newInstance());
             } catch (Exception e) {
