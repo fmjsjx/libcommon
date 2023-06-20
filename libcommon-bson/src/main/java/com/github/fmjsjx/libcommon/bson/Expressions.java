@@ -2,6 +2,7 @@ package com.github.fmjsjx.libcommon.bson;
 
 import static com.github.fmjsjx.libcommon.bson.BsonValueUtil.encodeValue;
 
+import com.github.fmjsjx.libcommon.util.ObjectUtil;
 import org.bson.BsonDocument;
 import org.bson.BsonDocumentWriter;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -38,6 +39,11 @@ public final class Expressions {
             encodeValue(writer, thenExpression, codecRegistry);
             writer.writeEndDocument();
             return writer.getDocument();
+        }
+
+        @Override
+        public String toString() {
+            return "BranchExpression(caseExpression=" + ObjectUtil.toString(caseExpression) + ", thenExpression=" + ObjectUtil.toString(thenExpression) + ")";
         }
     }
 
