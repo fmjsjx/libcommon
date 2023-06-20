@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.bson;
 
+import com.github.fmjsjx.libcommon.util.ObjectUtil;
 import org.bson.*;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
@@ -42,9 +43,15 @@ public final class Operators {
             encodeValue(writer, expression, codecRegistry);
         }
 
+        @Override
+        public String toString() {
+            return "SimpleOperator(operator=" + operator + ", expression=" + ObjectUtil.toString(expression) + ")";
+        }
+
     }
 
     private record SimpleArrayOperator(String operator, Object... expressions) implements Operator {
+
         @Override
         public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
             writer.writeStartArray();
@@ -53,6 +60,12 @@ public final class Operators {
             }
             writer.writeEndArray();
         }
+
+        @Override
+        public String toString() {
+            return "SimpleOperator(operator=" + operator + ", expressions=" + Arrays.toString(expressions) + ")";
+        }
+
     }
 
     private record SimpleIterableOperator(String operator, Iterable<?> expressions) implements Operator {
@@ -67,6 +80,7 @@ public final class Operators {
     }
 
     private record SimpleDocumentOperator1(String operator, String name, Object expression) implements Operator {
+
         @Override
         public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
             writer.writeStartDocument();
@@ -74,10 +88,17 @@ public final class Operators {
             encodeValue(writer, expression, codecRegistry);
             writer.writeEndDocument();
         }
+
+        @Override
+        public String toString() {
+            return "SimpleDocumentOperator1(operator=" + operator +
+                    ", name=" + name + ", expression=" + ObjectUtil.toString(expression) + ")";
+        }
     }
 
     private record SimpleDocumentOperator2(String operator, String name1, Object expression1, String name2,
                                            Object expression2) implements Operator {
+
         @Override
         public <TDocument> void writeOperatorValue(BsonDocumentWriter writer, Class<TDocument> documentClass, CodecRegistry codecRegistry) {
             writer.writeStartDocument();
@@ -87,6 +108,14 @@ public final class Operators {
             encodeValue(writer, expression2, codecRegistry);
             writer.writeEndDocument();
         }
+
+        @Override
+        public String toString() {
+            return "SimpleDocumentOperator2(operator=" + operator +
+                    ", name1=" + name1 + ", expression1=" + ObjectUtil.toString(expression1) +
+                    ", name2=" + name2 + ", expression2=" + ObjectUtil.toString(expression2) + ")";
+        }
+
     }
 
     private record SimpleDocumentOperator3(String operator, String name1, Object expression1, String name2,
@@ -101,6 +130,14 @@ public final class Operators {
             writer.writeName(name3);
             encodeValue(writer, expression3, codecRegistry);
             writer.writeEndDocument();
+        }
+
+        @Override
+        public String toString() {
+            return "SimpleDocumentOperator3(operator=" + operator +
+                    ", name1=" + name1 + ", expression1=" + ObjectUtil.toString(expression1) +
+                    ", name2=" + name2 + ", expression2=" + ObjectUtil.toString(expression2) +
+                    ", name3=" + name3 + ", expression3=" + ObjectUtil.toString(expression3) + ")";
         }
 
     }
@@ -321,6 +358,11 @@ public final class Operators {
             writer.writeEndArray();
         }
 
+        @Override
+        public String toString() {
+            return "ArrayElemAtOperator(array=" + array + ", idx=" + ObjectUtil.toString(idx) + ")";
+        }
+
     }
 
     /**
@@ -395,6 +437,10 @@ public final class Operators {
             }
         }
 
+        @Override
+        public String toString() {
+            return "ArrayToObjectOperator(literal=" + literal + ", entries=" + Arrays.toString(entries) + ")";
+        }
     }
 
     /**
@@ -463,6 +509,14 @@ public final class Operators {
                 encodeValue(writer, limit, codecRegistry);
             }
             writer.writeEndDocument();
+        }
+
+        @Override
+        public String toString() {
+            return "FilterOperator(input=" + ObjectUtil.toString(input) +
+                    ", cond=" + ObjectUtil.toString(cond) +
+                    ", as=" + ObjectUtil.toString(as) +
+                    ", limit=" + ObjectUtil.toString(limit) + ")";
         }
 
     }
@@ -627,6 +681,12 @@ public final class Operators {
             writer.writeEndDocument();
         }
 
+        @Override
+        public String toString() {
+            return "MapOperator(input=" + ObjectUtil.toString(input) +
+                    ", as=" + ObjectUtil.toString(as) +
+                    ", in=" + ObjectUtil.toString(in) + ")";
+        }
     }
 
     /**
@@ -818,6 +878,12 @@ public final class Operators {
             writer.writeEndDocument();
         }
 
+        @Override
+        public String toString() {
+            return "ZipOperator(inputs=" + inputs +
+                    ", useLongestLength=" + useLongestLength +
+                    ", defaults=" + ObjectUtil.toString(defaults);
+        }
     }
 
     /**
@@ -1076,6 +1142,11 @@ public final class Operators {
             writer.writeEndArray();
         }
 
+        @Override
+        public String toString() {
+            return "IfNullOperator(inputExpressions=" + inputExpressions +
+                    ", replacementExpression=" + ObjectUtil.toString(replacementExpression) + ")";
+        }
     }
 
     /**
@@ -1179,6 +1250,12 @@ public final class Operators {
                 encodeValue(writer, defaultExpression, codecRegistry);
             }
             writer.writeEndDocument();
+        }
+
+        @Override
+        public String toString() {
+            return "SwitchOperator(branches=" + branches +
+                    ", defaultExpression=" + ObjectUtil.toString(defaultExpression) + ")";
         }
 
     }
@@ -1343,6 +1420,13 @@ public final class Operators {
             writer.writeEndDocument();
         }
 
+        @Override
+        public String toString() {
+            return "DateAddOperator(startDate=" + ObjectUtil.toString(startDate) +
+                    ", unit=" + ObjectUtil.toString(unit) +
+                    ", amount=" + ObjectUtil.toString(amount) +
+                    ", timezone=" + ObjectUtil.toString(timezone) + ")";
+        }
     }
 
     /**
@@ -1417,6 +1501,15 @@ public final class Operators {
             writer.writeEndDocument();
         }
 
+        @Override
+        public String toString() {
+            return "DateDiff(startDate=" + ObjectUtil.toString(startDate) +
+                    ", endDate=" + ObjectUtil.toString(endDate) +
+                    ", unit=" + ObjectUtil.toString(unit) +
+                    ", timezone=" + ObjectUtil.toString(timezone) +
+                    ", startOfWeek=" + ObjectUtil.toString(startOfWeek);
+
+        }
     }
 
     /**
@@ -1462,6 +1555,18 @@ public final class Operators {
             writer.writeEndDocument();
         }
 
+        @Override
+        public String toString() {
+            return "DateFromPartsOperator(iso=" + iso +
+                    ", year=" + ObjectUtil.toString(year) +
+                    ", monthOrWeek=" + ObjectUtil.toString(monthOrWeek) +
+                    ", day=" + ObjectUtil.toString(day) +
+                    ", hour=" + ObjectUtil.toString(hour) +
+                    ", minute=" + ObjectUtil.toString(minute) +
+                    ", second=" + ObjectUtil.toString(second) +
+                    ", millisecond=" + ObjectUtil.toString(millisecond) +
+                    ", timezone=" + ObjectUtil.toString(timezone) + ")";
+        }
     }
 
     private static final void appendTime(BsonDocumentWriter writer, CodecRegistry codecRegistry, Object hour,
@@ -1557,6 +1662,16 @@ public final class Operators {
             writer.writeEndDocument();
         }
 
+        @Override
+        public String toString() {
+            return "DateFromStringOperator{" +
+                    "dateString=" + ObjectUtil.toString(dateString) +
+                    ", format=" + ObjectUtil.toString(format) +
+                    ", timezone=" + ObjectUtil.toString(timezone) +
+                    ", onError=" + ObjectUtil.toString(onError) +
+                    ", onNull=" + ObjectUtil.toString(onNull) +
+                    '}';
+        }
     }
 
     /**
@@ -1597,6 +1712,14 @@ public final class Operators {
             writer.writeEndDocument();
         }
 
+        @Override
+        public String toString() {
+            return "DateSubtract(startDate=" + ObjectUtil.toString(startDate) +
+                    ", unit=" + ObjectUtil.toString(unit) +
+                    ", amount=" + ObjectUtil.toString(amount) +
+                    ", timezone=" + ObjectUtil.toString(timezone) +
+                    '}';
+        }
     }
 
     /**
@@ -1674,6 +1797,13 @@ public final class Operators {
             writer.writeEndDocument();
         }
 
+        @Override
+        public String toString() {
+            return "DateToPartsOperator(" +
+                    "date=" + ObjectUtil.toString(date) +
+                    ", timezone=" + ObjectUtil.toString(timezone) +
+                    ", iso8601=" + ObjectUtil.toString(iso8601) + ")";
+        }
     }
 
     /**
@@ -1719,6 +1849,13 @@ public final class Operators {
             writer.writeEndDocument();
         }
 
+        @Override
+        public String toString() {
+            return "DateToStringOperator(dateString=" + ObjectUtil.toString(dateString) +
+                    ", format=" + ObjectUtil.toString(format) +
+                    ", timezone=" + ObjectUtil.toString(timezone) +
+                    ", onError=" + ObjectUtil.toString(onError) + ")";
+        }
     }
 
     /**
@@ -1780,6 +1917,14 @@ public final class Operators {
             writer.writeEndDocument();
         }
 
+        @Override
+        public String toString() {
+            return "DateTruncOperator{date=" + ObjectUtil.toString(date) +
+                    ", unit=" + ObjectUtil.toString(unit) +
+                    ", binSize=" + ObjectUtil.toString(binSize) +
+                    ", timezone=" + ObjectUtil.toString(timezone) +
+                    ", startOfWeek=" + ObjectUtil.toString(startOfWeek) + "\n";
+        }
     }
 
     /**
@@ -2154,6 +2299,7 @@ public final class Operators {
             writer.writeStartDocument();
             writer.writeEndDocument();
         }
+
     }
 
     /**
@@ -2236,6 +2382,11 @@ public final class Operators {
             }
             writer.writeEndArray();
             writer.writeEndArray();
+        }
+
+        @Override
+        public String toString() {
+            return "ElementsTrueOperator(all=" + all + ", elements=" + elements + ")";
         }
     }
 
@@ -2401,6 +2552,15 @@ public final class Operators {
                 }
             }
             writer.writeEndArray();
+        }
+
+        @Override
+        public String toString() {
+            return "IndexOfOperator(operator=" + ObjectUtil.toString(operator) +
+                    ", string=" + ObjectUtil.toString(string) +
+                    ", subString=" + ObjectUtil.toString(subString) +
+                    ", start=" + ObjectUtil.toString(start) +
+                    ", end=" + ObjectUtil.toString(end) + ")";
         }
     }
 
@@ -2907,6 +3067,13 @@ public final class Operators {
             writer.writeEndDocument();
         }
 
+        @Override
+        public String toString() {
+            return "ConvertOperator(input=" + ObjectUtil.toString(input) +
+                    ", to=" + ObjectUtil.toString(to) +
+                    ", onError=" + ObjectUtil.toString(onError) +
+                    ", onNull=" + ObjectUtil.toString(onNull) + ")";
+        }
     }
 
     /**
@@ -3153,6 +3320,11 @@ public final class Operators {
             writer.writeEndDocument();
         }
 
+        @Override
+        public String toString() {
+            return "LetOperator(vars=" + vars +
+                    ", in=" + ObjectUtil.toString(in) + ")";
+        }
     }
 
     /**
