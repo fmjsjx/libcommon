@@ -38,7 +38,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
         /**
          * Creates a new {@link Jackson2Exception} instance.
-         * 
+         *
          * @param message the message
          * @param cause   the cause
          */
@@ -48,7 +48,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
         /**
          * Creates a new {@link Jackson2Exception} instance.
-         * 
+         *
          * @param cause the cause
          */
         public Jackson2Exception(Throwable cause) {
@@ -92,7 +92,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
     /**
      * Returns the singleton (default) {@link ObjectMapper} instance.
-     * 
+     *
      * @return the singleton (default) {@code ObjectMapper} instance
      */
     public static final ObjectMapper defaultObjectMapper() {
@@ -107,7 +107,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
     /**
      * Returns the singleton (default) {@link Jackson2Library} instance.
-     * 
+     *
      * @return the singleton (default) {@code Jackson2Library} instance
      */
     public static final Jackson2Library getInstance() {
@@ -118,7 +118,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      * Returns the singleton (default) {@link Jackson2Library} instance.
      * <p>
      * This method is equivalent to {@link #getInstance()}.
-     * 
+     *
      * @return the singleton (default) {@code Jackson2Library} instance
      */
     public static final Jackson2Library defaultInstance() {
@@ -131,7 +131,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
     /**
      * Converts the specified type to a {@link JavaType}.
-     * 
+     *
      * @param type the type
      * @return a {@code JavaType}
      */
@@ -145,11 +145,14 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     /**
      * Creates a new {@link Jackson2Library} with the specified
      * {@code objectMapper}.
-     * 
+     *
      * @param objectMapper a {@code ObjectMapper}
      */
     public Jackson2Library(ObjectMapper objectMapper) {
         this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper must not be null");
+        if (JsoniterModule.isJsoniterAvailable()) {
+            objectMapper.registerModule(JsoniterModule.getInstance());
+        }
     }
 
     /**
@@ -161,7 +164,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
     /**
      * Returns the {@code ObjectMapper}.
-     * 
+     *
      * @return the {@code ObjectMapper}
      */
     public ObjectMapper objectMapper() {
@@ -182,7 +185,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
     /**
      * Creates a new {@link ObjectNode} instance.
-     * 
+     *
      * @return a new {@code ObjectNode} instance
      */
     public ObjectNode createObjectNode() {
@@ -191,7 +194,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
     /**
      * Creates a new {@link ArrayNode} instance.
-     * 
+     *
      * @return a new {@code ArrayNode} instance
      */
     public ArrayNode createArrayNode() {
@@ -228,7 +231,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
     /**
      * Decodes data from input stream.
-     * 
+     *
      * @param <T> the type of the data
      * @param src the source input stream
      * @return a {@code JsonNode}
@@ -319,7 +322,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
     /**
      * Decodes data from byte array.
-     * 
+     *
      * @param <T>  the type of the data
      * @param src  the source byte array
      * @param type the type of the data
@@ -336,7 +339,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
     /**
      * Decodes data from byte array.
-     * 
+     *
      * @param <T>  the type of the data
      * @param src  the source byte array
      * @param type the type of the data
@@ -353,7 +356,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
     /**
      * Decodes data from input stream.
-     * 
+     *
      * @param <T>  the type of the data
      * @param src  the source input stream
      * @param type the type of the data
@@ -370,7 +373,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
     /**
      * Decodes data from input stream.
-     * 
+     *
      * @param <T>  the type of the data
      * @param src  the source input stream
      * @param type the type of the data
@@ -387,7 +390,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
     /**
      * Decodes data from input stream.
-     * 
+     *
      * @param <T>  the type of the data
      * @param src  the source input stream
      * @param type the type of the data

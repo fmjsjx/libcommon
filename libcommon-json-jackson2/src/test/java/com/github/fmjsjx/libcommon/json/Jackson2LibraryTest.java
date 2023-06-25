@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.jsoniter.JsonIterator;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -30,6 +31,19 @@ public class Jackson2LibraryTest {
                 {"time":"2023-06-09T11:22:33"}""";
         var data = Jackson2Library.getInstance().loads(json, TestJavaTimeModule.class);
         assertEquals(LocalDateTime.of(2023, 6, 9, 11, 22, 33), data.getTime());
+    }
+
+    @Test
+    public void testJsoniterModule() {
+        var value = JsonIterator.deserialize("""
+                {"id":1,"o":[666,777,888]}""");
+        var obj = Jackson2Library.getInstance().createObjectNode()
+                .put("name", "testJsoniterModule")
+                .putPOJO("value", value);
+        assertEquals(
+                "{\"name\":\"testJsoniterModule\",\"value\":{\"id\":1,\"o\":[666,777,888]}}",
+                Jackson2Library.getInstance().dumpsToString(obj)
+        );
     }
 
     public static class TestJavaTimeModule {
