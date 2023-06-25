@@ -3,6 +3,12 @@ plugins {
     id("libcommon.publish-conventions")
 }
 
+java {
+    registerFeature("jsoniterSupport") {
+        usingSourceSet(sourceSets["main"])
+    }
+}
+
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
@@ -10,12 +16,12 @@ dependencies {
     api(project(":libcommon-json"))
     implementation(project(":libcommon-util"))
     api("com.alibaba.fastjson2:fastjson2")
+    "jsoniterSupportApi"("com.jsoniter:jsoniter")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
-
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-
     testImplementation("org.apache.logging.log4j:log4j-slf4j-impl")
+    testImplementation("com.jsoniter:jsoniter")
 
 }
 

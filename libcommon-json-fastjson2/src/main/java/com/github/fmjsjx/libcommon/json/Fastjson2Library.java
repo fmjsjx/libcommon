@@ -4,6 +4,7 @@ import static com.alibaba.fastjson2.JSONWriter.Feature.WriteNonStringKeyAsString
 import static com.alibaba.fastjson2.TypeReference.parametricType;
 
 import com.alibaba.fastjson2.*;
+import com.github.fmjsjx.libcommon.util.ReflectUtil;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,6 +22,48 @@ import java.util.Map;
  * @since 3.4
  */
 public class Fastjson2Library implements JsonLibrary<JSONObject> {
+
+    static {
+        if (ReflectUtil.hasClassForName("com.jsoniter.any.Any")) {
+            var anyClassNames = List.of(
+                    "com.jsoniter.any.Any",
+                    "com.jsoniter.any.LazyAny",
+                    "com.jsoniter.any.NotFoundAny",
+                    "com.jsoniter.any.TrueAny",
+                    "com.jsoniter.any.FalseAny",
+                    "com.jsoniter.any.ArrayLazyAny",
+                    "com.jsoniter.any.DoubleAny",
+                    "com.jsoniter.any.FloatAny",
+                    "com.jsoniter.any.IntAny",
+                    "com.jsoniter.any.LongAny",
+                    "com.jsoniter.any.NullAny",
+                    "com.jsoniter.any.LongLazyAny",
+                    "com.jsoniter.any.DoubleLazyAny",
+                    "com.jsoniter.any.ObjectLazyAny",
+                    "com.jsoniter.any.StringAny",
+                    "com.jsoniter.any.StringLazyAny",
+                    "com.jsoniter.any.ArrayAny",
+                    "com.jsoniter.any.ObjectAny",
+                    "com.jsoniter.any.ListWrapperAny",
+                    "com.jsoniter.any.ArrayWrapperAny",
+                    "com.jsoniter.any.MapWrapperAny"
+            );
+            for (var anyClassName : anyClassNames) {
+                try {
+                    var anyClass = Class.forName(anyClassName);
+                    JSON.register(anyClass, (jsonWriter, object, fieldName, fieldType, features) -> {
+                        if (object == null) {
+                            jsonWriter.writeNull();
+                        } else {
+                            jsonWriter.writeRaw(com.jsoniter.output.JsonStream.serialize(object));
+                        }
+                    });
+                } catch (ClassNotFoundException e) {
+                    // skip
+                }
+            }
+        }
+    }
 
     /**
      * A JSON exception threw by the {@link Fastjson2Library}.

@@ -2,6 +2,8 @@ package com.github.fmjsjx.libcommon.json;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.alibaba.fastjson2.JSONObject;
+import com.jsoniter.JsonIterator;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -138,6 +140,22 @@ public class Fastjson2LibraryTests {
         map.put(2, 2);
         map.put(3, 3);
         assertEquals("{\"1\":1,\"2\":2,\"3\":3}", Fastjson2Library.getInstance().dumpsToString(map));
+    }
+
+    @Test
+    public void testWriteJsoniterAny() {
+        var object = new JSONObject();
+        object.put("name", "testWriteJsoniterAny");
+        var value = JsonIterator.deserialize("{\"id\":1,\"o\":[666,777,888]}");
+        object.put("value", value);
+        assertEquals(
+                "{\"name\":\"testWriteJsoniterAny\",\"value\":{\"id\":1,\"o\":[666,777,888]}}",
+                Fastjson2Library.getInstance().dumpsToString(object)
+        );
+        assertArrayEquals(
+                "{\"name\":\"testWriteJsoniterAny\",\"value\":{\"id\":1,\"o\":[666,777,888]}}".getBytes(StandardCharsets.UTF_8),
+                Fastjson2Library.getInstance().dumpsToBytes(object)
+        );
     }
 
 }
