@@ -35,7 +35,7 @@ fun Any?.toFastjson2Bytes(): ByteArray = fastjson2Library.dumpsToBytes(this)
  * @author MJ Fang
  * @since 3.4
  */
-infix fun <T, S : CharSequence> S.parseFastjson2(type: Class<T>): T = fastjson2Library.loads(toString(), type)
+infix fun <T> CharSequence.parseFastjson2(type: Class<T>): T = fastjson2Library.loads(toString(), type)
 
 /**
  * Extension to decode data from string leveraging reified type parameters.
@@ -43,7 +43,7 @@ infix fun <T, S : CharSequence> S.parseFastjson2(type: Class<T>): T = fastjson2L
  * @author MJ Fang
  * @since 3.4
  */
-inline fun <reified T, S : CharSequence> S.parseFastjson2(): T = parseFastjson2(T::class.java)
+inline fun <reified T> CharSequence.parseFastjson2(): T = parseFastjson2(T::class.java)
 
 /**
  * Extension to decode data from string.
@@ -51,7 +51,7 @@ inline fun <reified T, S : CharSequence> S.parseFastjson2(): T = parseFastjson2(
  * @author MJ Fang
  * @since 3.4
  */
-infix fun <T, S : CharSequence> S.parseFastjson2(typeReference: TypeReference<T>): T =
+infix fun <T> CharSequence.parseFastjson2(typeReference: TypeReference<T>): T =
     fastjson2Library.loads(toString(), typeReference)
 
 /**
@@ -60,7 +60,7 @@ infix fun <T, S : CharSequence> S.parseFastjson2(typeReference: TypeReference<T>
  * @author MJ Fang
  * @since 3.4
  */
-infix fun <T, S : CharSequence> S.parseFastjson2(type: Type): T = fastjson2Library.loads(toString(), type)
+infix fun <T> CharSequence.parseFastjson2(type: Type): T = fastjson2Library.loads(toString(), type)
 
 /**
  * Extension to decode [JSONObject] from string.
@@ -84,7 +84,7 @@ fun <S : CharSequence> S.parseJSONArray(): JSONArray = fastjson2Library.loadsArr
  * @author MJ Fang
  * @since 3.4
  */
-infix fun <T, S : CharSequence> S.parseFastjson2List(type: Type): List<T> =
+infix fun <T> CharSequence.parseFastjson2List(type: Type): List<T> =
     fastjson2Library.loadsList(toString(), type)
 
 /**
@@ -93,7 +93,7 @@ infix fun <T, S : CharSequence> S.parseFastjson2List(type: Type): List<T> =
  * @author MJ Fang
  * @since 3.4
  */
-infix fun <T, S : CharSequence> S.parseFastjson2List(type: Class<T>): List<T> =
+infix fun <T> CharSequence.parseFastjson2List(type: Class<T>): List<T> =
     fastjson2Library.loadsList(toString(), type)
 
 /**
@@ -102,7 +102,7 @@ infix fun <T, S : CharSequence> S.parseFastjson2List(type: Class<T>): List<T> =
  * @author MJ Fang
  * @since 3.4
  */
-inline fun <reified T, S : CharSequence> S.parseFastjson2List(): List<T> = parseFastjson2List(T::class.java)
+inline fun <reified T> CharSequence.parseFastjson2List(): List<T> = parseFastjson2List(T::class.java)
 
 /**
  * Extension to decode data from byte array.
