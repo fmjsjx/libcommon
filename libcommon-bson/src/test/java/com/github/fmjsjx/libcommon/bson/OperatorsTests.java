@@ -2591,6 +2591,14 @@ public class OperatorsTests {
     }
 
     @Test
+    public void testPush() {
+        assertEquals(
+                simple("$push"),
+                push("$test").toBsonDocument()
+        );
+    }
+
+    @Test
     public void testStdDevPop() {
         assertEquals(
                 simple("$stdDevPop"),

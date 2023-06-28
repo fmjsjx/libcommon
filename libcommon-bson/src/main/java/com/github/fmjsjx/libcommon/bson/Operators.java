@@ -3217,6 +3217,16 @@ public final class Operators {
     }
 
     /**
+     * Creates a $push expression operator.
+     *
+     * @param expression can be any valid expression
+     * @return the $push expression operator
+     */
+    public static final Bson push(Object expression) {
+        return new SimpleOperator("$push", expression);
+    }
+
+    /**
      * Creates a $stdDevPop expression operator.
      *
      * @param expression can be any valid expression
