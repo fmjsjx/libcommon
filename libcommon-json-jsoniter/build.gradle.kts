@@ -3,6 +3,12 @@ plugins {
     id("libcommon.publish-conventions")
 }
 
+java {
+    registerFeature("jackson2Support") {
+        usingSourceSet(sourceSets["main"])
+    }
+}
+
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
@@ -10,6 +16,8 @@ dependencies {
     api(project(":libcommon-json"))
 
     api("com.jsoniter:jsoniter")
+
+    "jackson2SupportApi"(project(":libcommon-json-jackson2"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
 
