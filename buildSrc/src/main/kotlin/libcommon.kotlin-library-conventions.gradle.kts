@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     // kotlin
-    val kotlinVersion = "1.8.21"
+    val kotlinVersion = "1.9.0"
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
 
     constraints {
