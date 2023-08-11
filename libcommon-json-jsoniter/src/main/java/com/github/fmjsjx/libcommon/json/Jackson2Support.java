@@ -126,6 +126,9 @@ public final class Jackson2Support {
             throw new JsonException("type mismatch, expected ARRAY but was " + any.valueType());
         };
 
+        /**
+         * Enable the {@code Jackson2JsonNodeSupport}.
+         */
         public static void enable() {
             if (enabled.compareAndSet(false, true)) {
                 // register encoder for all nodes
@@ -150,6 +153,9 @@ public final class Jackson2Support {
                 JsoniterSpi.registerTypeDecoder(com.fasterxml.jackson.databind.node.ObjectNode.class, objectNodeDecoder);
                 JsoniterSpi.registerTypeDecoder(com.fasterxml.jackson.databind.node.ArrayNode.class, arrayNodeDecoder);
             }
+        }
+
+        private Jackson2JsonNodeSupport() {
         }
 
     }
