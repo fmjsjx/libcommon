@@ -70,6 +70,10 @@ public class JsoniterLibrary implements JsonLibrary<Any> {
             JsoniterSpi.setDefaultConfig(JsoniterSpi.getDefaultConfig().copyBuilder().escapeUnicode(false).build());
             Jdk8TimeSupport.enableAll();
             Jdk8OptionalSupport.enableAll();
+            // support encoding/decoding for jackson2 JsonNode
+            if (Jackson2Support.isAvailable()) {
+                Jackson2Support.enableAll();
+            }
         }
     }
 
@@ -219,6 +223,7 @@ public class JsoniterLibrary implements JsonLibrary<Any> {
             if (useDefaultConfig) {
                 return JsonStream.serialize(obj);
             }
+            //noinspection DataFlowIssue
             return JsonStream.serialize(config, obj);
         } catch (Exception e) {
             throw new JsoniterException(e);
