@@ -9,6 +9,8 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -227,6 +229,74 @@ public class JsoniterLibraryTest {
         assertEquals("0.1234567890123456789012345", JsoniterLibrary.getInstance().dumpsToString(object.path("bigDecimal")));
         assertEquals("{\"name\":\"test\"}", JsoniterLibrary.getInstance().dumpsToString(object.path("object")));
         assertEquals("[1,2,3]", JsoniterLibrary.getInstance().dumpsToString(object.path("array")));
+    }
+
+    public static class TestFastjson2Objects {
+
+        private JSONObject obj;
+        private JSONArray arr;
+
+        public JSONObject getObj() {
+            return obj;
+        }
+
+        public void setObj(JSONObject obj) {
+            this.obj = obj;
+        }
+
+        public JSONArray getArr() {
+            return arr;
+        }
+
+        public void setArr(JSONArray arr) {
+            this.arr = arr;
+        }
+
+    }
+
+    @Test
+    public void testDecodeFastjson2() {
+        var test = JsoniterLibrary.getInstance().loads("""
+                {"obj":{"name":"test"},"arr":[1,2,3]}""", TestFastjson2Objects.class);
+        assertNotNull(test);
+        assertNotNull(test.obj);
+        assertEquals(1, test.obj.size());
+        assertEquals("test", test.obj.get("name"));
+        assertNotNull(test.arr);
+        assertEquals(3, test.arr.size());
+        assertEquals(1, test.arr.get(0));
+        assertEquals(2, test.arr.get(1));
+        assertEquals(3, test.arr.get(2));
+
+        test = JsoniterLibrary.getInstance().loads("{}", TestFastjson2Objects.class);
+        assertNotNull(test);
+        assertNull(test.obj);
+        assertNull(test.arr);
+        test = JsoniterLibrary.getInstance().loads("""
+                {"obj":null,"arr":null}""", TestFastjson2Objects.class);
+        assertNotNull(test);
+        assertNull(test.obj);
+        assertNull(test.arr);
+    }
+
+    @Test
+    public void testEncodeFastjson2() {
+        var object = new JSONObject();
+        object.fluentPut("int", 1)
+                .fluentPut("long", 1234567890123L)
+                .fluentPut("double", 1.2)
+                .fluentPut("boolean", true)
+                .fluentPut("string", "abc")
+                .fluentPut("bigInteger", new BigInteger("1234567890123456789012345"))
+                .fluentPut("bigDecimal", new BigDecimal("0.1234567890123456789012345"));
+        object.putObject("object").fluentPut("name", "test");
+        object.putArray("array").fluentAdd(1).fluentAdd(2).fluentAdd(3);
+        assertEquals(
+                Fastjson2Library.getInstance().dumpsToString(object),
+                JsoniterLibrary.getInstance().dumpsToString(object)
+        );
+        assertEquals("{\"name\":\"test\"}", JsoniterLibrary.getInstance().dumpsToString(object.get("object")));
+        assertEquals("[1,2,3]", JsoniterLibrary.getInstance().dumpsToString(object.get("array")));
     }
 
 }
