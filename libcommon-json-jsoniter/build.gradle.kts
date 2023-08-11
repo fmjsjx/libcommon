@@ -3,19 +3,23 @@ plugins {
     id("libcommon.publish-conventions")
 }
 
+java {
+    registerFeature("jackson2Support") {
+        usingSourceSet(sourceSets["main"])
+    }
+}
+
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
-    
     api(project(":libcommon-json"))
-
     api("com.jsoniter:jsoniter")
+    "jackson2SupportImplementation"(project(":libcommon-json-jackson2"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
-
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-
     testImplementation("org.apache.logging.log4j:log4j-slf4j-impl")
+    testImplementation(project(":libcommon-json-jackson2"))
 
 }
 
