@@ -1,6 +1,7 @@
 package com.github.fmjsjx.libcommon.json;
 
 import static com.alibaba.fastjson2.JSONWriter.Feature.WriteNonStringKeyAsString;
+import static com.alibaba.fastjson2.JSONWriter.Feature.WriteNulls;
 import static com.alibaba.fastjson2.TypeReference.parametricType;
 
 import com.alibaba.fastjson2.*;
@@ -25,43 +26,75 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
 
     static {
         if (ReflectUtil.hasClassForName("com.jsoniter.any.Any")) {
-            var anyClassNames = List.of(
-                    "com.jsoniter.any.Any",
-                    "com.jsoniter.any.LazyAny",
-                    "com.jsoniter.any.NotFoundAny",
-                    "com.jsoniter.any.TrueAny",
-                    "com.jsoniter.any.FalseAny",
-                    "com.jsoniter.any.ArrayLazyAny",
-                    "com.jsoniter.any.DoubleAny",
-                    "com.jsoniter.any.FloatAny",
-                    "com.jsoniter.any.IntAny",
-                    "com.jsoniter.any.LongAny",
-                    "com.jsoniter.any.NullAny",
-                    "com.jsoniter.any.LongLazyAny",
-                    "com.jsoniter.any.DoubleLazyAny",
-                    "com.jsoniter.any.ObjectLazyAny",
-                    "com.jsoniter.any.StringAny",
-                    "com.jsoniter.any.StringLazyAny",
-                    "com.jsoniter.any.ArrayAny",
-                    "com.jsoniter.any.ObjectAny",
-                    "com.jsoniter.any.ListWrapperAny",
-                    "com.jsoniter.any.ArrayWrapperAny",
-                    "com.jsoniter.any.MapWrapperAny"
-            );
-            for (var anyClassName : anyClassNames) {
-                try {
-                    var anyClass = Class.forName(anyClassName);
-                    JSON.register(anyClass, (jsonWriter, object, fieldName, fieldType, features) -> {
-                        if (object == null) {
-                            jsonWriter.writeNull();
-                        } else {
-                            jsonWriter.writeRaw(com.jsoniter.output.JsonStream.serialize(object));
-                        }
-                    });
-                } catch (ClassNotFoundException e) {
-                    // skip
-                }
+            registerJsoniterAny();
+        }
+    }
+
+    private static void registerJsoniterAny() {
+        var anyClassNames = List.of(
+                "com.jsoniter.any.Any",
+                "com.jsoniter.any.LazyAny",
+                "com.jsoniter.any.NotFoundAny",
+                "com.jsoniter.any.TrueAny",
+                "com.jsoniter.any.FalseAny",
+                "com.jsoniter.any.ArrayLazyAny",
+                "com.jsoniter.any.DoubleAny",
+                "com.jsoniter.any.FloatAny",
+                "com.jsoniter.any.IntAny",
+                "com.jsoniter.any.LongAny",
+                "com.jsoniter.any.NullAny",
+                "com.jsoniter.any.LongLazyAny",
+                "com.jsoniter.any.DoubleLazyAny",
+                "com.jsoniter.any.ObjectLazyAny",
+                "com.jsoniter.any.StringAny",
+                "com.jsoniter.any.StringLazyAny",
+                "com.jsoniter.any.ArrayAny",
+                "com.jsoniter.any.ObjectAny",
+                "com.jsoniter.any.ListWrapperAny",
+                "com.jsoniter.any.ArrayWrapperAny",
+                "com.jsoniter.any.MapWrapperAny"
+        );
+        for (var anyClassName : anyClassNames) {
+            try {
+                var anyClass = Class.forName(anyClassName);
+                JSON.register(anyClass, (jsonWriter, object, fieldName, fieldType, features) -> {
+                    if (object == null) {
+                        jsonWriter.writeNull();
+                    } else {
+                        jsonWriter.writeRaw(com.jsoniter.output.JsonStream.serialize(object));
+                    }
+                });
+            } catch (ClassNotFoundException e) {
+                // skip
             }
+        }
+        // since 3.6
+        try {
+            var anyClass = Class.forName("com.jsoniter.any.Any");
+            JSON.register(anyClass, (jsonReader, fieldType, fieldName, features) -> {
+                if (jsonReader.nextIfNull()) {
+                    return com.jsoniter.any.Any.wrapNull();
+                }
+                if (jsonReader.isObject()) {
+                    return com.jsoniter.JsonIterator.deserialize(jsonReader.readJSONObject().toJSONString(WriteNonStringKeyAsString, WriteNulls));
+                }
+                if (jsonReader.isArray()) {
+                    return com.jsoniter.JsonIterator.deserialize(jsonReader.readJSONArray().toJSONString(WriteNonStringKeyAsString, WriteNulls));
+                }
+                if (jsonReader.isString()) {
+                    return com.jsoniter.JsonIterator.deserialize(JSON.toJSONString(jsonReader.readString(), WriteNonStringKeyAsString, WriteNulls));
+                }
+                if (jsonReader.isNumber()) {
+                    return com.jsoniter.JsonIterator.deserialize(JSON.toJSONString(jsonReader.readNumber(), WriteNonStringKeyAsString, WriteNulls));
+                }
+                return switch (jsonReader.current()) {
+                    case 't', 'f' -> com.jsoniter.any.Any.wrap(jsonReader.readBoolValue());
+                    default ->
+                            com.jsoniter.JsonIterator.deserialize(JSON.toJSONString(jsonReader.readAny(), WriteNonStringKeyAsString, WriteNulls));
+                };
+            });
+        } catch (ClassNotFoundException e) {
+            // skip
         }
     }
 

@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.jsoniter.JsonIterator;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -47,6 +49,7 @@ public class Fastjson2LibraryTests {
             assertEquals(1, o.getI1().getAsInt());
             assertEquals(2, o.getL1().getAsLong());
             assertEquals(3.0, o.getD1().getAsDouble());
+            assertNull(o.getAny());
 
             // {"l1":2,"d1":3.0}
             json = "{\"l1\":2,\"d1\":3.0}";
@@ -55,6 +58,7 @@ public class Fastjson2LibraryTests {
             assertTrue(o.getI1().isEmpty());
             assertEquals(2, o.getL1().getAsLong());
             assertEquals(3.0, o.getD1().getAsDouble());
+            assertNull(o.getAny());
 
             // {"i1":null,"l1":2,"d1":3.0}
             json = "{\"i1\":null,\"l1\":2,\"d1\":3.0}";
@@ -63,6 +67,7 @@ public class Fastjson2LibraryTests {
             assertTrue(o.getI1().isEmpty());
             assertEquals(2, o.getL1().getAsLong());
             assertEquals(3.0, o.getD1().getAsDouble());
+            assertNull(o.getAny());
 
             // {"i1":1,"d1":3.0}
             json = "{\"i1\":1,\"d1\":3.0}";
@@ -71,6 +76,7 @@ public class Fastjson2LibraryTests {
             assertEquals(1, o.getI1().getAsInt());
             assertTrue(o.getL1().isEmpty());
             assertEquals(3.0, o.getD1().getAsDouble());
+            assertNull(o.getAny());
 
             // {"i1":1,"l1":null,"d1":3.0}
             json = "{\"i1\":1,\"l1\":null,\"d1\":3.0}";
@@ -79,6 +85,7 @@ public class Fastjson2LibraryTests {
             assertEquals(1, o.getI1().getAsInt());
             assertTrue(o.getL1().isEmpty());
             assertEquals(3.0, o.getD1().getAsDouble());
+            assertNull(o.getAny());
 
             // {"i1":1,"l1":2}
             json = "{\"i1\":1,\"l1\":2}";
@@ -87,6 +94,7 @@ public class Fastjson2LibraryTests {
             assertEquals(1, o.getI1().getAsInt());
             assertEquals(2, o.getL1().getAsLong());
             assertTrue(o.getD1().isEmpty());
+            assertNull(o.getAny());
 
             // {"i1":1,"l1":2,"d1":null}
             json = "{\"i1\":1,\"l1\":2,\"d1\":null}";
@@ -95,7 +103,55 @@ public class Fastjson2LibraryTests {
             assertEquals(1, o.getI1().getAsInt());
             assertEquals(2, o.getL1().getAsLong());
             assertTrue(o.getD1().isEmpty());
+            assertNull(o.getAny());
 
+            // {"any":null}
+            json = "{\"any\":null}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNull(o.getAny());
+            // {"any":{"key":"value"}}
+            json = "{\"any\":{\"key\":\"value\"}}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getAny());
+            assertEquals(ValueType.OBJECT, o.getAny().valueType());
+            assertEquals("{\"key\":\"value\"}", o.getAny().toString());
+            // {"any":123}
+            json = "{\"any\":123}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getAny());
+            assertEquals(ValueType.NUMBER, o.getAny().valueType());
+            assertEquals(123, o.getAny().toInt());
+            // {"any":123.4567890123}
+            json = "{\"any\":123.4567890123}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getAny());
+            assertEquals(ValueType.NUMBER, o.getAny().valueType());
+            assertEquals(123.4567890123, o.getAny().toDouble());
+            // {"any":"this is a string"}
+            json = "{\"any\":\"this is a string\"}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getAny());
+            assertEquals(ValueType.STRING, o.getAny().valueType());
+            assertEquals("this is a string", o.getAny().toString());
+            // {"any":true}
+            json = "{\"any\":true}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getAny());
+            assertEquals(ValueType.BOOLEAN, o.getAny().valueType());
+            assertTrue(o.getAny().toBoolean());
+            // {"any":false}
+            json = "{\"any\":false}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getAny());
+            assertEquals(ValueType.BOOLEAN, o.getAny().valueType());
+            assertFalse(o.getAny().toBoolean());
         } catch (Exception e) {
             fail(e);
         }
@@ -106,6 +162,8 @@ public class Fastjson2LibraryTests {
         private OptionalInt i1 = OptionalInt.empty();
         private OptionalLong l1 = OptionalLong.empty();
         private OptionalDouble d1 = OptionalDouble.empty();
+
+        private Any any;
 
         public OptionalInt getI1() {
             return i1;
@@ -131,6 +189,14 @@ public class Fastjson2LibraryTests {
             this.d1 = d1;
         }
 
+        public Any getAny() {
+            return any;
+        }
+
+        public void setAny(Any any) {
+            this.any = any;
+        }
+
     }
 
     @Test
@@ -148,12 +214,13 @@ public class Fastjson2LibraryTests {
         object.put("name", "testWriteJsoniterAny");
         var value = JsonIterator.deserialize("{\"id\":1,\"o\":[666,777,888]}");
         object.put("value", value);
+        object.put("null", Any.wrapNull());
         assertEquals(
-                "{\"name\":\"testWriteJsoniterAny\",\"value\":{\"id\":1,\"o\":[666,777,888]}}",
+                "{\"name\":\"testWriteJsoniterAny\",\"value\":{\"id\":1,\"o\":[666,777,888]},\"null\":null}",
                 Fastjson2Library.getInstance().dumpsToString(object)
         );
         assertArrayEquals(
-                "{\"name\":\"testWriteJsoniterAny\",\"value\":{\"id\":1,\"o\":[666,777,888]}}".getBytes(StandardCharsets.UTF_8),
+                "{\"name\":\"testWriteJsoniterAny\",\"value\":{\"id\":1,\"o\":[666,777,888]},\"null\":null}".getBytes(StandardCharsets.UTF_8),
                 Fastjson2Library.getInstance().dumpsToBytes(object)
         );
     }
