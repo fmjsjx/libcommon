@@ -7,6 +7,9 @@ java {
     registerFeature("jsoniterSupport") {
         usingSourceSet(sourceSets["main"])
     }
+    registerFeature("jackson2Support") {
+        usingSourceSet(sourceSets["main"])
+    }
 }
 
 dependencies {
@@ -17,6 +20,7 @@ dependencies {
     implementation(project(":libcommon-util"))
     api("com.alibaba.fastjson2:fastjson2")
     "jsoniterSupportApi"("com.jsoniter:jsoniter")
+    "jackson2SupportImplementation"(project(":libcommon-json-jackson2"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")

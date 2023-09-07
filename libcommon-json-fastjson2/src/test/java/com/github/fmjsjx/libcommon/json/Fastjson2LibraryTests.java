@@ -3,6 +3,8 @@ package com.github.fmjsjx.libcommon.json;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.*;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.ValueType;
 import com.jsoniter.any.Any;
@@ -50,6 +52,9 @@ public class Fastjson2LibraryTests {
             assertEquals(2, o.getL1().getAsLong());
             assertEquals(3.0, o.getD1().getAsDouble());
             assertNull(o.getAny());
+            assertNull(o.getJn());
+            assertNull(o.getOn());
+            assertNull(o.getAn());
 
             // {"l1":2,"d1":3.0}
             json = "{\"l1\":2,\"d1\":3.0}";
@@ -58,7 +63,6 @@ public class Fastjson2LibraryTests {
             assertTrue(o.getI1().isEmpty());
             assertEquals(2, o.getL1().getAsLong());
             assertEquals(3.0, o.getD1().getAsDouble());
-            assertNull(o.getAny());
 
             // {"i1":null,"l1":2,"d1":3.0}
             json = "{\"i1\":null,\"l1\":2,\"d1\":3.0}";
@@ -67,7 +71,6 @@ public class Fastjson2LibraryTests {
             assertTrue(o.getI1().isEmpty());
             assertEquals(2, o.getL1().getAsLong());
             assertEquals(3.0, o.getD1().getAsDouble());
-            assertNull(o.getAny());
 
             // {"i1":1,"d1":3.0}
             json = "{\"i1\":1,\"d1\":3.0}";
@@ -76,7 +79,6 @@ public class Fastjson2LibraryTests {
             assertEquals(1, o.getI1().getAsInt());
             assertTrue(o.getL1().isEmpty());
             assertEquals(3.0, o.getD1().getAsDouble());
-            assertNull(o.getAny());
 
             // {"i1":1,"l1":null,"d1":3.0}
             json = "{\"i1\":1,\"l1\":null,\"d1\":3.0}";
@@ -85,7 +87,6 @@ public class Fastjson2LibraryTests {
             assertEquals(1, o.getI1().getAsInt());
             assertTrue(o.getL1().isEmpty());
             assertEquals(3.0, o.getD1().getAsDouble());
-            assertNull(o.getAny());
 
             // {"i1":1,"l1":2}
             json = "{\"i1\":1,\"l1\":2}";
@@ -94,7 +95,6 @@ public class Fastjson2LibraryTests {
             assertEquals(1, o.getI1().getAsInt());
             assertEquals(2, o.getL1().getAsLong());
             assertTrue(o.getD1().isEmpty());
-            assertNull(o.getAny());
 
             // {"i1":1,"l1":2,"d1":null}
             json = "{\"i1\":1,\"l1\":2,\"d1\":null}";
@@ -103,7 +103,6 @@ public class Fastjson2LibraryTests {
             assertEquals(1, o.getI1().getAsInt());
             assertEquals(2, o.getL1().getAsLong());
             assertTrue(o.getD1().isEmpty());
-            assertNull(o.getAny());
 
             // {"any":null}
             json = "{\"any\":null}";
@@ -152,6 +151,66 @@ public class Fastjson2LibraryTests {
             assertNotNull(o.getAny());
             assertEquals(ValueType.BOOLEAN, o.getAny().valueType());
             assertFalse(o.getAny().toBoolean());
+            // {"jn":null,"on":null,"an":null}
+            json = "{\"jn\":null,\"on\":null,\"an\":null}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNull(o.getJn());
+            assertNull(o.getOn());
+            assertNull(o.getAn());
+            // {"jn":{"key":"value"},"on":{"key":"value"},"an":[1,2,3]}
+            json = "{\"jn\":{\"key\":\"value\"},\"on\":{\"key\":\"value\"},\"an\":[1,2,3]}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn());
+            assertEquals(JsonNodeType.OBJECT, o.getJn().getNodeType());
+            assertEquals("{\"key\":\"value\"}", o.getJn().toString());
+            assertNotNull(o.getOn());
+            assertEquals("{\"key\":\"value\"}", o.getOn().toString());
+            assertNotNull(o.getAn());
+            assertEquals("[1,2,3]", o.getAn().toString());
+            // {"jn":[1,2,3]}
+            json = "{\"jn\":[1,2,3]}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn());
+            assertEquals(JsonNodeType.ARRAY, o.getJn().getNodeType());
+            assertEquals("[1,2,3]", o.getJn().toString());
+            // {"jn":"This is a string"}
+            json = "{\"jn\":\"This is a string\"}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn());
+            assertEquals(JsonNodeType.STRING, o.getJn().getNodeType());
+            assertEquals("This is a string", o.getJn().textValue());
+            // {"jn":123}
+            json = "{\"jn\":123}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn());
+            assertEquals(JsonNodeType.NUMBER, o.getJn().getNodeType());
+            assertEquals(123, o.getJn().intValue());
+            // {"jn":123.4567890123}
+            json = "{\"jn\":123.4567890123}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn());
+            assertEquals(JsonNodeType.NUMBER, o.getJn().getNodeType());
+            assertEquals(123.4567890123, o.getJn().doubleValue());
+            // {"jn":true}
+            json = "{\"jn\":true}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn());
+            assertEquals(JsonNodeType.BOOLEAN, o.getJn().getNodeType());
+            assertTrue(o.getJn().booleanValue());
+            // {"jn":false}
+            json = "{\"jn\":false}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn());
+            assertEquals(JsonNodeType.BOOLEAN, o.getJn().getNodeType());
+            assertFalse(o.getJn().booleanValue());
         } catch (Exception e) {
             fail(e);
         }
@@ -164,6 +223,10 @@ public class Fastjson2LibraryTests {
         private OptionalDouble d1 = OptionalDouble.empty();
 
         private Any any;
+
+        private JsonNode jn;
+        private ObjectNode on;
+        private ArrayNode an;
 
         public OptionalInt getI1() {
             return i1;
@@ -197,6 +260,30 @@ public class Fastjson2LibraryTests {
             this.any = any;
         }
 
+        public JsonNode getJn() {
+            return jn;
+        }
+
+        public void setJn(JsonNode jn) {
+            this.jn = jn;
+        }
+
+        public ObjectNode getOn() {
+            return on;
+        }
+
+        public void setOn(ObjectNode on) {
+            this.on = on;
+        }
+
+        public ArrayNode getAn() {
+            return an;
+        }
+
+        public void setAn(ArrayNode an) {
+            this.an = an;
+        }
+
     }
 
     @Test
@@ -221,6 +308,32 @@ public class Fastjson2LibraryTests {
         );
         assertArrayEquals(
                 "{\"name\":\"testWriteJsoniterAny\",\"value\":{\"id\":1,\"o\":[666,777,888]},\"null\":null}".getBytes(StandardCharsets.UTF_8),
+                Fastjson2Library.getInstance().dumpsToBytes(object)
+        );
+    }
+
+    @Test
+    public void testWriteJsonNode() {
+        var object = new JSONObject();
+        object.put("null", NullNode.getInstance());
+        object.put("string", TextNode.valueOf("abc"));
+        object.put("short", ShortNode.valueOf((short) 123));
+        object.put("int", IntNode.valueOf(123456));
+        object.put("long", LongNode.valueOf(1234567890123L));
+        object.put("double", DoubleNode.valueOf(123.456));
+        object.put("true", BooleanNode.TRUE);
+        object.put("false", BooleanNode.FALSE);
+        object.put("object", JsonNodeFactory.instance.objectNode().put("key", "value"));
+        object.put("array", JsonNodeFactory.instance.arrayNode().add(0));
+
+        assertEquals(
+                """
+                        {"null":null,"string":"abc","short":123,"int":123456,"long":1234567890123,"double":123.456,"true":{"array":false,"bigDecimal":false,"bigInteger":false,"binary":false,"boolean":true,"containerNode":false,"double":false,"empty":true,"float":false,"floatingPointNumber":false,"int":false,"integralNumber":false,"long":false,"missingNode":false,"nodeType":"BOOLEAN","null":false,"number":false,"object":false,"pojo":false,"short":false,"textual":false,"valueNode":true},"false":{"array":false,"bigDecimal":false,"bigInteger":false,"binary":false,"boolean":true,"containerNode":false,"double":false,"empty":true,"float":false,"floatingPointNumber":false,"int":false,"integralNumber":false,"long":false,"missingNode":false,"nodeType":"BOOLEAN","null":false,"number":false,"object":false,"pojo":false,"short":false,"textual":false,"valueNode":true},"object":{"key":"value"},"array":[0]}""",
+                Fastjson2Library.getInstance().dumpsToString(object)
+        );
+        assertArrayEquals(
+                """
+                        {"null":null,"string":"abc","short":123,"int":123456,"long":1234567890123,"double":123.456,"true":{"array":false,"bigDecimal":false,"bigInteger":false,"binary":false,"boolean":true,"containerNode":false,"double":false,"empty":true,"float":false,"floatingPointNumber":false,"int":false,"integralNumber":false,"long":false,"missingNode":false,"nodeType":"BOOLEAN","null":false,"number":false,"object":false,"pojo":false,"short":false,"textual":false,"valueNode":true},"false":{"array":false,"bigDecimal":false,"bigInteger":false,"binary":false,"boolean":true,"containerNode":false,"double":false,"empty":true,"float":false,"floatingPointNumber":false,"int":false,"integralNumber":false,"long":false,"missingNode":false,"nodeType":"BOOLEAN","null":false,"number":false,"object":false,"pojo":false,"short":false,"textual":false,"valueNode":true},"object":{"key":"value"},"array":[0]}""".getBytes(StandardCharsets.UTF_8),
                 Fastjson2Library.getInstance().dumpsToBytes(object)
         );
     }
