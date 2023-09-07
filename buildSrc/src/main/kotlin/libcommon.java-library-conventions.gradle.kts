@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
     // netty-bom
-    api(platform("io.netty:netty-bom:4.1.96.Final"))
+    api(platform("io.netty:netty-bom:4.1.97.Final"))
     // junit-bom
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     // mockito
@@ -34,7 +34,7 @@ dependencies {
         api("com.dslplatform:dsl-json-java8:1.10.0")
         api("com.jsoniter:jsoniter:0.9.23")
         api("com.aliyun.openservices:ons-client:2.0.5.Final")
-        val fastjson2Version = "2.0.38"
+        val fastjson2Version = "2.0.40"
         api("com.alibaba.fastjson2:fastjson2:$fastjson2Version")
         api("com.alibaba.fastjson2:fastjson2-kotlin:$fastjson2Version")
         val mongodbVersion = "4.10.2"
