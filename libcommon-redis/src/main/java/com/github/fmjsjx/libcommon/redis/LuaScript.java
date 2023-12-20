@@ -87,6 +87,7 @@ public interface LuaScript<R> {
             case INTEGER -> new DefaultLuaScript<>(script, sha1, outputType, Long.class);
             case MULTI -> new DefaultLuaScript<>(script, sha1, outputType, List.class);
             case STATUS, VALUE -> new DefaultLuaScript<>(script, sha1, outputType, String.class);
+            default -> throw new UnsupportedOperationException("Unsupported script output type " + outputType + " occurs");
         };
     }
 
