@@ -6,13 +6,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.MQProducer;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
-import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,14 +51,20 @@ public class RocketMQUtil {
             throws MQClientException, TooManyRetryException {
         try {
             return producer.send(msg);
-        } catch (RemotingException | MQBrokerException | InterruptedException e) {
+        } catch (Exception e) {
+            if (e instanceof MQClientException ex) {
+                throw ex;
+            }
             logger.warn("Send message failed, start retry stage: {}", msg, e);
             // retry stage
             List<Throwable> causes = new ArrayList<>();
             for (var remainingTimes = Math.max(0, retryTimes); remainingTimes > 0; remainingTimes--) {
                 try {
                     return producer.send(msg);
-                } catch (RemotingException | MQBrokerException | InterruptedException cause) {
+                } catch (Exception cause) {
+                    if (e instanceof MQClientException ex) {
+                        throw ex;
+                    }
                     causes.add(cause);
                 }
             }
@@ -92,7 +96,7 @@ public class RocketMQUtil {
         try {
             producer.send(msg, future);
             return future;
-        } catch (MQClientException | RemotingException | InterruptedException e) {
+        } catch (Exception e) {
             future.onException(e);
             return future;
         }
@@ -132,7 +136,7 @@ public class RocketMQUtil {
             if (remaining > 0) {
                 try {
                     producer.send(msg, this);
-                } catch (MQClientException | RemotingException | InterruptedException cause) {
+                } catch (Exception cause) {
                     onException(cause);
                 }
             } else {
