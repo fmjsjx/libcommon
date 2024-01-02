@@ -49,6 +49,12 @@ dependencies {
         implementation("org.jruby:jruby-core:$jrubyVersion")
         implementation("org.jruby:jruby-stdlib:$jrubyVersion")
         implementation("org.yaml:snakeyaml:2.0")
+        val prometheusVersion = "1.1.0"
+        api("io.prometheus:prometheus-metrics-core:$prometheusVersion")
+        api("io.prometheus:prometheus-metrics-model:$prometheusVersion")
+        api("io.prometheus:prometheus-metrics-tracer:$prometheusVersion")
+        api("io.prometheus:prometheus-metrics-exposition-formats:$prometheusVersion")
+        api("io.prometheus:prometheus-metrics-instrumentation-jvm:$prometheusVersion")
     }
     // log4j2
     implementation(platform("org.apache.logging.log4j:log4j-bom:2.22.0"))

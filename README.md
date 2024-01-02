@@ -135,9 +135,13 @@ The [`libcommon-json-jsoniter-kotlin`](libcommon-json-jsoniter-kotlin) module pr
 
 The [`libcommon-kotlin`](libcommon-kotlin) module provides some utilitiy class for [**Kotlin**](https://kotlinlang.org/).
 
-### libcommon-prometheus
+### libcommon-prometheus (legacy)
 
-The [`libcommon-prometheus`](libcommon-prometheus) module provides Hotspot JVM metrics exports, that allow users set custom labels, based on [**prometheus**](https://prometheus.io).
+The [`libcommon-prometheus`](libcommon-prometheus) module provides Hotspot JVM metrics exports, that allow users set custom labels, based on [**prometheus simple client**](https://github.com/prometheus/client_java/tree/simpleclient).
+
+### libcommon-prometheus-client
+
+The [`libcommon-prometheus-client`](libcommon-prometheus-client) module provides Hotspot JVM metrics exports, that allow users set custom labels, based on [**prometheus client java**](https://prometheus.github.io/client_java/).
 
 ### libcommon-yaml
 
