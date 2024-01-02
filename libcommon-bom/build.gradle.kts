@@ -23,6 +23,7 @@ dependencies {
         api(project(":libcommon-json-jsoniter-kotlin"))
         api(project(":libcommon-kotlin"))
         api(project(":libcommon-prometheus"))
+        api(project(":libcommon-prometheus-client"))
         api(project(":libcommon-redis"))
         api(project(":libcommon-redis-kotlin"))
         api(project(":libcommon-rocketmq"))
