@@ -93,6 +93,8 @@ public class JvmMetrics {
          * <p>
          * You must make sure to call this only once per {@code registry}, otherwise it will
          * throw an Exception because you are trying to register duplicate metrics.
+         *
+         * @param registry the prometheus registry
          */
         public void register(PrometheusRegistry registry) {
             JvmThreadsMetrics.builder(config).constLabels(constLabels).customLabels(customLabelsProvider).register(registry);
