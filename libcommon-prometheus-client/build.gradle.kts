@@ -7,12 +7,12 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
 
     api("io.prometheus:prometheus-metrics-core")
+    api("io.prometheus:prometheus-metrics-exposition-formats")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.apache.logging.log4j:log4j-slf4j-impl")
-    testImplementation("io.prometheus:prometheus-metrics-exposition-formats")
     testImplementation("org.mockito:mockito-core")
 }
 
