@@ -9,11 +9,6 @@ dependencies {
 
     api(project(":libcommon-json"))
 
-    api("com.fasterxml.jackson.core:jackson-databind")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
-
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
@@ -22,7 +17,7 @@ dependencies {
 
 }
 
-description = "libcommon/YAML"
+description = "libcommon/UUID"
 
 tasks.test {
     // Use junit platform for unit tests.
@@ -42,7 +37,7 @@ publishing {
                 }
             }
             pom {
-                name.set("libcommon/YAML")
+                name.set("libcommon/UUID")
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {
