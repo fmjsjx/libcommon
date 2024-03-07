@@ -11,39 +11,39 @@ repositories {
 
 dependencies {
     // netty-bom
-    api(platform("io.netty:netty-bom:4.1.104.Final"))
+    api(platform("io.netty:netty-bom:4.1.107.Final"))
     // junit-bom
-    testImplementation(platform("org.junit:junit-bom:5.10.1"))
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
     // mockito
-    testImplementation(platform("org.mockito:mockito-bom:5.8.0"))
+    testImplementation(platform("org.mockito:mockito-bom:5.11.0"))
     // jackson2-bom
-    api(platform("com.fasterxml.jackson:jackson-bom:2.16.0"))
+    api(platform("com.fasterxml.jackson:jackson-bom:2.16.1"))
     // rocketmq
     api(platform("org.apache.rocketmq:rocketmq-all:5.1.4"))
     // kotlin coroutines
-    api(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.3"))
+    api(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.8.0"))
     // prometheus
     api(platform("io.prometheus:simpleclient_bom:0.16.0"))
     // kotlin
     api(platform("org.jetbrains.kotlin:kotlin-bom:1.9.0"))
 
     constraints {
-        implementation("org.slf4j:slf4j-api:2.0.9")
-        implementation("ch.qos.logback:logback-classic:1.4.14")
-        api("io.lettuce:lettuce-core:6.3.0.RELEASE")
+        implementation("org.slf4j:slf4j-api:2.0.12")
+        implementation("ch.qos.logback:logback-classic:1.5.3")
+        api("io.lettuce:lettuce-core:6.3.1.RELEASE")
         api("com.dslplatform:dsl-json-java8:1.10.0")
         api("com.jsoniter:jsoniter:0.9.23")
         api("com.aliyun.openservices:ons-client:2.0.6.Final")
-        val fastjson2Version = "2.0.43"
+        val fastjson2Version = "2.0.47"
         api("com.alibaba.fastjson2:fastjson2:$fastjson2Version")
         api("com.alibaba.fastjson2:fastjson2-kotlin:$fastjson2Version")
-        val mongodbVersion = "4.11.1"
+        val mongodbVersion = "5.0.0"
         api("org.mongodb:bson:$mongodbVersion")
         api("org.mongodb:mongodb-driver-core:$mongodbVersion")
         api("org.mongodb:mongodb-driver-sync:$mongodbVersion")
         api("org.mongodb:mongodb-driver-reactivestreams:$mongodbVersion")
         api("org.mongodb:mongodb-driver-legacy:$mongodbVersion")
-        val jrubyVersion = "9.4.4.0"
+        val jrubyVersion = "9.4.5.0"
         implementation("org.jruby:jruby-complete:$jrubyVersion")
         implementation("org.jruby:jruby:$jrubyVersion")
         implementation("org.jruby:jruby-core:$jrubyVersion")
@@ -57,7 +57,7 @@ dependencies {
         api("io.prometheus:prometheus-metrics-instrumentation-jvm:$prometheusVersion")
     }
     // log4j2
-    implementation(platform("org.apache.logging.log4j:log4j-bom:2.22.0"))
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.23.0"))
 
 }
 
