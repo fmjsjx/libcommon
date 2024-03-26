@@ -145,7 +145,7 @@ The [`libcommon-prometheus-client`](libcommon-prometheus-client) module provides
 
 ### libcommon-yaml
 
-The [`libcommon-yaml`](libcommon-yaml) module provides a library interface to encode/decode YAML and it's default implementation based on [`Jackson2`](https://github.com/FasterXML/jackson).
+The [`libcommon-yaml`](libcommon-yaml) module provides a library interface to encode/decode YAML, with the default implementation based on [`Jackson2`](https://github.com/FasterXML/jackson).
 
 ### libcommon-redis
 
@@ -169,4 +169,12 @@ The [`libcommon-rocketmq`](libcommon-rocketmq) module provides additional utilit
 
 ### libcommon-bson
 
-The [`libcommon-bson`](libcommon-bson) module provides some additional kotlin extensions for [`BSON`](https://www.mongodb.com/basics/bson).
+The [`libcommon-bson`](libcommon-bson) module provides some additional utility functions for [`BSON`](https://www.mongodb.com/basics/bson).
+
+### libcommon-bson-kotlin
+
+The [`libcommon-bson-kotlin`](libcommon-bson-kotlin) module provides some additional kotlin extensions for [`BSON`](https://www.mongodb.com/basics/bson).
+
+### libcommon-uuid
+
+The [`libcommon-uuid`](libcommon-uuid) module provides additional implementations of `UUID`.
