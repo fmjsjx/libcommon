@@ -1,6 +1,8 @@
 package com.github.fmjsjx.libcommon.json;
 
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -19,6 +21,7 @@ public class DsljsonLibrary implements JsonLibrary<Map<String, ?>> {
      */
     public static final class DsljsonException extends JsonException {
 
+        @Serial
         private static final long serialVersionUID = -779902969383591399L;
 
         /**
@@ -149,6 +152,35 @@ public class DsljsonLibrary implements JsonLibrary<Map<String, ?>> {
         }
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Map<String, ?>> T loads(InputStream src) throws JsonException {
+        try {
+            return (T) dslJson.deserialize(mapType, src);
+        } catch (Exception e) {
+            throw new DsljsonException(e);
+        }
+    }
+
+    @Override
+    public <T> T loads(InputStream src, Class<T> type) throws JsonException {
+        try {
+            return dslJson.deserialize(type, src);
+        } catch (Exception e) {
+            throw new DsljsonException(e);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T loads(InputStream src, Type type) throws JsonException {
+        try {
+            return (T) dslJson.deserialize(type, src);
+        } catch (Exception e) {
+            throw new DsljsonException(e);
+        }
+    }
+
     /**
      * Decodes data from byte array.
      * 
@@ -172,6 +204,21 @@ public class DsljsonLibrary implements JsonLibrary<Map<String, ?>> {
      * @throws DsljsonException if any JSON decode error occurs
      */
     public <T> T loads(String src, TypeDefinition<T> typeDefinition) throws DsljsonException {
+        return loads(src, typeDefinition.type);
+    }
+
+    /**
+     * Decodes data from {@link InputStream}.
+     *
+     * @param <T>            the type of the data
+     * @param src            the source input stream
+     * @param typeDefinition the type definition of the data
+     * @return a data object as given type
+     * @throws DsljsonException if any JSON decode error occurs
+     * @author MJ Fang
+     * @since 3.8
+     */
+    public <T> T loads(InputStream src, TypeDefinition<T> typeDefinition) throws DsljsonException {
         return loads(src, typeDefinition.type);
     }
 

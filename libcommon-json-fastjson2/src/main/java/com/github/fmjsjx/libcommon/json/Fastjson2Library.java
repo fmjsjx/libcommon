@@ -7,6 +7,7 @@ import static com.alibaba.fastjson2.TypeReference.parametricType;
 import com.alibaba.fastjson2.*;
 import com.github.fmjsjx.libcommon.util.ReflectUtil;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serial;
@@ -312,6 +313,8 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
      * @return a {@code JSONArray}
      * @throws Fastjson2Exception if any JSON decode error occurs
      */
+    @SuppressWarnings("unchecked")
+    @Override
     public JSONObject loads(InputStream src) throws Fastjson2Exception {
         try {
             return JSON.parseObject(src, readerFeatures);
@@ -382,6 +385,18 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
     }
 
     /**
+     * @throws Fastjson2Exception if any JSON decode error occurs
+     */
+    @Override
+    public <T> T loads(InputStream src, Class<T> type) throws JsonException {
+        try {
+            return JSON.parseObject(src, type, readerFeatures);
+        } catch (Exception e) {
+            throw new Fastjson2Exception(e);
+        }
+    }
+
+    /**
      * Decodes data from string.
      *
      * @param <T>  the type of the data
@@ -399,6 +414,25 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
     }
 
     /**
+     * Decodes data from {@link InputStream}.
+     *
+     * @param <T>  the type of the data
+     * @param src  the source input stream
+     * @param type the type of the data
+     * @return a data object as given type
+     * @throws Fastjson2Exception if any JSON decode error occurs
+     * @author MJ Fang
+     * @since 3.8
+     */
+    public <T> T loads(InputStream src, TypeReference<T> type) throws Fastjson2Exception {
+        try {
+            return loads(src.readAllBytes(), type);
+        } catch (IOException e) {
+            throw new Fastjson2Exception(e);
+        }
+    }
+
+    /**
      * Decodes data from input stream.
      *
      * @param <T>  the type of the data
@@ -407,6 +441,7 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
      * @return a data object as given type
      * @throws Fastjson2Exception if any JSON decode error occurs
      */
+    @Override
     public <T> T loads(InputStream src, Type type) throws Fastjson2Exception {
         try {
             return JSON.parseObject(src, type, readerFeatures);

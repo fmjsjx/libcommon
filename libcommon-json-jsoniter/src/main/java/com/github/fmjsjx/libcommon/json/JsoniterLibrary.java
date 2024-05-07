@@ -1,8 +1,6 @@
 package com.github.fmjsjx.libcommon.json;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.io.Serial;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -162,6 +160,42 @@ public class JsoniterLibrary implements JsonLibrary<Any> {
         }
         TypeLiteral<T> typeLiteral = TypeLiteral.create(type);
         return loads(src, typeLiteral);
+    }
+
+    /**
+     * @throws JsoniterException if any JSON decode error occurs
+     */
+    @Override
+    public <T extends Any> T loads(InputStream src) throws JsonException {
+        try {
+            return loads(src.readAllBytes());
+        } catch (IOException e) {
+            throw new JsoniterException(e);
+        }
+    }
+
+    /**
+     * @throws JsoniterException if any JSON decode error occurs
+     */
+    @Override
+    public <T> T loads(InputStream src, Class<T> type) throws JsonException {
+        try {
+            return loads(src.readAllBytes(), type);
+        } catch (IOException e) {
+            throw new JsoniterException(e);
+        }
+    }
+
+    /**
+     * @throws JsoniterException if any JSON decode error occurs
+     */
+    @Override
+    public <T> T loads(InputStream src, Type type) throws JsonException {
+        try {
+            return loads(src.readAllBytes(), type);
+        } catch (IOException e) {
+            throw new JsoniterException(e);
+        }
     }
 
     /**
