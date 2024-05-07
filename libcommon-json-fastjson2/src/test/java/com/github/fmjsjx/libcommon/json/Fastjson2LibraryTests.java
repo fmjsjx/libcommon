@@ -10,6 +10,7 @@ import com.jsoniter.ValueType;
 import com.jsoniter.any.Any;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -30,6 +31,14 @@ public class Fastjson2LibraryTests {
             assertEquals(0, obj.getJSONObject("obj").getIntValue("o", -1));
 
             obj = Fastjson2Library.defaultInstance().loads(json.getBytes(StandardCharsets.UTF_8));
+            assertEquals(1, obj.getIntValue("id"));
+            assertEquals("test", obj.getString("name"));
+            assertEquals(3, obj.getJSONArray("array").size());
+            assertArrayEquals(new int[]{1, 2, 3}, obj.getJSONArray("array").toJavaList(Integer.class).stream().mapToInt(Number::intValue).toArray());
+            assertEquals(1, obj.getJSONObject("obj").size());
+            assertEquals(0, obj.getJSONObject("obj").getIntValue("o", -1));
+
+            obj = Fastjson2Library.defaultInstance().loads(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
             assertEquals(1, obj.getIntValue("id"));
             assertEquals("test", obj.getString("name"));
             assertEquals(3, obj.getJSONArray("array").size());

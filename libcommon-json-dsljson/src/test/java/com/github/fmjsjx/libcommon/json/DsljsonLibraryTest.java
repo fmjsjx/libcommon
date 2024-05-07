@@ -2,6 +2,7 @@ package com.github.fmjsjx.libcommon.json;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import com.dslplatform.json.runtime.TypeDefinition;
 
 public class DsljsonLibraryTest {
 
-    private static final TypeDefinition<List<TestObj>> typeDefinition = new TypeDefinition<List<TestObj>>() {
+    private static final TypeDefinition<List<TestObj>> typeDefinition = new TypeDefinition<>() {
     };
 
     @Test
@@ -26,8 +27,26 @@ public class DsljsonLibraryTest {
         assertEquals(1, obj.mails.size());
         assertEquals("test@test.test", obj.mails.get(0));
 
+        obj = DsljsonLibrary.getInstance().loads(new ByteArrayInputStream(json.getBytes()), TestObj.class);
+        assertNotNull(obj);
+        assertEquals(123, obj.id);
+        assertEquals("HaHa", obj.name);
+        assertNotNull(obj.mails);
+        assertEquals(1, obj.mails.size());
+        assertEquals("test@test.test", obj.mails.get(0));
+
         var jsonList = "[{\"id\":123,\"name\":\"HaHa\",\"mails\":[\"test@test.test\"]}]";
         List<TestObj> list = DsljsonLibrary.getInstance().loads(jsonList, typeDefinition.type);
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        obj = list.get(0);
+        assertEquals(123, obj.id);
+        assertEquals("HaHa", obj.name);
+        assertNotNull(obj.mails);
+        assertEquals(1, obj.mails.size());
+        assertEquals("test@test.test", obj.mails.get(0));
+
+        list = DsljsonLibrary.getInstance().loads(new ByteArrayInputStream(jsonList.getBytes()), typeDefinition.type);
         assertNotNull(list);
         assertEquals(1, list.size());
         obj = list.get(0);
@@ -47,12 +66,31 @@ public class DsljsonLibraryTest {
         assertEquals(1, obj.mails.size());
         assertEquals("test@test.test", obj.mails.get(0));
 
+        list = DsljsonLibrary.getInstance().loads(new ByteArrayInputStream(jsonList.getBytes()), typeDefinition);
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        obj = list.get(0);
+        assertEquals(123, obj.id);
+        assertEquals("HaHa", obj.name);
+        assertNotNull(obj.mails);
+        assertEquals(1, obj.mails.size());
+        assertEquals("test@test.test", obj.mails.get(0));
+
         var map = DsljsonLibrary.getInstance().loads(json);
         assertNotNull(map);
         assertEquals(123L, map.get("id"));
         assertEquals("HaHa", map.get("name"));
         @SuppressWarnings("unchecked")
         List<String> mails = (List<String>) map.get("mails");
+        assertEquals(1, mails.size());
+        assertEquals("test@test.test", mails.get(0));
+
+        map = DsljsonLibrary.getInstance().loads(new ByteArrayInputStream(json.getBytes()));
+        assertNotNull(map);
+        assertEquals(123L, map.get("id"));
+        assertEquals("HaHa", map.get("name"));
+        //noinspection unchecked
+        mails = (List<String>) map.get("mails");
         assertEquals(1, mails.size());
         assertEquals("test@test.test", mails.get(0));
     }

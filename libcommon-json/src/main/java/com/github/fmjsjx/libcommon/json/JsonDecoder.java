@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.json;
 
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 
@@ -80,4 +81,43 @@ public interface JsonDecoder<JSON> {
     default <T> T loads(String src, Type type) throws JsonException {
         return loads(src.getBytes(StandardCharsets.UTF_8), type);
     }
+
+    /**
+     * Decodes dynamic JSON object from {@link InputStream}.
+     *
+     * @param <T> the type of dynamic JSON object
+     * @param src the source input stream
+     * @return the dynamic JSON object
+     * @throws JsonException if any JSON decode error occurs
+     * @author MJ Fang
+     * @since 3.8
+     */
+    <T extends JSON> T loads(InputStream src) throws JsonException;
+
+    /**
+     * Decodes data from {@link InputStream}.
+     *
+     * @param <T>  the type of the data
+     * @param src  the source input stream
+     * @param type the class of the type
+     * @return a data object as given type
+     * @throws JsonException if any JSON decode error occurs
+     * @author MJ Fang
+     * @since 3.8
+     */
+    <T> T loads(InputStream src, Class<T> type) throws JsonException;
+
+    /**
+     * Decodes data from {@link InputStream}.
+     *
+     * @param <T>  the type of the data
+     * @param src  the source input stream
+     * @param type the type of the data
+     * @return a data object as given type
+     * @throws JsonException if any JSON decode error occurs
+     * @author MJ Fang
+     * @since 3.8
+     */
+    <T> T loads(InputStream src, Type type) throws JsonException;
+
 }

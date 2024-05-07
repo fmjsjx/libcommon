@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.json;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 
@@ -60,6 +61,21 @@ public class MixedJsonLibrary<JSON> implements JsonLibrary<JSON> {
 
     @Override
     public <T> T loads(byte[] src, Type type) throws JsonException {
+        return decoder.loads(src, type);
+    }
+
+    @Override
+    public <T extends JSON> T loads(InputStream src) throws JsonException {
+        return decoder.loads(src);
+    }
+
+    @Override
+    public <T> T loads(InputStream src, Class<T> type) throws JsonException {
+        return decoder.loads(src, type);
+    }
+
+    @Override
+    public <T> T loads(InputStream src, Type type) throws JsonException {
         return decoder.loads(src, type);
     }
 

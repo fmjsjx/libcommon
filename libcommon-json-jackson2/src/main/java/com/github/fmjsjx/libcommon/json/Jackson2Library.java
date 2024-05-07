@@ -230,14 +230,10 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     }
 
     /**
-     * Decodes data from input stream.
-     *
-     * @param <T> the type of the data
-     * @param src the source input stream
-     * @return a {@code JsonNode}
      * @throws Jackson2Exception if any JSON decode error occurs
      */
     @SuppressWarnings("unchecked")
+    @Override
     public <T extends JsonNode> T loads(InputStream src) throws Jackson2Exception {
         try {
             return (T) objectMapper.readTree(src);
@@ -355,20 +351,23 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     }
 
     /**
-     * Decodes data from input stream.
-     *
-     * @param <T>  the type of the data
-     * @param src  the source input stream
-     * @param type the type of the data
-     * @return a data object as given type
      * @throws Jackson2Exception if any JSON decode error occurs
      */
+    @Override
     public <T> T loads(InputStream src, Class<T> type) throws Jackson2Exception {
         try {
             return objectMapper.readValue(src, type);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
+    }
+
+    /**
+     *  @throws Jackson2Exception if any JSON decode error occurs
+     */
+    @Override
+    public <T> T loads(InputStream src, Type type) throws JsonException {
+        return loads(src, toJavaType(type));
     }
 
     /**
