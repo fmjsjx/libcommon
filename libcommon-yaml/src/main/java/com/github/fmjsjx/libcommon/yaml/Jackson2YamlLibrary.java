@@ -152,14 +152,10 @@ public class Jackson2YamlLibrary implements YamlLibrary<JsonNode> {
     }
 
     /**
-     * Decodes data from input stream.
-     * 
-     * @param <T> the type of the data
-     * @param src the source input stream
-     * @return a {@code JsonNode}
      * @throws YamlException if any YAML decode error occurs
      */
     @SuppressWarnings("unchecked")
+    @Override
     public <T extends JsonNode> T loads(InputStream src) throws YamlException {
         try {
             return (T) yamlMapper.readTree(src);
@@ -217,20 +213,23 @@ public class Jackson2YamlLibrary implements YamlLibrary<JsonNode> {
     }
 
     /**
-     * Decodes data from input stream.
-     * 
-     * @param <T>  the type of the data
-     * @param src  the source input stream
-     * @param type the type of the data
-     * @return a data object as given type
      * @throws YamlException if any YAML decode error occurs
      */
+    @Override
     public <T> T loads(InputStream src, Class<T> type) throws YamlException {
         try {
             return yamlMapper.readValue(src, type);
         } catch (Exception e) {
             throw new YamlException(e);
         }
+    }
+
+    /**
+     * @throws YamlException if any YAML decode error occurs
+     */
+    @Override
+    public <T> T loads(InputStream src, Type type) throws YamlException {
+        return loads(src, toJavaType(type));
     }
 
     /**

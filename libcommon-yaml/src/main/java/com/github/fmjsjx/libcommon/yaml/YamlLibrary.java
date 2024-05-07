@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.yaml;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
@@ -98,6 +99,41 @@ public interface YamlLibrary<O> extends JsonLibrary<O> {
     default <T> T loads(String src, Type type) throws YamlException {
         return loads(src.getBytes(StandardCharsets.UTF_8), type);
     }
+
+    /**
+     * Decodes data from {@link InputStream}.
+     *
+     * @param <T>  the type of the data
+     * @param src  the source input stream
+     * @return a data object as given type
+     * @throws YamlException if any YAML decode error occurs
+     */
+    @Override
+    <T extends O> T loads(InputStream src) throws YamlException;
+
+    /**
+     * Decodes data from {@link InputStream}.
+     *
+     * @param <T>  the type of the data
+     * @param src  the source input stream
+     * @param type the type of the data
+     * @return a data object as given type
+     * @throws YamlException if any YAML decode error occurs
+     */
+    @Override
+    <T> T loads(InputStream src, Class<T> type) throws YamlException;
+
+    /**
+     * Decodes data from {@link InputStream}.
+     *
+     * @param <T>  the type of the data
+     * @param src  the source input stream
+     * @param type the type of the data
+     * @return a data object as given type
+     * @throws YamlException if any YAML decode error occurs
+     */
+    @Override
+    <T> T loads(InputStream src, Type type) throws YamlException;
 
     /**
      * Encodes object to YAML value as byte array.
