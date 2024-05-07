@@ -17,6 +17,7 @@ public class DsljsonLibraryTest {
     };
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testLoads() {
         var json = "{\"id\":123,\"name\":\"HaHa\",\"mails\":[\"test@test.test\"]}";
         var obj = DsljsonLibrary.getInstance().loads(json, TestObj.class);
@@ -80,7 +81,7 @@ public class DsljsonLibraryTest {
         assertNotNull(map);
         assertEquals(123L, map.get("id"));
         assertEquals("HaHa", map.get("name"));
-        @SuppressWarnings("unchecked")
+
         List<String> mails = (List<String>) map.get("mails");
         assertEquals(1, mails.size());
         assertEquals("test@test.test", mails.get(0));
@@ -89,7 +90,7 @@ public class DsljsonLibraryTest {
         assertNotNull(map);
         assertEquals(123L, map.get("id"));
         assertEquals("HaHa", map.get("name"));
-        //noinspection unchecked
+
         mails = (List<String>) map.get("mails");
         assertEquals(1, mails.size());
         assertEquals("test@test.test", mails.get(0));

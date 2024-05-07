@@ -313,11 +313,11 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
      * @return a {@code JSONArray}
      * @throws Fastjson2Exception if any JSON decode error occurs
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public JSONObject loads(InputStream src) throws Fastjson2Exception {
+    @SuppressWarnings("unchecked")
+    public <T extends JSONObject> T loads(InputStream src) throws Fastjson2Exception {
         try {
-            return JSON.parseObject(src, readerFeatures);
+            return (T) JSON.parseObject(src, readerFeatures);
         } catch (Exception e) {
             throw new Fastjson2Exception(e);
         }
