@@ -171,6 +171,9 @@ public class JvmNativeMemoryMetrics {
         return new Builder(config);
     }
 
+    /**
+     * The builder.
+     */
     public static class Builder {
 
         private final PrometheusProperties config;
