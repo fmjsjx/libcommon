@@ -104,6 +104,7 @@ public class JvmMetrics {
             JvmGarbageCollectorMetrics.builder(config).constLabels(constLabels).customLabels(customLabelsProvider).register(registry);
             JvmMemoryPoolAllocationMetrics.builder(config).constLabels(constLabels).customLabels(customLabelsProvider).register(registry);
             JvmMemoryMetrics.builder(config).constLabels(constLabels).customLabels(customLabelsProvider).register(registry);
+            JvmNativeMemoryMetrics.builder(config).constLabels(constLabels).customLabels(customLabelsProvider).register(registry);
             JvmRuntimeInfoMetric.builder(config).constLabels(constLabels).customLabels(customLabelsProvider).register(registry);
             ProcessMetrics.builder(config).constLabels(constLabels).customLabels(customLabelsProvider).register(registry);
         }

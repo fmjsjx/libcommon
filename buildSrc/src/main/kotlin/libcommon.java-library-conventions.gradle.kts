@@ -11,17 +11,17 @@ repositories {
 
 dependencies {
     // netty-bom
-    api(platform("io.netty:netty-bom:4.1.109.Final"))
+    api(platform("io.netty:netty-bom:4.1.110.Final"))
     // junit-bom
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     // mockito
-    testImplementation(platform("org.mockito:mockito-bom:5.11.0"))
+    testImplementation(platform("org.mockito:mockito-bom:5.12.0"))
     // jackson2-bom
     api(platform("com.fasterxml.jackson:jackson-bom:2.17.1"))
     // rocketmq
     api(platform("org.apache.rocketmq:rocketmq-all:5.2.0"))
     // kotlin coroutines
-    api(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.8.0"))
+    api(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.8.1"))
     // prometheus
     api(platform("io.prometheus:simpleclient_bom:0.16.0"))
     // kotlin
@@ -34,7 +34,7 @@ dependencies {
         api("com.dslplatform:dsl-json-java8:1.10.0")
         api("com.jsoniter:jsoniter:0.9.23")
         api("com.aliyun.openservices:ons-client:2.0.7.Final")
-        val fastjson2Version = "2.0.49"
+        val fastjson2Version = "2.0.50"
         api("com.alibaba.fastjson2:fastjson2:$fastjson2Version")
         api("com.alibaba.fastjson2:fastjson2-kotlin:$fastjson2Version")
         val mongodbVersion = "5.1.0"
@@ -49,7 +49,7 @@ dependencies {
         implementation("org.jruby:jruby-core:$jrubyVersion")
         implementation("org.jruby:jruby-stdlib:$jrubyVersion")
         implementation("org.yaml:snakeyaml:2.2")
-        val prometheusVersion = "1.2.1"
+        val prometheusVersion = "1.3.1"
         api("io.prometheus:prometheus-metrics-core:$prometheusVersion")
         api("io.prometheus:prometheus-metrics-model:$prometheusVersion")
         api("io.prometheus:prometheus-metrics-tracer:$prometheusVersion")
