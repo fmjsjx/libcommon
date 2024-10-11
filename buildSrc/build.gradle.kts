@@ -10,9 +10,8 @@ repositories {
 }
 
 dependencies {
-    val kotlinVersion = "1.9.0"
-    implementation(plugin("org.jetbrains.kotlin.jvm", kotlinVersion))
-    implementation(plugin("org.jetbrains.kotlin.kapt", kotlinVersion))
+    implementation(plugin("org.jetbrains.kotlin.jvm"))
+    implementation(plugin("org.jetbrains.kotlin.kapt"))
 }
 
-fun plugin(id: String, version: String) = "$id:$id.gradle.plugin:$version"
+fun plugin(id: String, version: String = embeddedKotlinVersion) = "$id:$id.gradle.plugin:$version"
