@@ -12,6 +12,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -345,6 +350,134 @@ public class Fastjson2LibraryTests {
                         {"null":null,"string":"abc","short":123,"int":123456,"long":1234567890123,"double":123.456,"true":{"array":false,"bigDecimal":false,"bigInteger":false,"binary":false,"boolean":true,"containerNode":false,"double":false,"empty":true,"float":false,"floatingPointNumber":false,"int":false,"integralNumber":false,"long":false,"missingNode":false,"nodeType":"BOOLEAN","null":false,"number":false,"object":false,"pojo":false,"short":false,"textual":false,"valueNode":true},"false":{"array":false,"bigDecimal":false,"bigInteger":false,"binary":false,"boolean":true,"containerNode":false,"double":false,"empty":true,"float":false,"floatingPointNumber":false,"int":false,"integralNumber":false,"long":false,"missingNode":false,"nodeType":"BOOLEAN","null":false,"number":false,"object":false,"pojo":false,"short":false,"textual":false,"valueNode":true},"object":{"key":"value"},"array":[0]}""".getBytes(StandardCharsets.UTF_8),
                 Fastjson2Library.getInstance().dumpsToBytes(object)
         );
+    }
+
+    public static class FieldLocalDate {
+        private LocalDate field;
+
+        public LocalDate getField() {
+            return field;
+        }
+
+        public void setField(LocalDate field) {
+            this.field = field;
+        }
+
+        @Override
+        public String toString() {
+            return "FieldLocalDate{" +
+                    "field=" + getField() +
+                    '}';
+        }
+    }
+
+    @Test
+    public void testLocalDate() {
+        var obj = new FieldLocalDate();
+        obj.setField(LocalDate.now());
+        var json = "{\"field\":\"" + obj.getField().format(DateTimeFormatter.ISO_LOCAL_DATE) + "\"}";
+        assertNull(Fastjson2Library.getInstance().loads("{}", FieldLocalDate.class).field);
+        assertNull(Fastjson2Library.getInstance().loads("{\"field\":null}", FieldLocalDate.class).field);
+        assertEquals(obj.getField(), Fastjson2Library.getInstance().loads(json, FieldLocalDate.class).field);
+        assertEquals(json, Fastjson2Library.getInstance().dumpsToString(obj));
+        assertEquals("{}", Fastjson2Library.getInstance().dumpsToString(new FieldLocalDate()));
+        assertEquals(obj.getField(), JsoniterLibrary.getInstance().loads(json, FieldLocalDate.class).field);
+    }
+
+    public static class FieldLocalDateTime {
+        private LocalDateTime field;
+
+        public LocalDateTime getField() {
+            return field;
+        }
+
+        public void setField(LocalDateTime field) {
+            this.field = field;
+        }
+
+        @Override
+        public String toString() {
+            return "FieldLocalDateTime{" +
+                    "field=" + getField() +
+                    '}';
+        }
+    }
+
+    @Test
+    public void testLocalDateTime() {
+        var obj = new FieldLocalDateTime();
+        obj.setField(LocalDateTime.now());
+        var json = "{\"field\":\"" + obj.getField().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "\"}";
+        assertNull(Fastjson2Library.getInstance().loads("{}", FieldLocalDateTime.class).field);
+        assertNull(Fastjson2Library.getInstance().loads("{\"field\":null}", FieldLocalDateTime.class).field);
+        assertEquals(obj.getField(), Fastjson2Library.getInstance().loads(json, FieldLocalDateTime.class).field);
+        assertEquals(json, Fastjson2Library.getInstance().dumpsToString(obj));
+        assertEquals("{}", Fastjson2Library.getInstance().dumpsToString(new FieldLocalDateTime()));
+        assertEquals(obj.getField(), JsoniterLibrary.getInstance().loads(json, FieldLocalDateTime.class).field);
+    }
+
+    public static class FieldOffsetDateTime {
+        private OffsetDateTime field;
+
+        public OffsetDateTime getField() {
+            return field;
+        }
+
+        public void setField(OffsetDateTime field) {
+            this.field = field;
+        }
+
+        @Override
+        public String toString() {
+            return "FieldOffsetDateTime{" +
+                    "field=" + getField() +
+                    '}';
+        }
+    }
+
+    @Test
+    public void testOffsetDateTime() {
+        var obj = new FieldOffsetDateTime();
+        obj.setField(OffsetDateTime.now());
+        var json = "{\"field\":\"" + obj.getField().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + "\"}";
+        assertNull(Fastjson2Library.getInstance().loads("{}", FieldOffsetDateTime.class).field);
+        assertNull(Fastjson2Library.getInstance().loads("{\"field\":null}", FieldOffsetDateTime.class).field);
+        assertEquals(obj.getField(), Fastjson2Library.getInstance().loads(json, FieldOffsetDateTime.class).field);
+        assertEquals(json, Fastjson2Library.getInstance().dumpsToString(obj));
+        assertEquals("{}", Fastjson2Library.getInstance().dumpsToString(new FieldOffsetDateTime()));
+        assertEquals(obj.getField(), JsoniterLibrary.getInstance().loads(json, FieldOffsetDateTime.class).field);
+    }
+
+    public static class FieldZonedDateTime {
+        private ZonedDateTime field;
+
+        public ZonedDateTime getField() {
+            return field;
+        }
+
+        public void setField(ZonedDateTime field) {
+            this.field = field;
+        }
+
+        @Override
+        public String toString() {
+            return "FieldZonedDateTime{" +
+                    "field=" + getField() +
+                    '}';
+        }
+    }
+
+    @Test
+    public void testZonedDateTime() {
+        var obj = new FieldZonedDateTime();
+        obj.setField(ZonedDateTime.now());
+        var json = "{\"field\":\"" + obj.getField().format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + "\"}";
+        assertNull(Fastjson2Library.getInstance().loads("{}", FieldZonedDateTime.class).field);
+        assertNull(Fastjson2Library.getInstance().loads("{\"field\":null}", FieldZonedDateTime.class).field);
+        assertEquals(obj.getField(), Fastjson2Library.getInstance().loads(json, FieldZonedDateTime.class).field);
+        assertEquals(json, Fastjson2Library.getInstance().dumpsToString(obj));
+        assertEquals("{}", Fastjson2Library.getInstance().dumpsToString(new FieldZonedDateTime()));
+        assertEquals(obj.getField(), JsoniterLibrary.getInstance().loads(json, FieldZonedDateTime.class).field);
     }
 
 }
