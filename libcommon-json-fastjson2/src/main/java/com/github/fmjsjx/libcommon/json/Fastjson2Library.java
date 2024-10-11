@@ -13,6 +13,10 @@ import java.io.OutputStream;
 import java.io.Serial;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +36,7 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
         if (ReflectUtil.hasClassForName("com.github.fmjsjx.libcommon.json.Jackson2Library")) {
             registerJackson2Library();
         }
+        useISOFormatForDateTimeFields();
     }
 
     private static final void registerJsoniterAny() {
@@ -179,6 +184,42 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
         } catch (ClassNotFoundException e) {
             // skip
         }
+    }
+
+    private static final void useISOFormatForDateTimeFields() {
+        useISOFormatForLocalDateTimeFields();
+        useISOFormatForOffsetDateTimeFields();
+        useISOFormatForZonedDateTimeFields();
+    }
+
+    private static final void useISOFormatForLocalDateTimeFields() {
+        JSON.register(LocalDateTime.class, (jsonWriter, object, fieldName, fieldType, features) -> {
+            if (object == null) {
+                jsonWriter.writeNull();
+            } else {
+                jsonWriter.writeString(((LocalDateTime) object).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            }
+        });
+    }
+
+    private static final void useISOFormatForOffsetDateTimeFields() {
+        JSON.register(OffsetDateTime.class, (jsonWriter, object, fieldName, fieldType, features) -> {
+            if (object == null) {
+                jsonWriter.writeNull();
+            } else {
+                jsonWriter.writeString(((OffsetDateTime) object).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+            }
+        });
+    }
+
+    private static final void useISOFormatForZonedDateTimeFields() {
+        JSON.register(ZonedDateTime.class, (jsonWriter, object, fieldName, fieldType, features) -> {
+            if (object == null) {
+                jsonWriter.writeNull();
+            } else {
+                jsonWriter.writeString(((ZonedDateTime) object).format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+            }
+        });
     }
 
     /**
