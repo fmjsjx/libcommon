@@ -60,7 +60,8 @@ class BsonValueUtilTests {
     ) : BigInteger(v.toString()) {
         override fun toByte() = v.toByte()
 
-        override fun toChar() = v.toChar()
+        @Suppress("OVERRIDE_DEPRECATION")
+        override fun toChar() = v.toInt().toChar()
 
         override fun toShort() = v.toShort()
 
@@ -86,13 +87,13 @@ class BsonValueUtilTests {
             BsonDateTime(1234567890123),
             BsonValueUtil.encode(DateTimeUtil.ofEpochMilli(1234567890123).atOffset(ZoneOffset.ofHours(8)))
         )
-        DateUnit.values().forEach {
+        DateUnit.entries.forEach {
             assertEquals(it.toBsonString(), BsonValueUtil.encode(it))
         }
-        MetaDataKeyword.values().forEach {
+        MetaDataKeyword.entries.forEach {
             assertEquals(it.toBsonString(), BsonValueUtil.encode(it))
         }
-        BsonType.values().forEach {
+        BsonType.entries.forEach {
             assertEquals(BsonInt32(it.value), BsonValueUtil.encode(it))
         }
         assertEquals(BsonString("sun"), BsonValueUtil.encode(DayOfWeek.SUNDAY))
