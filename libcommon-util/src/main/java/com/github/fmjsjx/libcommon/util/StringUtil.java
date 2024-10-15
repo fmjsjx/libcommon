@@ -1,6 +1,5 @@
 package com.github.fmjsjx.libcommon.util;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -191,34 +190,7 @@ public class StringUtil {
      * @return the hex string
      */
     public static final String toHexString(byte[] value) {
-        if (value == null) {
-            return null;
-        }
-        if (value.length == 0) {
-            return "";
-        }
-        return toHexString0(value);
-    }
-
-    private static final String toHexString0(byte[] value) {
-        byte[] hexValue = new byte[value.length << 1];
-        toHexStringBytes0(value, hexValue, 0);
-        return new String(hexValue, StandardCharsets.US_ASCII);
-    }
-
-    private static final void toHexStringBytes0(byte[] src, byte[] dest, int offset) {
-        var digits = DigitsHolder.digits;
-        for (var i = 0; i < src.length; i++) {
-            byte b = src[i];
-            var index = i * 2;
-            dest[offset + index] = digits[(b >>> 0x4) & 0xf];
-            dest[offset + index + 1] = digits[b & 0xf];
-        }
-    }
-
-    static final class DigitsHolder {
-        static final byte[] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
-                'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+        return HexUtil.toHexString(value);
     }
 
     /**
@@ -228,7 +200,7 @@ public class StringUtil {
      * @param dest the destination byte array
      */
     public static final void toHexStringBytes(byte[] src, byte[] dest) {
-        toHexStringBytes(src, dest, 0);
+        HexUtil.toHexStringBytes(src, dest);
     }
 
     /**
@@ -239,12 +211,7 @@ public class StringUtil {
      * @param offset the offset in the destination byte array to start at
      */
     public static final void toHexStringBytes(byte[] src, byte[] dest, int offset) {
-        var remaining = dest.length - offset;
-        var need = src.length << 1;
-        if (remaining < need) {
-            throw new ArrayIndexOutOfBoundsException("remaining length must >= " + need + " but was " + remaining);
-        }
-        toHexStringBytes0(src, dest, offset);
+        HexUtil.toHexStringBytes(src, dest, offset);
     }
 
     /**
@@ -255,10 +222,7 @@ public class StringUtil {
      * @return the integer value represented by the argument in hex
      */
     public static final int parseIntHex(String value, int defaultValue) {
-        if (isEmpty(value)) {
-            return defaultValue;
-        }
-        return Integer.parseInt(value, 16);
+        return HexUtil.parseToInt(value, defaultValue);
     }
 
     /**
@@ -283,10 +247,7 @@ public class StringUtil {
      * @return the {@code long} represented by the argument in hex
      */
     public static final long parseLongHex(String value, long defaultValue) {
-        if (isEmpty(value)) {
-            return defaultValue;
-        }
-        return Long.parseLong(value);
+        return HexUtil.parseToLong(value, defaultValue);
     }
 
     /**
@@ -362,13 +323,7 @@ public class StringUtil {
      * @since 2.0
      */
     public static final boolean isEquals(String a, String b) {
-        if (a == null) {
-            return b == null;
-        }
-        if (b == null) {
-            return false;
-        }
-        return a.equals(b);
+        return ObjectUtil.isEquals(a, b);
     }
 
     /**

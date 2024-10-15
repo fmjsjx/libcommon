@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.fmjsjx.libcommon.util.DigestUtil.DigestAlgorithm;
 
-public class DigestUtilTtest {
+public class DigestUtilTests {
 
     @Test
     public void testMd5() {
