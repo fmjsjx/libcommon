@@ -67,16 +67,16 @@ java {
     withSourcesJar()
     withJavadocJar()
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(javaVersion))
+        languageVersion = JavaLanguageVersion.of(javaVersion)
     }
 }
 
-tasks.compileJava {
+tasks.withType<JavaCompile>() {
     options.encoding = "UTF-8"
-    options.release.set(javaVersion)
+    options.release = javaVersion
 }
 
-tasks.javadoc {
+tasks.withType<Javadoc>() {
     if (JavaVersion.current().isJava9Compatible) {
         (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
     }
