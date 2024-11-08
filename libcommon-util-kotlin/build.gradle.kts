@@ -1,5 +1,6 @@
 plugins {
     id("libcommon.java-library-conventions")
+    id("libcommon.kotlin-library-conventions")
     id("libcommon.publish-conventions")
 }
 
@@ -7,24 +8,25 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api")
 
-    api(project(":libcommon-function"))
+    api(project(":libcommon-util"))
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactive")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     testImplementation("org.apache.logging.log4j:log4j-slf4j-impl")
 
 }
 
-description = "libcommon/Util"
+description = "libcommon/Util Kotlin"
 
 tasks.test {
     // Use junit platform for unit tests.
     useJUnitPlatform()
-    jvmArgs = listOf(
-        "--add-opens", "java.base/java.util=ALL-UNNAMED",
-    )
 }
 
 publishing {
