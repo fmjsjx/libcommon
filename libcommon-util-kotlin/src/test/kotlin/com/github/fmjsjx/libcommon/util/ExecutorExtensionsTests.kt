@@ -58,7 +58,7 @@ class ExecutorExtensionsTests {
                 delay(1)
                 Thread.currentThread().name.substringBefore(" @")
             }
-            var threadName: String = ""
+            var threadName: String
             runBlocking {
                 threadName = deferred.await()
             }
