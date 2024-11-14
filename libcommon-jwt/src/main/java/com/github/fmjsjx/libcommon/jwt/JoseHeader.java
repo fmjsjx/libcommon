@@ -18,8 +18,8 @@ import java.util.OptionalLong;
 public interface JoseHeader extends JsonRepresented {
 
     /**
-     * Parse the JSON byte array to {@link JoseHeader} instance by using
-     * the default {@link JsonRepresentedFactory}.
+     * Parse the JSON byte array to a {@link JoseHeader} instance by
+     * using the default {@link JsonRepresentedFactory}.
      *
      * @param rawJson the raw JSON byte array
      * @return a {@code JoseHeader} instance
@@ -30,8 +30,8 @@ public interface JoseHeader extends JsonRepresented {
 
 
     /**
-     * Parse the JSON byte array to {@link JoseHeader} instance by using
-     * the specified {@link JsonRepresentedFactory}.
+     * Parse the JSON byte array to a {@link JoseHeader} instance by
+     * using the specified {@link JsonRepresentedFactory}.
      *
      * @param rawJson the raw JSON byte array
      * @param factory the {@link JsonRepresentedFactory}
@@ -39,6 +39,30 @@ public interface JoseHeader extends JsonRepresented {
      */
     static JoseHeader parse(byte[] rawJson, JsonRepresentedFactory<?> factory) {
         return DefaultJoseHeader.parse(rawJson, factory);
+    }
+
+    /**
+     * Parse the JSON byte array to a lazy parsed {@link JoseHeader}
+     * instance by using the default {@link JsonRepresentedFactory}.
+     *
+     * @param base64String the Base64url encoded string for JOSE header
+     * @return a {@code JoseHeader} instance
+     */
+    static JoseHeader parseLazy(String base64String) {
+        return parseLazy(base64String, Fastjson2JsonRepresented.getFactory());
+    }
+
+
+    /**
+     * Parse the JSON byte array to a lazy parsed {@link JoseHeader}
+     * instance by using the specified {@link JsonRepresentedFactory}.
+     *
+     * @param base64String the Base64url encoded string for JOSE header
+     * @param factory      the {@link JsonRepresentedFactory}
+     * @return a {@code JoseHeader} instance
+     */
+    static JoseHeader parseLazy(String base64String, JsonRepresentedFactory<?> factory) {
+        return new LazyParsedJoseHeader(base64String, factory);
     }
 
     /**

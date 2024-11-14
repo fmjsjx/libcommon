@@ -4,6 +4,7 @@ import static com.github.fmjsjx.libcommon.jwt.JoseHeaderNames.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.github.fmjsjx.libcommon.util.Base64Util;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,9 +24,17 @@ public class JoseHeaderTests {
         var result = mock(DefaultJoseHeader.class);
         when(DefaultJoseHeader.parse(any())).thenReturn(result);
         when(DefaultJoseHeader.parse(any(), any())).thenReturn(result);
-        var head = "{\"alg\":\"RS512\",\"typ\":\"JWT\",\"kid\":\"tY9fuGA5DXjEUObRLfngQ6eeZgeHr5_-9CKy7QBjEjc\"}".getBytes(StandardCharsets.UTF_8);
-        assertEquals(result, DefaultJoseHeader.parse(head));
-        assertEquals(result, DefaultJoseHeader.parse(head, mock()));
+        var rawJson = "{\"alg\":\"RS512\",\"typ\":\"JWT\",\"kid\":\"tY9fuGA5DXjEUObRLfngQ6eeZgeHr5_-9CKy7QBjEjc\"}".getBytes(StandardCharsets.UTF_8);
+        assertEquals(result, JoseHeader.parse(rawJson));
+        assertEquals(result, JoseHeader.parse(rawJson, mock()));
+    }
+
+    @Test
+    public void testParseLazy() {
+        var rawJson = "{\"alg\":\"RS512\",\"typ\":\"JWT\",\"kid\":\"tY9fuGA5DXjEUObRLfngQ6eeZgeHr5_-9CKy7QBjEjc\"}".getBytes(StandardCharsets.UTF_8);
+        var base64String = Base64Util.encoder(true, true).encodeToString(rawJson);
+        assertNotNull(JoseHeader.parseLazy(base64String));
+        assertNotNull(JoseHeader.parseLazy(base64String, mock()));
     }
 
     static JoseHeader mockHeader() {
