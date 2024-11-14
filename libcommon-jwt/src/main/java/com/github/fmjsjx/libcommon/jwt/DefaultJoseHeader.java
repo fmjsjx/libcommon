@@ -1,8 +1,7 @@
 package com.github.fmjsjx.libcommon.jwt;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
-import com.github.fmjsjx.libcommon.json.Fastjson2Library;
+import com.github.fmjsjx.libcommon.json.JsonException;
 import com.github.fmjsjx.libcommon.jwt.exception.IllegalJwtException;
 
 import java.nio.charset.StandardCharsets;
@@ -14,7 +13,7 @@ import java.util.*;
  * @author MJ Fang
  * @since 3.10
  */
-public class DefaultJoseHeader extends Fastjson2JsonRepresented implements JoseHeader {
+public class DefaultJoseHeader extends AbstractJsonRepresented implements JoseHeader {
 
     static {
         JSON.register(DefaultJoseHeader.class, (jsonWriter, object, fieldName, fieldType, features) -> {
@@ -27,23 +26,38 @@ public class DefaultJoseHeader extends Fastjson2JsonRepresented implements JoseH
     }
 
     /**
-     * Parse the JSON byte array to {@link DefaultJoseHeader}.
+     * Parse the JSON byte array to {@link DefaultJoseHeader} by using
+     * the default {@link JsonRepresentedFactory}.
      *
      * @param rawJson the raw JSON byte array
      * @return a {@code DefaultJoseHeader}
      */
     public static DefaultJoseHeader parse(byte[] rawJson) {
+        return parse(rawJson, Fastjson2JsonRepresented.getFactory());
+    }
+
+    /**
+     * Parse the JSON byte array to {@link DefaultJoseHeader} by using
+     * the specified {@link JsonRepresentedFactory}.
+     *
+     * @param rawJson the raw JSON byte array
+     * @param factory the {@link JsonRepresentedFactory}
+     * @return a {@code DefaultJoseHeader}
+     */
+    public static DefaultJoseHeader parse(byte[] rawJson, JsonRepresentedFactory<?> factory) {
         Objects.requireNonNull(rawJson, "rawJson must not be null");
+        Objects.requireNonNull(factory, "factory must not be null");
         try {
-            return new DefaultJoseHeader(rawJson, Fastjson2Library.getInstance().loads(rawJson));
-        } catch (Fastjson2Library.Fastjson2Exception e) {
+            return new DefaultJoseHeader(rawJson, factory.create(rawJson));
+        } catch (JsonException e) {
             throw new IllegalJwtException("Unable to parse JOSE header from JSON value: " +
                     new String(rawJson, StandardCharsets.UTF_8), e);
         }
+
     }
 
-    private DefaultJoseHeader(byte[] rawJson, JSONObject json) {
-        super(rawJson, json);
+    private DefaultJoseHeader(byte[] rawJson, JsonRepresented delegated) {
+        super(rawJson, delegated);
     }
 
 }

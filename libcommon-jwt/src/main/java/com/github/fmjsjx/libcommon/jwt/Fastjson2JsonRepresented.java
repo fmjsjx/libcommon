@@ -1,29 +1,37 @@
 package com.github.fmjsjx.libcommon.jwt;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.github.fmjsjx.libcommon.json.Fastjson2Library;
 
 import java.lang.reflect.Type;
-import java.util.List;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
+import java.util.*;
 
 /**
- * The abstract implementation of {@link JsonRepresented} using
- * {@code fastjson2}.
+ * The implementation of {@link JsonRepresented} using
+ * <a href="https://github.com/alibaba/fastjson2">fastjson2</a>
+ * {@link JSONObject}.
  *
  * @author MJ Fang
  * @since 3.10
  */
-public abstract class Fastjson2JsonRepresented implements JsonRepresented {
+public class Fastjson2JsonRepresented implements JsonRepresented {
 
-    protected final byte[] rawJson;
-    protected final JSONObject json;
-    protected transient String rawJsonString;
+    private static final JsonRepresentedFactory<Fastjson2JsonRepresented> FACTORY =
+            rawJson -> new Fastjson2JsonRepresented(Fastjson2Library.getInstance().loads(rawJson));
 
-    protected Fastjson2JsonRepresented(byte[] rawJson, JSONObject json) {
-        this.rawJson = rawJson;
-        this.json = json;
+    /**
+     * Returns the factory.
+     *
+     * @return the factory
+     */
+    public static JsonRepresentedFactory<Fastjson2JsonRepresented> getFactory() {
+        return FACTORY;
+    }
+
+    private final JSONObject json;
+
+    private Fastjson2JsonRepresented(JSONObject json) {
+        this.json = Objects.requireNonNull(json, "json must not be null");
     }
 
     @SuppressWarnings("unchecked")
@@ -84,25 +92,6 @@ public abstract class Fastjson2JsonRepresented implements JsonRepresented {
     @Override
     public <T> List<T> getList(String name, Class<T> elementType) {
         return json.getList(name, elementType);
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + rawJsonString() + ")";
-    }
-
-    protected String rawJsonString() {
-        //noinspection DuplicatedCode
-        var rawJsonString = this.rawJsonString;
-        if (rawJsonString == null) {
-            synchronized (this) {
-                rawJsonString = this.rawJsonString;
-                if (rawJsonString == null) {
-                    this.rawJsonString = rawJsonString = new String(rawJson);
-                }
-            }
-        }
-        return rawJsonString;
     }
 
 }

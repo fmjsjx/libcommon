@@ -3,6 +3,7 @@ package com.github.fmjsjx.libcommon.jwt;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.fmjsjx.libcommon.json.Fastjson2Library;
+import com.github.fmjsjx.libcommon.json.JsoniterLibrary;
 import com.github.fmjsjx.libcommon.jwt.exception.IllegalJwtException;
 import org.junit.jupiter.api.Test;
 
@@ -18,6 +19,8 @@ public class DefaultJoseHeaderTests {
     public void testParse() {
         var rawJson = "{\"alg\":\"RS512\",\"typ\":\"JWT\",\"kid\":\"tY9fuGA5DXjEUObRLfngQ6eeZgeHr5_-9CKy7QBjEjc\"}".getBytes(StandardCharsets.UTF_8);
         assertNotNull(DefaultJoseHeader.parse(rawJson));
+        assertNotNull(DefaultJoseHeader.parse(rawJson, Fastjson2JsonRepresented.getFactory()));
+        assertNotNull(DefaultJoseHeader.parse(rawJson, JsoniterJsonRepresented.getFactory()));
         try {
             DefaultJoseHeader.parse(Arrays.copyOf(rawJson, rawJson.length - 1));
             fail("Should throw IllegalJwtException");
@@ -29,6 +32,18 @@ public class DefaultJoseHeaderTests {
             fail("Should throw IllegalJwtException");
         } catch (IllegalJwtException e) {
             assertEquals(Fastjson2Library.Fastjson2Exception.class, e.getCause().getClass());
+        }
+        try {
+            DefaultJoseHeader.parse(Arrays.copyOf(rawJson, rawJson.length - 1), JsoniterJsonRepresented.getFactory());
+            fail("Should throw IllegalJwtException");
+        } catch (IllegalJwtException e) {
+            assertEquals(JsoniterLibrary.JsoniterException.class, e.getCause().getClass());
+        }
+        try {
+            DefaultJoseHeader.parse("[]".getBytes(), JsoniterJsonRepresented.getFactory());
+            fail("Should throw IllegalJwtException");
+        } catch (IllegalJwtException e) {
+            assertEquals(JsoniterLibrary.JsoniterException.class, e.getCause().getClass());
         }
     }
 
@@ -42,10 +57,10 @@ public class DefaultJoseHeaderTests {
     static DefaultJoseHeader create(String rawJsonString) {
         try {
             var rawJson = rawJsonString.getBytes(StandardCharsets.UTF_8);
-            var json = Fastjson2Library.getInstance().loads(rawJson);
+            var delegated = Fastjson2JsonRepresented.getFactory().create(rawJson);
             var constructor = DefaultJoseHeader.class.getDeclaredConstructors()[0];
             constructor.trySetAccessible();
-            return (DefaultJoseHeader) constructor.newInstance(rawJson, json);
+            return (DefaultJoseHeader) constructor.newInstance(rawJson, delegated);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -197,12 +212,6 @@ public class DefaultJoseHeaderTests {
         var header = create("{\"x5c\":[\"AA\",\"BB\",\"CC\"]}");
         assertArrayEquals(new String[]{"AA", "BB", "CC"}, header.getList("x5c", String.class).toArray(String[]::new));
         assertArrayEquals(new int[]{1, 2, 3}, create("{\"i\":[1,2,3]}").getList("i", Integer.class).stream().mapToInt(Integer::intValue).toArray());
-    }
-
-    @Test
-    public void testToString() {
-        assertEquals("DefaultJoseHeader({})", create("{}").toString());
-        assertEquals("DefaultJoseHeader({\"alg\":\"RS512\",\"typ\":\"JWT\",\"kid\":\"tY9fuGA5DXjEUObRLfngQ6eeZgeHr5_-9CKy7QBjEjc\"})", create("{\"alg\":\"RS512\",\"typ\":\"JWT\",\"kid\":\"tY9fuGA5DXjEUObRLfngQ6eeZgeHr5_-9CKy7QBjEjc\"}").toString());
     }
 
 }

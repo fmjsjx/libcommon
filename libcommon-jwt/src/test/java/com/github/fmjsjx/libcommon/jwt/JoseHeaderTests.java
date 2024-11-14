@@ -22,8 +22,10 @@ public class JoseHeaderTests {
         mockStatic(DefaultJoseHeader.class);
         var result = mock(DefaultJoseHeader.class);
         when(DefaultJoseHeader.parse(any())).thenReturn(result);
+        when(DefaultJoseHeader.parse(any(), any())).thenReturn(result);
         var head = "{\"alg\":\"RS512\",\"typ\":\"JWT\",\"kid\":\"tY9fuGA5DXjEUObRLfngQ6eeZgeHr5_-9CKy7QBjEjc\"}".getBytes(StandardCharsets.UTF_8);
         assertEquals(result, DefaultJoseHeader.parse(head));
+        assertEquals(result, DefaultJoseHeader.parse(head, mock()));
     }
 
     static JoseHeader mockHeader() {

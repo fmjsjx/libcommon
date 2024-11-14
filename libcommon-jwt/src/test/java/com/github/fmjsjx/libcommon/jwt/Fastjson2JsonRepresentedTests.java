@@ -1,97 +1,40 @@
 package com.github.fmjsjx.libcommon.jwt;
 
+import static com.github.fmjsjx.libcommon.jwt.DefaultJwtClaimsSetTests.EMPTY_JSON;
+import static com.github.fmjsjx.libcommon.jwt.DefaultJwtClaimsSetTests.TEST_RAW_JSON;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.github.fmjsjx.libcommon.json.Fastjson2Library;
-import com.github.fmjsjx.libcommon.jwt.exception.IllegalJwtException;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 
-public class DefaultJwtClaimsSetTests {
+public class Fastjson2JsonRepresentedTests {
 
-    static final byte[] EMPTY_JSON = "{}".getBytes();
-    static final byte[] TEST_RAW_JSON = "{\"exp\":1731574512,\"iat\":1731488112,\"jti\":\"2b62d6eb-2c78-45eb-ace4-e9b7906baa44\",\"iss\":\"https://dev-keycloak.hihcpss.cn/auth/realms/hiscene-dev\",\"sub\":\"f:2bee04c9-8e6f-4e03-9293-35c3a2b2b290:70951\",\"typ\":\"Bearer\",\"azp\":\"hi-enterprise-plat\",\"session_state\":\"2f731bec-4b39-4111-8e22-31aa3169b9e9\",\"acr\":\"1\",\"scope\":\"userinfo\",\"sid\":\"2f731bec-4b39-4111-8e22-31aa3169b9e9\",\"user_id\":\"70951\",\"nickname\":\"方敏杰\",\"picture\":\"http://192.168.24.66:32355/1/Xj0wDa.jpg\"}".getBytes(StandardCharsets.UTF_8);
+    static Fastjson2JsonRepresented createEmpty() {
+        return createTest(Fastjson2Library.getInstance().loads(EMPTY_JSON));
+    }
 
-    @Test
-    public void testParse() {
-        assertNotNull(DefaultJwtClaimsSet.parse(TEST_RAW_JSON));
+    static Fastjson2JsonRepresented createTest() {
+        return createTest(Fastjson2Library.getInstance().loads(TEST_RAW_JSON));
+    }
+
+    static Fastjson2JsonRepresented createTest(String jsonString) {
+        return createTest(Fastjson2Library.getInstance().loads(jsonString));
+    }
+
+    static Fastjson2JsonRepresented createTest(JSONObject json) {
+        var constructor = Fastjson2JsonRepresented.class.getDeclaredConstructors()[0];
+        constructor.setAccessible(true);
         try {
-            DefaultJwtClaimsSet.parse(Arrays.copyOf(TEST_RAW_JSON, TEST_RAW_JSON.length - 1));
-            fail("Should throw IllegalJwtException");
-        } catch (IllegalJwtException e) {
-            assertEquals(Fastjson2Library.Fastjson2Exception.class, e.getCause().getClass());
+            return (Fastjson2JsonRepresented) constructor.newInstance(json);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        try {
-            DefaultJwtClaimsSet.parse("[]".getBytes());
-            fail("Should throw IllegalJwtException");
-        } catch (IllegalJwtException e) {
-            assertEquals(Fastjson2Library.Fastjson2Exception.class, e.getCause().getClass());
-        }
-    }
-
-    @Test
-    public void testToJson() {
-        var claimsSet = DefaultJwtClaimsSet.parse(TEST_RAW_JSON);
-        assertArrayEquals(TEST_RAW_JSON, Fastjson2Library.getInstance().dumpsToBytes(claimsSet));
-    }
-
-    static DefaultJwtClaimsSet createEmpty() {
-        return DefaultJwtClaimsSet.parse(EMPTY_JSON);
-    }
-
-    static DefaultJwtClaimsSet createTest() {
-        return DefaultJwtClaimsSet.parse(TEST_RAW_JSON);
-    }
-
-    static DefaultJwtClaimsSet createTest(String jsonString) {
-        return DefaultJwtClaimsSet.parse(jsonString.getBytes(StandardCharsets.UTF_8));
-    }
-
-    @Test
-    public void testGetIssuer() {
-        assertNull(createEmpty().getIssuer());
-        assertEquals("https://dev-keycloak.hihcpss.cn/auth/realms/hiscene-dev", createTest().getIssuer());
-    }
-
-    @Test
-    public void testGetSubject() {
-        assertNull(createEmpty().getSubject());
-        assertEquals("f:2bee04c9-8e6f-4e03-9293-35c3a2b2b290:70951", createTest().getSubject());
-    }
-
-    @Test
-    public void testGetAudience() {
-        assertNull(createTest().getAudience());
-        assertEquals("audience", createTest("{\"aud\":\"audience\"}").getAudience());
-    }
-
-    @Test
-    public void testGetExpirationTime() {
-        assertFalse(createEmpty().getExpirationTime().isPresent());
-        assertEquals(1731574512L, createTest().getExpirationTime().orElse(-1));
-    }
-
-    @Test
-    public void testGetNotBefore() {
-        assertFalse(createTest().getNotBefore().isPresent());
-        assertEquals(1731488112L, createTest("{\"nbf\":1731488112}").getNotBefore().orElse(-1));
-    }
-
-    @Test
-    public void testGetIssuedAt() {
-        assertFalse(createEmpty().getIssuedAt().isPresent());
-        assertEquals(1731488112L, createTest().getIssuedAt().orElse(-1));
-    }
-
-    @Test
-    public void testGetJwtId() {
-        assertNull(createEmpty().getJwtId());
-        assertEquals("2b62d6eb-2c78-45eb-ace4-e9b7906baa44", createTest().getJwtId());
     }
 
     @Test

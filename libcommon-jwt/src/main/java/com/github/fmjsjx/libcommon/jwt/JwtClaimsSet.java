@@ -17,13 +17,25 @@ import java.util.OptionalLong;
 public interface JwtClaimsSet extends JsonRepresented {
 
     /**
-     * Parse the JSON byte array to {@link JwtClaimsSet} instance.
+     * Parse the JSON byte array to {@link JwtClaimsSet} instance by
+     * using the default {@link JsonRepresentedFactory}.
      *
      * @param rawJson the raw JSON byte array
      * @return a {@code JwtClaimsSet} instance
      */
     static JwtClaimsSet parse(byte[] rawJson) {
         return DefaultJwtClaimsSet.parse(rawJson);
+    }
+    /**
+     * Parse the JSON byte array to {@link JwtClaimsSet} instance by
+     * using the specified {@link JsonRepresentedFactory}.
+     *
+     * @param rawJson the raw JSON byte array
+     * @param factory the {@link JsonRepresentedFactory}
+     * @return a {@code JwtClaimsSet} instance
+     */
+    static JwtClaimsSet parse(byte[] rawJson, JsonRepresentedFactory<?> factory) {
+        return DefaultJwtClaimsSet.parse(rawJson, factory);
     }
 
     /**

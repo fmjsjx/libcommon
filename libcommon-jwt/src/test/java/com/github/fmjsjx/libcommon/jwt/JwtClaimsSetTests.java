@@ -25,7 +25,9 @@ public class JwtClaimsSetTests {
         mockStatic(DefaultJwtClaimsSet.class);
         var result = mock(DefaultJwtClaimsSet.class);
         when(DefaultJwtClaimsSet.parse(any())).thenReturn(result);
+        when(DefaultJwtClaimsSet.parse(any(), any())).thenReturn(result);
         assertEquals(result, JwtClaimsSet.parse(TEST_RAW_JSON));
+        assertEquals(result, JwtClaimsSet.parse(TEST_RAW_JSON, mock()));
     }
 
     static JwtClaimsSet mockClaimsSet() {

@@ -18,13 +18,27 @@ import java.util.OptionalLong;
 public interface JoseHeader extends JsonRepresented {
 
     /**
-     * Parse the JSON byte array to {@link JoseHeader} instance.
+     * Parse the JSON byte array to {@link JoseHeader} instance by using
+     * the default {@link JsonRepresentedFactory}.
      *
      * @param rawJson the raw JSON byte array
      * @return a {@code JoseHeader} instance
      */
     static JoseHeader parse(byte[] rawJson) {
         return DefaultJoseHeader.parse(rawJson);
+    }
+
+
+    /**
+     * Parse the JSON byte array to {@link JoseHeader} instance by using
+     * the specified {@link JsonRepresentedFactory}.
+     *
+     * @param rawJson the raw JSON byte array
+     * @param factory the {@link JsonRepresentedFactory}
+     * @return a {@code JoseHeader} instance
+     */
+    static JoseHeader parse(byte[] rawJson, JsonRepresentedFactory<?> factory) {
+        return DefaultJoseHeader.parse(rawJson, factory);
     }
 
     /**
