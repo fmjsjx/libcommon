@@ -8,12 +8,8 @@ import javax.crypto.Mac;
  * @author MJ Fang
  * @since 3.10
  */
-class MacCryptoAlgorithm implements JwsCryptoAlgorithm {
+final class MacCryptoAlgorithm extends AbstractCryptoAlgorithm implements JwsCryptoAlgorithm {
 
-    private final String name;
-    private final String description;
-    private final String jcaName;
-    private final boolean jdkStandard;
     private final MacProvider macProvider;
 
     /**
@@ -26,7 +22,7 @@ class MacCryptoAlgorithm implements JwsCryptoAlgorithm {
      * @param jdkStandard weather the algorithm is supported by standard
      *                    JDK distributions or not
      */
-    public MacCryptoAlgorithm(String name, String description, String jcaName, boolean jdkStandard) {
+    MacCryptoAlgorithm(String name, String description, String jcaName, boolean jdkStandard) {
         this(name, description, jcaName, jdkStandard, new MacProviderImpl(jcaName));
     }
 
@@ -41,36 +37,13 @@ class MacCryptoAlgorithm implements JwsCryptoAlgorithm {
      *                    JDK distributions or not
      * @param macProvider the {@link MacProvider}
      */
-    protected MacCryptoAlgorithm(String name, String description, String jcaName, boolean jdkStandard, MacProvider macProvider) {
-        this.name = name;
-        this.description = description;
-        this.jcaName = jcaName;
-        this.jdkStandard = jdkStandard;
+    MacCryptoAlgorithm(String name, String description, String jcaName, boolean jdkStandard, MacProvider macProvider) {
+        super(name, description, jcaName, jdkStandard);
         this.macProvider = macProvider;
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public String getJcaName() {
-        return jcaName;
-    }
-
-    @Override
-    public boolean isJdkStandard() {
-        return jdkStandard;
-    }
-
-    @Override
-    public final boolean isMac() {
+    public boolean isMac() {
         return true;
     }
 
