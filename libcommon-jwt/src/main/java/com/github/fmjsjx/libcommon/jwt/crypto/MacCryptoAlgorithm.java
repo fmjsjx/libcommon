@@ -8,7 +8,7 @@ import javax.crypto.Mac;
  * @author MJ Fang
  * @since 3.10
  */
-public class MacCryptoAlgorithm implements JwsCryptoAlgorithm {
+class MacCryptoAlgorithm implements JwsCryptoAlgorithm {
 
     private final String name;
     private final String description;
@@ -79,9 +79,6 @@ public class MacCryptoAlgorithm implements JwsCryptoAlgorithm {
         return macProvider;
     }
 
-    private record MacProviderImpl(String algorithm) implements MacProvider {
-    }
-
     @Override
     public String toString() {
         return "MacCryptoAlgorithm(" +
@@ -92,4 +89,25 @@ public class MacCryptoAlgorithm implements JwsCryptoAlgorithm {
                 ", macProvider" + getMacProvider() +
                 ")";
     }
+
+    private static final class MacProviderImpl implements MacProvider {
+
+        private final String algorithm;
+
+        private MacProviderImpl(String algorithm) {
+            this.algorithm = algorithm;
+        }
+
+        @Override
+        public String getAlgorithm() {
+            return algorithm;
+        }
+
+        @Override
+        public String toString() {
+            return "MacProviderImpl(algorithm=" + getAlgorithm() + ")";
+        }
+
+    }
+
 }

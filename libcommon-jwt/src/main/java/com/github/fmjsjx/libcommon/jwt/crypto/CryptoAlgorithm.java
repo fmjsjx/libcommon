@@ -23,6 +23,18 @@ public interface CryptoAlgorithm {
     }
 
     /**
+     * Returns the {@link CryptoAlgorithm} instance with the specified JCA name given.
+     *
+     * @param jcaName the name of the JCA algorithm
+     * @return the specified {@code CryptoAlgorithm} instance
+     * @throws UnsupportedAlgorithmException if the algorithm is still unsupported
+     */
+    static CryptoAlgorithm getInstanceByJcaName(String jcaName) throws UnsupportedAlgorithmException {
+        return CryptoAlgorithms.findAlgorithmByJcaName(jcaName)
+                .orElseThrow(() -> new UnsupportedAlgorithmException("Unsupported algorithm with JCA name `" + jcaName + "`"));
+    }
+
+    /**
      * Returns the name of the JWA algorithm.
      *
      * @return the name of the JWA algorithm

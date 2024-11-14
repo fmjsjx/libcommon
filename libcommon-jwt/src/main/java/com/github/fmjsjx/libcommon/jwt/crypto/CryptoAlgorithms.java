@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentMap;
 public final class CryptoAlgorithms {
 
     private static final ConcurrentMap<String, CryptoAlgorithm> ALGORITHMS = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, CryptoAlgorithm> JCA_ALGORITHMS = new ConcurrentHashMap<>();
 
     static {
         // Register for JWS
@@ -32,6 +33,17 @@ public final class CryptoAlgorithms {
     }
 
     /**
+     * Find the {@link CryptoAlgorithm} with the specified JCA name given
+     * from all registered Algorithms.
+     *
+     * @param jcaName the name of the JCA algorithm
+     * @return an {@code Optional<CryptoAlgorithm>}
+     */
+    static Optional<CryptoAlgorithm> findAlgorithmByJcaName(String jcaName) {
+        return Optional.ofNullable(JCA_ALGORITHMS.get(jcaName));
+    }
+
+    /**
      * Register the specified {@link CryptoAlgorithm}.
      *
      * @param algorithm the {@link CryptoAlgorithm} instance to be
@@ -40,7 +52,34 @@ public final class CryptoAlgorithms {
      * if there was no algorithm for the same name
      */
     public static CryptoAlgorithm registerAlgorithm(CryptoAlgorithm algorithm) {
+        JCA_ALGORITHMS.put(algorithm.getJcaName(), algorithm);
         return ALGORITHMS.put(algorithm.getName(), algorithm);
+    }
+
+    /**
+     * Constants for all embedded algorithms in JWA (RFC 7518) standard
+     * <a href="https://www.rfc-editor.org/rfc/rfc7518.html#section-3">
+     * Cryptographic Algorithms for Digital Signatures and MACs
+     * </a>
+     */
+    public static final class JWSs {
+
+        /**
+         * HMAC using SHA-256
+         */
+        public static JwsCryptoAlgorithm HS256 = JwsCryptoAlgorithms.HS256;
+        /**
+         * HMAC using SHA-384
+         */
+        public static JwsCryptoAlgorithm HS384 = JwsCryptoAlgorithms.HS384;
+        /**
+         * HMAC using SHA-512
+         */
+        public static JwsCryptoAlgorithm HS512 = JwsCryptoAlgorithms.HS512;
+
+        private JWSs() {
+        }
+
     }
 
     private CryptoAlgorithms() {

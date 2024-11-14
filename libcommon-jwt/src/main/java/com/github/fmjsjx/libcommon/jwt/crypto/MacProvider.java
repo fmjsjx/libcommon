@@ -20,7 +20,7 @@ public interface MacProvider {
      *
      * @return the name of the MAC algorithm
      */
-    String algorithm();
+    String getAlgorithm();
 
     /**
      * Constructs a secret key from the given byte array.
@@ -29,7 +29,7 @@ public interface MacProvider {
      * @return a {@link SecretKey}
      */
     default SecretKey getSecretKey(byte[] keyBytes) {
-        return new SecretKeySpec(keyBytes, algorithm());
+        return new SecretKeySpec(keyBytes, getAlgorithm());
     }
 
     /**
@@ -45,7 +45,7 @@ public interface MacProvider {
      *                                  for initializing the MAC
      */
     default Mac getInstance(Key key) throws NoSuchAlgorithmException, InvalidKeyException {
-        var mac = Mac.getInstance(algorithm());
+        var mac = Mac.getInstance(getAlgorithm());
         mac.init(key);
         return mac;
     }
