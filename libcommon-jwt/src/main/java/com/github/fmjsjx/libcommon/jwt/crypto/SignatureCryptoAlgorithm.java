@@ -51,7 +51,43 @@ final class SignatureCryptoAlgorithm extends AbstractCryptoAlgorithm implements 
         return signatureProvider;
     }
 
-    private static class RsaSignatureProvider implements SignatureProvider {
+    private static abstract class ThreadLocalSignatureProvider implements SignatureProvider {
+
+        protected final EasyThreadLocal<Signature> threadLocalSignature = EasyThreadLocal.create(() -> {
+            try {
+                return getInstance();
+            } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        @Override
+        public boolean verify(PublicKey publicKey, byte[] data, byte[] signature) throws NoSuchAlgorithmException,
+                InvalidAlgorithmParameterException, InvalidKeyException, SignatureException {
+            var sig = getThreadLocalSignature();
+            sig.initVerify(publicKey);
+            sig.update(data);
+            return sig.verify(signature);
+        }
+
+        protected Signature getThreadLocalSignature() throws NoSuchAlgorithmException,
+                InvalidAlgorithmParameterException {
+            try {
+                return threadLocalSignature.get();
+            } catch (RuntimeException e) {
+                if (e.getCause() != null) {
+                    if (e.getCause() instanceof NoSuchAlgorithmException nsa) {
+                        throw nsa;
+                    } else if (e.getCause() instanceof InvalidAlgorithmParameterException iap) {
+                        throw iap;
+                    }
+                }
+                throw e;
+            }
+        }
+    }
+
+    private static class RsaSignatureProvider extends ThreadLocalSignatureProvider implements SignatureProvider {
 
         private static final KeyFactory RSA_KEY_FACTORY;
 
@@ -64,18 +100,10 @@ final class SignatureCryptoAlgorithm extends AbstractCryptoAlgorithm implements 
         }
 
         private final String algorithm;
-        private final EasyThreadLocal<Signature> threadLocalSignature = EasyThreadLocal.create(() -> {
-            try {
-                return SignatureProvider.super.getInstance();
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            }
-        });
 
         private RsaSignatureProvider(String algorithm) {
             this.algorithm = algorithm;
         }
-
 
         @Override
         public String getAlgorithm() {
@@ -87,22 +115,10 @@ final class SignatureCryptoAlgorithm extends AbstractCryptoAlgorithm implements 
             return RSA_KEY_FACTORY;
         }
 
-        @Override
-        public Signature getInstance() throws NoSuchAlgorithmException {
-            try {
-                return threadLocalSignature.get();
-            } catch (RuntimeException e) {
-                if (e.getCause() != null && e.getCause() instanceof NoSuchAlgorithmException nsa) {
-                    throw nsa;
-                }
-                throw e;
-            }
-        }
-
     }
 
 
-    private static class PssSignatureProvider implements SignatureProvider {
+    private static class PssSignatureProvider extends ThreadLocalSignatureProvider implements SignatureProvider {
 
         private static final String ALGORITHM = "RSASSA-PSS";
 
@@ -117,16 +133,6 @@ final class SignatureCryptoAlgorithm extends AbstractCryptoAlgorithm implements 
         }
 
         private final PSSParameterSpec parameterSpec;
-
-        private final EasyThreadLocal<Signature> threadLocalSignature = EasyThreadLocal.create(() -> {
-            try {
-                var signature = SignatureProvider.super.getInstance();
-                signature.setParameter(getParameterSpec());
-                return signature;
-            } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
-                throw new RuntimeException(e);
-            }
-        });
 
         private PssSignatureProvider(int digestBitLength) {
             var mdName = "SHA-" + digestBitLength;
@@ -148,17 +154,10 @@ final class SignatureCryptoAlgorithm extends AbstractCryptoAlgorithm implements 
         }
 
         @Override
-        public Signature getInstance() throws NoSuchAlgorithmException {
-            try {
-                return threadLocalSignature.get();
-            } catch (RuntimeException e) {
-                if (e.getCause() != null) {
-                    if (e.getCause() instanceof NoSuchAlgorithmException nsa) {
-                        throw nsa;
-                    }
-                }
-                throw e;
-            }
+        public Signature getInstance() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+            var signature = super.getInstance();
+            signature.setParameter(getParameterSpec());
+            return signature;
         }
 
     }

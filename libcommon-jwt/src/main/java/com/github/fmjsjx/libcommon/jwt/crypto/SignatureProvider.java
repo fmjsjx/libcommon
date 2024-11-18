@@ -53,12 +53,17 @@ public interface SignatureProvider extends SecureProvider {
      * algorithm.
      *
      * @return a {@link Signature}
-     * @throws NoSuchAlgorithmException if no {@code Provider} supports a
-     *                                  {@code KeyFactorySpi}
-     *                                  implementation for the specified
-     *                                  algorithm
+     * @throws NoSuchAlgorithmException           if no {@code Provider}
+     *                                            supports a
+     *                                            {@code KeyFactorySpi}
+     *                                            implementation for the
+     *                                            specified algorithm
+     * @throws InvalidAlgorithmParameterException if the given parameters
+     *                                            are inappropriate for
+     *                                            this signature engine
      */
-    default Signature getInstance() throws NoSuchAlgorithmException {
+    default Signature getInstance() throws NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException {
         return Signature.getInstance(getAlgorithm());
     }
 
@@ -74,9 +79,13 @@ public interface SignatureProvider extends SecureProvider {
      *                                  {@code KeyFactorySpi}
      *                                  implementation for the specified
      *                                  algorithm
+     * @throws InvalidAlgorithmParameterException if the given parameters
+     *                                            are inappropriate for
+     *                                            this signature engine
      * @throws InvalidKeyException      if the key is invalid
      */
-    default Signature getInstance(PublicKey publicKey) throws NoSuchAlgorithmException, InvalidKeyException {
+    default Signature getInstance(PublicKey publicKey) throws NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, InvalidKeyException {
         var signature = getInstance();
         signature.initVerify(publicKey);
         return signature;
@@ -95,9 +104,13 @@ public interface SignatureProvider extends SecureProvider {
      *                                  {@code KeyFactorySpi}
      *                                  implementation for the specified
      *                                  algorithm
+     * @throws InvalidAlgorithmParameterException if the given parameters
+     *                                            are inappropriate for
+     *                                            this signature engine
      * @throws InvalidKeyException      if the key is invalid
      */
-    default Signature getInstance(PrivateKey privateKey) throws NoSuchAlgorithmException, InvalidKeyException {
+    default Signature getInstance(PrivateKey privateKey) throws NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, InvalidKeyException {
         var signature = getInstance();
         signature.initSign(privateKey);
         return signature;
@@ -116,6 +129,9 @@ public interface SignatureProvider extends SecureProvider {
      *                                  {@code KeyFactorySpi}
      *                                  implementation for the specified
      *                                  algorithm
+     * @throws InvalidAlgorithmParameterException if the given parameters
+     *                                            are inappropriate for
+     *                                            this signature engine
      * @throws InvalidKeyException      if the key is invalid
      * @throws SignatureException       if this signature object is not
      *                                  initialized properly, the
@@ -125,7 +141,8 @@ public interface SignatureProvider extends SecureProvider {
      *                                  is unable to process the input
      *                                  data provided, etc
      */
-    default boolean verify(PublicKey publicKey, byte[] data, byte[] signature) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    default boolean verify(PublicKey publicKey, byte[] data, byte[] signature) throws NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, InvalidKeyException, SignatureException {
         var sig = getInstance(publicKey);
         sig.update(data);
         return sig.verify(signature);
