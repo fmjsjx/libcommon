@@ -85,6 +85,15 @@ final class SignatureCryptoAlgorithm extends AbstractCryptoAlgorithm implements 
                 throw e;
             }
         }
+
+        @Override
+        public byte[] sign(PrivateKey privateKey, byte[] data) throws NoSuchAlgorithmException,
+                InvalidAlgorithmParameterException, InvalidKeyException, SignatureException {
+            var sig = getThreadLocalSignature();
+            sig.initSign(privateKey);
+            sig.update(data);
+            return sig.sign();
+        }
     }
 
     private static class RsaSignatureProvider extends ThreadLocalSignatureProvider implements SignatureProvider {
