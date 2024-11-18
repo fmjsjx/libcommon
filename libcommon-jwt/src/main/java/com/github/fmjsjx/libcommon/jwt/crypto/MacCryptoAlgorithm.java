@@ -10,6 +10,16 @@ import javax.crypto.Mac;
  */
 final class MacCryptoAlgorithm extends AbstractCryptoAlgorithm implements JwsCryptoAlgorithm {
 
+    /**
+     * Creates and returns a new {@link MacCryptoAlgorithm} instance with "HMAC using SHA" algorithm.
+     *
+     * @param digestBitLength the digest bit length
+     * @return the {@code MacCryptoAlgorithm} instance
+     */
+    static MacCryptoAlgorithm createHS(int digestBitLength) {
+        return new MacCryptoAlgorithm("HS" + digestBitLength, "HMAC using SHA-" + digestBitLength, "HmacSHA" + digestBitLength, true);
+    }
+
     private final MacProvider macProvider;
 
     /**

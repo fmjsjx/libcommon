@@ -13,13 +13,14 @@ import java.security.NoSuchAlgorithmException;
  * @author MJ Fang
  * @since 3.10
  */
-public interface MacProvider {
+public interface MacProvider extends SecureProvider {
 
     /**
      * Returns the name of the MAC algorithm.
      *
      * @return the name of the MAC algorithm
      */
+    @Override
     String getAlgorithm();
 
     /**

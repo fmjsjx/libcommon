@@ -20,6 +20,15 @@ public interface JwsCryptoAlgorithm extends CryptoAlgorithm {
     boolean isMac();
 
     /**
+     * Returns the provider.
+     *
+     * @return the {@link SecureProvider}
+     */
+    default SecureProvider getProvider() {
+        return isMac() ? getMacProvider() : getSignatureProvider();
+    }
+
+    /**
      * Returns the {@link MacProvider}.
      * <p>
      * This method will always return {@code null} when {@link #isMac()}
@@ -27,6 +36,20 @@ public interface JwsCryptoAlgorithm extends CryptoAlgorithm {
      *
      * @return the {@code MacProvider} instance
      */
-    MacProvider getMacProvider();
+    default MacProvider getMacProvider() {
+        return null;
+    }
+
+    /**
+     * Returns the {@link SignatureProvider}.
+     * <p>
+     * This method will always return {@code null} when {@link #isMac()}
+     * returns {@code true}.
+     *
+     * @return the {@code SignatureProvider} instance
+     */
+    default SignatureProvider getSignatureProvider() {
+        return null;
+    }
 
 }

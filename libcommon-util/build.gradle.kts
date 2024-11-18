@@ -8,6 +8,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
 
     api(project(":libcommon-function"))
+    compileOnly("io.netty:netty-common")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

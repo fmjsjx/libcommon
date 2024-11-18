@@ -20,6 +20,18 @@ public final class CryptoAlgorithmNames {
      * {@code "HS512"}
      */
     public static final String HS512 = "HS512";
+    /**
+     * {@code "RS256"}
+     */
+    public static final String RS256 = "RS256";
+    /**
+     * {@code "RS384"}
+     */
+    public static final String RS384 = "RS384";
+    /**
+     * {@code "RS512"}
+     */
+    public static final String RS512 = "RS512";
 
     private CryptoAlgorithmNames() {
     }
