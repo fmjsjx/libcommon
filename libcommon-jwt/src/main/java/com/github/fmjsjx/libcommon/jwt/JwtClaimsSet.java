@@ -26,6 +26,7 @@ public interface JwtClaimsSet extends JsonRepresented {
     static JwtClaimsSet parse(byte[] rawJson) {
         return DefaultJwtClaimsSet.parse(rawJson);
     }
+
     /**
      * Parse the JSON byte array to {@link JwtClaimsSet} instance by
      * using the specified {@link JsonRepresentedFactory}.
