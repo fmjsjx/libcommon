@@ -7,27 +7,27 @@ import com.github.fmjsjx.libcommon.jwt.exception.SecurityException;
 import com.github.fmjsjx.libcommon.util.concurrent.EasyThreadLocal;
 
 import javax.crypto.Mac;
-import javax.crypto.SecretKey;
+import java.security.Key;
 
 class SimpleMacJwtParser extends AbstractJwtParser {
 
     private final JwsCryptoAlgorithm algorithm;
-    private final SecretKey secretKey;
+    private final Key key;
 
     private final EasyThreadLocal<Mac> threadLocalMac;
 
-    SimpleMacJwtParser(JwsCryptoAlgorithm algorithm, SecretKey secretKey,
+    SimpleMacJwtParser(JwsCryptoAlgorithm algorithm, Key key,
                        JsonRepresentedFactory<?> jsonRepresentedFactory, boolean allowExpired,
                        long allowedClockSkewSeconds) {
         super(jsonRepresentedFactory, allowExpired, allowedClockSkewSeconds);
         this.algorithm = algorithm;
-        this.secretKey = secretKey;
+        this.key = key;
         this.threadLocalMac = EasyThreadLocal.create(this::getMacInstance);
     }
 
     private Mac getMacInstance() {
         try {
-            return algorithm.getMacProvider().getInstance(secretKey);
+            return algorithm.getMacProvider().getInstance(key);
         } catch (Exception e) {
             throw new SecurityException("Initialize Mac instance failed", e);
         }

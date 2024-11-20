@@ -2,10 +2,8 @@ package com.github.fmjsjx.libcommon.jwt;
 
 import com.github.fmjsjx.libcommon.jwt.crypto.CryptoAlgorithm;
 import com.github.fmjsjx.libcommon.jwt.crypto.JwsCryptoAlgorithm;
-import com.github.fmjsjx.libcommon.jwt.exception.InvalidKeyException;
 import com.github.fmjsjx.libcommon.jwt.exception.JwtException;
 
-import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Objects;
 
@@ -38,19 +36,18 @@ public interface JwtParser {
      */
     final class Builder {
 
-        private CryptoAlgorithm singleAlgorithm;
-        private Key singleKey;
         private JsonRepresentedFactory<?> jsonRepresentedFactory;
         private boolean allowExpired;
         private long allowedClockSkewSeconds;
 
-        public Builder algorithm(CryptoAlgorithm singleAlgorithm) {
-            this.singleAlgorithm = singleAlgorithm;
-            return this;
-        }
+        private boolean simpleMode;
+        private CryptoAlgorithm singleAlgorithm;
+        private Key singleKey;
 
-        public Builder key(Key singleKey) {
-            this.singleKey = singleKey;
+        public Builder simple(CryptoAlgorithm algorithm, Key key) {
+            simpleMode = true;
+            singleAlgorithm = Objects.requireNonNull(algorithm, "algorithm must not be null");
+            singleKey = Objects.requireNonNull(key, "key must not be null");
             return this;
         }
 
@@ -82,29 +79,13 @@ public interface JwtParser {
         }
 
         public JwtParser build() {
-
-            var singleKey = this.singleKey;
-            var singleAlgorithm = this.singleAlgorithm;
-            if (singleKey != null) {
-                if (singleAlgorithm != null) {
-                    // now only support JWS
-                    var algorithm = (JwsCryptoAlgorithm) singleAlgorithm;
-                    if (algorithm.isMac()) {
-                        if (singleKey instanceof SecretKey secretKey) {
-                            return new SimpleMacJwtParser(algorithm, secretKey, fixedJsonRepresentedFactory(), allowExpired, allowedClockSkewSeconds);
-                        } else {
-                            throw new InvalidKeyException("The key expected be a secret key but was " + singleKey.getClass());
-                        }
-                    } else {
-                        return new SimpleSignatureJwtParser(algorithm, singleKey, fixedJsonRepresentedFactory(), allowExpired, allowedClockSkewSeconds);
-                    }
+            if (simpleMode) {
+                // now only support JWS
+                var algorithm = (JwsCryptoAlgorithm) singleAlgorithm;
+                if (algorithm.isMac()) {
+                    return new SimpleMacJwtParser(algorithm, singleKey, fixedJsonRepresentedFactory(), allowExpired, allowedClockSkewSeconds);
                 } else {
-                    if (singleKey instanceof SecretKey secretKey) {
-                        var algorithm = (JwsCryptoAlgorithm) CryptoAlgorithm.getInstanceByJcaName(secretKey.getAlgorithm());
-                        return new SimpleMacJwtParser(algorithm, secretKey, fixedJsonRepresentedFactory(), allowExpired, allowedClockSkewSeconds);
-                    } else {
-                        throw new IllegalArgumentException("Missing JWT cryptographic algorithm");
-                    }
+                    return new SimpleSignatureJwtParser(algorithm, singleKey, fixedJsonRepresentedFactory(), allowExpired, allowedClockSkewSeconds);
                 }
             }
             throw new IllegalArgumentException("Missing JWKS key");
