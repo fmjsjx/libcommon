@@ -44,6 +44,13 @@ public interface JwtParser {
         private CryptoAlgorithm singleAlgorithm;
         private Key singleKey;
 
+        /**
+         * Change to simple mode and sets the specified algorithm and key.
+         *
+         * @param algorithm the {@link CryptoAlgorithm} to be set
+         * @param key       the {@link Key} to be set
+         * @return this builder
+         */
         public Builder simple(CryptoAlgorithm algorithm, Key key) {
             simpleMode = true;
             singleAlgorithm = Objects.requireNonNull(algorithm, "algorithm must not be null");
@@ -51,7 +58,13 @@ public interface JwtParser {
             return this;
         }
 
-        public Builder fixedJsonRepresentedFactory(JsonRepresentedFactory<?> jsonRepresentedFactory) {
+        /**
+         * Sets the {@link JsonRepresentedFactory}.
+         *
+         * @param jsonRepresentedFactory the {@link JsonRepresentedFactory} to be set
+         * @return this builder
+         */
+        public Builder jsonRepresentedFactory(JsonRepresentedFactory<?> jsonRepresentedFactory) {
             this.jsonRepresentedFactory = jsonRepresentedFactory;
             return this;
         }
@@ -60,10 +73,20 @@ public interface JwtParser {
             return Objects.requireNonNullElseGet(jsonRepresentedFactory, Fastjson2JsonRepresented::getFactory);
         }
 
+        /**
+         * Allow expired JWT.
+         *
+         * @return this builder
+         */
         public Builder allowExpired() {
             return allowExpired(true);
         }
 
+        /**
+         * Disallow expired JWT.
+         *
+         * @return this builder
+         */
         public Builder disallowExpired() {
             return allowExpired(false);
         }
@@ -73,11 +96,22 @@ public interface JwtParser {
             return this;
         }
 
+        /**
+         * Sets the allowed clock skew in seconds.
+         *
+         * @param allowedClockSkewSeconds the allowed clock skew in seconds
+         * @return this builder
+         */
         public Builder allowedClockSkewSeconds(long allowedClockSkewSeconds) {
             this.allowedClockSkewSeconds = allowedClockSkewSeconds;
             return this;
         }
 
+        /**
+         * Creates a new {@link JwtParser} by this builder.
+         *
+         * @return a new {@link JwtParser} instance
+         */
         public JwtParser build() {
             if (simpleMode) {
                 // now only support JWS
