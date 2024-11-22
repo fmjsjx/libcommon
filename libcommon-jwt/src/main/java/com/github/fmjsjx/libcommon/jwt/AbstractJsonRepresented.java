@@ -19,6 +19,14 @@ public abstract class AbstractJsonRepresented implements JsonRepresented {
 
     protected transient String rawJsonString;
 
+    /**
+     * Constructs a new {@link AbstractJsonRepresented} instance with the
+     * specified {@code rawJson} and the specified {@code delegated}
+     * {@link JsonRepresented} given.
+     *
+     * @param rawJson   the raw JSON byte array
+     * @param delegated the delegated {@link JsonRepresented}
+     */
     protected AbstractJsonRepresented(byte[] rawJson, JsonRepresented delegated) {
         this.rawJson = rawJson;
         this.delegated = delegated;
@@ -69,6 +77,11 @@ public abstract class AbstractJsonRepresented implements JsonRepresented {
         return getClass().getSimpleName() + "(rawJson=" + rawJsonString() + ", delegated=" + delegated + ")";
     }
 
+    /**
+     * Caches and returns a string built from the raw JSON byte array.
+     *
+     * @return a cached raw JSON string
+     */
     protected String rawJsonString() {
         //noinspection DuplicatedCode
         var rawJsonString = this.rawJsonString;

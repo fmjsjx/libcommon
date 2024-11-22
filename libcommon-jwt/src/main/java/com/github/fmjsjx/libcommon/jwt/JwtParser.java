@@ -15,6 +15,11 @@ import java.util.Objects;
  */
 public interface JwtParser {
 
+    /**
+     * Creates a new {@link Builder} instance.
+     *
+     * @return a new {@link Builder} instance
+     */
     static Builder builder() {
         return new Builder();
     }
@@ -33,6 +38,9 @@ public interface JwtParser {
 
     /**
      * The builder builds {@link JwtParser}s.
+     *
+     * @author MJ Fang
+     * @since 3.10
      */
     final class Builder {
 

@@ -61,6 +61,9 @@ public final class CryptoAlgorithms {
      * <a href="https://www.rfc-editor.org/rfc/rfc7518.html#section-3">
      * Cryptographic Algorithms for Digital Signatures and MACs
      * </a>
+     *
+     * @author MJ Fang
+     * @since 3.10
      */
     public static final class JWSs {
 
