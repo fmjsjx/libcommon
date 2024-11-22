@@ -3,7 +3,6 @@ package com.github.fmjsjx.libcommon.jwt.util;
 import com.github.fmjsjx.libcommon.jwt.JoseHeader;
 
 import java.security.Key;
-import java.util.Optional;
 
 /**
  * A {@link KeyLocator} can return a {@link Key} referenced in a JOSE
@@ -13,6 +12,7 @@ import java.util.Optional;
  * @see KidKeyLocator
  * @since 3.10
  */
+@FunctionalInterface
 public interface KeyLocator {
 
     /**
@@ -21,6 +21,6 @@ public interface KeyLocator {
      * @param header the {@link JoseHeader}
      * @return an {@code Optional<Key>}
      */
-    Optional<Key> locate(JoseHeader header);
+    Key locate(JoseHeader header);
 
 }

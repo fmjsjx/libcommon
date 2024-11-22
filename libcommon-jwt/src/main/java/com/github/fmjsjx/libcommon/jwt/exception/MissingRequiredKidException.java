@@ -9,20 +9,12 @@ package com.github.fmjsjx.libcommon.jwt.exception;
  */
 public class MissingRequiredKidException extends IllegalJwtException {
 
-    private static final class InstanceHolder {
-        private static final MissingRequiredKidException INSTANCE = new MissingRequiredKidException();
-    }
-
     /**
-     * Returns the singleton {@link MissingRequiredKidException} instance.
-     *
-     * @return the singleton {@code MissingRequiredKidException} instance
+     * Constructs a new {@link MissingRequiredKidException} with the
+     * default detail message {@code Missing the necessary "kid"
+     * parameter value in the header}.
      */
-    public static MissingRequiredKidException getInstance() {
-        return InstanceHolder.INSTANCE;
-    }
-
-    private MissingRequiredKidException() {
+    public MissingRequiredKidException() {
         this("Missing the necessary \"kid\" parameter value in the header");
     }
 

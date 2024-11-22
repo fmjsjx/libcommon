@@ -2,6 +2,7 @@ package com.github.fmjsjx.libcommon.jwt.util;
 
 import com.github.fmjsjx.libcommon.jwt.JoseHeader;
 import com.github.fmjsjx.libcommon.jwt.exception.MissingRequiredKidException;
+import com.github.fmjsjx.libcommon.jwt.exception.NoSuchKeyException;
 
 import java.security.Key;
 import java.util.LinkedHashMap;
@@ -18,6 +19,10 @@ import java.util.function.Function;
  * @since 3.10
  */
 public abstract class KidKeyLocator implements KeyLocator {
+
+    public static Builder builder() {
+        return new Builder();
+    }
 
     /**
      * Lookup and returns the associated {@link Key} instance by the
@@ -36,7 +41,7 @@ public abstract class KidKeyLocator implements KeyLocator {
      * @return a {@code MissingRequiredKidException} instance
      */
     protected MissingRequiredKidException missingRequiredKidException(JoseHeader header) {
-        return MissingRequiredKidException.getInstance();
+        return new MissingRequiredKidException();
     }
 
     /**
@@ -45,12 +50,12 @@ public abstract class KidKeyLocator implements KeyLocator {
      *                                     the JOSE header
      */
     @Override
-    public Optional<Key> locate(JoseHeader header) throws MissingRequiredKidException {
+    public Key locate(JoseHeader header) throws MissingRequiredKidException {
         var keyId = header.getKeyId();
         if (keyId == null) {
             throw missingRequiredKidException(header);
         }
-        return lookup(keyId);
+        return lookup(keyId).orElseThrow(() -> new NoSuchKeyException("Cannot find a key with id `" + keyId + "`"));
     }
 
     /**
@@ -186,7 +191,7 @@ public abstract class KidKeyLocator implements KeyLocator {
 
         @Override
         protected Optional<Key> lookup(String keyId) {
-            return Optional.empty();
+            return Optional.ofNullable(keys.get(keyId));
         }
 
         @Override

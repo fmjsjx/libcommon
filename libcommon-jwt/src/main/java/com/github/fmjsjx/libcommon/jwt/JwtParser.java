@@ -3,6 +3,7 @@ package com.github.fmjsjx.libcommon.jwt;
 import com.github.fmjsjx.libcommon.jwt.crypto.CryptoAlgorithm;
 import com.github.fmjsjx.libcommon.jwt.crypto.JwsCryptoAlgorithm;
 import com.github.fmjsjx.libcommon.jwt.exception.JwtException;
+import com.github.fmjsjx.libcommon.jwt.util.KeyLocator;
 
 import java.security.Key;
 import java.util.Objects;
@@ -48,9 +49,19 @@ public interface JwtParser {
         private boolean allowExpired;
         private long allowedClockSkewSeconds;
 
+        private KeyLocator keyLocator;
+
         private boolean simpleMode;
         private CryptoAlgorithm singleAlgorithm;
         private Key singleKey;
+
+        public Builder keyLocator(KeyLocator keyLocator) {
+            this.keyLocator = keyLocator;
+            simpleMode = false;
+            singleAlgorithm = null;
+            singleKey = null;
+            return this;
+        }
 
         /**
          * Change to simple mode and sets the specified algorithm and key.
@@ -130,7 +141,11 @@ public interface JwtParser {
                     return new SimpleSignatureJwtParser(algorithm, singleKey, fixedJsonRepresentedFactory(), allowExpired, allowedClockSkewSeconds);
                 }
             }
-            throw new IllegalArgumentException("Missing JWKS key");
+            var keyLocator = this.keyLocator;
+            if (keyLocator == null) {
+                throw new IllegalArgumentException("Missing required key locator");
+            }
+            return new DefaultJwtParser(keyLocator, fixedJsonRepresentedFactory(), allowExpired, allowedClockSkewSeconds);
         }
 
         private Builder() {
