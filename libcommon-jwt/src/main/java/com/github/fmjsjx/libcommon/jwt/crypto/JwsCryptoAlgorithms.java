@@ -12,12 +12,17 @@ final class JwsCryptoAlgorithms {
     static final SignatureCryptoAlgorithm RS384 = SignatureCryptoAlgorithm.createRS(384);
     static final SignatureCryptoAlgorithm RS512 = SignatureCryptoAlgorithm.createRS(512);
 
+    static final SignatureCryptoAlgorithm ES256 = SignatureCryptoAlgorithm.createES(256);
+    static final SignatureCryptoAlgorithm ES384 = SignatureCryptoAlgorithm.createES(384);
+    static final SignatureCryptoAlgorithm ES512 = SignatureCryptoAlgorithm.createES(512);
+
     static final SignatureCryptoAlgorithm PS256 = SignatureCryptoAlgorithm.createPS(256);
     static final SignatureCryptoAlgorithm PS384 = SignatureCryptoAlgorithm.createPS(384);
     static final SignatureCryptoAlgorithm PS512 = SignatureCryptoAlgorithm.createPS(512);
 
     static void registerAll() {
-        Stream.of(HS256, HS384, HS512, RS256, RS384, RS512, /* append ES??? here... */ PS256, PS384, PS512).forEach(CryptoAlgorithms::registerAlgorithm);
+        Stream.of(HS256, HS384, HS512, RS256, RS384, RS512, ES256, ES384, ES512, PS256, PS384, PS512)
+                .forEach(CryptoAlgorithms::registerAlgorithm);
     }
 
     private JwsCryptoAlgorithms() {

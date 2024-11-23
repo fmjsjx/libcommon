@@ -25,6 +25,16 @@ final class SignatureCryptoAlgorithm extends AbstractCryptoAlgorithm implements 
                 new RsaSignatureProvider(jcaName));
     }
 
+    static SignatureCryptoAlgorithm createES(int digestBitLength) {
+        var jcaName = "SHA" + digestBitLength + "withECDSA";
+        return new SignatureCryptoAlgorithm(
+                "ES" + digestBitLength,
+                "ECDSA using P-" + digestBitLength + " and SHA-" + digestBitLength,
+                jcaName,
+                true,
+                new EcdsaSignatureProvider(jcaName));
+    }
+
     static SignatureCryptoAlgorithm createPS(int digestBitLength) {
         return new SignatureCryptoAlgorithm(
                 "PS" + digestBitLength,
@@ -126,6 +136,35 @@ final class SignatureCryptoAlgorithm extends AbstractCryptoAlgorithm implements 
 
     }
 
+    private static class EcdsaSignatureProvider extends ThreadLocalSignatureProvider implements SignatureProvider {
+
+        private static final KeyFactory ECDSA_KEY_FACTORY;
+
+        static {
+            try {
+                ECDSA_KEY_FACTORY = KeyFactory.getInstance("EC");
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private final String algorithm;
+
+        private EcdsaSignatureProvider(String algorithm) {
+            this.algorithm = algorithm;
+        }
+
+        @Override
+        public String getAlgorithm() {
+            return algorithm;
+        }
+
+        @Override
+        public KeyFactory getKeyFactory() {
+            return ECDSA_KEY_FACTORY;
+        }
+
+    }
 
     private static class PssSignatureProvider extends ThreadLocalSignatureProvider implements SignatureProvider {
 

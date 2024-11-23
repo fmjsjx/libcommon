@@ -91,6 +91,18 @@ public final class CryptoAlgorithms {
          * RSASSA-PKCS1-v1_5 using SHA-512
          */
         public static JwsCryptoAlgorithm RS512 = JwsCryptoAlgorithms.RS512;
+        /**
+         * ECDSA using P-256 and SHA-256
+         */
+        public static JwsCryptoAlgorithm ES256 = JwsCryptoAlgorithms.ES256;
+        /**
+         * ECDSA using P-384 and SHA-384
+         */
+        public static JwsCryptoAlgorithm ES384 = JwsCryptoAlgorithms.ES384;
+        /**
+         * ECDSA using P-521 and SHA-512
+         */
+        public static JwsCryptoAlgorithm ES512 = JwsCryptoAlgorithms.ES512;
 
         /**
          * RSASSA-PSS using SHA-256 and MGF1 with SHA-256
