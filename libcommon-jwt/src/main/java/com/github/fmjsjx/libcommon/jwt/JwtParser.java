@@ -45,6 +45,8 @@ public interface JwtParser {
      */
     final class Builder {
 
+        private boolean insecure;
+
         private JsonRepresentedFactory<?> jsonRepresentedFactory;
         private boolean allowExpired;
         private long allowedClockSkewSeconds;
@@ -60,6 +62,29 @@ public interface JwtParser {
             simpleMode = false;
             singleAlgorithm = null;
             singleKey = null;
+            return this;
+        }
+
+        /**
+         * Allow insecure JWTs.
+         *
+         * @return this builder
+         */
+        public Builder allowInsecure() {
+            return insecure(true);
+        }
+
+        /**
+         * Disallow insecure JWTs.
+         *
+         * @return this builder
+         */
+        public Builder disallowInsecure() {
+            return insecure(false);
+        }
+
+        private Builder insecure(boolean insecure) {
+            this.insecure = insecure;
             return this;
         }
 
@@ -132,6 +157,9 @@ public interface JwtParser {
          * @return a new {@link JwtParser} instance
          */
         public JwtParser build() {
+            if (insecure) {
+                return new InsecureJwtParser(fixedJsonRepresentedFactory(), allowExpired, allowedClockSkewSeconds);
+            }
             if (simpleMode) {
                 // now only support JWS
                 var algorithm = (JwsCryptoAlgorithm) singleAlgorithm;
