@@ -57,6 +57,12 @@ public interface JwtParser {
         private CryptoAlgorithm singleAlgorithm;
         private Key singleKey;
 
+        /**
+         * Sets the {@link KeyLocator}.
+         *
+         * @param keyLocator the KeyLocator
+         * @return this builder
+         */
         public Builder keyLocator(KeyLocator keyLocator) {
             this.keyLocator = keyLocator;
             simpleMode = false;

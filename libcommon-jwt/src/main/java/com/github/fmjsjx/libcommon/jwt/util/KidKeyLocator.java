@@ -20,6 +20,11 @@ import java.util.function.Function;
  */
 public abstract class KidKeyLocator implements KeyLocator {
 
+    /**
+     * Returns a new {@link Builder} instance.
+     *
+     * @return a new {@link Builder} instance
+     */
     public static Builder builder() {
         return new Builder();
     }

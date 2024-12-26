@@ -48,11 +48,11 @@ public interface EasyThreadLocal<V> {
      * Returns the current value for the current thread if it exists,
      * {@code null} otherwise.
      * <p>
+     * Only {@link FastEasyThreadLocal} support this method.
      *
      * @return the current value for the current thread if it exists,
      * {@code null} otherwise
-     * @throws UnsupportedOperationException if the implementation not
-     *                                       support this method
+     * @throws UnsupportedOperationException if the implementation not support this method
      */
     default V getIfExists() throws UnsupportedOperationException {
         throw new UnsupportedOperationException("getIfExists on " + getClass().getSimpleName());
