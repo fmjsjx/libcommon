@@ -70,52 +70,52 @@ public final class CryptoAlgorithms {
         /**
          * HMAC using SHA-256
          */
-        public static JwsCryptoAlgorithm HS256 = JwsCryptoAlgorithms.HS256;
+        public static final JwsCryptoAlgorithm HS256 = JwsCryptoAlgorithms.HS256;
         /**
          * HMAC using SHA-384
          */
-        public static JwsCryptoAlgorithm HS384 = JwsCryptoAlgorithms.HS384;
+        public static final JwsCryptoAlgorithm HS384 = JwsCryptoAlgorithms.HS384;
         /**
          * HMAC using SHA-512
          */
-        public static JwsCryptoAlgorithm HS512 = JwsCryptoAlgorithms.HS512;
+        public static final JwsCryptoAlgorithm HS512 = JwsCryptoAlgorithms.HS512;
         /**
          * RSASSA-PKCS1-v1_5 using SHA-256
          */
-        public static JwsCryptoAlgorithm RS256 = JwsCryptoAlgorithms.RS256;
+        public static final JwsCryptoAlgorithm RS256 = JwsCryptoAlgorithms.RS256;
         /**
          * RSASSA-PKCS1-v1_5 using SHA-384
          */
-        public static JwsCryptoAlgorithm RS384 = JwsCryptoAlgorithms.RS384;
+        public static final JwsCryptoAlgorithm RS384 = JwsCryptoAlgorithms.RS384;
         /**
          * RSASSA-PKCS1-v1_5 using SHA-512
          */
-        public static JwsCryptoAlgorithm RS512 = JwsCryptoAlgorithms.RS512;
+        public static final JwsCryptoAlgorithm RS512 = JwsCryptoAlgorithms.RS512;
         /**
          * ECDSA using P-256 and SHA-256
          */
-        public static JwsCryptoAlgorithm ES256 = JwsCryptoAlgorithms.ES256;
+        public static final JwsCryptoAlgorithm ES256 = JwsCryptoAlgorithms.ES256;
         /**
          * ECDSA using P-384 and SHA-384
          */
-        public static JwsCryptoAlgorithm ES384 = JwsCryptoAlgorithms.ES384;
+        public static final JwsCryptoAlgorithm ES384 = JwsCryptoAlgorithms.ES384;
         /**
          * ECDSA using P-521 and SHA-512
          */
-        public static JwsCryptoAlgorithm ES512 = JwsCryptoAlgorithms.ES512;
+        public static final JwsCryptoAlgorithm ES512 = JwsCryptoAlgorithms.ES512;
 
         /**
          * RSASSA-PSS using SHA-256 and MGF1 with SHA-256
          */
-        public static JwsCryptoAlgorithm PS256 = JwsCryptoAlgorithms.PS256;
+        public static final JwsCryptoAlgorithm PS256 = JwsCryptoAlgorithms.PS256;
         /**
          * RSASSA-PSS using SHA-384 and MGF1 with SHA-384
          */
-        public static JwsCryptoAlgorithm PS384 = JwsCryptoAlgorithms.PS384;
+        public static final JwsCryptoAlgorithm PS384 = JwsCryptoAlgorithms.PS384;
         /**
          * RSASSA-PSS using SHA-512 and MGF1 with SHA-512
          */
-        public static JwsCryptoAlgorithm PS512 = JwsCryptoAlgorithms.PS512;
+        public static final JwsCryptoAlgorithm PS512 = JwsCryptoAlgorithms.PS512;
 
         private JWSs() {
         }

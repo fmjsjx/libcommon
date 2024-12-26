@@ -1,42 +1,27 @@
 package com.github.fmjsjx.libcommon.jwt;
 
 import com.github.fmjsjx.libcommon.jwt.crypto.JwsCryptoAlgorithm;
+import com.github.fmjsjx.libcommon.jwt.crypto.MacProvider.MacFunction;
 import com.github.fmjsjx.libcommon.jwt.exception.InvalidSignatureException;
 import com.github.fmjsjx.libcommon.jwt.exception.JwtException;
-import com.github.fmjsjx.libcommon.jwt.exception.SecurityException;
-import com.github.fmjsjx.libcommon.util.concurrent.EasyThreadLocal;
 
-import javax.crypto.Mac;
 import java.security.Key;
+import java.util.Arrays;
 
 class SimpleMacJwtParser extends AbstractJwtParser {
 
-    private final JwsCryptoAlgorithm algorithm;
-    private final Key key;
-
-    private final EasyThreadLocal<Mac> threadLocalMac;
+    private final MacFunction macFunction;
 
     SimpleMacJwtParser(JwsCryptoAlgorithm algorithm, Key key,
                        JsonRepresentedFactory<?> jsonRepresentedFactory, boolean allowExpired,
                        long allowedClockSkewSeconds) {
         super(jsonRepresentedFactory, allowExpired, allowedClockSkewSeconds);
-        this.algorithm = algorithm;
-        this.key = key;
-        this.threadLocalMac = EasyThreadLocal.create(this::getMacInstance);
-    }
-
-    private Mac getMacInstance() {
-        try {
-            return algorithm.getMacProvider().getInstance(key);
-        } catch (Exception e) {
-            throw new SecurityException("Initialize Mac instance failed", e);
-        }
+        this.macFunction = algorithm.getMacProvider().getFunction(key);
     }
 
     private boolean verify(byte[] signBaseBytes, String base64Signature) {
-        var signData = threadLocalMac.get().doFinal(signBaseBytes);
-        var signString = encodeBase64(signData);
-        return signString.equals(base64Signature);
+        var signData = macFunction.apply(signBaseBytes);
+        return Arrays.equals(signData, decodeContent(base64Signature));
     }
 
     @Override

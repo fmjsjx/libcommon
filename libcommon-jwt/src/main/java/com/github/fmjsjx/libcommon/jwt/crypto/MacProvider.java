@@ -6,6 +6,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.util.function.Function;
 
 /**
  * The interface provides functionality of {@link Mac}s.
@@ -49,6 +50,32 @@ public interface MacProvider extends SecureProvider {
         var mac = Mac.getInstance(getAlgorithm());
         mac.init(key);
         return mac;
+    }
+
+    /**
+     * Returns the {@link MacFunction} instance with the specified key.
+     *
+     * @param key the key
+     * @return the {@code MacFunction} instance
+     */
+    MacFunction getFunction(Key key);
+
+    /**
+     * Represents a function that processes an array of bytes and finishes the MAC operation.
+     *
+     * @author MJ Fang
+     * @since 3.10
+     */
+    interface MacFunction extends Function<byte[], byte[]> {
+
+        /**
+         * Processes the given array of bytes and finishes the MAC operation.
+         *
+         * @param bytes data in bytes
+         * @return the MAC result
+         */
+        byte[] apply(byte[] bytes);
+
     }
 
 }

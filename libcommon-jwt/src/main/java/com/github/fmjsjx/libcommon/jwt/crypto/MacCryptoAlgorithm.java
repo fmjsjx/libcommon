@@ -1,6 +1,14 @@
 package com.github.fmjsjx.libcommon.jwt.crypto;
 
+import com.github.fmjsjx.libcommon.jwt.exception.SecurityException;
+import com.github.fmjsjx.libcommon.util.concurrent.EasyThreadLocal;
+
 import javax.crypto.Mac;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * The implementation of {@link JwsCryptoAlgorithm} for {@link Mac}s.
@@ -76,6 +84,7 @@ final class MacCryptoAlgorithm extends AbstractCryptoAlgorithm implements JwsCry
     private static final class MacProviderImpl implements MacProvider {
 
         private final String algorithm;
+        private final ConcurrentMap<Key, MacFunction> macFunctions = new ConcurrentHashMap<>();
 
         private MacProviderImpl(String algorithm) {
             this.algorithm = algorithm;
@@ -89,6 +98,22 @@ final class MacCryptoAlgorithm extends AbstractCryptoAlgorithm implements JwsCry
         @Override
         public String toString() {
             return "MacProviderImpl(algorithm=" + getAlgorithm() + ")";
+        }
+
+        @Override
+        public MacFunction getFunction(Key key) {
+            return macFunctions.computeIfAbsent(key, this::generateFunction);
+        }
+
+        private MacFunction generateFunction(Key key) {
+            var threadLocalMac = EasyThreadLocal.create(() -> {
+                try {
+                    return getInstance(key);
+                } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+                    throw new SecurityException("Initialize Mac instance failed", e);
+                }
+            });
+            return bytes -> threadLocalMac.get().doFinal(bytes);
         }
 
     }
