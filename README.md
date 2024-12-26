@@ -131,6 +131,10 @@ The [`libcommon-json-jsoniter`](libcommon-json-jsoniter) module provides an impl
 
 The [`libcommon-json-jsoniter-kotlin`](libcommon-json-jsoniter-kotlin) module provides the kotlin extensions of [`libcommon-json-jsoniter`](libcommon-json-jsoniter).
 
+### libcommon-jwt
+
+The [`libcommon-jwt`](libcommon-jwt) module provides a library to build/parse JWTs.
+
 ### libcommon-kotlin
 
 The [`libcommon-kotlin`](libcommon-kotlin) module provides some utilitiy class for [**Kotlin**](https://kotlinlang.org/).
