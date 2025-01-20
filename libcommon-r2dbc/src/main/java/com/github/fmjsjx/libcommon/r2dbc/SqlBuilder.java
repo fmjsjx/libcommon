@@ -1,11 +1,12 @@
 package com.github.fmjsjx.libcommon.r2dbc;
 
+import com.github.fmjsjx.libcommon.util.StringUtil;
 import io.r2dbc.spi.Parameters;
+import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 
 /**
@@ -355,8 +356,8 @@ public class SqlBuilder {
     /**
      * Append another {@link SqlBuilder} into this.
      * <p>
-     * <B>Note</B>: This method will trigger a {@link #finishSelect()} call at
-     * first.
+     * <B>Note</B>: This method will trigger a {@link #finishSelect()}
+     * call at first.
      *
      * @param other the another {@code SqlBuilder}
      * @return this {@link SqlBuilder}
@@ -467,5 +468,296 @@ public class SqlBuilder {
         }
         return this;
     }
+
+    /**
+     * Sets {@code distinct}.
+     *
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder distinct() {
+        this.distinct = true;
+        return this;
+    }
+
+    private List<String> ensureSelectColumns() {
+        var selectColumns = this.selectColumns;
+        if (selectColumns == null) {
+            throw new IllegalStateException("not at select step");
+        }
+        return selectColumns;
+    }
+
+    /**
+     * Append columns in the select part of the SQL.
+     *
+     * @param columns the columns SQL string
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder appendColumns(String columns) {
+        ensureSelectColumns().add(columns);
+        return this;
+    }
+
+    /**
+     * Append columns in the select part of the SQL.
+     *
+     * @param columns the array of columns
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder appendColumns(String... columns) {
+        Collections.addAll(ensureSelectColumns(), columns);
+        return this;
+    }
+
+    /**
+     * Append columns in the select part of the SQL.
+     *
+     * @param columns the list contains columns
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder appendColumns(List<String> columns) {
+        ensureSelectColumns().addAll(columns);
+        return this;
+    }
+
+    /**
+     * Select columns.
+     *
+     * @param columns the columns SQL string
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder select(String columns) {
+        return select().appendColumns(columns);
+    }
+
+    /**
+     * Functionally equals to: {@code SELECT *}.
+     *
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder selectAll() {
+        return select("*");
+    }
+
+    /**
+     * Select columns.
+     *
+     * @param columns the array of columns
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder select(String... columns) {
+        return select().appendColumns(columns);
+    }
+
+    /**
+     * Select columns.
+     *
+     * @param columns the list contains columns
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder select(List<String> columns) {
+        return select().appendColumns(columns);
+    }
+
+    /**
+     * Functionally equals to: {@code SELECT COUNT(*)}.
+     *
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder selectCount() {
+        return select("COUNT(*)");
+    }
+
+    /**
+     * Select count with columns.
+     *
+     * @param columns the columns SQL string
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder selectCount(String columns) {
+        return select().appendColumns("COUNT(" + columns + ")");
+    }
+
+    /**
+     * Select count with columns.
+     *
+     * @param columns the array of columns
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder selectCount(String... columns) {
+        return select().selectCount(String.join(", ", columns));
+    }
+
+    /**
+     * Select count with columns.
+     *
+     * @param columns the list contains columns
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder selectCount(List<String> columns) {
+        return select().selectCount(String.join(", ", columns));
+    }
+
+    /**
+     * Select distinct columns.
+     *
+     * @param columns the columns SQL string
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder selectDistinct(String columns) {
+        return select().distinct().appendColumns(columns);
+    }
+
+    /**
+     * Select distinct columns.
+     *
+     * @param columns the array of columns
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder selectDistinct(String... columns) {
+        return select().distinct().appendColumns(columns);
+    }
+
+    /**
+     * Select distinct columns.
+     *
+     * @param columns the list contains columns
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder selectDistinct(List<String> columns) {
+        return select().distinct().appendColumns(columns);
+    }
+
+    /**
+     * Finish select part and append {@code FROM} into SQL.
+     * <B>Note</B>: This method will trigger a {@link #finishSelect()}
+     * call at first.
+     *
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder from() {
+        return finishSelect().s("FROM");
+    }
+
+    /**
+     * Finish select part and append {@code FROM} into SQL.
+     * <p>
+     * <B>Note</B>: This method will trigger a {@link #finishSelect()}
+     * call at first.
+     *
+     * @param table the table SQL string
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder from(String table) {
+        return finishSelect().s("FROM", table);
+    }
+
+    /**
+     * Finish select part and append {@code FROM} into SQL.
+     * <p>
+     * <B>Note</B>: This method will trigger a {@link #finishSelect()}
+     * call at first.
+     *
+     * @param tables the array of tables
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder from(String... tables) {
+        return finishSelect().s("FROM", String.join(", ", tables));
+    }
+
+    /**
+     * Finish select part and append {@code FROM} into SQL.
+     * <p>
+     * <B>Note</B>: This method will trigger a {@link #finishSelect()}
+     * call at first.
+     *
+     * @param tables the list contains tables
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder from(List<String> tables) {
+        return finishSelect().s("FROM", String.join(", ", tables));
+    }
+
+    /**
+     * Get the table name from the entity class.
+     *
+     * @param entityClass the entity class
+     * @return the table name
+     */
+    public static final String getTableName(Class<?> entityClass) {
+        return TableNamesHolder.CACHE.computeIfAbsent(entityClass, TableNamesHolder::getTableName);
+    }
+
+    static final class TableNamesHolder {
+        static final ConcurrentMap<Class<?>, String> CACHE = new ConcurrentHashMap<>();
+
+        static final Pattern UPPER_CASE = Pattern.compile("[A-Z]");
+
+        static final String toLowercaseUnderline(String name) {
+            var tmpName = Character.toLowerCase(name.charAt(0)) + name.substring(1);
+            return UPPER_CASE.matcher(tmpName).replaceAll(matchResult -> "_" + matchResult.group().toLowerCase());
+        }
+
+        static final String getTableName(Class<?> entityClass) {
+            var tableName = "";
+            var schema = "";
+            if (entityClass.isAnnotationPresent(Table.class)) {
+                var table = entityClass.getAnnotation(Table.class);
+                schema = table.schema();
+                tableName = table.name();
+                if (StringUtil.isEmpty(tableName)) {
+                    tableName = table.value();
+                }
+            }
+            if (StringUtil.isEmpty(tableName)) {
+                tableName = toLowercaseUnderline(entityClass.getSimpleName());
+            }
+            return StringUtil.isEmpty(schema) ? tableName : schema + "." + tableName;
+        }
+    }
+
+    /**
+     * Finish select part and append {@code FROM} into SQL.
+     * <p>
+     * <B>Note</B>: This method will trigger a {@link #finishSelect()}
+     * call at first.
+     *
+     * @param entityClass the entity class from which to get the table name
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder from(Class<?> entityClass) {
+        return from(getTableName(entityClass));
+    }
+
+    /**
+     * Finish select part and append {@code FROM} into SQL.
+     * <p>
+     * <B>Note</B>: This method will trigger a {@link #finishSelect()}
+     * call at first.
+     *
+     * @param entityClasses the array of entity classes from which to get
+     *                      the table names
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder from(Class<?>... entityClasses) {
+        var tableNames = new String[entityClasses.length];
+        for (int i = 0; i < entityClasses.length; i++) {
+            tableNames[i] = getTableName(entityClasses[i]);
+        }
+        return from(tableNames);
+    }
+
+    private SqlBuilder join(String type, String table) {
+        return s(type, "JOIN", table);
+    }
+
+    private SqlBuilder join(String type, SqlBuilder subqueryBuilder, String tableAlias) {
+        return s(type, "JOIN (").append(subqueryBuilder).s(")", tableAlias);
+    }
+
+    private SqlBuilder joinSubquery(String type) {
+        return s(type, "JOIN").subquery();
+    }
+
 
 }
