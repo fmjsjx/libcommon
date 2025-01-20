@@ -26,6 +26,8 @@ dependencies {
         api(project(":libcommon-kotlin"))
         api(project(":libcommon-prometheus"))
         api(project(":libcommon-prometheus-client"))
+        api(project(":libcommon-r2dbc"))
+        api(project(":libcommon-r2dbc-kotlin"))
         api(project(":libcommon-redis"))
         api(project(":libcommon-redis-kotlin"))
         api(project(":libcommon-rocketmq"))
