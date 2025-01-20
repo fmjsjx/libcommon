@@ -46,7 +46,7 @@ publishing {
                 }
             }
             pom {
-                name.set("libcommon/Util")
+                name.set("libcommon/JWT Kotlin")
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {

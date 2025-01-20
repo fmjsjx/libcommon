@@ -38,7 +38,7 @@ publishing {
                 }
             }
             pom {
-                name.set("libcommon/REDIS")
+                name.set("libcommon/JWT")
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {

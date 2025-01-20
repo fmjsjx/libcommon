@@ -3,22 +3,13 @@ plugins {
     id("libcommon.publish-conventions")
 }
 
-java {
-    registerFeature("jackson2Support") {
-        usingSourceSet(sourceSets["main"])
-    }
-    registerFeature("fastjson2Support") {
-        usingSourceSet(sourceSets["main"])
-    }
-}
-
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
     api(project(":libcommon-json"))
     api("com.jsoniter:jsoniter")
-    "jackson2SupportImplementation"(project(":libcommon-json-jackson2"))
-    "fastjson2SupportImplementation"(project(":libcommon-json-fastjson2"))
+    compileOnlyApi(project(":libcommon-json-jackson2"))
+    compileOnlyApi(project(":libcommon-json-fastjson2"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

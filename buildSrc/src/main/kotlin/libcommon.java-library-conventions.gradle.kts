@@ -3,6 +3,7 @@ plugins {
 }
 
 repositories {
+    mavenLocal()
     maven {
         url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
     }
@@ -71,12 +72,12 @@ java {
     }
 }
 
-tasks.withType<JavaCompile>() {
+tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.release = javaVersion
 }
 
-tasks.withType<Javadoc>() {
+tasks.withType<Javadoc> {
     if (JavaVersion.current().isJava9Compatible) {
         (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
     }
