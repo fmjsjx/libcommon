@@ -3,15 +3,6 @@ plugins {
     id("libcommon.publish-conventions")
 }
 
-java {
-    registerFeature("jsoniterSupport") {
-        usingSourceSet(sourceSets["main"])
-    }
-    registerFeature("jackson2Support") {
-        usingSourceSet(sourceSets["main"])
-    }
-}
-
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
@@ -19,8 +10,8 @@ dependencies {
     api(project(":libcommon-json"))
     implementation(project(":libcommon-util"))
     api("com.alibaba.fastjson2:fastjson2")
-    "jsoniterSupportApi"("com.jsoniter:jsoniter")
-    "jackson2SupportImplementation"(project(":libcommon-json-jackson2"))
+    compileOnlyApi("com.jsoniter:jsoniter")
+    compileOnlyApi(project(":libcommon-json-jackson2"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
