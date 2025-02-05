@@ -1238,7 +1238,7 @@ public class SqlBuilder {
      * @param values a list contains values
      * @return this {@link SqlBuilder}
      */
-    public SqlBuilder in(List<String> values) {
+    public SqlBuilder in(List<Object> values) {
         return s("IN", "(", questionMarks(values.size()), ")").v(values);
     }
 

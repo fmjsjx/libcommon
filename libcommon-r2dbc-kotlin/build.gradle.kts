@@ -7,6 +7,7 @@ plugins {
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     api(project(":libcommon-util-kotlin"))
     api(project(":libcommon-r2dbc"))
