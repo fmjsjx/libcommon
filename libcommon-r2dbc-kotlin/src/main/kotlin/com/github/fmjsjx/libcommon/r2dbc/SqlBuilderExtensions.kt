@@ -20,6 +20,7 @@ import kotlin.reflect.jvm.javaField
  * An alias for the method [SqlBuilder. in].
  *
  * @return this [SqlBuilder]
+ * @since 3.11
  */
 fun SqlBuilder.isIn(values: List<Any>): SqlBuilder = `in`(values)
 
@@ -27,6 +28,7 @@ fun SqlBuilder.isIn(values: List<Any>): SqlBuilder = `in`(values)
  * An alias for the method [SqlBuilder. in].
  *
  * @return this [SqlBuilder]
+ * @since 3.11
  */
 fun SqlBuilder.isIn(vararg values: Any): SqlBuilder = `in`(*values)
 
@@ -35,6 +37,7 @@ fun SqlBuilder.isIn(vararg values: Any): SqlBuilder = `in`(*values)
  *
  * @param E the entity type from which to get the table name
  * @return this [SqlBuilder]
+ * @since 3.11
  */
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 inline fun <reified E : Any> SqlBuilder.from(): SqlBuilder = from(E::class)
@@ -44,6 +47,7 @@ inline fun <reified E : Any> SqlBuilder.from(): SqlBuilder = from(E::class)
  *
  * @param type the entity kotlin class from which to get the table name
  * @return this [SqlBuilder]
+ * @since 3.11
  */
 fun <E : Any> SqlBuilder.from(type: KClass<E>): SqlBuilder = from(getTableName(type))
 
@@ -76,6 +80,7 @@ private fun getTableName(type: KClass<*>): String =
  *
  * @param E the entity type
  * @return this [SqlBuilder]
+ * @since 3.11
  */
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 inline fun <reified E : Any> SqlBuilder.into(): SqlBuilder = into(E::class)
@@ -86,6 +91,7 @@ inline fun <reified E : Any> SqlBuilder.into(): SqlBuilder = into(E::class)
  *
  * @param entityType the entity kotlin class
  * @return this [SqlBuilder]
+ * @since 3.11
  */
 fun SqlBuilder.into(entityType: KClass<*>): SqlBuilder = into(getTableName(entityType))
 
@@ -95,6 +101,7 @@ fun SqlBuilder.into(entityType: KClass<*>): SqlBuilder = into(getTableName(entit
  *
  * @param E the entity type
  * @return this [SqlBuilder]
+ * @since 3.11
  */
 inline fun <reified E : Any> SqlBuilder.columns(): SqlBuilder = columns(E::class)
 
@@ -105,6 +112,7 @@ inline fun <reified E : Any> SqlBuilder.columns(): SqlBuilder = columns(E::class
  * @param E the entity type
  * @param entityType the entity kotlin class
  * @return this [SqlBuilder]
+ * @since 3.11
  */
 fun <E : Any> SqlBuilder.columns(entityType: KClass<E>): SqlBuilder =
     getPersistentEntityInfo(entityType)?.let { info ->
@@ -194,6 +202,7 @@ private fun getValueGetter(prop: KProperty<*>): (Any) -> Any? = prop.getter::cal
  *
  * @param E the entity type
  * @return this [SqlBuilder]
+ * @since 3.11
  */
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 inline fun <reified E : Any> SqlBuilder.update(): SqlBuilder = update(E::class)
@@ -204,6 +213,7 @@ inline fun <reified E : Any> SqlBuilder.update(): SqlBuilder = update(E::class)
  *
  * @param entityType the entity kotlin class
  * @return this [SqlBuilder]
+ * @since 3.11
  */
 fun SqlBuilder.update(entityType: KClass<*>): SqlBuilder = update(getTableName(entityType))
 
