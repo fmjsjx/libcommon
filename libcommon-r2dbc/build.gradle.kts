@@ -7,7 +7,7 @@ plugins {
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
-    implementation("javax.annotation:javax.annotation-api")
+    compileOnly("com.google.code.findbugs:jsr305")
     implementation(project(":libcommon-util"))
     api("org.springframework.data:spring-data-r2dbc:3.4.2")
 
