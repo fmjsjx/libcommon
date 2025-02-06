@@ -57,6 +57,8 @@ dependencies {
         api("io.prometheus:prometheus-metrics-exposition-formats:$prometheusVersion")
         api("io.prometheus:prometheus-metrics-instrumentation-jvm:$prometheusVersion")
         api("javax.annotation:javax.annotation-api:1.3.2")
+        api("jakarta.annotation:jakarta.annotation-api:3.0.0")
+        api("com.google.code.findbugs:jsr305:3.0.2")
     }
     // log4j2
     implementation(platform("org.apache.logging.log4j:log4j-bom:2.24.3"))
