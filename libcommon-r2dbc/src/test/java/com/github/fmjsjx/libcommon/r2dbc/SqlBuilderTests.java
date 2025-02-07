@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.r2dbc;
 
+import io.r2dbc.spi.Parameters;
 import org.junit.jupiter.api.Test;
 
 import static com.github.fmjsjx.libcommon.r2dbc.ParameterStyle.MYSQL;
@@ -7,6 +8,7 @@ import static com.github.fmjsjx.libcommon.r2dbc.ParameterStyle.NONE;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SqlBuilderTests {
@@ -164,7 +166,7 @@ public class SqlBuilderTests {
     }
 
     @Test
-    public void testAppendSql() {
+    public void testAppendSql_String() {
         var sqlBuilder = new SqlBuilder().appendSql("SELECT");
         assertNotNull(sqlParts(sqlBuilder));
         assertEquals(1, sqlParts(sqlBuilder).size());
@@ -175,6 +177,205 @@ public class SqlBuilderTests {
         } catch (Exception e) {
             assertEquals("sqlPart must not be null", e.getMessage());
         }
+    }
+
+    @Test
+    public void testAppendSql_StringArray() {
+        var sqlBuilder = new SqlBuilder().appendSql("SELECT", "'x'");
+        assertNotNull(sqlParts(sqlBuilder));
+        assertEquals(2, sqlParts(sqlBuilder).size());
+        assertEquals("SELECT", sqlParts(sqlBuilder).get(0));
+        assertEquals("'x'", sqlParts(sqlBuilder).get(1));
+        try {
+            new SqlBuilder().appendSql("SELECT", null);
+            fail("should throw NullPointerException");
+        } catch (Exception e) {
+            assertEquals("sqlPart must not be null", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testAppendSql_StringList() {
+        var sqlBuilder = new SqlBuilder().appendSql(List.of("SELECT", "'x'"));
+        assertNotNull(sqlParts(sqlBuilder));
+        assertEquals(2, sqlParts(sqlBuilder).size());
+        assertEquals("SELECT", sqlParts(sqlBuilder).get(0));
+        assertEquals("'x'", sqlParts(sqlBuilder).get(1));
+        try {
+            new SqlBuilder().appendSql(Arrays.asList("SELECT", null));
+            fail("should throw NullPointerException");
+        } catch (Exception e) {
+            assertEquals("sqlPart must not be null", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testS_String() {
+        var sqlBuilder = new SqlBuilder().s("SELECT");
+        assertNotNull(sqlParts(sqlBuilder));
+        assertEquals(1, sqlParts(sqlBuilder).size());
+        assertEquals("SELECT", sqlParts(sqlBuilder).get(0));
+        try {
+            new SqlBuilder().s((String) null);
+            fail("should throw NullPointerException");
+        } catch (Exception e) {
+            assertEquals("sqlPart must not be null", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testS_StringArray() {
+        var sqlBuilder = new SqlBuilder().s("SELECT", "'x'");
+        assertNotNull(sqlParts(sqlBuilder));
+        assertEquals(2, sqlParts(sqlBuilder).size());
+        assertEquals("SELECT", sqlParts(sqlBuilder).get(0));
+        assertEquals("'x'", sqlParts(sqlBuilder).get(1));
+        try {
+            new SqlBuilder().s("SELECT", null);
+            fail("should throw NullPointerException");
+        } catch (Exception e) {
+            assertEquals("sqlPart must not be null", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testS_StringList() {
+        var sqlBuilder = new SqlBuilder().s(List.of("SELECT", "'x'"));
+        assertNotNull(sqlParts(sqlBuilder));
+        assertEquals(2, sqlParts(sqlBuilder).size());
+        assertEquals("SELECT", sqlParts(sqlBuilder).get(0));
+        assertEquals("'x'", sqlParts(sqlBuilder).get(1));
+        try {
+            new SqlBuilder().s(Arrays.asList("SELECT", null));
+            fail("should throw NullPointerException");
+        } catch (Exception e) {
+            assertEquals("sqlPart must not be null", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testAddValue() {
+        var sqlBuilder = new SqlBuilder().addValue("a");
+        assertNotNull(values(sqlBuilder));
+        assertEquals(1, values(sqlBuilder).size());
+        assertEquals("a", values(sqlBuilder).get(0));
+        sqlBuilder.addValue(null);
+        assertNotNull(values(sqlBuilder));
+        assertEquals(2, values(sqlBuilder).size());
+        assertEquals(Parameters.in(Object.class), values(sqlBuilder).get(1));
+        sqlBuilder.addValues(String.class);
+        assertNotNull(values(sqlBuilder));
+        assertEquals(3, values(sqlBuilder).size());
+        assertEquals(Parameters.in(String.class), values(sqlBuilder).get(2));
+    }
+
+    @Test
+    public void testAddValues_ObjectArray() {
+        var sqlBuilder = new SqlBuilder().addValues("a", null, String.class);
+        assertNotNull(values(sqlBuilder));
+        assertEquals(3, values(sqlBuilder).size());
+        assertEquals("a", values(sqlBuilder).get(0));
+        assertEquals(Parameters.in(Object.class), values(sqlBuilder).get(1));
+        assertEquals(Parameters.in(String.class), values(sqlBuilder).get(2));
+    }
+
+    @Test
+    public void testAddValues_ObjectList() {
+        var sqlBuilder = new SqlBuilder().addValues(Arrays.asList("a", null, String.class));
+        assertNotNull(values(sqlBuilder));
+        assertEquals(3, values(sqlBuilder).size());
+        assertEquals("a", values(sqlBuilder).get(0));
+        assertEquals(Parameters.in(Object.class), values(sqlBuilder).get(1));
+        assertEquals(Parameters.in(String.class), values(sqlBuilder).get(2));
+    }
+
+
+    @Test
+    public void testV_Object() {
+        var sqlBuilder = new SqlBuilder().v("a");
+        assertNotNull(values(sqlBuilder));
+        assertEquals(1, values(sqlBuilder).size());
+        assertEquals("a", values(sqlBuilder).get(0));
+        sqlBuilder.v((Object) null);
+        assertNotNull(values(sqlBuilder));
+        assertEquals(2, values(sqlBuilder).size());
+        assertEquals(Parameters.in(Object.class), values(sqlBuilder).get(1));
+        sqlBuilder.v(String.class);
+        assertNotNull(values(sqlBuilder));
+        assertEquals(3, values(sqlBuilder).size());
+        assertEquals(Parameters.in(String.class), values(sqlBuilder).get(2));
+    }
+
+    @Test
+    public void testV_ObjectArray() {
+        var sqlBuilder = new SqlBuilder().v("a", null, String.class);
+        assertNotNull(values(sqlBuilder));
+        assertEquals(3, values(sqlBuilder).size());
+        assertEquals("a", values(sqlBuilder).get(0));
+        assertEquals(Parameters.in(Object.class), values(sqlBuilder).get(1));
+        assertEquals(Parameters.in(String.class), values(sqlBuilder).get(2));
+    }
+
+    @Test
+    public void testV_ObjectList() {
+        var sqlBuilder = new SqlBuilder().v(Arrays.asList("a", null, String.class));
+        assertNotNull(values(sqlBuilder));
+        assertEquals(3, values(sqlBuilder).size());
+        assertEquals("a", values(sqlBuilder).get(0));
+        assertEquals(Parameters.in(Object.class), values(sqlBuilder).get(1));
+        assertEquals(Parameters.in(String.class), values(sqlBuilder).get(2));
+    }
+
+    @Test
+    public void testAppendSqlValues_String_ObjectArray() {
+        var sqlBuilder = new SqlBuilder().appendSqlValues("WHERE a IN (?, ?, ?)", "a", null, String.class);
+        assertNotNull(sqlParts(sqlBuilder));
+        assertEquals(1, sqlParts(sqlBuilder).size());
+        assertEquals("WHERE a IN (?, ?, ?)", sqlParts(sqlBuilder).get(0));
+        assertNotNull(values(sqlBuilder));
+        assertEquals(3, values(sqlBuilder).size());
+        assertEquals("a", values(sqlBuilder).get(0));
+        assertEquals(Parameters.in(Object.class), values(sqlBuilder).get(1));
+        assertEquals(Parameters.in(String.class), values(sqlBuilder).get(2));
+    }
+
+    @Test
+    public void testAppendSqlValues_String_ObjectList() {
+        var sqlBuilder = new SqlBuilder().appendSqlValues("WHERE a IN (?, ?, ?)", Arrays.asList("a", null, String.class));
+        assertNotNull(sqlParts(sqlBuilder));
+        assertEquals(1, sqlParts(sqlBuilder).size());
+        assertEquals("WHERE a IN (?, ?, ?)", sqlParts(sqlBuilder).get(0));
+        assertNotNull(values(sqlBuilder));
+        assertEquals(3, values(sqlBuilder).size());
+        assertEquals("a", values(sqlBuilder).get(0));
+        assertEquals(Parameters.in(Object.class), values(sqlBuilder).get(1));
+        assertEquals(Parameters.in(String.class), values(sqlBuilder).get(2));
+    }
+
+    @Test
+    public void testSV_String_ObjectArray() {
+        var sqlBuilder = new SqlBuilder().sv("WHERE a IN (?, ?, ?)", "a", null, String.class);
+        assertNotNull(sqlParts(sqlBuilder));
+        assertEquals(1, sqlParts(sqlBuilder).size());
+        assertEquals("WHERE a IN (?, ?, ?)", sqlParts(sqlBuilder).get(0));
+        assertNotNull(values(sqlBuilder));
+        assertEquals(3, values(sqlBuilder).size());
+        assertEquals("a", values(sqlBuilder).get(0));
+        assertEquals(Parameters.in(Object.class), values(sqlBuilder).get(1));
+        assertEquals(Parameters.in(String.class), values(sqlBuilder).get(2));
+    }
+
+    @Test
+    public void testSV_ObjectList() {
+        var sqlBuilder = new SqlBuilder().sv("WHERE a IN (?, ?, ?)", Arrays.asList("a", null, String.class));
+        assertNotNull(sqlParts(sqlBuilder));
+        assertEquals(1, sqlParts(sqlBuilder).size());
+        assertEquals("WHERE a IN (?, ?, ?)", sqlParts(sqlBuilder).get(0));
+        assertNotNull(values(sqlBuilder));
+        assertEquals(3, values(sqlBuilder).size());
+        assertEquals("a", values(sqlBuilder).get(0));
+        assertEquals(Parameters.in(Object.class), values(sqlBuilder).get(1));
+        assertEquals(Parameters.in(String.class), values(sqlBuilder).get(2));
     }
 
 }
