@@ -12,11 +12,11 @@ repositories {
 
 dependencies {
     // netty-bom
-    api(platform("io.netty:netty-bom:4.1.116.Final"))
+    api(platform("io.netty:netty-bom:4.1.117.Final"))
     // junit-bom
     testImplementation(platform("org.junit:junit-bom:5.11.4"))
     // mockito
-    testImplementation(platform("org.mockito:mockito-bom:5.14.2"))
+    testImplementation(platform("org.mockito:mockito-bom:5.15.2"))
     // jackson2-bom
     api(platform("com.fasterxml.jackson:jackson-bom:2.18.2"))
     // rocketmq
@@ -30,21 +30,21 @@ dependencies {
 
     constraints {
         implementation("org.slf4j:slf4j-api:2.0.16")
-        implementation("ch.qos.logback:logback-classic:1.5.15")
-        api("io.lettuce:lettuce-core:6.5.1.RELEASE")
+        implementation("ch.qos.logback:logback-classic:1.5.16")
+        api("io.lettuce:lettuce-core:6.5.3.RELEASE")
         api("com.dslplatform:dsl-json-java8:1.10.0")
         api("com.jsoniter:jsoniter:0.9.23")
         api("com.aliyun.openservices:ons-client:2.0.7.Final")
-        val fastjson2Version = "2.0.53"
+        val fastjson2Version = "2.0.54"
         api("com.alibaba.fastjson2:fastjson2:$fastjson2Version")
         api("com.alibaba.fastjson2:fastjson2-kotlin:$fastjson2Version")
-        val mongodbVersion = "5.2.1"
+        val mongodbVersion = "5.3.1"
         api("org.mongodb:bson:$mongodbVersion")
         api("org.mongodb:mongodb-driver-core:$mongodbVersion")
         api("org.mongodb:mongodb-driver-sync:$mongodbVersion")
         api("org.mongodb:mongodb-driver-reactivestreams:$mongodbVersion")
         api("org.mongodb:mongodb-driver-legacy:$mongodbVersion")
-        val jrubyVersion = "9.4.8.0"
+        val jrubyVersion = "9.4.11.0"
         implementation("org.jruby:jruby-complete:$jrubyVersion")
         implementation("org.jruby:jruby:$jrubyVersion")
         implementation("org.jruby:jruby-core:$jrubyVersion")
