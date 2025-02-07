@@ -971,10 +971,10 @@ public class SqlBuilder {
      * @return the parent {@link SqlBuilder}
      */
     public SqlBuilder endWhereClause() {
-        return endClause(WHERE_CLAUSE, "not in a where clause", "AND");
+        return endClause("WHERE", WHERE_CLAUSE, "not in a where clause", "AND");
     }
 
-    SqlBuilder endClause(int mode, String errorMessage, String delimiter) {
+    SqlBuilder endClause(String key, int mode, String errorMessage, String delimiter) {
         if (this.mode != mode) {
             throw new IllegalStateException(errorMessage);
         }
@@ -982,13 +982,13 @@ public class SqlBuilder {
         if (sqlParts.isEmpty()) {
             return parent;
         }
-        parent.where();
+        parent.s(key);
         if (delimiter.equalsIgnoreCase(sqlParts.get(0))) {
             sqlParts.stream().skip(1).forEach(parent::s);
         } else {
             parent.s(sqlParts);
         }
-        return parent.v(getValues());
+        return parent.v(values);
     }
 
     /**
@@ -2089,7 +2089,7 @@ public class SqlBuilder {
      * @return the parent {@link SqlBuilder}
      */
     public SqlBuilder endSetClause() {
-        return endClause(SET_CLAUSE, "not in a set clause", ",");
+        return endClause("SET", SET_CLAUSE, "not in a set clause", ",");
     }
 
     /**
