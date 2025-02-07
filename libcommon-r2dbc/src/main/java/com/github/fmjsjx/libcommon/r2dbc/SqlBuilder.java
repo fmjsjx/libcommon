@@ -103,6 +103,8 @@ public class SqlBuilder {
                     modeName = "where clause";
                 } else if (mode == SET_CLAUSE) {
                     modeName = "set clause";
+                } else {
+                    modeName = "<" + mode + ">";
                 }
                 throw new IllegalArgumentException("parent must not be null in " + modeName + " mode");
             }
