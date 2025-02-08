@@ -20,7 +20,9 @@ public class HexUtilTests {
     static byte[] randomBytes(int len) {
         SecureRandom ng = Holder.numberGenerator;
         byte[] randomBytes = new byte[len];
-        ng.nextBytes(randomBytes);
+        while (randomBytes[0] == 0) {
+            ng.nextBytes(randomBytes);
+        }
         return randomBytes;
     }
 
