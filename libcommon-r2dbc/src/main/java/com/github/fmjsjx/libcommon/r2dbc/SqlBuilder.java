@@ -29,13 +29,12 @@ import java.util.stream.Collectors;
  */
 public class SqlBuilder {
 
-    private static final Pattern QUESTION_MARK_PATTERN = Pattern.compile("\\?");
-
-    private static final int NONE = 0;
-    private static final int SUBQUERY = 1;
-    private static final int GROUP = 2;
-    private static final int WHERE_CLAUSE = 3;
-    private static final int SET_CLAUSE = 4;
+    static final int NONE = 0;
+    static final int SUBQUERY = 1;
+    static final int GROUP = 2;
+    static final int WHERE_CLAUSE = 3;
+    static final int SET_CLAUSE = 4;
+    static final int HAVING_CLAUSE = 5;
 
     private static final List<String> questionMarkGroups;
 
@@ -103,6 +102,8 @@ public class SqlBuilder {
                     modeName = "where clause";
                 } else if (mode == SET_CLAUSE) {
                     modeName = "set clause";
+                } else if (mode == HAVING_CLAUSE) {
+                    modeName = "having clause";
                 } else {
                     modeName = "<" + mode + ">";
                 }
@@ -413,6 +414,8 @@ public class SqlBuilder {
     private String buildSql0() {
         return String.join(" ", sqlParts);
     }
+
+    private static final Pattern QUESTION_MARK_PATTERN = Pattern.compile("\\?");
 
     /**
      * Build and returns the SQL string uses index parameters that are
@@ -775,7 +778,7 @@ public class SqlBuilder {
     }
 
     private SqlBuilder join(String type, SqlBuilder subqueryBuilder, String tableAlias) {
-        return s(type, "JOIN (").append(subqueryBuilder).s(")", tableAlias);
+        return s(type, "JOIN", "(").append(subqueryBuilder).s(")", tableAlias);
     }
 
     private SqlBuilder joinSubquery(String type) {
@@ -1220,8 +1223,38 @@ public class SqlBuilder {
      * @param value a string value
      * @return this {@link SqlBuilder}
      */
-    public SqlBuilder likeConcat(Object value) {
+    public SqlBuilder anyLikeConcat(Object value) {
         return sv("LIKE CONCAT('%', ?, '%')", value);
+    }
+
+    /**
+     * Quick invocation to append "begin" {@code LIKE} predicate into SQL
+     * by using {@code CONCAT} function.
+     * <p>
+     * This method is equivalent to: <pre>{@code
+     * appendSqlValues("LIKE CONCAT(?, '%')", value);
+     * }</pre>
+     *
+     * @param value a string value
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder beginLikeConcat(Object value) {
+        return sv("LIKE CONCAT(?, '%')", value);
+    }
+
+    /**
+     * Quick invocation to append "begin" {@code LIKE} predicate into SQL
+     * by using {@code CONCAT} function.
+     * <p>
+     * This method is equivalent to: <pre>{@code
+     * appendSqlValues("LIKE CONCAT('%', ?)", value);
+     * }</pre>
+     *
+     * @param value a string value
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder endLikeConcat(Object value) {
+        return sv("LIKE CONCAT('%', ?)", value);
     }
 
     /**
@@ -1403,6 +1436,26 @@ public class SqlBuilder {
      */
     public SqlBuilder having(List<String> conditions) {
         return having(String.join(" AND ", conditions));
+    }
+
+    /**
+     * Append {@code HAVING} clause into SQL and returns the
+     * {@link SqlBuilder} in {@code HAVING CLAUSE} mode.
+     *
+     * @return the {@link SqlBuilder} in {@code HAVING CLAUSE} mode
+     */
+    public SqlBuilder havingClause() {
+        return new SqlBuilder(this, HAVING_CLAUSE);
+    }
+
+    /**
+     * End the current having clause and returns the parent
+     * {@link SqlBuilder}.
+     *
+     * @return the parent {@link SqlBuilder}
+     */
+    public SqlBuilder endHavingClause() {
+        return endClause("HAVING", HAVING_CLAUSE, "not in a having clause", "AND");
     }
 
     /**
