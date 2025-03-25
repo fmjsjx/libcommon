@@ -23,6 +23,9 @@ description = "libcommon/JSON Jsoniter Kotlin"
 tasks.test {
     // Use junit platform for unit tests.
     useJUnitPlatform()
+    jvmArgs = listOf(
+        "-Xshare:off",
+    )
 }
 
 publishing {

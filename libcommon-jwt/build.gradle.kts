@@ -23,6 +23,11 @@ description = "libcommon/JWT"
 tasks.test {
     // Use junit platform for unit tests.
     useJUnitPlatform()
+    jvmArgs = listOf(
+        "-XX:+EnableDynamicAgentLoading",
+        "-Xshare:off",
+        classpath.find { "mockito-core" in it.name }?.let { "-javaagent:${it.absolutePath}" } ?: "",
+    )
 }
 
 publishing {
