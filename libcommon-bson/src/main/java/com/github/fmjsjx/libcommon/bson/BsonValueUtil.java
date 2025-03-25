@@ -52,15 +52,14 @@ public class BsonValueUtil {
         private static final Map<Class<?>, Function<Object, BsonValue>> encoders;
 
         static {
-            var startOfWeeks = Map.ofEntries(
-                    Map.entry(DayOfWeek.SUNDAY, new BsonString("sun")),
-                    Map.entry(DayOfWeek.MONDAY, new BsonString("mon")),
-                    Map.entry(DayOfWeek.TUESDAY, new BsonString("tue")),
-                    Map.entry(DayOfWeek.WEDNESDAY, new BsonString("wed")),
-                    Map.entry(DayOfWeek.THURSDAY, new BsonString("thu")),
-                    Map.entry(DayOfWeek.FRIDAY, new BsonString("fri")),
-                    Map.entry(DayOfWeek.SATURDAY, new BsonString("sat"))
-            );
+            var startOfWeeks = new EnumMap<DayOfWeek, BsonString>(DayOfWeek.class);
+            startOfWeeks.put(DayOfWeek.SUNDAY, new BsonString("sun"));
+            startOfWeeks.put(DayOfWeek.MONDAY, new BsonString("mon"));
+            startOfWeeks.put(DayOfWeek.TUESDAY, new BsonString("tue"));
+            startOfWeeks.put(DayOfWeek.WEDNESDAY, new BsonString("wed"));
+            startOfWeeks.put(DayOfWeek.THURSDAY, new BsonString("thu"));
+            startOfWeeks.put(DayOfWeek.FRIDAY, new BsonString("fri"));
+            startOfWeeks.put(DayOfWeek.SATURDAY, new BsonString("sat"));
             encoders = Map.ofEntries(
                     Map.entry(String.class, v -> new BsonString(v.toString())),
                     Map.entry(char[].class, v -> new BsonString(new String((char[]) v))),
@@ -166,12 +165,7 @@ public class BsonValueUtil {
             return encoder.apply(value);
         }
         if (valueType.isArray()) {
-            var array = (Object[]) value;
-            var bsonArray = new BsonArray(array.length);
-            for (var v : array) {
-                bsonArray.add(encode(v));
-            }
-            return bsonArray;
+            return encodeList((Object[]) value);
         }
         if (value instanceof Iterable<?> iterable) {
             var bsonArray = new BsonArray(iterable instanceof Collection<?> collection ? collection.size() : 10);
