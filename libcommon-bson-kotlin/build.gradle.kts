@@ -21,9 +21,7 @@ description = "libcommon/BSON Kotlin"
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
     jvmArgs = listOf(
-        "-XX:+EnableDynamicAgentLoading",
         "-Xshare:off",
-        classpath.find { "mockito-core" in it.name }?.let { "-javaagent:${it.absolutePath}" } ?: "",
     )
 }
 
