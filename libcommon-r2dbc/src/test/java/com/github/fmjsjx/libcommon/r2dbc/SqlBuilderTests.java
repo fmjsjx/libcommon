@@ -9,6 +9,8 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.InsertOnlyProperty;
 import org.springframework.data.relational.core.mapping.Table;
 
+import static com.github.fmjsjx.libcommon.r2dbc.Sort.ASC;
+import static com.github.fmjsjx.libcommon.r2dbc.Sort.DESC;
 import static com.github.fmjsjx.libcommon.r2dbc.SqlBuilder.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -1346,6 +1348,13 @@ public class SqlBuilderTests {
         var sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.orderBy(List.of("state DESC", "create_time DESC")));
         assertIterableEquals(List.of("ORDER BY", "state DESC, create_time DESC"), sqlParts(sqlBuilder));
+    }
+
+    @Test
+    public void testOrderBy_OrderArray() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.orderBy(new Order("id", null), new Order("state", ASC), new Order("create_time", DESC)));
+        assertIterableEquals(List.of("ORDER BY", "id, state ASC, create_time DESC"), sqlParts(sqlBuilder));
     }
 
     @Test
