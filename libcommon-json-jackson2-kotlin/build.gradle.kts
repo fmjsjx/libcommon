@@ -25,6 +25,9 @@ description = "libcommon/JSON Jackson2 Kotlin"
 tasks.test {
     // Use junit platform for unit tests.
     useJUnitPlatform()
+    jvmArgs = listOf(
+        "-Xshare:off",
+    )
 }
 
 publishing {
