@@ -719,7 +719,7 @@ public class SqlBuilder {
 
         static final Pattern UPPER_CASE = Pattern.compile("[A-Z]");
 
-        static final String toLowercaseUnderline(String name) {
+        static final String toSnakeCase(String name) {
             var tmpName = Character.toLowerCase(name.charAt(0)) + name.substring(1);
             return UPPER_CASE.matcher(tmpName).replaceAll(matchResult -> "_" + matchResult.group().toLowerCase());
         }
@@ -736,7 +736,7 @@ public class SqlBuilder {
                 }
             }
             if (StringUtil.isEmpty(tableName)) {
-                tableName = toLowercaseUnderline(entityClass.getSimpleName());
+                tableName = toSnakeCase(entityClass.getSimpleName());
             }
             return StringUtil.isEmpty(schema) ? tableName : schema + "." + tableName;
         }
@@ -1495,6 +1495,20 @@ public class SqlBuilder {
      */
     public SqlBuilder orderBy(List<String> orders) {
         return orderBy().s(String.join(", ", orders));
+    }
+
+    /**
+     * Append {@code ORDER BY} clause into SQL with the specified orders.
+     *
+     * @param orders an array of {@link Order}s
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder orderBy(Order... orders) {
+        var orderStrings = new String[orders.length];
+        for (int i = 0; i < orders.length; i++) {
+            orderStrings[i] = orders[i].toOrderString();
+        }
+        return orderBy(orderStrings);
     }
 
     /**

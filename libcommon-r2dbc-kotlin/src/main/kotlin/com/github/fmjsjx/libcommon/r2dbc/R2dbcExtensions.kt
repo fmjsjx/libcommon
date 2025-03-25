@@ -29,6 +29,16 @@ fun GenericExecuteSpec.bindValues(sqlBuilder: SqlBuilder): GenericExecuteSpec =
     sqlBuilder.values.takeUnless { it.isEmpty() }?.let(::bindValues) ?: this
 
 /**
+ * Execute SQL.
+ *
+ * @param sqlBuilder the [SqlBuilder]
+ * @return a new [GenericExecuteSpec]
+ * @since 3.12
+ */
+fun R2dbcEntityOperations.execute(sqlBuilder: SqlBuilder): GenericExecuteSpec =
+    databaseClient.execute(sqlBuilder)
+
+/**
  * Execute SQL for select and returns one long result.
  *
  * @param sqlBuilder the [SqlBuilder]
@@ -36,7 +46,7 @@ fun GenericExecuteSpec.bindValues(sqlBuilder: SqlBuilder): GenericExecuteSpec =
  * @since 3.11
  */
 fun R2dbcEntityOperations.selectLong(sqlBuilder: SqlBuilder): Mono<Long> =
-    databaseClient.execute(sqlBuilder).filter { it.fetchSize(1) }.mapValue(Long::class.java).one()
+    execute(sqlBuilder).filter { it.fetchSize(1) }.mapValue(Long::class.java).one()
 
 /**
  * Execute SQL for select and returns all matching results.
@@ -58,7 +68,7 @@ inline fun <reified T : Any> R2dbcEntityOperations.select(sqlBuilder: SqlBuilder
  * @since 3.11
  */
 fun <T : Any> R2dbcEntityOperations.select(entityClass: KClass<T>, sqlBuilder: SqlBuilder): Flux<T> =
-    databaseClient.execute(sqlBuilder).map { row, metadata -> converter.read(entityClass.java, row, metadata) }.all()
+    execute(sqlBuilder).map { row, metadata -> converter.read(entityClass.java, row, metadata) }.all()
 
 /**
  * Execute SQL for select and returns exactly zero or one result.
@@ -84,7 +94,7 @@ inline fun <reified T : Any> R2dbcEntityOperations.selectOne(sqlBuilder: SqlBuil
  * @since 3.11
  */
 fun <T : Any> R2dbcEntityOperations.selectOne(entityClass: KClass<T>, sqlBuilder: SqlBuilder): Mono<T> =
-    databaseClient.execute(sqlBuilder).filter { it.fetchSize(2) }
+    execute(sqlBuilder).filter { it.fetchSize(2) }
         .map { row, metadata -> converter.read(entityClass.java, row, metadata) }.one()
 
 /**
@@ -107,5 +117,14 @@ inline fun <reified T : Any> R2dbcEntityOperations.selectFirst(sqlBuilder: SqlBu
  * @since 3.11
  */
 fun <T : Any> R2dbcEntityOperations.selectFirst(entityClass: KClass<T>, sqlBuilder: SqlBuilder): Mono<T> =
-    databaseClient.execute(sqlBuilder).filter { it.fetchSize(1) }
+    execute(sqlBuilder).filter { it.fetchSize(1) }
         .map { row, metadata -> converter.read(entityClass.java, row, metadata) }.first()
+
+/**
+ * Execute SQL and returns the number of updated rows.
+ *
+ * @param sqlBuilder the [SqlBuilder]
+ * @return a Mono emitting the number of updated rows
+ * @since 3.12
+ */
+fun R2dbcEntityOperations.executeUpdate(sqlBuilder: SqlBuilder): Mono<Long> = execute(sqlBuilder).fetch().rowsUpdated()

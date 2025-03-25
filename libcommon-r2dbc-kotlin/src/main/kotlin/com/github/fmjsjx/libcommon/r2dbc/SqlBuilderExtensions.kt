@@ -1,9 +1,13 @@
 package com.github.fmjsjx.libcommon.r2dbc
 
+import com.github.fmjsjx.libcommon.r2dbc.Sort.ASC
+import com.github.fmjsjx.libcommon.r2dbc.Sort.DESC
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Embedded
 import org.springframework.data.relational.core.mapping.InsertOnlyProperty
 import org.springframework.data.relational.core.mapping.Table
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 import org.springframework.data.annotation.Id as EntityId
 import org.springframework.data.annotation.Transient as EntityTransient
 import org.springframework.data.annotation.ReadOnlyProperty as EntityReadOnlyProperty
@@ -217,4 +221,68 @@ inline fun <reified E : Any> SqlBuilder.update(): SqlBuilder = update(E::class)
  */
 fun SqlBuilder.update(entityType: KClass<*>): SqlBuilder = update(getTableName(entityType))
 
+private object FieldColumnMappingsHolder {
+    val mappings: ConcurrentMap<KProperty1<*, *>, String> = ConcurrentHashMap()
+}
 
+/**
+ * Convert field to column name string.
+ *
+ * @return the column name
+ * @since 3.12
+ */
+fun <T, V> KProperty1<T, V>.toColumn(): String =
+    FieldColumnMappingsHolder.mappings.getOrPut(this) { javaField?.getAnnotation(Column::class.java)?.value ?: name }
+
+/**
+ * Convert field to [Order].
+ *
+ * @param sort the [Sort]
+ * @return an [Order] with the specified `sort` given
+ * @since 3.12
+ */
+infix fun <T, V> KProperty1<T, V>.toOrder(sort: Sort? = null): Order = Order(toColumn(), sort)
+
+/**
+ * Convert field to an ASC [Order].
+ *
+ * @return an ASC [Order]
+ * @since 3.12
+ */
+fun <T, V> KProperty1<T, V>.asc(): Order = toOrder(ASC)
+
+/**
+ * Convert field to a DESC [Order].
+ *
+ * @return a DESC [Order]
+ * @since 3.12
+ */
+fun <T, V> KProperty1<T, V>.desc(): Order = toOrder(DESC)
+
+/**
+ * Select columns.
+ *
+ * @param columns the columns
+ * @return this [SqlBuilder]
+ * @since 3.12
+ */
+fun SqlBuilder.select(vararg columns: KProperty1<*, *>): SqlBuilder =
+    select(*columns.map { it.toColumn() }.toTypedArray())
+
+/**
+ * Append `WHERE` and the specified `column` into SQL.
+ *
+ * @param column the column
+ * @return this [SqlBuilder]
+ * @since 3.12
+ */
+fun SqlBuilder.where(column: KProperty1<*, *>): SqlBuilder = where().s(column.toColumn())
+
+/**
+ * Append `AND` and the specified `column` into SQL.
+ *
+ * @param column the column
+ * @return this [SqlBuilder]
+ * @since 3.12
+ */
+fun SqlBuilder.and(column: KProperty1<*, *>): SqlBuilder = and().s(column.toColumn())
