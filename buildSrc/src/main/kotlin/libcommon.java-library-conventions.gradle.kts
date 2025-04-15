@@ -12,11 +12,11 @@ repositories {
 
 dependencies {
     // netty-bom
-    api(platform("io.netty:netty-bom:4.1.119.Final"))
+    api(platform("io.netty:netty-bom:4.2.0.Final"))
     // junit-bom
-    testImplementation(platform("org.junit:junit-bom:5.12.1"))
+    testImplementation(platform("org.junit:junit-bom:5.12.2"))
     // mockito
-    testImplementation(platform("org.mockito:mockito-bom:5.16.1"))
+    testImplementation(platform("org.mockito:mockito-bom:5.17.0"))
     // jackson2-bom
     api(platform("com.fasterxml.jackson:jackson-bom:2.18.3"))
     // rocketmq
@@ -34,8 +34,8 @@ dependencies {
         api("io.lettuce:lettuce-core:6.5.5.RELEASE")
         api("com.dslplatform:dsl-json-java8:1.10.0")
         api("com.jsoniter:jsoniter:0.9.23")
-        api("com.aliyun.openservices:ons-client:2.0.7.Final")
-        val fastjson2Version = "2.0.56"
+        api("com.aliyun.openservices:ons-client:2.0.8.Final")
+        val fastjson2Version = "2.0.57"
         api("com.alibaba.fastjson2:fastjson2:$fastjson2Version")
         api("com.alibaba.fastjson2:fastjson2-kotlin:$fastjson2Version")
         val mongodbVersion = "5.4.0"
