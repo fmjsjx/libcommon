@@ -729,6 +729,7 @@ public class SqlBuilder {
             var schema = "";
             if (entityClass.isAnnotationPresent(Table.class)) {
                 var table = entityClass.getAnnotation(Table.class);
+                assert table != null;
                 schema = table.schema();
                 tableName = table.name();
                 if (StringUtil.isEmpty(tableName)) {
@@ -1834,6 +1835,7 @@ public class SqlBuilder {
                 var columnName = field.getName();
                 if (field.isAnnotationPresent(Column.class)) {
                     var columnAnnotation = field.getAnnotation(Column.class);
+                    assert columnAnnotation != null;
                     columnName = columnAnnotation.value();
                 }
                 var valueGetter = getValueGetter(entityClass, field);
@@ -1879,11 +1881,17 @@ public class SqlBuilder {
                                                       List<PersistentColumnInfo.Builder> columnBuilders) {
         String prefix = null;
         if (field.isAnnotationPresent(Embedded.class)) {
-            prefix = field.getAnnotation(Embedded.class).prefix();
+            var embedded = field.getAnnotation(Embedded.class);
+            assert embedded != null;
+            prefix = embedded.prefix();
         } else if (field.isAnnotationPresent(Embedded.Empty.class)) {
-            prefix = field.getAnnotation(Embedded.Empty.class).prefix();
+            var empty = field.getAnnotation(Embedded.Empty.class);
+            assert empty != null;
+            prefix = empty.prefix();
         } else if (field.isAnnotationPresent(Embedded.Nullable.class)) {
-            prefix = field.getAnnotation(Embedded.Nullable.class).prefix();
+            var nullable = field.getAnnotation(Embedded.Nullable.class);
+            assert nullable != null;
+            prefix = nullable.prefix();
         }
         if (prefix != null) {
             appendEmbeddedColumns(entityClass, field, columnBuilders, prefix);
