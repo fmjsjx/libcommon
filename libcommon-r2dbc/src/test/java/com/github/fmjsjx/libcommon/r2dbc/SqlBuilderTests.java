@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@SuppressWarnings("SpringDataJdbcAssociatedDbElementsInspection")
 public class SqlBuilderTests {
 
     @SuppressWarnings("unchecked")
