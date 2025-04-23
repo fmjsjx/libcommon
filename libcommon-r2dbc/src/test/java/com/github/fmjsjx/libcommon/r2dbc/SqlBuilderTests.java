@@ -547,6 +547,72 @@ public class SqlBuilderTests {
     }
 
     @Test
+    public void testAppendColumns_Class() {
+        var sqlBuilder = new SqlBuilder().select();
+        assertSame(sqlBuilder, sqlBuilder.appendColumns(TestEntity.class));
+        assertIterableEquals(List.of("test_entity.id, test_entity.name, test_entity.update_time"), selectColumns(sqlBuilder));
+
+        try {
+            new SqlBuilder().appendColumns(TestEntity.class);
+            fail("Should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertEquals("not at select step", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testAppendColumns_Class_String() {
+        var sqlBuilder = new SqlBuilder().select();
+        assertSame(sqlBuilder, sqlBuilder.appendColumns(TestEntity.class, null));
+        assertIterableEquals(List.of("test_entity.id, test_entity.name, test_entity.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder().select();
+        assertSame(sqlBuilder, sqlBuilder.appendColumns(TestEntity.class, " "));
+        assertIterableEquals(List.of("test_entity.id, test_entity.name, test_entity.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder().select();
+        assertSame(sqlBuilder, sqlBuilder.appendColumns(TestEntity.class, "a"));
+        assertIterableEquals(List.of("a.id, a.name, a.update_time"), selectColumns(sqlBuilder));
+
+        try {
+            new SqlBuilder().appendColumns(TestEntity.class, "a");
+            fail("Should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertEquals("not at select step", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testAppendColumns_Class_String_String() {
+        var sqlBuilder = new SqlBuilder().select();
+        assertSame(sqlBuilder, sqlBuilder.appendColumns(TestEntity.class, null, null));
+        assertIterableEquals(List.of("test_entity.id, test_entity.name, test_entity.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder().select();
+        assertSame(sqlBuilder, sqlBuilder.appendColumns(TestEntity.class, " ", " "));
+        assertIterableEquals(List.of("test_entity.id, test_entity.name, test_entity.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder().select();
+        assertSame(sqlBuilder, sqlBuilder.appendColumns(TestEntity.class, "a", null));
+        assertIterableEquals(List.of("a.id, a.name, a.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder().select();
+        assertSame(sqlBuilder, sqlBuilder.appendColumns(TestEntity.class, "a", " "));
+        assertIterableEquals(List.of("a.id, a.name, a.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder().select();
+        assertSame(sqlBuilder, sqlBuilder.appendColumns(TestEntity.class, " ", "a_"));
+        assertIterableEquals(List.of("test_entity.id a_id, test_entity.name a_name, test_entity.update_time a_update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder().select();
+        assertSame(sqlBuilder, sqlBuilder.appendColumns(TestEntity.class, null, "a_"));
+        assertIterableEquals(List.of("test_entity.id a_id, test_entity.name a_name, test_entity.update_time a_update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder().select();
+        assertSame(sqlBuilder, sqlBuilder.appendColumns(TestEntity.class, "a", "a_"));
+        assertIterableEquals(List.of("a.id a_id, a.name a_name, a.update_time a_update_time"), selectColumns(sqlBuilder));
+
+        try {
+            new SqlBuilder().appendColumns(TestEntity.class, "a", "a_");
+            fail("Should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertEquals("not at select step", e.getMessage());
+        }
+    }
+
+    @Test
     public void testSelect_String() {
         var sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.select("*"));
@@ -576,6 +642,70 @@ public class SqlBuilderTests {
         assertSame(sqlBuilder, sqlBuilder.select(List.of("id", "name")));
         assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of("id", "name"), selectColumns(sqlBuilder));
+    }
+
+    @Test
+    public void testSelect_Class() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.select(TestEntity.class));
+        assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("test_entity.id, test_entity.name, test_entity.update_time"), selectColumns(sqlBuilder));
+    }
+
+    @Test
+    public void testSelect_Class_String() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.select(TestEntity.class, null));
+        assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("test_entity.id, test_entity.name, test_entity.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.select(TestEntity.class, " "));
+        assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("test_entity.id, test_entity.name, test_entity.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.select(TestEntity.class, "a"));
+        assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("a.id, a.name, a.update_time"), selectColumns(sqlBuilder));
+    }
+
+    @Test
+    public void testSelect_Class_String_String() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.select(TestEntity.class, null, null));
+        assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("test_entity.id, test_entity.name, test_entity.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.select(TestEntity.class, " ", null));
+        assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("test_entity.id, test_entity.name, test_entity.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.select(TestEntity.class, null, " "));
+        assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("test_entity.id, test_entity.name, test_entity.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.select(TestEntity.class, " ", " "));
+        assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("test_entity.id, test_entity.name, test_entity.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.select(TestEntity.class, "a", null));
+        assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("a.id, a.name, a.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.select(TestEntity.class, "a", " "));
+        assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("a.id, a.name, a.update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.select(TestEntity.class, "a", "a_"));
+        assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("a.id a_id, a.name a_name, a.update_time a_update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.select(TestEntity.class, null, "a_"));
+        assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("test_entity.id a_id, test_entity.name a_name, test_entity.update_time a_update_time"), selectColumns(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.select(TestEntity.class, " ", "a_"));
+        assertIterableEquals(List.of("SELECT"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("test_entity.id a_id, test_entity.name a_name, test_entity.update_time a_update_time"), selectColumns(sqlBuilder));
     }
 
     @Test
@@ -707,6 +837,7 @@ public class SqlBuilderTests {
         @Transient
         private Object other2;
         @ReadOnlyProperty
+        @Column("update_time")
         private LocalDateTime updateTime;
 
         public long getId() {
@@ -784,6 +915,18 @@ public class SqlBuilderTests {
     }
 
     @Test
+    public void testFrom_Class_String() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.from(TestEntity.class, "a"));
+        assertIterableEquals(List.of("FROM", "test_entity", "a"), sqlParts(sqlBuilder));
+
+        sqlBuilder = new SqlBuilder().selectAll();
+        assertSame(sqlBuilder, sqlBuilder.from(TestEntity.class, "a"));
+        assertIterableEquals(List.of("SELECT", "*", "FROM", "test_entity", "a"), sqlParts(sqlBuilder));
+        assertNull(selectColumns(sqlBuilder));
+    }
+
+    @Test
     public void testFrom_ClassArray() {
         var sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.from(TestEntity.class, TestEntity2.class));
@@ -800,6 +943,20 @@ public class SqlBuilderTests {
         var sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.innerJoin("tb_test2 b"));
         assertIterableEquals(List.of("INNER", "JOIN", "tb_test2 b"), sqlParts(sqlBuilder));
+    }
+
+    @Test
+    public void testInnerJoin_Class() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.innerJoin(TestEntity.class));
+        assertIterableEquals(List.of("INNER", "JOIN", "test_entity"), sqlParts(sqlBuilder));
+    }
+
+    @Test
+    public void testInnerJoin_Class_String() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.innerJoin(TestEntity.class, "a"));
+        assertIterableEquals(List.of("INNER", "JOIN", "test_entity", "a"), sqlParts(sqlBuilder));
     }
 
     @Test
@@ -828,6 +985,20 @@ public class SqlBuilderTests {
     }
 
     @Test
+    public void testLeftJoin_Class() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.leftJoin(TestEntity.class));
+        assertIterableEquals(List.of("LEFT", "JOIN", "test_entity"), sqlParts(sqlBuilder));
+    }
+
+    @Test
+    public void testLeftJoin_Class_String() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.leftJoin(TestEntity.class, "a"));
+        assertIterableEquals(List.of("LEFT", "JOIN", "test_entity", "a"), sqlParts(sqlBuilder));
+    }
+
+    @Test
     public void testLeftJoin_SqlBuilder_String() {
         var subquery = new SqlBuilder().selectAll().from("tb_test2");
         var sqlBuilder = new SqlBuilder();
@@ -850,6 +1021,20 @@ public class SqlBuilderTests {
         var sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.rightJoin("tb_test2 b"));
         assertIterableEquals(List.of("RIGHT", "JOIN", "tb_test2 b"), sqlParts(sqlBuilder));
+    }
+
+    @Test
+    public void testRightJoin_Class() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.rightJoin(TestEntity.class));
+        assertIterableEquals(List.of("RIGHT", "JOIN", "test_entity"), sqlParts(sqlBuilder));
+    }
+
+    @Test
+    public void testRightJoin_Class_String() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.rightJoin(TestEntity.class, "a"));
+        assertIterableEquals(List.of("RIGHT", "JOIN", "test_entity", "a"), sqlParts(sqlBuilder));
     }
 
     @Test
@@ -1580,6 +1765,17 @@ public class SqlBuilderTests {
     }
 
     @Test
+    public void testColumns_Class_boolean() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.columns(TestEntity.class, true));
+        assertIterableEquals(List.of("(", "name, create_time", ")"), sqlParts(sqlBuilder));
+
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.columns(TestEntity.class, false));
+        assertIterableEquals(List.of("(", "id, name, create_time", ")"), sqlParts(sqlBuilder));
+    }
+
+    @Test
     public void testValue() {
         var sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.value());
@@ -1620,6 +1816,39 @@ public class SqlBuilderTests {
     }
 
     @Test
+    public void testValue_Entity_boolean() {
+        var sqlBuilder = new SqlBuilder();
+        var entity = new TestEntity();
+        entity.setId(1);
+        entity.setName("name");
+        var now = LocalDateTime.now();
+        entity.setCreateTime(now);
+        assertSame(sqlBuilder, sqlBuilder.value(entity, true));
+        assertIterableEquals(List.of("VALUE", "(", "?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("name", now), values(sqlBuilder));
+
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.value(entity, false));
+        assertIterableEquals(List.of("VALUE", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L, "name", now), values(sqlBuilder));
+
+        var e1 = new TestEntityE1();
+        sqlBuilder = new SqlBuilder();
+        e1.setId(1);
+        e1.setName("name");
+        e1.setCreateTime(now);
+        e1.setAddress("address");
+        assertSame(sqlBuilder, sqlBuilder.value(e1, true));
+        assertIterableEquals(List.of("VALUE", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("name", now, "address"), values(sqlBuilder));
+
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.value(e1, false));
+        assertIterableEquals(List.of("VALUE", "(", "?, ?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L, "name", now, "address"), values(sqlBuilder));
+    }
+
+    @Test
     public void testValue_Class_Entity() {
         var sqlBuilder = new SqlBuilder();
         var entity = new TestEntity();
@@ -1654,6 +1883,54 @@ public class SqlBuilderTests {
         assertIterableEquals(List.of("name", now, "address"), values(sqlBuilder));
     }
 
+    @Test
+    public void testValue_Class_Entity_boolean() {
+        var sqlBuilder = new SqlBuilder();
+        var entity = new TestEntity();
+        entity.setId(1L);
+        entity.setName("name");
+        var now = LocalDateTime.now();
+        entity.setCreateTime(now);
+        assertSame(sqlBuilder, sqlBuilder.value(TestEntity.class, entity, true));
+        assertIterableEquals(List.of("VALUE", "(", "?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("name", now), values(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.value(TestEntity.class, entity, false));
+        assertIterableEquals(List.of("VALUE", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L, "name", now), values(sqlBuilder));
+
+        var e1 = new TestEntityE1();
+        e1.setId(1L);
+        e1.setName("name");
+        e1.setCreateTime(now);
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.value(TestEntity.class, e1, true));
+        assertIterableEquals(List.of("VALUE", "(", "?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("name", now), values(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.value(TestEntity.class, e1, false));
+        assertIterableEquals(List.of("VALUE", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L, "name", now), values(sqlBuilder));
+
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.value(TestEntityE1.class, e1, true));
+        assertIterableEquals(List.of("VALUE", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("name", now, Parameters.in(Object.class)), values(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.value(TestEntityE1.class, e1, false));
+        assertIterableEquals(List.of("VALUE", "(", "?, ?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L, "name", now, Parameters.in(Object.class)), values(sqlBuilder));
+
+        e1.setAddress("address");
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.value(TestEntityE1.class, e1, true));
+        assertIterableEquals(List.of("VALUE", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("name", now, "address"), values(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.value(TestEntityE1.class, e1, false));
+        assertIterableEquals(List.of("VALUE", "(", "?, ?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L, "name", now, "address"), values(sqlBuilder));
+    }
 
     @Test
     public void testValues() {
@@ -1684,6 +1961,37 @@ public class SqlBuilderTests {
     }
 
     @Test
+    public void testValues_Entity_boolean() {
+        var sqlBuilder = new SqlBuilder();
+        var entity = new TestEntity();
+        var now = LocalDateTime.now();
+        entity.setId(1);
+        entity.setName("name");
+        entity.setCreateTime(now);
+        assertSame(sqlBuilder, sqlBuilder.values(entity, true));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("name", now), values(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.values(entity, false));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L, "name", now), values(sqlBuilder));
+
+        var e1 = new TestEntityE1();
+        e1.setId(1L);
+        e1.setName("name");
+        e1.setCreateTime(now);
+        e1.setAddress("address");
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.values(e1, true));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("name", now, "address"), values(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.values(e1, false));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L, "name", now, "address"), values(sqlBuilder));
+    }
+
+    @Test
     public void testValues_EntityList() {
         var sqlBuilder = new SqlBuilder();
         var entity = new TestEntity();
@@ -1709,6 +2017,46 @@ public class SqlBuilderTests {
         assertSame(sqlBuilder, sqlBuilder.values(List.of(e1, e2)));
         assertIterableEquals(List.of("VALUES", "(", "?, ?, ?", ")", ",", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of("name", now, "address", "name2", now, "address2"), values(sqlBuilder));
+    }
+
+    @Test
+    public void testValues_EntityList_boolean() {
+        var sqlBuilder = new SqlBuilder();
+        var entity = new TestEntity();
+        entity.setId(1);
+        entity.setName("name");
+        var now = LocalDateTime.now();
+        entity.setCreateTime(now);
+        var entity2 = new TestEntity();
+        entity2.setId(2);
+        entity2.setName("name2");
+        entity2.setCreateTime(now);
+        assertSame(sqlBuilder, sqlBuilder.values(List.of(entity, entity2), true));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?", ")", ",", "(", "?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("name", now, "name2", now), values(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.values(List.of(entity, entity2), false));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?, ?", ")", ",", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L, "name", now, 2L, "name2", now), values(sqlBuilder));
+
+        var e1 = new TestEntityE1();
+        e1.setId(1);
+        e1.setName("name");
+        e1.setCreateTime(now);
+        e1.setAddress("address");
+        var e2 = new TestEntityE1();
+        e2.setId(2);
+        e2.setName("name2");
+        e2.setCreateTime(now);
+        e2.setAddress("address2");
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.values(List.of(e1, e2), true));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?, ?", ")", ",", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("name", now, "address", "name2", now, "address2"), values(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.values(List.of(e1, e2), false));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?, ?, ?", ")", ",", "(", "?, ?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L, "name", now, "address", 2L, "name2", now, "address2"), values(sqlBuilder));
     }
 
     @Test
@@ -1743,6 +2091,56 @@ public class SqlBuilderTests {
         assertSame(sqlBuilder, sqlBuilder.values(TestEntityE1.class, List.of(e1, e2)));
         assertIterableEquals(List.of("VALUES", "(", "?, ?, ?", ")", ",", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of("name", now, "address", "name2", now, "address2"), values(sqlBuilder));
+    }
+
+    @Test
+    public void testValues_Class_EntityList_boolean() {
+        var sqlBuilder = new SqlBuilder();
+        var entity = new TestEntity();
+        entity.setId(1);
+        entity.setName("name");
+        var now = LocalDateTime.now();
+        entity.setCreateTime(now);
+        var entity2 = new TestEntity();
+        entity2.setId(2);
+        entity2.setName("name2");
+        entity2.setCreateTime(now);
+        var e1 = new TestEntityE1();
+        e1.setId(3);
+        e1.setName("name");
+        e1.setCreateTime(now);
+        e1.setAddress("address");
+        var e2 = new TestEntityE1();
+        e2.setId(4);
+        e2.setName("name2");
+        e2.setCreateTime(now);
+        e2.setAddress("address2");
+
+        assertSame(sqlBuilder, sqlBuilder.values(TestEntity.class, List.of(entity, entity2), true));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?", ")", ",", "(", "?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("name", now, "name2", now), values(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.values(TestEntity.class, List.of(entity, entity2), false));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?, ?", ")", ",", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L, "name", now, 2L, "name2", now), values(sqlBuilder));
+
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.values(TestEntity.class, List.of(entity, e2), true));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?", ")", ",", "(", "?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("name", now, "name2", now), values(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.values(TestEntity.class, List.of(entity, e2), false));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?, ?", ")", ",", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L, "name", now, 4L, "name2", now), values(sqlBuilder));
+
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.values(TestEntityE1.class, List.of(e1, e2), true));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?, ?", ")", ",", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("name", now, "address", "name2", now, "address2"), values(sqlBuilder));
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.values(TestEntityE1.class, List.of(e1, e2), false));
+        assertIterableEquals(List.of("VALUES", "(", "?, ?, ?, ?", ")", ",", "(", "?, ?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(3L, "name", now, "address", 4L, "name2", now, "address2"), values(sqlBuilder));
     }
 
     @Test

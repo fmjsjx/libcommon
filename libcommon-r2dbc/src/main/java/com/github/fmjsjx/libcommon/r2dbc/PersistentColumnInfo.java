@@ -7,12 +7,17 @@ final class PersistentColumnInfo<T> {
     private final PersistentEntityInfo<T> entityInfo;
     private final String columnName;
     private final Function<T, Object> valueGetter;
+    private final boolean id;
+    private final boolean readOnly;
     private final boolean insertOnly;
 
-    private PersistentColumnInfo(PersistentEntityInfo<T> entityInfo, String columnName, Function<T, Object> valueGetter, boolean insertOnly) {
+    private PersistentColumnInfo(PersistentEntityInfo<T> entityInfo, String columnName, Function<T, Object> valueGetter,
+                                 boolean id, boolean readOnly, boolean insertOnly) {
         this.entityInfo = entityInfo;
         this.columnName = columnName;
         this.valueGetter = valueGetter;
+        this.id = id;
+        this.readOnly = readOnly;
         this.insertOnly = insertOnly;
     }
 
@@ -36,12 +41,20 @@ final class PersistentColumnInfo<T> {
         return getValueGetter().apply(entity);
     }
 
+    boolean isId() {
+        return id;
+    }
+
+    boolean isReadOnly() {
+        return readOnly;
+    }
+
     boolean isInsertOnly() {
         return insertOnly;
     }
 
     Builder toBuilder() {
-        return new Builder(entityInfo, columnName, valueGetter, insertOnly);
+        return new Builder(entityInfo, columnName, valueGetter, id, readOnly, insertOnly);
     }
 
     static final Builder builder() {
@@ -57,16 +70,20 @@ final class PersistentColumnInfo<T> {
         private PersistentEntityInfo<?> entityInfo;
         private String columnName;
         private Function<?, Object> valueGetter;
+        private boolean id;
+        private boolean readOnly;
         private boolean insertOnly;
 
         private Builder() {
         }
 
         private Builder(PersistentEntityInfo<?> entityInfo, String columnName, Function<?, Object> valueGetter,
-                        boolean insertOnly) {
+                        boolean id, boolean readOnly, boolean insertOnly) {
             this.entityInfo = entityInfo;
             this.columnName = columnName;
             this.valueGetter = valueGetter;
+            this.id = id;
+            this.readOnly = readOnly;
             this.insertOnly = insertOnly;
         }
 
@@ -82,6 +99,16 @@ final class PersistentColumnInfo<T> {
 
         Builder valueGetter(Function<?, Object> valueGetter) {
             this.valueGetter = valueGetter;
+            return this;
+        }
+
+        Builder id(boolean id) {
+            this.id = id;
+            return this;
+        }
+
+        Builder readOnly(boolean readOnly) {
+            this.readOnly = readOnly;
             return this;
         }
 
@@ -104,8 +131,10 @@ final class PersistentColumnInfo<T> {
             var entityInfo = (PersistentEntityInfo<T>) this.entityInfo;
             var columnName = this.columnName;
             var valueGetter = (Function<T, Object>) this.valueGetter;
+            var id = this.id;
+            var readOnly = this.readOnly;
             var insertOnly = this.insertOnly;
-            return new PersistentColumnInfo<>(entityInfo, columnName, valueGetter, insertOnly);
+            return new PersistentColumnInfo<>(entityInfo, columnName, valueGetter, id, readOnly, insertOnly);
         }
 
         @Override
@@ -114,6 +143,8 @@ final class PersistentColumnInfo<T> {
                     "entityInfo=" + entityInfo +
                     ", columnName='" + columnName + '\'' +
                     ", valueGetter=" + valueGetter +
+                    ", id=" + id +
+                    ", readOnly=" + readOnly +
                     ", insertOnly=" + insertOnly +
                     '}';
         }

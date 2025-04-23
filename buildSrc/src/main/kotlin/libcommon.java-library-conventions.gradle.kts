@@ -27,6 +27,8 @@ dependencies {
     api(platform("io.prometheus:simpleclient_bom:0.16.0"))
     // kotlin
     api(platform("org.jetbrains.kotlin:kotlin-bom:1.9.0"))
+    // spring boot
+    api(platform("org.springframework.boot:spring-boot-dependencies:3.4.4"))
 
     constraints {
         implementation("org.slf4j:slf4j-api:2.0.17")

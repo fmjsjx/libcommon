@@ -38,6 +38,11 @@ public enum ParameterStyle {
      * Oracle
      */
     ORACLE,
+    /**
+     * JDBC
+     * @since 3.13
+     */
+    JDBC,
     ;
 
     private final boolean prefixed;
