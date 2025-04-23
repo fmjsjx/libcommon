@@ -9,7 +9,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
     compileOnly("com.google.code.findbugs:jsr305")
     implementation(project(":libcommon-util"))
-    api("org.springframework.data:spring-data-r2dbc:3.4.2")
+    api("org.springframework.data:spring-data-r2dbc")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

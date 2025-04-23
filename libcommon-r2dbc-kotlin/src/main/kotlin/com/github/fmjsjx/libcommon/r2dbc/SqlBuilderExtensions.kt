@@ -26,23 +26,153 @@ fun SqlBuilder.isIn(values: List<Any>): SqlBuilder = `in`(values)
 fun SqlBuilder.isIn(vararg values: Any): SqlBuilder = `in`(*values)
 
 /**
+ * Append columns in the select part of the SQL.
+ *
+ * @param E the entity type from which to get the table name
+ * @param tableAlias the alias of the table
+ * @param columnsAliasPrefix the prefix for column aliases
+ * @return this [SqlBuilder]
+ * @since 3.13
+ */
+inline fun <reified E : Any>SqlBuilder.appendColumns(
+    tableAlias: String? = null,
+    columnsAliasPrefix: String? = null,
+): SqlBuilder = appendColumns(E::class, tableAlias, columnsAliasPrefix)
+
+/**
+ * Append columns in the select part of the SQL.
+ *
+ * @param type the entity kotlin class from which to get the table name
+ * @param tableAlias the alias of the table
+ * @param columnsAliasPrefix the prefix for column aliases
+ * @return this [SqlBuilder]
+ * @since 3.13
+ */
+fun <E : Any> SqlBuilder.appendColumns(
+    type: KClass<E>,
+    tableAlias: String? = null,
+    columnsAliasPrefix: String? = null,
+): SqlBuilder = appendColumns(type.java, tableAlias, columnsAliasPrefix)
+
+/**
+ * Select columns.
+ *
+ * @param E the entity type from which to get the table name
+ * @param tableAlias the alias of the table
+ * @param columnsAliasPrefix the prefix for column aliases
+ * @return this [SqlBuilder]
+ * @since 3.13
+ */
+inline fun <reified E : Any> SqlBuilder.select(
+    tableAlias: String? = null,
+    columnsAliasPrefix: String? = null,
+): SqlBuilder = select(E::class.java, tableAlias, columnsAliasPrefix)
+
+/**
+ * Select columns.
+ *
+ * @param type the entity kotlin class from which to get the table name
+ * @param tableAlias the alias of the table
+ * @param columnsAliasPrefix the prefix for column aliases
+ * @return this [SqlBuilder]
+ * @since 3.13
+ */
+fun <E : Any> SqlBuilder.select(
+    type: KClass<E>,
+    tableAlias: String? = null,
+    columnsAliasPrefix: String? = null,
+): SqlBuilder = select(type.java, tableAlias, columnsAliasPrefix)
+
+/**
  * Finish select part and append `FROM` into SQL.
  *
  * @param E the entity type from which to get the table name
+ * @param tableAlias the alias of the table
  * @return this [SqlBuilder]
- * @since 3.11
+ * @since 3.13
  */
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
-inline fun <reified E : Any> SqlBuilder.from(): SqlBuilder = from(E::class)
+inline fun <reified E : Any> SqlBuilder.from(tableAlias: String? = null): SqlBuilder = from(E::class, tableAlias)
 
 /**
  * Finish select part and append `FROM` into SQL.
  *
  * @param type the entity kotlin class from which to get the table name
+ * @param tableAlias the alias of the table
  * @return this [SqlBuilder]
- * @since 3.11
+ * @since 3.13
  */
-fun <E : Any> SqlBuilder.from(type: KClass<E>): SqlBuilder = from(type.java)
+fun <E : Any> SqlBuilder.from(type: KClass<E>, tableAlias: String? = null): SqlBuilder =
+    tableAlias?.let { from(type.java, it) } ?: from(type.java)
+
+/**
+ * Append {@code INNER JOIN} into SQL.
+ *
+ * @param E the entity type from which to get the table name
+ * @param tableAlias the alias of the table
+ * @return this [SqlBuilder]
+ * @since 3.13
+ */
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+inline fun <reified E : Any> SqlBuilder.innerJoin(tableAlias: String? = null): SqlBuilder =
+    innerJoin(E::class, tableAlias)
+
+/**
+ * Append {@code INNER JOIN} into SQL.
+ *
+ * @param type the entity kotlin class from which to get the table name
+ * @param tableAlias the alias of the table
+ * @return this [SqlBuilder]
+ * @since 3.13
+ */
+fun <E : Any> SqlBuilder.innerJoin(type: KClass<E>, tableAlias: String? = null): SqlBuilder =
+    tableAlias?.let { innerJoin(type.java, tableAlias) } ?: innerJoin(type.java)
+
+/**
+ * Append {@code LEFT JOIN} into SQL.
+ *
+ * @param E the entity type from which to get the table name
+ * @param tableAlias the alias of the table
+ * @return this [SqlBuilder]
+ * @since 3.13
+ */
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+inline fun <reified E : Any> SqlBuilder.leftJoin(tableAlias: String? = null): SqlBuilder =
+    leftJoin(E::class, tableAlias)
+
+/**
+ * Append {@code LEFT JOIN} into SQL.
+ *
+ * @param type the entity kotlin class from which to get the table name
+ * @param tableAlias the alias of the table
+ * @return this [SqlBuilder]
+ * @since 3.13
+ */
+fun <E : Any> SqlBuilder.leftJoin(type: KClass<E>, tableAlias: String? = null): SqlBuilder =
+    tableAlias?.let { leftJoin(type.java, tableAlias) } ?: leftJoin(type.java)
+
+/**
+ * Append {@code RIGHT JOIN} into SQL.
+ *
+ * @param E the entity type from which to get the table name
+ * @param tableAlias the alias of the table
+ * @return this [SqlBuilder]
+ * @since 3.13
+ */
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+inline fun <reified E : Any> SqlBuilder.rightJoin(tableAlias: String? = null): SqlBuilder =
+    rightJoin(E::class, tableAlias)
+
+/**
+ * Append {@code RIGHT JOIN} into SQL.
+ *
+ * @param type the entity kotlin class from which to get the table name
+ * @param tableAlias the alias of the table
+ * @return this [SqlBuilder]
+ * @since 3.13
+ */
+fun <E : Any> SqlBuilder.rightJoin(type: KClass<E>, tableAlias: String? = null): SqlBuilder =
+    tableAlias?.let { rightJoin(type.java, tableAlias) } ?: rightJoin(type.java)
 
 /**
  * Finish select part and append `FROM` into SQL.
@@ -79,10 +209,11 @@ fun SqlBuilder.into(entityType: KClass<*>): SqlBuilder = into(entityType.java)
  * the SQL
  *
  * @param E the entity type
+ * @param generateId `true` if it should skip ID column
  * @return this [SqlBuilder]
- * @since 3.11
+ * @since 3.13
  */
-inline fun <reified E : Any> SqlBuilder.columns(): SqlBuilder = columns(E::class)
+inline fun <reified E : Any> SqlBuilder.columns(generateId: Boolean = true): SqlBuilder = columns(E::class, generateId)
 
 /**
  * Append columns, extracted from the specified entityType given, into
@@ -90,10 +221,14 @@ inline fun <reified E : Any> SqlBuilder.columns(): SqlBuilder = columns(E::class
  *
  * @param E the entity type
  * @param entityType the entity kotlin class
+ * @param generateId `true` if it should skip ID column
  * @return this [SqlBuilder]
- * @since 3.11
+ * @since 3.13
  */
-fun <E : Any> SqlBuilder.columns(entityType: KClass<E>): SqlBuilder = columns(entityType.java)
+fun <E : Any> SqlBuilder.columns(
+    entityType: KClass<E>,
+    generateId: Boolean = true,
+): SqlBuilder = columns(entityType.java, generateId)
 
 /**
  * Append `UPDATE` clause into SQL for the table extracted from the

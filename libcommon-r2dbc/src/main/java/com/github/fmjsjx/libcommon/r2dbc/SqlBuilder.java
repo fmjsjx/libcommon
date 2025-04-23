@@ -2,6 +2,7 @@ package com.github.fmjsjx.libcommon.r2dbc;
 
 import com.github.fmjsjx.libcommon.util.StringUtil;
 import com.github.fmjsjx.libcommon.util.concurrent.EasyThreadLocal;
+import io.r2dbc.spi.Parameter;
 import io.r2dbc.spi.Parameters;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.ReadOnlyProperty;
@@ -153,9 +154,25 @@ public class SqlBuilder {
     }
 
     /**
-     * Append the specified sql part string into the {@code sqlParts}.
+     * Returns a list copy of the {@code values} for JDBC.
      *
-     * @param sqlPart the sql part string
+     * @return a list copy of the {@code values} for JDBC
+     * @since 3.13
+     */
+    public List<Object> getValuesForJdbc() {
+        return values.stream().map(it -> {
+            if (it instanceof Parameter p) {
+                return p.getValue();
+            } else {
+                return it;
+            }
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * Append the specified SQL part string into the {@code sqlParts}.
+     *
+     * @param sqlPart the SQL part string
      * @return this {@link SqlBuilder}
      */
     public SqlBuilder appendSql(String sqlPart) {
@@ -164,9 +181,9 @@ public class SqlBuilder {
     }
 
     /**
-     * Append the specified sql part strings into the {@code sqlParts}.
+     * Append the specified SQL part strings into the {@code sqlParts}.
      *
-     * @param sqlParts the array of sql part strings
+     * @param sqlParts the array of SQL part strings
      * @return this {@link SqlBuilder}
      */
     public SqlBuilder appendSql(String... sqlParts) {
@@ -177,9 +194,9 @@ public class SqlBuilder {
     }
 
     /**
-     * Append the specified sql part strings into the {@code sqlParts}.
+     * Append the specified SQL part strings into the {@code sqlParts}.
      *
-     * @param sqlParts the list contains sql part strings
+     * @param sqlParts the list contains SQL part strings
      * @return this {@link SqlBuilder}
      */
     public SqlBuilder appendSql(List<String> sqlParts) {
@@ -192,7 +209,7 @@ public class SqlBuilder {
     /**
      * An alias for the method {@link #appendSql(String)}.
      *
-     * @param sqlPart the sql part string
+     * @param sqlPart the SQL part string
      * @return this {@link SqlBuilder}
      * @see #appendSql(String)
      */
@@ -203,7 +220,7 @@ public class SqlBuilder {
     /**
      * An alias for the method {@link #appendSql(String...)}.
      *
-     * @param sqlParts the array of sql part strings
+     * @param sqlParts the array of SQL part strings
      * @return this {@link SqlBuilder}
      * @see #appendSql(String...)
      */
@@ -214,7 +231,7 @@ public class SqlBuilder {
     /**
      * An alias for the method {@link #appendSql(List)}.
      *
-     * @param sqlParts the list contains sql part strings
+     * @param sqlParts the list contains SQL part strings
      * @return this {@link SqlBuilder}
      * @see #appendSql(List)
      */
@@ -305,14 +322,14 @@ public class SqlBuilder {
     }
 
     /**
-     * Append the specified sql part string into the {@code sqlParts}
+     * Append the specified SQL part string into the {@code sqlParts}
      * and then add values as parameters identified by their {@code index}.
      * <p>
      * This method is equivalent to: <pre>{@code
      * appendSql(sqlPart).addValues(values);
      * }</pre>
      *
-     * @param sqlPart the sql part string
+     * @param sqlPart the SQL part string
      * @param values  an array of values
      * @return this {@link SqlBuilder}
      * @see #appendSql(String)
@@ -323,14 +340,14 @@ public class SqlBuilder {
     }
 
     /**
-     * Append the specified sql part string into the {@code sqlParts}
+     * Append the specified SQL part string into the {@code sqlParts}
      * and then add values as parameters identified by their {@code index}.
      * <p>
      * This method is equivalent to: <pre>{@code
      * appendSql(sqlPart).addValues(values);
      * }</pre>
      *
-     * @param sqlPart the sql part string
+     * @param sqlPart the SQL part string
      * @param values  a list contains values
      * @return this {@link SqlBuilder}
      * @see #appendSql(String)
@@ -343,7 +360,7 @@ public class SqlBuilder {
     /**
      * An alias for the method {@link #appendSqlValues(String, Object...)}.
      *
-     * @param sqlPart the sql part string
+     * @param sqlPart the SQL part string
      * @param values  an array of values
      * @return this {@link SqlBuilder}
      * @see #appendSql(String)
@@ -357,7 +374,7 @@ public class SqlBuilder {
     /**
      * An alias for the method {@link #appendSqlValues(String, List)}.
      *
-     * @param sqlPart the sql part string
+     * @param sqlPart the SQL part string
      * @param values  a list contains values
      * @return this {@link SqlBuilder}
      * @see #appendSql(String)
@@ -547,6 +564,48 @@ public class SqlBuilder {
     }
 
     /**
+     * Append columns in the select part of the SQL.
+     *
+     * @param entityClass the entity class from which to get the columns
+     * @param <E>         the entity type
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public <E> SqlBuilder appendColumns(Class<E> entityClass) {
+        return appendColumns(entityClass, null);
+    }
+
+    /**
+     * Append columns in the select part of the SQL.
+     *
+     * @param entityClass the entity class from which to get the columns
+     * @param tableAlias  the alias of the table
+     * @param <E>         the entity type
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public <E> SqlBuilder appendColumns(Class<E> entityClass, String tableAlias) {
+        return appendColumns(entityClass, tableAlias, null);
+    }
+
+    /**
+     * Append columns in the select part of the SQL.
+     *
+     * @param entityClass        the entity class from which to get the columns
+     * @param tableAlias         the alias of the table
+     * @param columnsAliasPrefix the prefix for column aliases
+     * @param <E>                the entity type
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public <E> SqlBuilder appendColumns(Class<E> entityClass, String tableAlias, String columnsAliasPrefix) {
+        var info = getRequiredPersistentEntityInfo(entityClass);
+        var columns = info.getSelectColumns(tableAlias, columnsAliasPrefix);
+        ensureSelectColumns().add(columns);
+        return this;
+    }
+
+    /**
      * Select columns.
      *
      * @param columns the columns SQL string
@@ -583,6 +642,45 @@ public class SqlBuilder {
      */
     public SqlBuilder select(List<String> columns) {
         return select().appendColumns(columns);
+    }
+
+    /**
+     * Select columns.
+     *
+     * @param entityClass the entity class from which to get the columns
+     * @param <E>         the entity type
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public <E> SqlBuilder select(Class<E> entityClass) {
+        return select().appendColumns(entityClass);
+    }
+
+    /**
+     * Select columns.
+     *
+     * @param entityClass the entity class from which to get the columns
+     * @param tableAlias  the alias of the table
+     * @param <E>         the entity type
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public <E> SqlBuilder select(Class<E> entityClass, String tableAlias) {
+        return select().appendColumns(entityClass, tableAlias);
+    }
+
+    /**
+     * Select columns.
+     *
+     * @param entityClass        the entity class from which to get the columns
+     * @param tableAlias         the alias of the table
+     * @param columnsAliasPrefix the prefix for column aliases
+     * @param <E>                the entity type
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public <E> SqlBuilder select(Class<E> entityClass, String tableAlias, String columnsAliasPrefix) {
+        return select().appendColumns(entityClass, tableAlias, columnsAliasPrefix);
     }
 
     /**
@@ -762,6 +860,21 @@ public class SqlBuilder {
      * <B>Note</B>: This method will trigger a {@link #finishSelect()}
      * call at first.
      *
+     * @param entityClass the entity class from which to get the table name
+     * @param tableAlias  the alias of the table
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public SqlBuilder from(Class<?> entityClass, String tableAlias) {
+        return from(getTableName(entityClass)).s(tableAlias);
+    }
+
+    /**
+     * Finish select part and append {@code FROM} into SQL.
+     * <p>
+     * <B>Note</B>: This method will trigger a {@link #finishSelect()}
+     * call at first.
+     *
      * @param entityClasses the array of entity classes from which to get
      *                      the table names
      * @return this {@link SqlBuilder}
@@ -799,6 +912,29 @@ public class SqlBuilder {
     /**
      * Append {@code INNER JOIN} into SQL.
      *
+     * @param entityClass the entity class from which to get the table name
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public SqlBuilder innerJoin(Class<?> entityClass) {
+        return join("INNER", getTableName(entityClass));
+    }
+
+    /**
+     * Append {@code INNER JOIN} into SQL.
+     *
+     * @param entityClass the entity class from which to get the table name
+     * @param tableAlias  the alias of the table
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public SqlBuilder innerJoin(Class<?> entityClass, String tableAlias) {
+        return innerJoin(entityClass).s(tableAlias);
+    }
+
+    /**
+     * Append {@code INNER JOIN} into SQL.
+     *
      * @param subqueryBuilder the {@link SqlBuilder} in subquery mode to
      *                        be joined
      * @param tableAlias      the alias of the subquery
@@ -831,6 +967,29 @@ public class SqlBuilder {
     /**
      * Append {@code LEFT JOIN} into SQL.
      *
+     * @param entityClass the entity class from which to get the table name
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public SqlBuilder leftJoin(Class<?> entityClass) {
+        return join("LEFT", getTableName(entityClass));
+    }
+
+    /**
+     * Append {@code LEFT JOIN} into SQL.
+     *
+     * @param entityClass the entity class from which to get the table name
+     * @param tableAlias  the alias of the table
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public SqlBuilder leftJoin(Class<?> entityClass, String tableAlias) {
+        return leftJoin(entityClass).s(tableAlias);
+    }
+
+    /**
+     * Append {@code LEFT JOIN} into SQL.
+     *
      * @param subqueryBuilder the {@link SqlBuilder} in subquery mode to
      *                        be joined
      * @param tableAlias      the alias of the subquery
@@ -858,6 +1017,30 @@ public class SqlBuilder {
      */
     public SqlBuilder rightJoin(String table) {
         return join("RIGHT", table);
+    }
+
+    /**
+     * Append {@code RIGHT JOIN} into SQL.
+     *
+     * @param entityClass the entity class from which to get the table name
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public SqlBuilder rightJoin(Class<?> entityClass) {
+        return join("RIGHT", getTableName(entityClass));
+    }
+
+
+    /**
+     * Append {@code RIGHT JOIN} into SQL.
+     *
+     * @param entityClass the entity class from which to get the table name
+     * @param tableAlias  the alias of the table
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public SqlBuilder rightJoin(Class<?> entityClass, String tableAlias) {
+        return rightJoin(entityClass).s(tableAlias);
     }
 
     /**
@@ -1778,8 +1961,23 @@ public class SqlBuilder {
      * @return this {@link SqlBuilder}
      */
     public <E> SqlBuilder columns(Class<E> entityClass) {
+        return columns(entityClass, true);
+    }
+
+    /**
+     * Append columns extracted from the specified entityClass into SQL.
+     *
+     * @param entityClass the entity class
+     * @param generateId  {@code true} if it should skip ID column
+     * @param <E>         the entity type
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public <E> SqlBuilder columns(Class<E> entityClass, boolean generateId) {
         var info = getRequiredPersistentEntityInfo(entityClass);
-        var columns = info.getColumns().stream().map(PersistentColumnInfo::getColumnName).collect(Collectors.joining(", "));
+        var columns = info.getColumns().stream()
+                .filter(it -> !it.isReadOnly() && (!generateId || !it.isId()))
+                .map(PersistentColumnInfo::getColumnName).collect(Collectors.joining(", "));
         return columns(columns);
     }
 
@@ -1824,9 +2022,7 @@ public class SqlBuilder {
                 if ((field.getModifiers() & (Modifier.STATIC | Modifier.TRANSIENT)) != 0) {
                     continue;
                 }
-                if (field.isAnnotationPresent(Id.class) ||
-                        field.isAnnotationPresent(Transient.class) ||
-                        field.isAnnotationPresent(ReadOnlyProperty.class)) {
+                if (field.isAnnotationPresent(Transient.class)) {
                     continue;
                 }
                 if (tryAppendEmbeddedColumns(entityClass, field, columnBuilders)) {
@@ -1842,10 +2038,14 @@ public class SqlBuilder {
                 if (valueGetter == null) {
                     continue;
                 }
+                var id = field.isAnnotationPresent(Id.class);
+                var readOnly = field.isAnnotationPresent(ReadOnlyProperty.class);
                 var insertOnly = field.isAnnotationPresent(InsertOnlyProperty.class);
                 var builder = PersistentColumnInfo.builder()
                         .columnName(columnName)
                         .valueGetter(valueGetter)
+                        .id(id)
+                        .readOnly(readOnly)
                         .insertOnly(insertOnly);
                 columnBuilders.add(builder);
             }
@@ -1962,10 +2162,23 @@ public class SqlBuilder {
      * @param <E>    the entity type
      * @return this {@link SqlBuilder}
      */
-    @SuppressWarnings("unchecked")
     public <E> SqlBuilder value(E entity) {
+        return value(entity, true);
+    }
+
+    /**
+     * Append {@code VALUE} into SQL with the values extracted from the
+     * specified entity given.
+     *
+     * @param entity     the entity object
+     * @param generateId {@code true} if it should skip ID column
+     * @param <E>        the entity type
+     * @return this {@link SqlBuilder}
+     */
+    @SuppressWarnings("unchecked")
+    public <E> SqlBuilder value(E entity, boolean generateId) {
         Objects.requireNonNull(entity, "entity must not be null");
-        return value((Class<E>) entity.getClass(), entity);
+        return value((Class<E>) entity.getClass(), entity, generateId);
     }
 
     /**
@@ -1978,12 +2191,31 @@ public class SqlBuilder {
      * @return this {@link SqlBuilder}
      */
     public <E> SqlBuilder value(Class<E> entityClass, E entity) {
-        var info = getRequiredPersistentEntityInfo(entityClass);
-        return value().s("(", questionMarks(info.getColumns().size()), ")").addValues(info, entity);
+        return value(entityClass, entity, true);
     }
 
-    <E> SqlBuilder addValues(PersistentEntityInfo<E> info, E entity) {
+    /**
+     * Append {@code VALUE} into SQL with the values extracted from the
+     * specified entity given.
+     *
+     * @param entityClass the entity class
+     * @param entity      the entity object
+     * @param generateId  {@code true} if it should skip ID column
+     * @param <E>         the entity type
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    public <E> SqlBuilder value(Class<E> entityClass, E entity, boolean generateId) {
+        var info = getRequiredPersistentEntityInfo(entityClass);
+        var questionMarks = questionMarks(generateId ? info.getInsertColumnsWithoutId() : info.getInsertColumns());
+        return value().s("(", questionMarks, ")").addValues(info, entity, generateId);
+    }
+
+    <E> SqlBuilder addValues(PersistentEntityInfo<E> info, E entity, boolean generateId) {
         for (var column : info.getColumns()) {
+            if (column.isReadOnly() || (generateId && column.isId())) {
+                continue;
+            }
             v(column.getValue(entity));
         }
         return this;
@@ -2006,11 +2238,25 @@ public class SqlBuilder {
      * @param <E>    the entity type
      * @return this {@link SqlBuilder}
      */
-    @SuppressWarnings("unchecked")
     public <E> SqlBuilder values(E entity) {
+        return values(entity, true);
+    }
+
+    /**
+     * Append {@code VALUES} into SQL with the values extracted from the
+     * specified entity given.
+     *
+     * @param entity     the entity object
+     * @param generateId {@code true} if it should skip ID column
+     * @param <E>        the entity type
+     * @return this {@link SqlBuilder}
+     * @since 3.13
+     */
+    @SuppressWarnings("unchecked")
+    public <E> SqlBuilder values(E entity, boolean generateId) {
         Objects.requireNonNull(entity, "entity must not be null");
         Class<E> entityClass = (Class<E>) entity.getClass();
-        return values(entityClass, List.of(entity), false);
+        return values(entityClass, List.of(entity), generateId, false);
     }
 
     /**
@@ -2021,13 +2267,26 @@ public class SqlBuilder {
      * @param <E>        the entity type
      * @return this {@link SqlBuilder}
      */
-    @SuppressWarnings("unchecked")
     public <E> SqlBuilder values(List<E> entityList) {
+        return values(entityList, true);
+    }
+
+    /**
+     * Append {@code VALUES} into SQL with the values extracted from the
+     * specified entityList given.
+     *
+     * @param entityList a list contains entity objects
+     * @param generateId {@code true} if it should skip ID column
+     * @param <E>        the entity type
+     * @return this {@link SqlBuilder}
+     */
+    @SuppressWarnings("unchecked")
+    public <E> SqlBuilder values(List<E> entityList, boolean generateId) {
         if (entityList.isEmpty()) {
             throw new IllegalArgumentException("entityList must not be empty");
         }
         Class<E> entityClass = (Class<E>) entityList.get(0).getClass();
-        return values(entityClass, entityList, false);
+        return values(entityClass, entityList, generateId, false);
     }
 
     /**
@@ -2043,19 +2302,33 @@ public class SqlBuilder {
         return values(entityClass, entityList, true);
     }
 
-    <E> SqlBuilder values(Class<E> entityClass, List<E> entityList, boolean checkEmpty) {
+    /**
+     * Append {@code VALUES} into SQL with the values extracted from the
+     * specified entityClass and the specified entityList given.
+     *
+     * @param entityClass the entity class
+     * @param entityList  a list contains entity objects
+     * @param generateId  {@code true} if it should skip ID column
+     * @param <E>         the entity type
+     * @return this {@link SqlBuilder}
+     */
+    public <E> SqlBuilder values(Class<E> entityClass, List<E> entityList, boolean generateId) {
+        return values(entityClass, entityList, generateId, true);
+    }
+
+    <E> SqlBuilder values(Class<E> entityClass, List<E> entityList, boolean generateId, boolean checkEmpty) {
         if (checkEmpty && entityList.isEmpty()) {
             throw new IllegalArgumentException("entityList must not be empty");
         }
         var info = getRequiredPersistentEntityInfo(entityClass);
         values();
-        var questionMarks = questionMarks(info.getColumns().size());
+        var questionMarks = questionMarks(generateId ? info.getInsertColumnsWithoutId() : info.getInsertColumns());
         var index = 0;
         for (var entity : entityList) {
             if (index++ != 0) {
                 s(",");
             }
-            s("(", questionMarks, ")").addValues(info, entity);
+            s("(", questionMarks, ")").addValues(info, entity, generateId);
         }
         return this;
     }
@@ -2225,7 +2498,7 @@ public class SqlBuilder {
     public <E> SqlBuilder appendAssignments(Class<E> entityClass, E entity) {
         var info = getRequiredPersistentEntityInfo(entityClass);
         for (var column : info.getColumns()) {
-            if (!column.isInsertOnly()) {
+            if (!column.isInsertOnly() && !column.isId() && !column.isReadOnly()) {
                 var value = column.getValue(entity);
                 if (value != null) {
                     appendAssignment(column.getColumnName(), value);

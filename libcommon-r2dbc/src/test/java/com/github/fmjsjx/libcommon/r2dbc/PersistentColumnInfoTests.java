@@ -42,12 +42,16 @@ public class PersistentColumnInfoTests {
         assertEquals(mockEntityInfo, info.getEntityInfo());
         assertEquals("test", info.getColumnName());
         assertEquals(mockValueGetter, info.getValueGetter());
+        assertFalse(info.isId());
+        assertFalse(info.isReadOnly());
         assertFalse(info.isInsertOnly());
-        info = builder.insertOnly(true).build();
+        info = builder.id(true).readOnly(true).insertOnly(true).build();
         assertNotNull(info);
         assertEquals(mockEntityInfo, info.getEntityInfo());
         assertEquals("test", info.getColumnName());
         assertEquals(mockValueGetter, info.getValueGetter());
+        assertTrue(info.isId());
+        assertTrue(info.isReadOnly());
         assertTrue(info.isInsertOnly());
     }
 
