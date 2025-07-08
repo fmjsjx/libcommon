@@ -22,7 +22,7 @@ inline val fastjson2Library: Fastjson2Library get() = Fastjson2Library.getInstan
 fun Any?.toFastjson2String(): String = fastjson2Library.dumpsToString(this)
 
 /**
- * Extension to encode any object to JSON value as byte array.
+ * Extension to encode any object to JSON value as a byte array.
  *
  * @author MJ Fang
  * @since 3.4
@@ -127,8 +127,7 @@ inline fun <reified T> ByteArray.parseFastjson2(): T = parseFastjson2(T::class.j
  * @author MJ Fang
  * @since 3.4
  */
-infix fun <T> ByteArray.parseFastjson2(typeReference: TypeReference<T>): T =
-    fastjson2Library.loads(toString(), typeReference)
+infix fun <T> ByteArray.parseFastjson2(typeReference: TypeReference<T>): T = fastjson2Library.loads(this, typeReference)
 
 /**
  * Extension to decode data from byte array.
@@ -136,23 +135,23 @@ infix fun <T> ByteArray.parseFastjson2(typeReference: TypeReference<T>): T =
  * @author MJ Fang
  * @since 3.4
  */
-infix fun <T> ByteArray.parseFastjson2(type: Type): T = fastjson2Library.loads(toString(), type)
+infix fun <T> ByteArray.parseFastjson2(type: Type): T = fastjson2Library.loads(this, type)
 
 /**
- * Extension to decode [JSONObject] from byte array.
+ * Extension to decode [JSONObject] from a byte array.
  *
  * @author MJ Fang
  * @since 3.4
  */
-fun ByteArray.parseJSONObject(): JSONObject = fastjson2Library.loads(toString())
+fun ByteArray.parseJSONObject(): JSONObject = fastjson2Library.loads(this)
 
 /**
- * Extension to decode [JSONArray] from byte array.
+ * Extension to decode [JSONArray] from a byte array.
  *
  * @author MJ Fang
  * @since 3.4
  */
-fun ByteArray.parseJSONArray(): JSONArray = fastjson2Library.loadsArray(toString())
+fun ByteArray.parseJSONArray(): JSONArray = fastjson2Library.loadsArray(this)
 
 /**
  * Extension for [Fastjson2Library.listTypeReference] leveraging reified type parameters.
