@@ -20,7 +20,7 @@ dependencies {
 description = "libcommon/Collection"
 
 tasks.test {
-    // Use junit platform for unit tests.
+    // Use the junit platform for unit tests.
     useJUnitPlatform()
 }
 
