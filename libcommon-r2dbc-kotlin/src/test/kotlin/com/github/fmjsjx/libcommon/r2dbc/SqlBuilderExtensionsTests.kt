@@ -68,7 +68,6 @@ class SqlBuilderExtensionsTests {
         var other1: Any? = null,
         @SpringDataTransient
         var other2: Any? = null,
-        @Column("update_time")
         @ReadOnlyProperty
         var updateTime: LocalDateTime? = null,
     )

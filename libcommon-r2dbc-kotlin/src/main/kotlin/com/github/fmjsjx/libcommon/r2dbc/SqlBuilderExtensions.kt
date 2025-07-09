@@ -2,6 +2,7 @@ package com.github.fmjsjx.libcommon.r2dbc
 
 import com.github.fmjsjx.libcommon.r2dbc.Sort.ASC
 import com.github.fmjsjx.libcommon.r2dbc.Sort.DESC
+import com.github.fmjsjx.libcommon.r2dbc.SqlBuilder.toSnakeCase
 import org.springframework.data.relational.core.mapping.Column
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
@@ -10,7 +11,7 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.jvm.javaField
 
 /**
- * An alias for the method [SqlBuilder.in].
+ * An alias for the method [SqlBuilder. in].
  *
  * @return this [SqlBuilder]
  * @since 3.11
@@ -18,12 +19,40 @@ import kotlin.reflect.jvm.javaField
 fun SqlBuilder.isIn(values: List<Any>): SqlBuilder = `in`(values)
 
 /**
- * An alias for the method [SqlBuilder.in].
+ * An alias for the method [SqlBuilder. in].
  *
  * @return this [SqlBuilder]
  * @since 3.11
  */
 fun SqlBuilder.isIn(vararg values: Any): SqlBuilder = `in`(*values)
+
+/**
+ * Append `NOT IN` predicate into SQL.
+ *
+ * This method is equivalent to:
+ * ```
+ * not().`in`(values)
+ * ```
+ *
+ * @param values a list contains values
+ * @return this [SqlBuilder]
+ * @since 3.14
+ */
+fun SqlBuilder.notIn(values: List<Any>): SqlBuilder = not().`in`(values)
+
+/**
+ * Append `NOT IN` predicate into SQL.
+ *
+ * This method is equivalent to:
+ * ```
+ * not().`in`(values)
+ * ```
+ *
+ * @param values an array of values
+ * @return this [SqlBuilder]
+ * @since 3.14
+ */
+fun SqlBuilder.notIn(vararg values: Any): SqlBuilder = not().`in`(*values)
 
 /**
  * Append columns in the select part of the SQL.
@@ -34,7 +63,7 @@ fun SqlBuilder.isIn(vararg values: Any): SqlBuilder = `in`(*values)
  * @return this [SqlBuilder]
  * @since 3.13
  */
-inline fun <reified E : Any>SqlBuilder.appendColumns(
+inline fun <reified E : Any> SqlBuilder.appendColumns(
     tableAlias: String? = null,
     columnsAliasPrefix: String? = null,
 ): SqlBuilder = appendColumns(E::class, tableAlias, columnsAliasPrefix)
@@ -257,12 +286,13 @@ private object FieldColumnMappingsHolder {
 
 /**
  * Convert field to column name string.
- *
+ * > Since version 3.14, the default column name change to be the snake case of the field name.
  * @return the column name
  * @since 3.12
  */
-fun <T, V> KProperty1<T, V>.toColumn(): String =
-    FieldColumnMappingsHolder.mappings.getOrPut(this) { javaField?.getAnnotation(Column::class.java)?.value ?: name }
+fun <T, V> KProperty1<T, V>.toColumn(): String = FieldColumnMappingsHolder.mappings.getOrPut(this) {
+    javaField?.getAnnotation(Column::class.java)?.value ?: toSnakeCase(name)
+}
 
 /**
  * Convert field to [Order].
