@@ -25,6 +25,7 @@ dependencies {
     api(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"))
     // prometheus
     api(platform("io.prometheus:simpleclient_bom:0.16.0"))
+    api(platform("io.prometheus:prometheus-metrics-bom:1.3.9"))
     // kotlin
     api(platform("org.jetbrains.kotlin:kotlin-bom:2.1.0"))
     // spring boot
@@ -52,12 +53,6 @@ dependencies {
         implementation("org.jruby:jruby-core:$jrubyVersion")
         implementation("org.jruby:jruby-stdlib:$jrubyVersion")
         implementation("org.yaml:snakeyaml:2.2")
-        val prometheusVersion = "1.3.1"
-        api("io.prometheus:prometheus-metrics-core:$prometheusVersion")
-        api("io.prometheus:prometheus-metrics-model:$prometheusVersion")
-        api("io.prometheus:prometheus-metrics-tracer:$prometheusVersion")
-        api("io.prometheus:prometheus-metrics-exposition-formats:$prometheusVersion")
-        api("io.prometheus:prometheus-metrics-instrumentation-jvm:$prometheusVersion")
         api("javax.annotation:javax.annotation-api:1.3.2")
         api("jakarta.annotation:jakarta.annotation-api:3.0.0")
         api("com.google.code.findbugs:jsr305:3.0.2")
