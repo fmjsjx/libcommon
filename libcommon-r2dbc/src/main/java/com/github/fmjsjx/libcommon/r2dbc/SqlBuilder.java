@@ -812,15 +812,15 @@ public class SqlBuilder {
         return TableNamesHolder.CACHE.computeIfAbsent(entityClass, TableNamesHolder::getTableName);
     }
 
+    static final Pattern UPPER_CASE = Pattern.compile("[A-Z]");
+
+    static final String toSnakeCase(String name) {
+        var tmpName = Character.toLowerCase(name.charAt(0)) + name.substring(1);
+        return UPPER_CASE.matcher(tmpName).replaceAll(matchResult -> "_" + matchResult.group().toLowerCase());
+    }
+
     static final class TableNamesHolder {
         static final ConcurrentMap<Class<?>, String> CACHE = new ConcurrentHashMap<>();
-
-        static final Pattern UPPER_CASE = Pattern.compile("[A-Z]");
-
-        static final String toSnakeCase(String name) {
-            var tmpName = Character.toLowerCase(name.charAt(0)) + name.substring(1);
-            return UPPER_CASE.matcher(tmpName).replaceAll(matchResult -> "_" + matchResult.group().toLowerCase());
-        }
 
         static final String getTableName(Class<?> entityClass) {
             var tableName = "";
@@ -2028,7 +2028,7 @@ public class SqlBuilder {
                 if (tryAppendEmbeddedColumns(entityClass, field, columnBuilders)) {
                     continue;
                 }
-                var columnName = field.getName();
+                var columnName = toSnakeCase(field.getName());
                 if (field.isAnnotationPresent(Column.class)) {
                     var columnAnnotation = field.getAnnotation(Column.class);
                     assert columnAnnotation != null;

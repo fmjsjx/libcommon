@@ -42,18 +42,83 @@ fun R2dbcEntityOperations.execute(sqlBuilder: SqlBuilder): GenericExecuteSpec =
  * Execute SQL for select and returns one long result.
  *
  * @param sqlBuilder the [SqlBuilder]
- * @return a Mono emitting one long result
+ * @return a [Mono] emitting a long result in the first column of the first row
  * @since 3.11
  */
-fun R2dbcEntityOperations.selectLong(sqlBuilder: SqlBuilder): Mono<Long> =
-    execute(sqlBuilder).filter { it.fetchSize(1) }.mapValue(Long::class.java).one()
+fun R2dbcEntityOperations.selectLong(sqlBuilder: SqlBuilder): Mono<Long> = selectOneValue<Long>(sqlBuilder)
+
+/**
+ * Execute SQL for select and returns one value result.
+ *
+ * @param T the value type, such as [String], [Long], [Int], etc.
+ * @param sqlBuilder the [SqlBuilder]
+ * @return a [Mono] emitting a value result in the first column of the first row
+ * @since 3.14
+ */
+inline fun <reified T : Any> R2dbcEntityOperations.selectOneValue(sqlBuilder: SqlBuilder): Mono<T> =
+    selectOneValue(T::class, sqlBuilder)
+
+/**
+ * Execute SQL for select and returns one value result.
+ *
+ * @param valueClass the kotlin class of the value
+ * @param sqlBuilder the [SqlBuilder]
+ * @return a [Mono] emitting a value result in the first column of the first row
+ * @since 3.14
+ */
+fun <T : Any> R2dbcEntityOperations.selectOneValue(valueClass: KClass<T>, sqlBuilder: SqlBuilder): Mono<T> =
+    execute(sqlBuilder).filter { it.fetchSize(2) }.mapValue(valueClass.java).one()
+
+/**
+ * Execute SQL for select and returns all matching values in the first column.
+ *
+ * @param T the value type, such as [String], [Long], [Int], etc.
+ * @param sqlBuilder the [SqlBuilder]
+ * @return a [Flux] emitting all results
+ * @since 3.14
+ */
+inline fun <reified T : Any> R2dbcEntityOperations.selectValue(sqlBuilder: SqlBuilder): Flux<T> =
+    selectValue(T::class, sqlBuilder)
+
+/**
+ * Execute SQL for select and returns all matching values in the first column.
+ *
+ * @param valueClass the kotlin class of the value
+ * @param sqlBuilder the [SqlBuilder]
+ * @return a [Flux] emitting all results
+ * @since 3.14
+ */
+fun <T : Any> R2dbcEntityOperations.selectValue(valueClass: KClass<T>, sqlBuilder: SqlBuilder): Flux<T> =
+    execute(sqlBuilder).filter { it.fetchSize(2) }.mapValue(valueClass.java).all()
+
+/**
+ * Execute SQL for select and returns all matching values in the first column.
+ *
+ * @param T the value type, such as [String], [Long], [Int], etc.
+ * @param sqlBuilder the [SqlBuilder]
+ * @return a [Mono] emitting a List of all results
+ * @since 3.14
+ */
+inline fun <reified T : Any> R2dbcEntityOperations.selectValueList(sqlBuilder: SqlBuilder): Mono<List<T>> =
+    selectValueList(T::class, sqlBuilder)
+
+/**
+ * Execute SQL for select and returns all matching values in the first column.
+ *
+ * @param valueClass the kotlin class of the value
+ * @param sqlBuilder the [SqlBuilder]
+ * @return a [Mono] emitting a List of all results
+ * @since 3.14
+ */
+fun <T : Any> R2dbcEntityOperations.selectValueList(valueClass: KClass<T>, sqlBuilder: SqlBuilder): Mono<List<T>> =
+    selectValue(valueClass, sqlBuilder).collectList()
 
 /**
  * Execute SQL for select and returns all matching results.
  *
  * @param sqlBuilder the [SqlBuilder]
  * @param T the entity type
- * @return a Flux emitting all results
+ * @return a [Flux] emitting all results
  * @since 3.11
  */
 inline fun <reified T : Any> R2dbcEntityOperations.select(sqlBuilder: SqlBuilder): Flux<T> =
@@ -64,18 +129,40 @@ inline fun <reified T : Any> R2dbcEntityOperations.select(sqlBuilder: SqlBuilder
  *
  * @param entityClass the entity kotlin class
  * @param sqlBuilder the [SqlBuilder]
- * @return a Flux emitting all results
+ * @return a [Flux] emitting all results
  * @since 3.11
  */
 fun <T : Any> R2dbcEntityOperations.select(entityClass: KClass<T>, sqlBuilder: SqlBuilder): Flux<T> =
     execute(sqlBuilder).map { row, metadata -> converter.read(entityClass.java, row, metadata) }.all()
 
 /**
+ * Execute SQL for select and returns all matching results as a List.
+ *
+ * @param sqlBuilder the [SqlBuilder]
+ * @param T the entity type
+ * @return a [Mono] emitting a List of all results
+ * @since 3.14
+ */
+inline fun <reified T : Any> R2dbcEntityOperations.selectList(sqlBuilder: SqlBuilder): Mono<List<T>> =
+    selectList(T::class, sqlBuilder)
+
+/**
+ * Execute SQL for select and returns all matching results as a List.
+ *
+ * @param entityClass the entity kotlin class
+ * @param sqlBuilder the [SqlBuilder]
+ * @return a [Mono] emitting a List of all results
+ * @since 3.14
+ */
+fun <T : Any> R2dbcEntityOperations.selectList(entityClass: KClass<T>, sqlBuilder: SqlBuilder): Mono<List<T>> =
+    select(entityClass, sqlBuilder).collectList()
+
+/**
  * Execute SQL for select and returns exactly zero or one result.
  *
  * @param sqlBuilder the [SqlBuilder]
  * @param T the entity type
- * @return a Mono emitting one result, or [Mono.empty] if no match found.
+ * @return a [Mono] emitting one result, or [Mono.empty] if no match found.
  *         Completes with `IncorrectResultSizeDataAccessException` if more
  *         than one match found
  * @since 3.11
@@ -88,7 +175,7 @@ inline fun <reified T : Any> R2dbcEntityOperations.selectOne(sqlBuilder: SqlBuil
  *
  * @param entityClass the entity kotlin class
  * @param sqlBuilder the [SqlBuilder]
- * @return a Mono emitting one result, or [Mono.empty] if no match found.
+ * @return a [Mono] emitting one result, or [Mono.empty] if no match found.
  *         Completes with `IncorrectResultSizeDataAccessException` if more
  *         than one match found
  * @since 3.11
@@ -102,7 +189,7 @@ fun <T : Any> R2dbcEntityOperations.selectOne(entityClass: KClass<T>, sqlBuilder
  *
  * @param sqlBuilder the [SqlBuilder]
  * @param T the entity type
- * @return a Mono emitting first result, or [Mono.empty] if no match found
+ * @return a [Mono] emitting first result, or [Mono.empty] if no match found
  * @since 3.11
  */
 inline fun <reified T : Any> R2dbcEntityOperations.selectFirst(sqlBuilder: SqlBuilder): Mono<T> =
@@ -113,7 +200,7 @@ inline fun <reified T : Any> R2dbcEntityOperations.selectFirst(sqlBuilder: SqlBu
  *
  * @param entityClass the entity kotlin class
  * @param sqlBuilder the [SqlBuilder]
- * @return a Mono emitting first result, or [Mono.empty] if no match found
+ * @return a [Mono] emitting first result, or [Mono.empty] if no match found
  * @since 3.11
  */
 fun <T : Any> R2dbcEntityOperations.selectFirst(entityClass: KClass<T>, sqlBuilder: SqlBuilder): Mono<T> =
@@ -124,7 +211,7 @@ fun <T : Any> R2dbcEntityOperations.selectFirst(entityClass: KClass<T>, sqlBuild
  * Execute SQL and returns the number of updated rows.
  *
  * @param sqlBuilder the [SqlBuilder]
- * @return a Mono emitting the number of updated rows
+ * @return a [Mono] emitting the number of updated rows
  * @since 3.12
  */
 fun R2dbcEntityOperations.executeUpdate(sqlBuilder: SqlBuilder): Mono<Long> = execute(sqlBuilder).fetch().rowsUpdated()

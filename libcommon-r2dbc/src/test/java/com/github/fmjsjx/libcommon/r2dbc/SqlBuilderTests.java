@@ -837,7 +837,6 @@ public class SqlBuilderTests {
         @Transient
         private Object other2;
         @ReadOnlyProperty
-        @Column("update_time")
         private LocalDateTime updateTime;
 
         public long getId() {
