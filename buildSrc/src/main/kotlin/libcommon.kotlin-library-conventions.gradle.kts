@@ -7,14 +7,13 @@ plugins {
 
 dependencies {
     // kotlin
-    val kotlinVersion = "1.9.0"
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.1.0"))
 
     constraints {
         // reactor-kotlin-extensions
         implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.3")
         // mockk
-        testImplementation("io.mockk:mockk:1.13.16")
+        testImplementation("io.mockk:mockk:1.14.4")
     }
 }
 
