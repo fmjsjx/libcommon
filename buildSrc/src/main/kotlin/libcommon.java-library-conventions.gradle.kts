@@ -14,11 +14,11 @@ dependencies {
     // netty-bom
     api(platform("io.netty:netty-bom:4.2.2.Final"))
     // junit-bom
-    testImplementation(platform("org.junit:junit-bom:5.12.2"))
+    testImplementation(platform("org.junit:junit-bom:5.13.3"))
     // mockito
     testImplementation(platform("org.mockito:mockito-bom:5.18.0"))
     // jackson2-bom
-    api(platform("com.fasterxml.jackson:jackson-bom:2.19.0"))
+    api(platform("com.fasterxml.jackson:jackson-bom:2.19.1"))
     // rocketmq
     api(platform("org.apache.rocketmq:rocketmq-all:5.3.3"))
     // kotlin coroutines
