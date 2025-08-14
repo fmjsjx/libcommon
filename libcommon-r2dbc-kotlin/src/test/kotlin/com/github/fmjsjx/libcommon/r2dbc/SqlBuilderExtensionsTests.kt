@@ -14,7 +14,6 @@ import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 import org.springframework.data.annotation.Transient as SpringDataTransient
 
-@Suppress("SpringDataJdbcAssociatedDbElementsInspection")
 class SqlBuilderExtensionsTests {
 
     companion object {

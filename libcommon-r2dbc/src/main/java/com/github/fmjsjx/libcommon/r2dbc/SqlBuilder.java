@@ -1215,6 +1215,36 @@ public class SqlBuilder {
     }
 
     /**
+     * Append {@code AND} and the specified column string into SQL.
+     * <p>
+     * This method is equivalent to: <pre>{@code
+     * and().column(column);
+     * }</pre>
+     *
+     * @param column the column
+     * @return this {@link SqlBuilder}
+     * @since 3.15
+     */
+    public SqlBuilder and(String column) {
+        return and().column(column);
+    }
+
+    /**
+     * Append {@code OR} and the specified column string into SQL.
+     * <p>
+     * This method is equivalent to: <pre>{@code
+     * or().column(column);
+     * }</pre>
+     *
+     * @param column the column
+     * @return this {@link SqlBuilder}
+     * @since 3.15
+     */
+    public SqlBuilder or(String column) {
+        return or().column(column);
+    }
+
+    /**
      * Append {@code ANY} into SQL.
      *
      * @return this {@link SqlBuilder}
@@ -1459,6 +1489,30 @@ public class SqlBuilder {
      */
     public SqlBuilder in(List<Object> values) {
         return s("IN", "(", questionMarks(values.size()), ")").v(values);
+    }
+
+    /**
+     * Append either {@code =} comparison or {@code IN} predicate, depends
+     * on the length of the {@code values}, into SQL.
+     *
+     * @param values an array of values
+     * @return this {@link SqlBuilder}
+     * @since 3.15
+     */
+    public SqlBuilder eqOrIn(Object... values) {
+        return values.length == 1 ? eq(values[0]) : in(values);
+    }
+
+    /**
+     * Append either {@code =} comparison or {@code IN} predicate, depends
+     * on the size of the {@code values}, into SQL.
+     *
+     * @param values a list contains values
+     * @return this {@link SqlBuilder}
+     * @since 3.15
+     */
+    public SqlBuilder eqOrIn(List<Object> values) {
+        return values.size() == 1 ? eq(values.get(0)) : in(values);
     }
 
     /**
@@ -2462,20 +2516,33 @@ public class SqlBuilder {
     }
 
     /**
-     * Append assignment into SQL with the specified column and the
+     * Append the assignment into SQL with the specified column and the
      * specified value given.
+     *
+     * @param column the column
+     * @param value  the value
+     * @return this {@link SqlBuilder}
+     * @since 3.15
+     */
+    public SqlBuilder assign(String column, Object value) {
+        return column(column).sv("= ?", value);
+    }
+
+    /**
+     * Append the next assignment into SQL with the specified column and
+     * the specified value given.
      *
      * @param column the column
      * @param value  the value
      * @return this {@link SqlBuilder}
      */
     public SqlBuilder appendAssignment(String column, Object value) {
-        return comma().column(column).sv("= ?", value);
+        return comma().assign(column, value);
     }
 
     /**
-     * Append assignments, extracted from the specified entity given, into
-     * SQL.
+     * Append more assignments, extracted from the specified entity given,
+     * into SQL.
      *
      * @param entity the entity object
      * @param <E>    the entity type
@@ -2487,8 +2554,8 @@ public class SqlBuilder {
     }
 
     /**
-     * Append assignments, extracted from the specified entityClass and
-     * the specified entity given, into SQL.
+     * Append more assignments, extracted from the specified entityClass
+     * and the specified entity given, into SQL.
      *
      * @param entityClass the entity class
      * @param entity      the entity object
@@ -2509,6 +2576,49 @@ public class SqlBuilder {
     }
 
     /**
+     * Append assignments, extracted from the specified entity given, into
+     * SQL.
+     *
+     * @param entity the entity object
+     * @param <E>    the entity type
+     * @return this {@link SqlBuilder}
+     * @since 3.15
+     */
+    @SuppressWarnings("unchecked")
+    public <E> SqlBuilder assign(E entity) {
+        return assign((Class<E>) entity.getClass(), entity);
+    }
+
+    /**
+     * Append assignments, extracted from the specified entityClass and
+     * the specified entity given, into SQL.
+     *
+     * @param entityClass the entity class
+     * @param entity      the entity object
+     * @param <E>         the entity type
+     * @return this {@link SqlBuilder}
+     * @since 3.15
+     */
+    public <E> SqlBuilder assign(Class<E> entityClass, E entity) {
+        var info = getRequiredPersistentEntityInfo(entityClass);
+        var first = true;
+        for (var column : info.getColumns()) {
+            if (!column.isInsertOnly() && !column.isId() && !column.isReadOnly()) {
+                var value = column.getValue(entity);
+                if (value != null) {
+                    if (first) {
+                        first = false;
+                        assign(column.getColumnName(), value);
+                    } else {
+                        appendAssignment(column.getColumnName(), value);
+                    }
+                }
+            }
+        }
+        return this;
+    }
+
+    /**
      * Append set clause into SQL with the assignments extracted from
      * the specified entity given.
      *
@@ -2517,7 +2627,7 @@ public class SqlBuilder {
      * @return this {@link SqlBuilder}
      */
     public <E> SqlBuilder set(E entity) {
-        return setClause().appendAssignments(entity).endSetClause();
+        return set().assign(entity);
     }
 
     /**
@@ -2530,7 +2640,7 @@ public class SqlBuilder {
      * @return this {@link SqlBuilder}
      */
     public <E> SqlBuilder set(Class<E> entityClass, E entity) {
-        return setClause().appendAssignments(entityClass, entity).endSetClause();
+        return set().assign(entityClass, entity);
     }
 
 }

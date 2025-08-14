@@ -330,6 +330,16 @@ fun SqlBuilder.select(vararg columns: KProperty1<*, *>): SqlBuilder =
     select(*columns.map { it.toColumn() }.toTypedArray())
 
 /**
+ * Select distinct columns.
+ *
+ * @param columns the columns
+ * @return this [SqlBuilder]
+ * @since 3.15
+ */
+fun SqlBuilder.selectDistinct(vararg columns: KProperty1<*, *>): SqlBuilder =
+    selectDistinct(*columns.map { it.toColumn() }.toTypedArray())
+
+/**
  * Append `WHERE` and the specified `column` into SQL.
  *
  * @param column the column
@@ -345,4 +355,13 @@ fun SqlBuilder.where(column: KProperty1<*, *>): SqlBuilder = where().s(column.to
  * @return this [SqlBuilder]
  * @since 3.12
  */
-fun SqlBuilder.and(column: KProperty1<*, *>): SqlBuilder = and().s(column.toColumn())
+fun SqlBuilder.and(column: KProperty1<*, *>): SqlBuilder = and(column.toColumn())
+
+/**
+ * Append `OR` and the specified `column` into SQL.
+ *
+ * @param column the column
+ * @return this [SqlBuilder]
+ * @since 3.15
+ */
+fun SqlBuilder.or(column: KProperty1<*, *>): SqlBuilder = or(column.toColumn())
