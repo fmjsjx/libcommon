@@ -17,27 +17,29 @@ import com.github.fmjsjx.libcommon.util.ExecutorUtil;
 
 import io.lettuce.core.RedisNoScriptException;
 import io.lettuce.core.SetArgs;
-import io.lettuce.core.api.async.RedisAsyncCommands;
-import io.lettuce.core.api.sync.RedisCommands;
+import io.lettuce.core.api.async.RedisScriptingAsyncCommands;
+import io.lettuce.core.api.async.RedisStringAsyncCommands;
+import io.lettuce.core.api.sync.RedisScriptingCommands;
+import io.lettuce.core.api.sync.RedisStringCommands;
 
 /**
  * Utility class for REDIS (based on lettuce).
  */
-public class RedisUtil {
+public final class RedisUtil {
 
     private static final long DEFAULT_EACH_WAIT = 200;
 
     /**
      * Converts the input values to a hash table (actually is
      * {@link LinkedHashMap}).
-     * 
+     *
      * @param <K>    the key type
      * @param <V>    the value type
      * @param values the input values, size must be even
      * @return a hash table
      */
     @SuppressWarnings("unchecked")
-    public static final <K, V> Map<K, V> toHash(List<Object> values) {
+    public static <K, V> Map<K, V> toHash(List<Object> values) {
         if (values == null) {
             return null;
         }
@@ -62,17 +64,17 @@ public class RedisUtil {
 
     /**
      * Evaluates a LUA script on server side.
-     * 
+     *
      * @param <K>    the key type
      * @param <V>    the value type
      * @param <R>    the return type
-     * @param redis  the synchronous REDIS API
+     * @param redis  the synchronous REDIS API for Scripting
      * @param script the LUA script
      * @param keys   key names
      * @return the script result
      */
     @SuppressWarnings("unchecked")
-    public static final <K, V, R> R eval(RedisCommands<K, V> redis, LuaScript<R> script, K... keys) {
+    public static <K, V, R> R eval(RedisScriptingCommands<K, V> redis, LuaScript<R> script, K... keys) {
         try {
             return redis.evalsha(script.sha1(), script.outputType(), keys);
         } catch (RedisNoScriptException e) {
@@ -82,18 +84,18 @@ public class RedisUtil {
 
     /**
      * Evaluates a LUA script on server side.
-     * 
+     *
      * @param <K>    the key type
      * @param <V>    the value type
      * @param <R>    the return type
-     * @param redis  the synchronous REDIS API
+     * @param redis  the synchronous REDIS API for Scripting
      * @param script the LUA script
      * @param keys   key names
      * @param values the values
      * @return the script result
      */
     @SuppressWarnings("unchecked")
-    public static final <K, V, R> R eval(RedisCommands<K, V> redis, LuaScript<R> script, K[] keys, V... values) {
+    public static <K, V, R> R eval(RedisScriptingCommands<K, V> redis, LuaScript<R> script, K[] keys, V... values) {
         try {
             return redis.evalsha(script.sha1(), script.outputType(), keys, values);
         } catch (RedisNoScriptException e) {
@@ -103,18 +105,18 @@ public class RedisUtil {
 
     /**
      * Evaluates a LUA script on server side.
-     * 
+     *
      * @param <K>    the key type
      * @param <V>    the value type
      * @param <R>    the return type
-     * @param redis  the asynchronous REDIS API
+     * @param redis  the asynchronous REDIS API for Scripting
      * @param script the LUA script
      * @param keys   key names
      * @return the script result
      */
     @SuppressWarnings("unchecked")
-    public static final <K, V, R> CompletionStage<R> eval(RedisAsyncCommands<K, V> redis, LuaScript<R> script,
-            K... keys) {
+    public static <K, V, R> CompletionStage<R> eval(RedisScriptingAsyncCommands<K, V> redis, LuaScript<R> script,
+                                                    K... keys) {
         return redis.<R>evalsha(script.sha1(), script.outputType(), keys).<CompletionStage<R>>handle((r, e) -> {
             if (e != null) {
                 if (e instanceof RedisNoScriptException) {
@@ -128,19 +130,19 @@ public class RedisUtil {
 
     /**
      * Evaluates a LUA script on server side.
-     * 
+     *
      * @param <K>    the key type
      * @param <V>    the value type
      * @param <R>    the return type
-     * @param redis  the asynchronous REDIS API
+     * @param redis  the asynchronous REDIS API for Scripting
      * @param script the LUA script
      * @param keys   key names
      * @param values the values
      * @return the script result
      */
     @SuppressWarnings("unchecked")
-    public static final <K, V, R> CompletionStage<R> eval(RedisAsyncCommands<K, V> redis, LuaScript<R> script, K[] keys,
-            V... values) {
+    public static <K, V, R> CompletionStage<R> eval(RedisScriptingAsyncCommands<K, V> redis, LuaScript<R> script,
+                                                    K[] keys, V... values) {
         return redis.<R>evalsha(script.sha1(), script.outputType(), keys, values).<CompletionStage<R>>handle((r, e) -> {
             if (e != null) {
                 if (e instanceof RedisNoScriptException) {
@@ -154,26 +156,26 @@ public class RedisUtil {
 
     /**
      * Try to lock the specified key with the specified value.
-     * 
+     *
      * @param <K>     the key type
      * @param <V>     the value type
-     * @param redis   the synchronous REDIS API
+     * @param redis   the synchronous REDIS API for Strings
      * @param key     the key name
      * @param value   the value
      * @param timeout the timeout in seconds
      * @return {@code true} if the operation is success, {@code false} otherwise
      */
-    public static final <K, V> boolean tryLock(RedisCommands<K, V> redis, K key, V value, long timeout) {
+    public static <K, V> boolean tryLock(RedisStringCommands<K, V> redis, K key, V value, long timeout) {
         var ok = redis.set(key, value, new SetArgs().nx().ex(timeout));
         return ok != null;
     }
 
     /**
      * Try to lock the specified key with the specified value.
-     * 
+     *
      * @param <K>     the key type
      * @param <V>     the value type
-     * @param redis   the synchronous REDIS API
+     * @param redis   the synchronous REDIS API for Strings
      * @param key     the key name
      * @param value   the value
      * @param timeout the timeout in seconds
@@ -181,17 +183,17 @@ public class RedisUtil {
      * @return {@code true} if the operation is success, {@code false} otherwise
      * @throws InterruptedException if any thread has interrupted the current thread
      */
-    public static final <K, V> boolean tryLock(RedisCommands<K, V> redis, K key, V value, long timeout, long maxWait)
-            throws InterruptedException {
+    public static <K, V> boolean tryLock(RedisStringCommands<K, V> redis, K key, V value,
+                                         long timeout, long maxWait) throws InterruptedException {
         return tryLock(redis, key, value, timeout, maxWait, DEFAULT_EACH_WAIT);
     }
 
     /**
      * Try to lock the specified key with the specified value.
-     * 
+     *
      * @param <K>      the key type
      * @param <V>      the value type
-     * @param redis    the synchronous REDIS API
+     * @param redis    the synchronous REDIS API for Strings
      * @param key      the key name
      * @param value    the value
      * @param timeout  the timeout in seconds
@@ -200,13 +202,14 @@ public class RedisUtil {
      * @return {@code true} if the operation is success, {@code false} otherwise
      * @throws InterruptedException if any thread has interrupted the current thread
      */
-    public static final <K, V> boolean tryLock(RedisCommands<K, V> redis, K key, V value, long timeout, long maxWait,
-            long eachWait) throws InterruptedException {
+    @SuppressWarnings("BusyWait")
+    public static <K, V> boolean tryLock(RedisStringCommands<K, V> redis, K key, V value,
+                                         long timeout, long maxWait, long eachWait) throws InterruptedException {
         var now = System.currentTimeMillis();
         var r = tryLock(redis, key, value, timeout);
         if (!r) {
             var end = now + maxWait;
-            for (;;) {
+            for (; ; ) {
                 now = System.currentTimeMillis();
                 var millis = Math.min(end - now, eachWait);
                 if (millis <= 0) {
@@ -224,60 +227,60 @@ public class RedisUtil {
 
     /**
      * Releases the lock.
-     * 
+     *
      * @param <K>   the key type
      * @param <V>   the value type
-     * @param redis the synchronous REDIS API
+     * @param redis the synchronous REDIS API for Scripting
      * @param key   the key name
      * @param value the value
      * @return {@code true} if the lock not timeout and be released successfully,
-     *         {@code false} otherwise
+     * {@code false} otherwise
      */
     @SuppressWarnings("unchecked")
-    public static final <K, V> boolean unlock(RedisCommands<K, V> redis, K key, V value) {
+    public static <K, V> boolean unlock(RedisScriptingCommands<K, V> redis, K key, V value) {
         K[] keys = ArrayUtil.self(key);
         return eval(redis, LuaScripts.DEL_IF_VALUE_EQUALS, keys, value);
     }
 
     /**
      * Try to lock the specified key with the specified value.
-     * 
+     *
      * @param <K>     the key type
      * @param <V>     the value type
-     * @param redis   the asynchronous REDIS API
+     * @param redis   the asynchronous REDIS API for Strings
      * @param key     the key name
      * @param value   the value
      * @param timeout the timeout in seconds
      * @return {@code true} if the operation is success, {@code false} otherwise
      */
-    public static final <K, V> CompletionStage<Boolean> tryLock(RedisAsyncCommands<K, V> redis, K key, V value,
-            long timeout) {
+    public static <K, V> CompletionStage<Boolean> tryLock(RedisStringAsyncCommands<K, V> redis, K key, V value,
+                                                          long timeout) {
         return redis.set(key, value, new SetArgs().nx().ex(timeout)).thenApply(Objects::nonNull);
     }
 
     /**
      * Try to lock the specified key with the specified value.
-     * 
+     *
      * @param <K>     the key type
      * @param <V>     the value type
-     * @param redis   the asynchronous REDIS API
+     * @param redis   the asynchronous REDIS API for Strings
      * @param key     the key name
      * @param value   the value
      * @param timeout the timeout in seconds
      * @param maxWait the maximum milliseconds to wait for the lock
      * @return {@code true} if the operation is success, {@code false} otherwise
      */
-    public static final <K, V> CompletionStage<Boolean> tryLock(RedisAsyncCommands<K, V> redis, K key, V value,
-            long timeout, long maxWait) {
+    public static <K, V> CompletionStage<Boolean> tryLock(RedisStringAsyncCommands<K, V> redis, K key, V value,
+                                                          long timeout, long maxWait) {
         return tryLock(redis, key, value, timeout, maxWait, DEFAULT_EACH_WAIT);
     }
 
     /**
      * Try to lock the specified key with the specified value.
-     * 
+     *
      * @param <K>      the key type
      * @param <V>      the value type
-     * @param redis    the asynchronous REDIS API
+     * @param redis    the asynchronous REDIS API for Strings
      * @param key      the key name
      * @param value    the value
      * @param timeout  the timeout in seconds
@@ -285,11 +288,11 @@ public class RedisUtil {
      * @param eachWait the milliseconds to wait for each loop
      * @return {@code true} if the operation is success, {@code false} otherwise
      */
-    public static final <K, V> CompletionStage<Boolean> tryLock(RedisAsyncCommands<K, V> redis, K key, V value,
-            long timeout, long maxWait, long eachWait) {
+    public static <K, V> CompletionStage<Boolean> tryLock(RedisStringAsyncCommands<K, V> redis, K key, V value,
+                                                          long timeout, long maxWait, long eachWait) {
         return tryLock(redis, key, value, timeout).thenCompose(success -> {
             if (success) {
-                return CompletableFuture.completedStage(success);
+                return CompletableFuture.completedStage(true);
             }
             if (maxWait <= 0) {
                 return CompletableFuture.completedStage(Boolean.FALSE);
@@ -305,10 +308,10 @@ public class RedisUtil {
 
     /**
      * Try to lock the specified key with the specified value.
-     * 
+     *
      * @param <K>      the key type
      * @param <V>      the value type
-     * @param redis    the asynchronous REDIS API
+     * @param redis    the asynchronous REDIS API for Strings
      * @param key      the key name
      * @param value    the value
      * @param timeout  the timeout in seconds
@@ -316,17 +319,17 @@ public class RedisUtil {
      * @param executor the base executor
      * @return {@code true} if the operation is success, {@code false} otherwise
      */
-    public static final <K, V> CompletionStage<Boolean> tryLock(RedisAsyncCommands<K, V> redis, K key, V value,
-            long timeout, long maxWait, Executor executor) {
+    public static <K, V> CompletionStage<Boolean> tryLock(RedisStringAsyncCommands<K, V> redis, K key, V value,
+                                                          long timeout, long maxWait, Executor executor) {
         return tryLock(redis, key, value, timeout, maxWait, DEFAULT_EACH_WAIT, executor);
     }
 
     /**
      * Try to lock the specified key with the specified value.
-     * 
+     *
      * @param <K>      the key type
      * @param <V>      the value type
-     * @param redis    the asynchronous REDIS API
+     * @param redis    the asynchronous REDIS API for Strings
      * @param key      the key name
      * @param value    the value
      * @param timeout  the timeout in seconds
@@ -335,11 +338,11 @@ public class RedisUtil {
      * @param executor the base executor
      * @return {@code true} if the operation is success, {@code false} otherwise
      */
-    public static final <K, V> CompletionStage<Boolean> tryLock(RedisAsyncCommands<K, V> redis, K key, V value,
-            long timeout, long maxWait, long eachWait, Executor executor) {
+    public static <K, V> CompletionStage<Boolean> tryLock(RedisStringAsyncCommands<K, V> redis, K key, V value,
+                                                          long timeout, long maxWait, long eachWait, Executor executor) {
         return tryLock(redis, key, value, timeout).thenComposeAsync(success -> {
             if (success) {
-                return CompletableFuture.completedStage(success);
+                return CompletableFuture.completedStage(true);
             }
             if (maxWait <= 0) {
                 return CompletableFuture.completedStage(Boolean.FALSE);
@@ -363,17 +366,17 @@ public class RedisUtil {
 
     /**
      * Releases the lock.
-     * 
+     *
      * @param <K>   the key type
      * @param <V>   the value type
-     * @param redis the asynchronous REDIS API
+     * @param redis the asynchronous REDIS API for Scripting
      * @param key   the key name
      * @param value the value
      * @return {@code true} if the lock not timeout and be released successfully,
-     *         {@code false} otherwise
+     * {@code false} otherwise
      */
     @SuppressWarnings("unchecked")
-    public static final <K, V> CompletionStage<Boolean> unlock(RedisAsyncCommands<K, V> redis, K key, V value) {
+    public static <K, V> CompletionStage<Boolean> unlock(RedisScriptingAsyncCommands<K, V> redis, K key, V value) {
         K[] keys = ArrayUtil.self(key);
         return eval(redis, LuaScripts.DEL_IF_VALUE_EQUALS, keys, value);
     }

@@ -28,7 +28,7 @@ public class DefaultLuaScript<R> implements LuaScript<R> {
     public DefaultLuaScript(String script, String sha1, ScriptOutputType outputType, Class<R> resultType) {
         this.script = Objects.requireNonNull(script, "script must not be null");
         this.sha1 = Objects.requireNonNull(sha1, "sha1 must not be null");
-        this.outputType = Objects.requireNonNull(outputType, "outputYype must not be null");
+        this.outputType = Objects.requireNonNull(outputType, "outputType must not be null");
         this.resultType = resultType;
     }
 

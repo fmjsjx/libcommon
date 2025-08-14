@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
@@ -8,6 +7,8 @@ plugins {
 dependencies {
     // kotlin
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.1.0"))
+    // kotlin coroutines
+    implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"))
 
     constraints {
         // reactor-kotlin-extensions
@@ -15,11 +16,12 @@ dependencies {
         // mockk
         testImplementation("io.mockk:mockk:1.14.4")
     }
+
 }
 
-tasks.withType<KotlinCompile> {
+kotlin {
     compilerOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict", "-opt-in=kotlin.RequiresOptIn")
         jvmTarget = JvmTarget.JVM_17
+        freeCompilerArgs.addAll("-Xjsr305=strict", "-opt-in=kotlin.RequiresOptIn")
     }
 }
