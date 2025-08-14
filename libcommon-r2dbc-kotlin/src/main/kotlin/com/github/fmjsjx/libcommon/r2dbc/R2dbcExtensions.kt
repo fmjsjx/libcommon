@@ -117,6 +117,28 @@ fun <T : Any> R2dbcEntityOperations.selectValueList(valueClass: KClass<T>, sqlBu
  * Execute SQL for select and returns all matching results.
  *
  * @param sqlBuilder the [SqlBuilder]
+ * @param T the target type
+ * @return a [Flux] emitting all results
+ * @since 3.15
+ */
+inline fun <reified T : Any> R2dbcEntityOperations.selectProperties(sqlBuilder: SqlBuilder): Flux<T> =
+    selectProperties(T::class, sqlBuilder)
+
+/**
+ * Execute SQL for select and returns all matching results.
+ *
+ * @param mappedClass the target kotlin class with properties to map to
+ * @param sqlBuilder the [SqlBuilder]
+ * @return a [Flux] emitting all results
+ * @since 3.15
+ */
+fun <T : Any> R2dbcEntityOperations.selectProperties(mappedClass: KClass<T>, sqlBuilder: SqlBuilder): Flux<T> =
+    execute(sqlBuilder).mapProperties(mappedClass.java).all()
+
+/**
+ * Execute SQL for select and returns all matching results.
+ *
+ * @param sqlBuilder the [SqlBuilder]
  * @param T the entity type
  * @return a [Flux] emitting all results
  * @since 3.11
