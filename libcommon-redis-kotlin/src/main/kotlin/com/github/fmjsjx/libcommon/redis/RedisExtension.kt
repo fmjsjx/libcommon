@@ -1,10 +1,10 @@
 package com.github.fmjsjx.libcommon.redis
 
+import io.lettuce.core.AbstractRedisAsyncCommands
+import io.lettuce.core.RedisNoScriptException
 import io.lettuce.core.SetArgs
-import io.lettuce.core.api.async.RedisAsyncCommands
 import io.lettuce.core.api.async.RedisScriptingAsyncCommands
 import io.lettuce.core.api.async.RedisStringAsyncCommands
-import io.lettuce.core.cluster.api.async.RedisClusterAsyncCommands
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.await
 import java.util.concurrent.CompletionStage
@@ -14,9 +14,9 @@ import kotlin.math.min
  * Try to lock the specified key with the specified value.
  *
  * @author MJ Fang
- * @since 3.1
+ * @since 3.15
  */
-suspend fun <K, V> RedisStringAsyncCommands<K, V>.tryLock(
+suspend fun <K, V, C : RedisStringAsyncCommands<K, V>> C.tryLock(
     key: K,
     value: V,
     timeout: Long,
@@ -39,26 +39,27 @@ suspend fun <K, V> RedisStringAsyncCommands<K, V>.tryLock(
  * Extension for [RedisUtil.unlock].
  *
  * @author MJ Fang
- * @since 3.1
+ * @since 3.15
  */
-fun <K, V> RedisScriptingAsyncCommands<K, V>.unlockAsync(key: K, value: V): CompletionStage<Boolean> =
+fun <K, V, C : RedisScriptingAsyncCommands<K, V>> C.unlockAsync(key: K, value: V): CompletionStage<Boolean> =
     RedisUtil.unlock(this, key, value)
 
 /**
  * Extension to release the lock.
  *
  * @author MJ Fang
- * @since 3.1
+ * @since 3.15
  */
-suspend fun <K, V> RedisScriptingAsyncCommands<K, V>.unlock(key: K, value: V): Boolean = unlockAsync(key, value).await()
+suspend fun <K, V, C : RedisScriptingAsyncCommands<K, V>> C.unlock(key: K, value: V): Boolean =
+    unlockAsync(key, value).await()
 
 /**
  * Extension to try to create a [RedisDistributedLock] by the params given.
  *
  * @author MJ Fang
- * @since 3.1
+ * @since 3.15
  */
-suspend inline fun <K, V> RedisAsyncCommands<K, V>.tryDistributedLock(
+suspend inline fun <K, V, C : AbstractRedisAsyncCommands<K, V>> C.tryDistributedLock(
     key: K,
     timeout: Long = 5,
     maxWait: Long = 10_000,
@@ -73,21 +74,64 @@ suspend inline fun <K, V> RedisAsyncCommands<K, V>.tryDistributedLock(
 }
 
 /**
- * Extension to try to create a [RedisDistributedLock] by the params given.
+ * Extension for [RedisUtil.eval].
  *
  * @author MJ Fang
  * @since 3.15
  */
-suspend inline fun <K, V> RedisClusterAsyncCommands<K, V>.tryDistributedLock(
-    key: K,
-    timeout: Long = 5,
-    maxWait: Long = 10_000,
-    eachWait: Long = 200,
-    valueSupplier: () -> V,
-): RedisDistributedLock<K, V>? {
-    val value = valueSupplier.invoke()
-    if (tryLock(key, value, timeout, maxWait, eachWait)) {
-        return RedisDistributedLock(key, value, this::unlockAsync)
-    }
-    return null
+fun <K, V, C : RedisScriptingAsyncCommands<K, V>, R> C.evalAsync(
+    script: LuaScript<R>,
+    vararg keys: K,
+): CompletionStage<R> =
+    RedisUtil.eval(this, script, *keys)
+
+/**
+ * Extension for [RedisUtil.eval].
+ *
+ * @author MJ Fang
+ * @since 3.15
+ */
+fun <K, V, C : RedisScriptingAsyncCommands<K, V>, R> C.evalAsync(
+    script: LuaScript<R>,
+    keys: Array<K>,
+    vararg values: V,
+): CompletionStage<R> =
+    RedisUtil.eval(this, script, keys, *values)
+
+/**
+ * Evaluates a LUA script on server side.
+ *
+ * @param script the LUA script
+ * @param keys the key names
+ * @return the script result.
+ * @author MJ Fang
+ * @since 3.15
+ */
+suspend fun <K, V, C : RedisScriptingAsyncCommands<K, V>, R> C.eval(
+    script: LuaScript<R>,
+    vararg keys: K,
+): R = try {
+    evalsha<R>(script.sha1(), script.outputType(), *keys).await()
+} catch (_: RedisNoScriptException) {
+    eval<R>(script.script(), script.outputType(), *keys).await()
+}
+
+/**
+ * Evaluates a LUA script on server side.
+ *
+ * @param script the LUA script
+ * @param keys the key names
+ * @param values the values
+ * @return the script result.
+ * @author MJ Fang
+ * @since 3.15
+ */
+suspend fun <K, V, C : RedisScriptingAsyncCommands<K, V>, R> C.eval(
+    script: LuaScript<R>,
+    keys: Array<K>,
+    vararg values: V,
+): R = try {
+    evalsha<R>(script.sha1(), script.outputType(), keys, *values).await()
+} catch (_: RedisNoScriptException) {
+    eval<R>(script.script(), script.outputType(), keys, *values).await()
 }
