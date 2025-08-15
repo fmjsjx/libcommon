@@ -1,10 +1,11 @@
 package com.github.fmjsjx.libcommon.redis
 
-import io.lettuce.core.AbstractRedisAsyncCommands
 import io.lettuce.core.RedisNoScriptException
 import io.lettuce.core.SetArgs
+import io.lettuce.core.api.async.RedisAsyncCommands
 import io.lettuce.core.api.async.RedisScriptingAsyncCommands
 import io.lettuce.core.api.async.RedisStringAsyncCommands
+import io.lettuce.core.cluster.api.async.RedisClusterAsyncCommands
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.await
 import java.util.concurrent.CompletionStage
@@ -59,7 +60,27 @@ suspend fun <K, V, C : RedisScriptingAsyncCommands<K, V>> C.unlock(key: K, value
  * @author MJ Fang
  * @since 3.15
  */
-suspend inline fun <K, V, C : AbstractRedisAsyncCommands<K, V>> C.tryDistributedLock(
+suspend inline fun <K, V, C : RedisAsyncCommands<K, V>> C.tryDistributedLock(
+    key: K,
+    timeout: Long = 5,
+    maxWait: Long = 10_000,
+    eachWait: Long = 200,
+    valueSupplier: () -> V,
+): RedisDistributedLock<K, V>? {
+    val value = valueSupplier.invoke()
+    if (tryLock(key, value, timeout, maxWait, eachWait)) {
+        return RedisDistributedLock(key, value, this::unlockAsync)
+    }
+    return null
+}
+
+/**
+ * Extension to try to create a [RedisDistributedLock] by the params given.
+ *
+ * @author MJ Fang
+ * @since 3.15
+ */
+suspend inline fun <K, V, C : RedisClusterAsyncCommands<K, V>> C.tryDistributedLock(
     key: K,
     timeout: Long = 5,
     maxWait: Long = 10_000,
