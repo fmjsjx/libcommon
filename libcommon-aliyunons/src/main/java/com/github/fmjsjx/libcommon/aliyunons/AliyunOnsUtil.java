@@ -18,7 +18,10 @@ import com.aliyun.openservices.ons.api.order.OrderProducer;
 
 /**
  * Utility class for ALIYUN ONS.
+ *
+ * @deprecated Deprecated since 3.16 and may be removed in future version.
  */
+@Deprecated(since = "3.16", forRemoval = true)
 public class AliyunOnsUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(AliyunOnsUtil.class);

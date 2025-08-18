@@ -16,7 +16,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for RocketMQ.
+ *
+ * @deprecated Deprecated since 3.16 and may be removed in future version.
  */
+@Deprecated(since = "3.16", forRemoval = true)
 public class RocketMQUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(RocketMQUtil.class);
