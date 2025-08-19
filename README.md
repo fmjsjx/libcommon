@@ -16,7 +16,7 @@ A set of some common useful libraries.
       <dependency>
         <groupId>com.github.fmjsjx</groupId>
         <artifactId>libcommon-bom</artifactId>
-        <version>3.16.0-RC1</version>
+        <version>3.16.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -52,7 +52,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation platform('com.github.fmjsjx:libcommon-bom:3.16.0-RC1')
+    implementation platform('com.github.fmjsjx:libcommon-bom:3.16.0')
     // Common Utility
     implementation 'com.github.fmjsjx:libcommon-util'
     // JSON library based on Fastjson2
@@ -71,7 +71,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation(platform("com.github.fmjsjx:libcommon-bom:3.16.0-RC1"))
+    implementation(platform("com.github.fmjsjx:libcommon-bom:3.16.0"))
     // Common Utility
     implementation("com.github.fmjsjx:libcommon-util")
     // JSON library based on Fastjson2
@@ -165,9 +165,13 @@ The [`libcommon-util`](libcommon-util) module provides additional utility functi
 
 ### libcommon-aliyunons
 
+> This module has been deprecated since 3.16 and may be removed in future version.
+
 The [`libcommon-aliyunons`](libcommon-aliyunons) module provides additional utility functions for [`ALIYUN Open Services/RocketMQ`](https://help.aliyun.com/product/29530.html).
 
 ### libcommon-rocketmq
+
+> This module has been deprecated since 3.16 and may be removed in future version.
 
 The [`libcommon-rocketmq`](libcommon-rocketmq) module provides additional utility functions for [`RocketMQ`](https://rocketmq.apache.org/).
 
