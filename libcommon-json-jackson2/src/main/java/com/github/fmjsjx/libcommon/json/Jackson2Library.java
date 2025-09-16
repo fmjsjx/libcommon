@@ -62,7 +62,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     }
 
     private static final ObjectMapper createDefaultObjectMapper() {
-        var mapper = new ObjectMapper().setSerializationInclusion(Include.NON_ABSENT)
+        var mapper = new ObjectMapper().setDefaultPropertyInclusion(Include.NON_ABSENT)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         ReflectUtil.<Module>findForName("com.fasterxml.jackson.datatype.jdk8.Jdk8Module").ifPresent(moduleClass -> {
             try {
