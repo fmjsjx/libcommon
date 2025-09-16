@@ -31,7 +31,7 @@ public class Jackson2YamlLibrary implements YamlLibrary<JsonNode> {
 
     private static final YAMLMapper createDefaultYamlMapper() {
         var mapper = new YAMLMapper();
-        mapper.setSerializationInclusion(Include.NON_ABSENT);
+        mapper.setDefaultPropertyInclusion(Include.NON_ABSENT);
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.disable(Feature.WRITE_DOC_START_MARKER);
         mapper.registerModules(new Jdk8Module(), new JavaTimeModule());
