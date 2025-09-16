@@ -81,7 +81,7 @@ public final class KotlinReflectionUtil {
      */
     public static boolean isSuspend(Method method) {
         if (KotlinUtil.isKotlinType(method.getDeclaringClass())) {
-            return findKotlinFunction(method).get().isSuspend();
+            return findKotlinFunction(method).map(KFunction::isSuspend).orElse(false);
         }
         return false;
     }
