@@ -116,11 +116,15 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
         var jsonNodeClassNames = List.of(
                 "com.fasterxml.jackson.databind.node.ArrayNode",
                 "com.fasterxml.jackson.databind.node.BigIntegerNode",
-                "com.fasterxml.jackson.databind.node.DoubleNode",
+                "com.fasterxml.jackson.databind.node.BinaryNode",
+                "com.fasterxml.jackson.databind.node.BooleanNode",
                 "com.fasterxml.jackson.databind.node.DecimalNode",
+                "com.fasterxml.jackson.databind.node.DoubleNode",
+                "com.fasterxml.jackson.databind.node.FloatNode",
                 "com.fasterxml.jackson.databind.node.IntNode",
                 "com.fasterxml.jackson.databind.node.LongNode",
                 "com.fasterxml.jackson.databind.node.NullNode",
+                "com.fasterxml.jackson.databind.node.ObjectNode",
                 "com.fasterxml.jackson.databind.node.POJONode",
                 "com.fasterxml.jackson.databind.node.ShortNode",
                 "com.fasterxml.jackson.databind.node.TextNode"
@@ -195,14 +199,18 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
         var jsonNodeClassNames = List.of(
                 "tools.jackson.databind.node.ArrayNode",
                 "tools.jackson.databind.node.BigIntegerNode",
-                "tools.jackson.databind.node.DoubleNode",
+                "tools.jackson.databind.node.BinaryNode",
+                "tools.jackson.databind.node.BooleanNode",
                 "tools.jackson.databind.node.DecimalNode",
+                "tools.jackson.databind.node.DoubleNode",
+                "tools.jackson.databind.node.FloatNode",
                 "tools.jackson.databind.node.IntNode",
                 "tools.jackson.databind.node.LongNode",
                 "tools.jackson.databind.node.NullNode",
+                "tools.jackson.databind.node.ObjectNode",
                 "tools.jackson.databind.node.POJONode",
                 "tools.jackson.databind.node.ShortNode",
-                "tools.jackson.databind.node.TextNode"
+                "tools.jackson.databind.node.StringNode"
         );
         for (var jsonNodeClassName : jsonNodeClassNames) {
             try {

@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @since 3.17
  */
-public class JsoniterModule extends SimpleModule {
+public class Jackson3JsoniterModule extends SimpleModule {
 
     /**
      * Returns {@code true} if jsoniter is available, {@code false} otherwise.
@@ -31,16 +31,16 @@ public class JsoniterModule extends SimpleModule {
     }
 
     /**
-     * Returns the singleton {@link JsoniterModule} instance.
+     * Returns the singleton {@link Jackson3JsoniterModule} instance.
      *
-     * @return the singleton {@link JsoniterModule} instance
+     * @return the singleton {@link Jackson3JsoniterModule} instance
      */
-    public static final JsoniterModule getInstance() {
+    public static final Jackson3JsoniterModule getInstance() {
         return InstanceHolder.INSTANCE;
     }
 
     private static final class InstanceHolder {
-        private static final JsoniterModule INSTANCE = new JsoniterModule();
+        private static final Jackson3JsoniterModule INSTANCE = new Jackson3JsoniterModule();
     }
 
     private static final List<String> anyClasses() {
@@ -79,9 +79,9 @@ public class JsoniterModule extends SimpleModule {
     }
 
     /**
-     * Constructs the new instance of {@link JsoniterModule}.
+     * Constructs the new instance of {@link Jackson3JsoniterModule}.
      */
-    public JsoniterModule() {
+    public Jackson3JsoniterModule() {
         super("jsoniter");
         if (isJsoniterAvailable()) {
             for (var anyClass : anyClasses()) {

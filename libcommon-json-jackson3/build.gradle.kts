@@ -12,8 +12,6 @@ dependencies {
 
     api("tools.jackson.core:jackson-databind")
     compileOnlyApi("com.jsoniter:jsoniter")
-    compileOnlyApi(project(":libcommon-json-fastjson2"))
-    compileOnlyApi(project(":libcommon-json-jsoniter"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

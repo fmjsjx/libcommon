@@ -84,8 +84,8 @@ public class Jackson3Library implements JsonLibrary<JsonNode> {
                 }
             });
         }
-        if (JsoniterModule.isJsoniterAvailable()) {
-            mapperBuilder.addModule(JsoniterModule.getInstance());
+        if (Jackson3JsoniterModule.isJsoniterAvailable()) {
+            mapperBuilder.addModule(Jackson3JsoniterModule.getInstance());
         }
         return mapperBuilder.build();
     }
