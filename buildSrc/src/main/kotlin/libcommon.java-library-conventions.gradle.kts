@@ -19,6 +19,8 @@ dependencies {
     testImplementation(platform("org.mockito:mockito-bom:5.19.0"))
     // jackson2-bom
     api(platform("com.fasterxml.jackson:jackson-bom:2.20.0"))
+    // jackson3-bom
+    api(platform("tools.jackson:jackson-bom:3.0.3"))
     // rocketmq
     api(platform("org.apache.rocketmq:rocketmq-all:5.3.3"))
     // kotlin coroutines
