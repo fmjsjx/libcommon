@@ -19,6 +19,8 @@ dependencies {
         api(project(":libcommon-json-fastjson2-kotlin"))
         api(project(":libcommon-json-jackson2"))
         api(project(":libcommon-json-jackson2-kotlin"))
+        api(project(":libcommon-json-jackson3"))
+        api(project(":libcommon-json-jackson3-kotlin"))
         api(project(":libcommon-json-jsoniter"))
         api(project(":libcommon-json-jsoniter-kotlin"))
         api(project(":libcommon-jwt"))
