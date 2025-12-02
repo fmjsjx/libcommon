@@ -4,6 +4,7 @@ import com.jsoniter.ValueType
 import com.jsoniter.spi.TypeLiteral
 import java.lang.reflect.Type
 import java.util.*
+import kotlin.reflect.KClass
 
 /**
  * Type alias for [com.jsoniter.any.Any].
@@ -226,3 +227,85 @@ fun JsonAny.toNotEmptyStringOrNull(key: String): String? = toStringOrNull(key).t
  * @since 3.1
  */
 fun JsonAny.toNotEmptyStringOrNull(vararg keys: Any): String? = toStringOrNull(keys).takeUnless(String?::isNullOrEmpty)
+
+/**
+ * Extension to decodes data from string leveraging reified type parameters.
+ *
+ * @author MJ Fang
+ * @since 3.17
+ */
+inline fun <reified T : Any> CharSequence.parseJsoniterOrNull(): T? = parseJsoniterOrNull(T::class)
+
+/**
+ * Extension to decodes data from string leveraging reified type parameters.
+ *
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> CharSequence.parseJsoniterOrNull(type: KClass<T>): T? = parseJsoniterOrNull(type.java)
+
+/**
+ * Extension to decodes data from string.
+ *
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> CharSequence.parseJsoniterOrNull(type: Class<T>): T? = jsoniterLibrary.loads(toString(), type)
+
+/**
+ * Extension to decodes data from string.
+ *
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> CharSequence.parseJsoniterOrNull(typeLiteral: TypeLiteral<T>): T? =
+    jsoniterLibrary.loads(toString(), typeLiteral)
+
+/**
+ * Extension to decodes data from string.
+ *
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> CharSequence.parseJsoniterOrNull(type: Type): T? = jsoniterLibrary.loads(toString(), type)
+
+/**
+ * Extension to decodes data from byte array leveraging reified type parameters.
+ *
+ * @author MJ Fang
+ * @since 3.17
+ */
+inline fun <reified T : Any> ByteArray.parseJsoniterOrNull(): T? = parseJsoniterOrNull(T::class)
+
+/**
+ * Extension to decodes data from byte array leveraging reified type parameters.
+ *
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> ByteArray.parseJsoniterOrNull(type: KClass<T>): T? = parseJsoniterOrNull(type.java)
+
+/**
+ * Extension to decodes data from byte array.
+ *
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> ByteArray.parseJsoniterOrNull(type: Class<T>): T? = jsoniterLibrary.loads(this, type)
+
+/**
+ * Extension to decodes data from byte array.
+ *
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> ByteArray.parseJsoniterOrNull(typeLiteral: TypeLiteral<T>): T? =
+    jsoniterLibrary.loads(this, typeLiteral)
+
+/**
+ * Extension to decodes data from byte array.
+ *
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> ByteArray.parseJsoniterOrNull(type: Type): T? = jsoniterLibrary.loads(this, type)

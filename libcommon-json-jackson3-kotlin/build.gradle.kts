@@ -1,5 +1,6 @@
 plugins {
     id("libcommon.java-library-conventions")
+    id("libcommon.kotlin-library-conventions")
     id("libcommon.publish-conventions")
 }
 
@@ -7,28 +8,26 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api")
 
-    api(project(":libcommon-json"))
-    implementation(project(":libcommon-util"))
-    api("com.alibaba.fastjson2:fastjson2")
-    compileOnlyApi("com.jsoniter:jsoniter")
-    compileOnlyApi(project(":libcommon-json-jackson2"))
-    compileOnlyApi(project(":libcommon-json-jackson3"))
+    api(project(":libcommon-json-jackson3"))
+
+    implementation("tools.jackson.module:jackson-module-kotlin")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
-    testImplementation(project(":libcommon-json-jsoniter"))
-    testImplementation(project(":libcommon-json-jackson2"))
-    testImplementation(project(":libcommon-json-jackson3"))
 
 }
 
-description = "libcommon/JSON Fastjson2"
+description = "libcommon/JSON Jackson3 Kotlin"
 
 tasks.test {
     // Use junit platform for unit tests.
     useJUnitPlatform()
+    jvmArgs = listOf(
+        "-Xshare:off",
+    )
 }
 
 publishing {
@@ -44,7 +43,7 @@ publishing {
                 }
             }
             pom {
-                name.set("libcommon/JSON Fastjson2")
+                name.set("libcommon/JSON Jackson3 Kotlin")
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {
