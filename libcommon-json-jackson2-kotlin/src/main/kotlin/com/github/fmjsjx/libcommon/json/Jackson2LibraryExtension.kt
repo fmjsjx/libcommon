@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonNode
 import java.lang.reflect.Type
+import kotlin.reflect.KClass
 
 /**
  * The singleton [Jackson2Library] instance.
@@ -46,7 +47,7 @@ inline fun <reified T> CharSequence.parseJackson2(): T = jackson2Library.loads(t
  * @since 3.1
  */
 infix fun <T> CharSequence.parseJackson2(typeReference: TypeReference<T>): T =
-    jackson2Library.loads(toString().toByteArray(), typeReference)
+    jackson2Library.loads(toString(), typeReference)
 
 /**
  * Extension to decode data from string.
@@ -134,3 +135,90 @@ inline fun <reified T : Any, reified C : Collection<T>> collectionTypeReference(
  */
 inline fun <reified K : Any, reified V : Any, reified M : Map<K, V>> anyMapTypeReference(): TypeReference<M> =
     jackson2Library.mapTypeReference(K::class.java, V::class.java, M::class.java)
+
+/**
+ * Extension to decode data from string.
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> CharSequence.parseJackson2OrNull(type: Class<T>): T? = jackson2Library.loads(toString(), type)
+
+/**
+ * Extension to decode data from string.
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> CharSequence.parseJackson2OrNull(type: KClass<T>): T? = parseJackson2OrNull(type.java)
+
+/**
+ * Extension to decode data from string leveraging reified type parameters.
+ * @author MJ Fang
+ * @since 3.17
+ */
+inline fun <reified T : Any> CharSequence.parseJackson2OrNull(): T? = parseJackson2OrNull(T::class)
+
+/**
+ * Extension to decode data from string.
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> CharSequence.parseJackson2OrNull(typeReference: TypeReference<T>): T =
+    jackson2Library.loads(toString(), typeReference)
+
+/**
+ * Extension to decode data from string.
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> CharSequence.parseJackson2OrNull(javaType: JavaType): T? =
+    jackson2Library.loads(toString(), javaType)
+
+/**
+ * Extension to decode data from string.
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> CharSequence.parseJackson2OrNull(type: Type): T? = jackson2Library.loads(toString(), type)
+
+/**
+ * Extension to decode data from byte array.
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> ByteArray.parseJackson2OrNull(type: Class<T>): T? = jackson2Library.loads(this, type)
+
+/**
+ * Extension to decode data from byte array.
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> ByteArray.parseJackson2OrNull(type: KClass<T>): T? = parseJackson2OrNull(type.java)
+
+/**
+ * Extension to decode data from byte array leveraging reified type parameters.
+ * @author MJ Fang
+ * @since 3.17
+ */
+inline fun <reified T : Any> ByteArray.parseJackson2OrNull(): T? = parseJackson2OrNull(T::class)
+
+/**
+ * Extension to decode data from byte array.
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> ByteArray.parseJackson2OrNull(typeReference: TypeReference<T>): T? =
+    jackson2Library.loads(this, typeReference)
+
+/**
+ * Extension to decode data from byte array.
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> ByteArray.parseJackson2OrNull(javaType: JavaType): T? = jackson2Library.loads(this, javaType)
+
+/**
+ * Extension to decode data from byte array.
+ * @author MJ Fang
+ * @since 3.17
+ */
+infix fun <T : Any> ByteArray.parseJackson2OrNull(type: Type): T? = jackson2Library.loads(this, type)
