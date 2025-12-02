@@ -10,6 +10,7 @@ dependencies {
     api("com.jsoniter:jsoniter")
     compileOnlyApi(project(":libcommon-json-jackson2"))
     compileOnlyApi(project(":libcommon-json-fastjson2"))
+    compileOnlyApi(project(":libcommon-json-jackson3"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -17,6 +18,7 @@ dependencies {
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
     testImplementation(project(":libcommon-json-jackson2"))
     testImplementation(project(":libcommon-json-fastjson2"))
+    testImplementation(project(":libcommon-json-jackson3"))
 
 }
 
