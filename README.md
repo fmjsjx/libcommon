@@ -123,6 +123,14 @@ The [`libcommon-json-jackson2`](libcommon-json-jackson2) module provides an impl
 
 The [`libcommon-json-jackson2-kotlin`](libcommon-json-jackson2-kotlin) module provides the kotlin extensions of [`libcommon-json-jackson2`](libcommon-json-jackson2).
 
+### libcommon-json-jackson3
+
+The [`libcommon-json-jackson3`](libcommon-json-jackson3) module provides an implementation of [`libcommon-json`](libcommon-json) based on [`Jackson3`](https://github.com/FasterXML/jackson).
+
+### libcommon-json-jackson3-kotlin
+
+The [`libcommon-json-jackson3-kotlin`](libcommon-json-jackson3-kotlin) module provides the kotlin extensions of [`libcommon-json-jackson3`](libcommon-json-jackson3).
+
 ### libcommon-json-jsoniter
 
 The [`libcommon-json-jsoniter`](libcommon-json-jsoniter) module provides an implementation of [`libcommon-json`](libcommon-json) based on [`json-iterator`](https://jsoniter.com/).
