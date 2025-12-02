@@ -68,9 +68,13 @@ public class JsoniterLibrary implements JsonLibrary<Any> {
             JsoniterSpi.setDefaultConfig(JsoniterSpi.getDefaultConfig().copyBuilder().escapeUnicode(false).build());
             Jdk8TimeSupport.enableAll();
             Jdk8OptionalSupport.enableAll();
-            // support encoding/decoding for jackson2 JsonNode
+            // support encoding/decoding for Jackson2 JsonNode
             if (Jackson2Support.isAvailable()) {
                 Jackson2Support.enableAll();
+            }
+            // support encoding/decoding for Jackson3 JsonNode
+            if (Jackson3Support.isAvailable()) {
+                Jackson3Support.enableAll();
             }
         }
     }

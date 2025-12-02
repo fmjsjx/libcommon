@@ -36,6 +36,10 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
         if (ReflectUtil.hasClassForName("com.github.fmjsjx.libcommon.json.Jackson2Library")) {
             registerJackson2Library();
         }
+        // Add Jackson3 support since 3.17
+        if (ReflectUtil.hasClassForName("com.github.fmjsjx.libcommon.json.Jackson3Library")) {
+            registerJackson3Library();
+        }
         useISOFormatForDateTimeFields();
     }
 
@@ -112,11 +116,15 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
         var jsonNodeClassNames = List.of(
                 "com.fasterxml.jackson.databind.node.ArrayNode",
                 "com.fasterxml.jackson.databind.node.BigIntegerNode",
-                "com.fasterxml.jackson.databind.node.DoubleNode",
+                "com.fasterxml.jackson.databind.node.BinaryNode",
+                "com.fasterxml.jackson.databind.node.BooleanNode",
                 "com.fasterxml.jackson.databind.node.DecimalNode",
+                "com.fasterxml.jackson.databind.node.DoubleNode",
+                "com.fasterxml.jackson.databind.node.FloatNode",
                 "com.fasterxml.jackson.databind.node.IntNode",
                 "com.fasterxml.jackson.databind.node.LongNode",
                 "com.fasterxml.jackson.databind.node.NullNode",
+                "com.fasterxml.jackson.databind.node.ObjectNode",
                 "com.fasterxml.jackson.databind.node.POJONode",
                 "com.fasterxml.jackson.databind.node.ShortNode",
                 "com.fasterxml.jackson.databind.node.TextNode"
@@ -179,6 +187,89 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
                     case 't', 'f' -> com.fasterxml.jackson.databind.node.BooleanNode.valueOf(jsonReader.readBoolValue());
                     default ->
                             com.github.fmjsjx.libcommon.json.Jackson2Library.getInstance().loads(JSON.toJSONString(jsonReader.readAny(), WriteNonStringKeyAsString, WriteNulls));
+                };
+            });
+        } catch (ClassNotFoundException e) {
+            // skip
+        }
+    }
+
+    private static final void registerJackson3Library() {
+        // since 3.17
+        var jsonNodeClassNames = List.of(
+                "tools.jackson.databind.node.ArrayNode",
+                "tools.jackson.databind.node.BigIntegerNode",
+                "tools.jackson.databind.node.BinaryNode",
+                "tools.jackson.databind.node.BooleanNode",
+                "tools.jackson.databind.node.DecimalNode",
+                "tools.jackson.databind.node.DoubleNode",
+                "tools.jackson.databind.node.FloatNode",
+                "tools.jackson.databind.node.IntNode",
+                "tools.jackson.databind.node.LongNode",
+                "tools.jackson.databind.node.NullNode",
+                "tools.jackson.databind.node.ObjectNode",
+                "tools.jackson.databind.node.POJONode",
+                "tools.jackson.databind.node.ShortNode",
+                "tools.jackson.databind.node.StringNode"
+        );
+        for (var jsonNodeClassName : jsonNodeClassNames) {
+            try {
+                var anyClass = Class.forName(jsonNodeClassName);
+                JSON.register(anyClass, (jsonWriter, object, fieldName, fieldType, features) -> {
+                    if (object == null) {
+                        jsonWriter.writeNull();
+                    } else {
+                        jsonWriter.writeRaw(com.github.fmjsjx.libcommon.json.Jackson3Library.getInstance().dumpsToString(object));
+                    }
+                });
+            } catch (ClassNotFoundException e) {
+                // skip
+            }
+        }
+        try {
+            var anyClass = Class.forName("tools.jackson.databind.node.ArrayNode");
+            JSON.register(anyClass, (jsonReader, fieldType, fieldName, features) -> {
+                if (jsonReader.nextIfNull()) {
+                    return tools.jackson.databind.node.NullNode.getInstance();
+                }
+                return com.github.fmjsjx.libcommon.json.Jackson3Library.getInstance().loads(jsonReader.readJSONArray().toJSONString(WriteNonStringKeyAsString, WriteNulls));
+            });
+        } catch (ClassNotFoundException e) {
+            // skip
+        }
+        try {
+            var anyClass = Class.forName("tools.jackson.databind.node.ObjectNode");
+            JSON.register(anyClass, (jsonReader, fieldType, fieldName, features) -> {
+                if (jsonReader.nextIfNull()) {
+                    return tools.jackson.databind.node.NullNode.getInstance();
+                }
+                return com.github.fmjsjx.libcommon.json.Jackson3Library.getInstance().loads(jsonReader.readJSONObject().toJSONString(WriteNonStringKeyAsString, WriteNulls));
+            });
+        } catch (ClassNotFoundException e) {
+            // skip
+        }
+        try {
+            var anyClass = Class.forName("tools.jackson.databind.JsonNode");
+            JSON.register(anyClass, (jsonReader, fieldType, fieldName, features) -> {
+                if (jsonReader.nextIfNull()) {
+                    return tools.jackson.databind.node.NullNode.getInstance();
+                }
+                if (jsonReader.isObject()) {
+                    return com.github.fmjsjx.libcommon.json.Jackson3Library.getInstance().loads(jsonReader.readJSONObject().toJSONString(WriteNonStringKeyAsString, WriteNulls));
+                }
+                if (jsonReader.isArray()) {
+                    return com.github.fmjsjx.libcommon.json.Jackson3Library.getInstance().loads(jsonReader.readJSONArray().toJSONString(WriteNonStringKeyAsString, WriteNulls));
+                }
+                if (jsonReader.isString()) {
+                    return com.github.fmjsjx.libcommon.json.Jackson3Library.getInstance().loads(JSON.toJSONString(jsonReader.readString(), WriteNonStringKeyAsString, WriteNulls));
+                }
+                if (jsonReader.isNumber()) {
+                    return com.github.fmjsjx.libcommon.json.Jackson3Library.getInstance().loads(JSON.toJSONString(jsonReader.readNumber(), WriteNonStringKeyAsString, WriteNulls));
+                }
+                return switch (jsonReader.current()) {
+                    case 't', 'f' -> tools.jackson.databind.node.BooleanNode.valueOf(jsonReader.readBoolValue());
+                    default ->
+                            com.github.fmjsjx.libcommon.json.Jackson3Library.getInstance().loads(JSON.toJSONString(jsonReader.readAny(), WriteNonStringKeyAsString, WriteNulls));
                 };
             });
         } catch (ClassNotFoundException e) {

@@ -9,22 +9,19 @@ dependencies {
 
     api(project(":libcommon-json"))
     implementation(project(":libcommon-util"))
-    api("com.alibaba.fastjson2:fastjson2")
+
+    api("tools.jackson.core:jackson-databind")
     compileOnlyApi("com.jsoniter:jsoniter")
-    compileOnlyApi(project(":libcommon-json-jackson2"))
-    compileOnlyApi(project(":libcommon-json-jackson3"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
-    testImplementation(project(":libcommon-json-jsoniter"))
-    testImplementation(project(":libcommon-json-jackson2"))
-    testImplementation(project(":libcommon-json-jackson3"))
+    testImplementation("com.jsoniter:jsoniter")
 
 }
 
-description = "libcommon/JSON Fastjson2"
+description = "libcommon/JSON Jackson3"
 
 tasks.test {
     // Use junit platform for unit tests.
@@ -44,7 +41,7 @@ publishing {
                 }
             }
             pom {
-                name.set("libcommon/JSON Fastjson2")
+                name.set("libcommon/JSON Jackson3")
                 description.set("A set of some common useful libraries.")
                 url.set("https://github.com/fmjsjx/libcommon")
                 licenses {

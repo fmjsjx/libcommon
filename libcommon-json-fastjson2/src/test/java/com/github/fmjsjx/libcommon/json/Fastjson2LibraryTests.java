@@ -225,11 +225,72 @@ public class Fastjson2LibraryTests {
             assertNotNull(o.getJn());
             assertEquals(JsonNodeType.BOOLEAN, o.getJn().getNodeType());
             assertFalse(o.getJn().booleanValue());
+            // {"jn3":null,"on3":null,"an3":null}
+            json = "{\"jn3\":null,\"on3\":null,\"an3\":null}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNull(o.getJn3());
+            assertNull(o.getOn3());
+            assertNull(o.getAn3());
+            // {"jn3":{"key":"value"},"on3":{"key":"value"},"an3":[1,2,3]}
+            json = "{\"jn3\":{\"key\":\"value\"},\"on3\":{\"key\":\"value\"},\"an3\":[1,2,3]}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn3());
+            assertEquals(tools.jackson.databind.node.JsonNodeType.OBJECT, o.getJn3().getNodeType());
+            assertEquals("{\"key\":\"value\"}", o.getJn3().toString());
+            assertNotNull(o.getOn3());
+            assertEquals("{\"key\":\"value\"}", o.getOn3().toString());
+            assertNotNull(o.getAn3());
+            assertEquals("[1,2,3]", o.getAn3().toString());
+            // {"jn3":[1,2,3]}
+            json = "{\"jn3\":[1,2,3]}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn3());
+            assertEquals(tools.jackson.databind.node.JsonNodeType.ARRAY, o.getJn3().getNodeType());
+            assertEquals("[1,2,3]", o.getJn3().toString());
+            // {"jn3":"This is a string"}
+            json = "{\"jn3\":\"This is a string\"}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn3());
+            assertEquals(tools.jackson.databind.node.JsonNodeType.STRING, o.getJn3().getNodeType());
+            assertEquals("This is a string", o.getJn3().stringValue());
+            // {"jn3":123}
+            json = "{\"jn3\":123}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn3());
+            assertEquals(tools.jackson.databind.node.JsonNodeType.NUMBER, o.getJn3().getNodeType());
+            assertEquals(123, o.getJn3().intValue());
+            // {"jn3":123.4567890123}
+            json = "{\"jn3\":123.4567890123}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn3());
+            assertEquals(tools.jackson.databind.node.JsonNodeType.NUMBER, o.getJn3().getNodeType());
+            assertEquals(123.4567890123, o.getJn3().doubleValue());
+            // {"jn3":true}
+            json = "{\"jn3\":true}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn3());
+            assertEquals(tools.jackson.databind.node.JsonNodeType.BOOLEAN, o.getJn3().getNodeType());
+            assertTrue(o.getJn3().booleanValue());
+            // {"jn3":false}
+            json = "{\"jn3\":false}";
+            o = Fastjson2Library.getInstance().loads(json, TestObj.class);
+            assertNotNull(o);
+            assertNotNull(o.getJn3());
+            assertEquals(tools.jackson.databind.node.JsonNodeType.BOOLEAN, o.getJn3().getNodeType());
+            assertFalse(o.getJn3().booleanValue());
         } catch (Exception e) {
             fail(e);
         }
     }
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public static class TestObj {
 
         private OptionalInt i1 = OptionalInt.empty();
@@ -241,6 +302,10 @@ public class Fastjson2LibraryTests {
         private JsonNode jn;
         private ObjectNode on;
         private ArrayNode an;
+
+        private tools.jackson.databind.JsonNode jn3;
+        private tools.jackson.databind.node.ObjectNode on3;
+        private tools.jackson.databind.node.ArrayNode an3;
 
         public OptionalInt getI1() {
             return i1;
@@ -298,6 +363,29 @@ public class Fastjson2LibraryTests {
             this.an = an;
         }
 
+        public tools.jackson.databind.JsonNode getJn3() {
+            return jn3;
+        }
+
+        public void setJn3(tools.jackson.databind.JsonNode jn3) {
+            this.jn3 = jn3;
+        }
+
+        public tools.jackson.databind.node.ObjectNode getOn3() {
+            return on3;
+        }
+
+        public void setOn3(tools.jackson.databind.node.ObjectNode on3) {
+            this.on3 = on3;
+        }
+
+        public tools.jackson.databind.node.ArrayNode getAn3() {
+            return an3;
+        }
+
+        public void setAn3(tools.jackson.databind.node.ArrayNode an3) {
+            this.an3 = an3;
+        }
     }
 
     @Test
@@ -342,12 +430,38 @@ public class Fastjson2LibraryTests {
 
         assertEquals(
                 """
-                        {"null":null,"string":"abc","short":123,"int":123456,"long":1234567890123,"double":123.456,"true":{"array":false,"bigDecimal":false,"bigInteger":false,"binary":false,"boolean":true,"containerNode":false,"double":false,"empty":true,"float":false,"floatingPointNumber":false,"int":false,"integralNumber":false,"long":false,"missingNode":false,"nodeType":"BOOLEAN","null":false,"number":false,"object":false,"pojo":false,"short":false,"textual":false,"valueNode":true},"false":{"array":false,"bigDecimal":false,"bigInteger":false,"binary":false,"boolean":true,"containerNode":false,"double":false,"empty":true,"float":false,"floatingPointNumber":false,"int":false,"integralNumber":false,"long":false,"missingNode":false,"nodeType":"BOOLEAN","null":false,"number":false,"object":false,"pojo":false,"short":false,"textual":false,"valueNode":true},"object":{"key":"value"},"array":[0]}""",
+                        {"null":null,"string":"abc","short":123,"int":123456,"long":1234567890123,"double":123.456,"true":true,"false":false,"object":{"key":"value"},"array":[0]}""",
                 Fastjson2Library.getInstance().dumpsToString(object)
         );
         assertArrayEquals(
                 """
-                        {"null":null,"string":"abc","short":123,"int":123456,"long":1234567890123,"double":123.456,"true":{"array":false,"bigDecimal":false,"bigInteger":false,"binary":false,"boolean":true,"containerNode":false,"double":false,"empty":true,"float":false,"floatingPointNumber":false,"int":false,"integralNumber":false,"long":false,"missingNode":false,"nodeType":"BOOLEAN","null":false,"number":false,"object":false,"pojo":false,"short":false,"textual":false,"valueNode":true},"false":{"array":false,"bigDecimal":false,"bigInteger":false,"binary":false,"boolean":true,"containerNode":false,"double":false,"empty":true,"float":false,"floatingPointNumber":false,"int":false,"integralNumber":false,"long":false,"missingNode":false,"nodeType":"BOOLEAN","null":false,"number":false,"object":false,"pojo":false,"short":false,"textual":false,"valueNode":true},"object":{"key":"value"},"array":[0]}""".getBytes(StandardCharsets.UTF_8),
+                        {"null":null,"string":"abc","short":123,"int":123456,"long":1234567890123,"double":123.456,"true":true,"false":false,"object":{"key":"value"},"array":[0]}""".getBytes(StandardCharsets.UTF_8),
+                Fastjson2Library.getInstance().dumpsToBytes(object)
+        );
+    }
+
+    @Test
+    public void testWriteJackson3JsonNode() {
+        var object = new JSONObject();
+        object.put("null", tools.jackson.databind.node.NullNode.getInstance());
+        object.put("string", tools.jackson.databind.node.StringNode.valueOf("abc"));
+        object.put("short", tools.jackson.databind.node.ShortNode.valueOf((short) 123));
+        object.put("int", tools.jackson.databind.node.IntNode.valueOf(123456));
+        object.put("long", tools.jackson.databind.node.LongNode.valueOf(1234567890123L));
+        object.put("double", tools.jackson.databind.node.DoubleNode.valueOf(123.456));
+        object.put("true", tools.jackson.databind.node.BooleanNode.TRUE);
+        object.put("false", tools.jackson.databind.node.BooleanNode.FALSE);
+        object.put("object", tools.jackson.databind.node.JsonNodeFactory.instance.objectNode().put("key", "value"));
+        object.put("array", tools.jackson.databind.node.JsonNodeFactory.instance.arrayNode().add(0));
+
+        assertEquals(
+                """
+                        {"null":null,"string":"abc","short":123,"int":123456,"long":1234567890123,"double":123.456,"true":true,"false":false,"object":{"key":"value"},"array":[0]}""",
+                Fastjson2Library.getInstance().dumpsToString(object)
+        );
+        assertArrayEquals(
+                """
+                        {"null":null,"string":"abc","short":123,"int":123456,"long":1234567890123,"double":123.456,"true":true,"false":false,"object":{"key":"value"},"array":[0]}""".getBytes(StandardCharsets.UTF_8),
                 Fastjson2Library.getInstance().dumpsToBytes(object)
         );
     }
