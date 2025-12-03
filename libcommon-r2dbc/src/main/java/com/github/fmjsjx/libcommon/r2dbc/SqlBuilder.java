@@ -278,7 +278,7 @@ public class SqlBuilder {
      * @return this {@link SqlBuilder}
      * @see #addValue(Object)
      */
-    public SqlBuilder addValues(List<Object> values) {
+    public SqlBuilder addValues(List<?> values) {
         for (var value : values) {
             addValue(value);
         }
@@ -317,7 +317,7 @@ public class SqlBuilder {
      * @see #addValue(Object)
      * @see #addValues(List)
      */
-    public SqlBuilder v(List<Object> values) {
+    public SqlBuilder v(List<?> values) {
         return addValues(values);
     }
 
@@ -353,7 +353,7 @@ public class SqlBuilder {
      * @see #appendSql(String)
      * @see #addValues(List)
      */
-    public SqlBuilder appendSqlValues(String sqlPart, List<Object> values) {
+    public SqlBuilder appendSqlValues(String sqlPart, List<?> values) {
         return appendSql(sqlPart).addValues(values);
     }
 
@@ -381,7 +381,7 @@ public class SqlBuilder {
      * @see #addValues(List)
      * @see #appendSqlValues(String, List)
      */
-    public SqlBuilder sv(String sqlPart, List<Object> values) {
+    public SqlBuilder sv(String sqlPart, List<?> values) {
         return appendSqlValues(sqlPart, values);
     }
 
@@ -1500,7 +1500,7 @@ public class SqlBuilder {
      * @return this {@link SqlBuilder}
      * @since 3.17
      */
-    public SqlBuilder in(int... values) {
+    public SqlBuilder in(int[] values) {
         return s("IN", "(", questionMarks(values.length), ")").v(Arrays.stream(values).boxed().toList());
     }
 
@@ -1511,7 +1511,7 @@ public class SqlBuilder {
      * @return this {@link SqlBuilder}
      * @since 3.17
      */
-    public SqlBuilder in(long... values) {
+    public SqlBuilder in(long[] values) {
         return s("IN", "(", questionMarks(values.length), ")").v(Arrays.stream(values).boxed().toList());
     }
 
@@ -1521,7 +1521,7 @@ public class SqlBuilder {
      * @param values a list contains values
      * @return this {@link SqlBuilder}
      */
-    public SqlBuilder in(List<Object> values) {
+    public SqlBuilder in(List<?> values) {
         return s("IN", "(", questionMarks(values.size()), ")").v(values);
     }
 
@@ -1545,7 +1545,7 @@ public class SqlBuilder {
      * @return this {@link SqlBuilder}
      * @since 3.15
      */
-    public SqlBuilder eqOrIn(List<Object> values) {
+    public SqlBuilder eqOrIn(List<?> values) {
         return values.size() == 1 ? eq(values.get(0)) : in(values);
     }
 
