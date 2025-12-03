@@ -1237,17 +1237,17 @@ public class SqlBuilderTests {
         sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.eq(null));
         assertIterableEquals(List.of("IS NULL"), sqlParts(sqlBuilder));
-        assertIterableEquals(List.of(1), values(sqlBuilder));
+        assertIterableEquals(List.of(), values(sqlBuilder));
 
         sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.eq(String.class));
         assertIterableEquals(List.of("IS NULL"), sqlParts(sqlBuilder));
-        assertIterableEquals(List.of(1), values(sqlBuilder));
+        assertIterableEquals(List.of(), values(sqlBuilder));
 
         sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.eq(Parameters.in(String.class)));
         assertIterableEquals(List.of("IS NULL"), sqlParts(sqlBuilder));
-        assertIterableEquals(List.of(1), values(sqlBuilder));
+        assertIterableEquals(List.of(), values(sqlBuilder));
     }
 
 
@@ -1261,17 +1261,17 @@ public class SqlBuilderTests {
         sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.ne(null));
         assertIterableEquals(List.of("IS NOT NULL"), sqlParts(sqlBuilder));
-        assertIterableEquals(List.of(1), values(sqlBuilder));
+        assertIterableEquals(List.of(), values(sqlBuilder));
 
         sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.ne(String.class));
         assertIterableEquals(List.of("IS NOT NULL"), sqlParts(sqlBuilder));
-        assertIterableEquals(List.of(1), values(sqlBuilder));
+        assertIterableEquals(List.of(), values(sqlBuilder));
 
         sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.ne(Parameters.in(String.class)));
         assertIterableEquals(List.of("IS NOT NULL"), sqlParts(sqlBuilder));
-        assertIterableEquals(List.of(1), values(sqlBuilder));
+        assertIterableEquals(List.of(), values(sqlBuilder));
     }
 
     @Test
@@ -1360,7 +1360,7 @@ public class SqlBuilderTests {
     }
 
     @Test
-    public void testIn_ObjectArray() {
+    public void testIn_Varargs() {
         var sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.in(1, "2", "three"));
         assertIterableEquals(List.of("IN", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
@@ -1370,7 +1370,7 @@ public class SqlBuilderTests {
     @Test
     public void testIn_IntArray() {
         var sqlBuilder = new SqlBuilder();
-        assertSame(sqlBuilder, sqlBuilder.in(1, 2, 3));
+        assertSame(sqlBuilder, sqlBuilder.in(new int[] { 1, 2, 3 }));
         assertIterableEquals(List.of("IN", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of(1, 2, 3), values(sqlBuilder));
     }
@@ -1378,7 +1378,7 @@ public class SqlBuilderTests {
     @Test
     public void testIn_LongArray() {
         var sqlBuilder = new SqlBuilder();
-        assertSame(sqlBuilder, sqlBuilder.in(1L, 2L, 3L));
+        assertSame(sqlBuilder, sqlBuilder.in(new long[] { 1, 2, 3 }));
         assertIterableEquals(List.of("IN", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of(1L, 2L, 3L), values(sqlBuilder));
     }

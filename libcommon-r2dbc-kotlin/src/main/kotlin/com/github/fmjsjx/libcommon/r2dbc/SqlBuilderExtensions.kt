@@ -32,7 +32,7 @@ fun SqlBuilder.isIn(vararg values: Any): SqlBuilder = `in`(*values)
  * @return this [SqlBuilder]
  * @since 3.17
  */
-fun SqlBuilder.isIn(vararg values: Int): SqlBuilder = `in`(*values)
+fun SqlBuilder.isIn(vararg values: Int): SqlBuilder = `in`(values)
 
 /**
  * An alias for the method [SqlBuilder.in].
@@ -40,7 +40,7 @@ fun SqlBuilder.isIn(vararg values: Int): SqlBuilder = `in`(*values)
  * @return this [SqlBuilder]
  * @since 3.17
  */
-fun SqlBuilder.isIn(vararg values: Long): SqlBuilder = `in`(*values)
+fun SqlBuilder.isIn(vararg values: Long): SqlBuilder = `in`(values)
 
 /**
  * Append `NOT IN` predicate into SQL.
@@ -82,7 +82,7 @@ fun SqlBuilder.notIn(vararg values: Any): SqlBuilder = not().`in`(*values)
  * @return this [SqlBuilder]
  * @since 3.17
  */
-fun SqlBuilder.notIn(vararg values: Int): SqlBuilder = not().`in`(*values)
+fun SqlBuilder.notIn(vararg values: Int): SqlBuilder = not().`in`(values)
 
 /**
  * Append `NOT IN` predicate into SQL.
@@ -96,7 +96,7 @@ fun SqlBuilder.notIn(vararg values: Int): SqlBuilder = not().`in`(*values)
  * @return this [SqlBuilder]
  * @since 3.17
  */
-fun SqlBuilder.notIn(vararg values: Long): SqlBuilder = not().`in`(*values)
+fun SqlBuilder.notIn(vararg values: Long): SqlBuilder = not().`in`(values)
 
 /**
  * Append columns in the select part of the SQL.
