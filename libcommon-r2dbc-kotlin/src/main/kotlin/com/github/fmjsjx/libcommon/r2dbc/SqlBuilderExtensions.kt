@@ -11,7 +11,7 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.jvm.javaField
 
 /**
- * An alias for the method [SqlBuilder. in].
+ * An alias for the method [SqlBuilder.in].
  *
  * @return this [SqlBuilder]
  * @since 3.11
@@ -19,12 +19,28 @@ import kotlin.reflect.jvm.javaField
 fun SqlBuilder.isIn(values: List<Any>): SqlBuilder = `in`(values)
 
 /**
- * An alias for the method [SqlBuilder. in].
+ * An alias for the method [SqlBuilder.in].
  *
  * @return this [SqlBuilder]
  * @since 3.11
  */
 fun SqlBuilder.isIn(vararg values: Any): SqlBuilder = `in`(*values)
+
+/**
+ * An alias for the method [SqlBuilder.in].
+ *
+ * @return this [SqlBuilder]
+ * @since 3.17
+ */
+fun SqlBuilder.isIn(vararg values: Int): SqlBuilder = `in`(*values)
+
+/**
+ * An alias for the method [SqlBuilder.in].
+ *
+ * @return this [SqlBuilder]
+ * @since 3.17
+ */
+fun SqlBuilder.isIn(vararg values: Long): SqlBuilder = `in`(*values)
 
 /**
  * Append `NOT IN` predicate into SQL.
@@ -53,6 +69,34 @@ fun SqlBuilder.notIn(values: List<Any>): SqlBuilder = not().`in`(values)
  * @since 3.14
  */
 fun SqlBuilder.notIn(vararg values: Any): SqlBuilder = not().`in`(*values)
+
+/**
+ * Append `NOT IN` predicate into SQL.
+ *
+ * This method is equivalent to:
+ * ```
+ * not().`in`(values)
+ * ```
+ *
+ * @param values an array of values
+ * @return this [SqlBuilder]
+ * @since 3.17
+ */
+fun SqlBuilder.notIn(vararg values: Int): SqlBuilder = not().`in`(*values)
+
+/**
+ * Append `NOT IN` predicate into SQL.
+ *
+ * This method is equivalent to:
+ * ```
+ * not().`in`(values)
+ * ```
+ *
+ * @param values an array of values
+ * @return this [SqlBuilder]
+ * @since 3.17
+ */
+fun SqlBuilder.notIn(vararg values: Long): SqlBuilder = not().`in`(*values)
 
 /**
  * Append columns in the select part of the SQL.
@@ -365,3 +409,33 @@ fun SqlBuilder.and(column: KProperty1<*, *>): SqlBuilder = and(column.toColumn()
  * @since 3.15
  */
 fun SqlBuilder.or(column: KProperty1<*, *>): SqlBuilder = or(column.toColumn())
+
+/**
+ * Append the assignment into SQL with the specified `column` and the
+ * specified `value` given.
+ *
+ * @param column the column
+ * @param value the value
+ * @return this [SqlBuilder]
+ * @since 3.17
+ */
+fun SqlBuilder.assign(column: KProperty1<*, *>, value: Any?): SqlBuilder = assign(column.toColumn(), value)
+
+/**
+ * Append the specified `column` into SQL.
+ *
+ * @param column the column
+ * @return this [SqlBuilder]
+ * @since 3.17
+ */
+fun SqlBuilder.column(column: KProperty1<*, *>): SqlBuilder = column(column.toColumn())
+
+/**
+ * Returns a new SqlBuilder in group mode and append the specified
+ * `column` into it.
+ *
+ * @param column the column
+ * @return this [SqlBuilder]
+ * @since 3.17
+ */
+fun SqlBuilder.beginGroup(column: KProperty1<*, *>): SqlBuilder = beginGroup(column.toColumn())
