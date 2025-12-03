@@ -1308,24 +1308,36 @@ public class SqlBuilder {
     }
 
     /**
-     * Append {@code =} comparison into SQL.
+     * Append {@code =} or {@code IS NULL} comparison into SQL.
      *
      * @param value a scalar value, a parameter type for a {@code null}
      *              value or a {@code null} value
      * @return this {@link SqlBuilder}
      */
     public SqlBuilder eq(Object value) {
+        if (value == null || value instanceof Class<?>) {
+            return isNull();
+        }
+        if (value instanceof Parameter parameter && parameter.getValue() == null) {
+            return isNull();
+        }
         return sv("= ?", value);
     }
 
     /**
-     * Append {@code <>} comparison into SQL.
+     * Append {@code <>} or {@code IS NOT NULL} comparison into SQL.
      *
      * @param value a scalar value, a parameter type for a {@code null}
      *              value or a {@code null} value
      * @return this {@link SqlBuilder}
      */
     public SqlBuilder ne(Object value) {
+        if (value == null || value instanceof Class<?>) {
+            return isNotNull();
+        }
+        if (value instanceof Parameter parameter && parameter.getValue() == null) {
+            return isNotNull();
+        }
         return sv("<> ?", value);
     }
 
@@ -1484,6 +1496,28 @@ public class SqlBuilder {
     /**
      * Append {@code IN} predicate into SQL.
      *
+     * @param values an array of values
+     * @return this {@link SqlBuilder}
+     * @since 3.17
+     */
+    public SqlBuilder in(int... values) {
+        return s("IN", "(", questionMarks(values.length), ")").v(Arrays.stream(values).boxed().toList());
+    }
+
+    /**
+     * Append {@code IN} predicate into SQL.
+     *
+     * @param values an array of values
+     * @return this {@link SqlBuilder}
+     * @since 3.17
+     */
+    public SqlBuilder in(long... values) {
+        return s("IN", "(", questionMarks(values.length), ")").v(Arrays.stream(values).boxed().toList());
+    }
+
+    /**
+     * Append {@code IN} predicate into SQL.
+     *
      * @param values a list contains values
      * @return this {@link SqlBuilder}
      */
@@ -1553,6 +1587,21 @@ public class SqlBuilder {
      */
     public SqlBuilder beginGroup() {
         return new SqlBuilder(s("("), GROUP);
+    }
+
+    /**
+     * Returns a new {@link SqlBuilder} in group mode and append specified
+     * column string into it.
+     * <p>
+     * This method is equivalent to: <pre>{@code
+     * beginGroup().column(column);
+     * }</pre>
+     *
+     * @param column the column
+     * @return a new {@link SqlBuilder} in group mode
+     */
+    public SqlBuilder beginGroup(String column) {
+        return beginGroup().column(column);
     }
 
     /**
