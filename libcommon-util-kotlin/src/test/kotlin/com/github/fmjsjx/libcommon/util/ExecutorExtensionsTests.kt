@@ -33,7 +33,7 @@ class ExecutorExtensionsTests {
         val executor = Executors.newSingleThreadExecutor()
         try {
             executor.execute { name.set(Thread.currentThread().name) }
-            var threadName: String = ""
+            var threadName = ""
             val job = executor.launch {
                 delay(1)
                 threadName = Thread.currentThread().name.substringBefore(" @")
