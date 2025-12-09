@@ -2,7 +2,7 @@
 
 A set of some common useful libraries.
 
-> Since 3.0, members of libraries are always based on JDK 17.
+> Since 4.0, members of libraries are always based on Java 21.
 
 
 ## Add Dependencies
