@@ -171,18 +171,6 @@ The [`libcommon-redis-kotlin`](libcommon-redis-kotlin) module provides the kotli
 
 The [`libcommon-util`](libcommon-util) module provides additional utility functions for JDBC.
 
-### libcommon-aliyunons
-
-> This module has been deprecated since 3.16 and may be removed in future version.
-
-The [`libcommon-aliyunons`](libcommon-aliyunons) module provides additional utility functions for [`ALIYUN Open Services/RocketMQ`](https://help.aliyun.com/product/29530.html).
-
-### libcommon-rocketmq
-
-> This module has been deprecated since 3.16 and may be removed in future version.
-
-The [`libcommon-rocketmq`](libcommon-rocketmq) module provides additional utility functions for [`RocketMQ`](https://rocketmq.apache.org/).
-
 ### libcommon-bson
 
 The [`libcommon-bson`](libcommon-bson) module provides some additional utility functions for [`BSON`](https://www.mongodb.com/basics/bson).

@@ -9,7 +9,6 @@ pluginManagement {
 }
 
 rootProject.name = "libcommon"
-include(":libcommon-aliyunons")
 include(":libcommon-bom")
 include(":libcommon-bson")
 include(":libcommon-bson-kotlin")
@@ -35,7 +34,6 @@ include(":libcommon-r2dbc")
 include(":libcommon-r2dbc-kotlin")
 include(":libcommon-redis")
 include(":libcommon-redis-kotlin")
-include(":libcommon-rocketmq")
 include(":libcommon-util")
 include(":libcommon-util-kotlin")
 include(":libcommon-uuid")
