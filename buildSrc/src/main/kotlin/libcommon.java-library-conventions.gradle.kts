@@ -21,8 +21,6 @@ dependencies {
     api(platform("com.fasterxml.jackson:jackson-bom:2.20.1"))
     // jackson3-bom
     api(platform("tools.jackson:jackson-bom:3.0.3"))
-    // rocketmq
-    api(platform("org.apache.rocketmq:rocketmq-all:5.3.3"))
     // kotlin coroutines
     api(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"))
     // prometheus
@@ -39,7 +37,6 @@ dependencies {
         api("io.lettuce:lettuce-core:7.2.0.RELEASE")
         api("com.dslplatform:dsl-json-java8:1.10.0")
         api("com.jsoniter:jsoniter:0.9.23")
-        api("com.aliyun.openservices:ons-client:2.0.8.Final")
         val fastjson2Version = "2.0.60"
         api("com.alibaba.fastjson2:fastjson2:$fastjson2Version")
         api("com.alibaba.fastjson2:fastjson2-kotlin:$fastjson2Version")
