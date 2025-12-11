@@ -104,6 +104,7 @@ public class DigestUtil {
         }
 
         private final String algorithm;
+        private volatile EasyThreadLocal<DigestUtil> threadLocalUtil;
 
         DigestAlgorithm(String algorithm) {
             this.algorithm = algorithm;
@@ -143,6 +144,30 @@ public class DigestUtil {
             return new DigestUtil(get());
         }
 
+        private EasyThreadLocal<DigestUtil> getOrInitThreadLocalUtil() {
+            var threadLocalUtil = this.threadLocalUtil;
+            if (threadLocalUtil == null) {
+                synchronized (this) {
+                    threadLocalUtil = this.threadLocalUtil;
+                    if (threadLocalUtil == null) {
+                        this.threadLocalUtil = threadLocalUtil = EasyThreadLocal.create(this::createUtil);
+                    }
+                }
+            }
+            return threadLocalUtil;
+        }
+
+        /**
+         * Returns the thread local {@link DigestUtil} with this
+         * {@code algorithm}.
+         *
+         * @return a {@code DigestUtil}
+         * @since 4.0
+         */
+        public DigestUtil threadLocalUtil() {
+            return getOrInitThreadLocalUtil().get();
+        }
+
     }
 
     private static final class DigestAlgorithmMappingsHolder {
@@ -166,7 +191,7 @@ public class DigestUtil {
 
     private static final class Md5UtilInstanceHolder {
 
-        private static final EasyThreadLocal<DigestUtil> INSTANCE = EasyThreadLocal.create(DigestAlgorithm.MD5::createUtil);
+        private static final EasyThreadLocal<DigestUtil> INSTANCE = DigestAlgorithm.MD5.getOrInitThreadLocalUtil();
 
     }
 
@@ -273,7 +298,7 @@ public class DigestUtil {
 
     private static final class Sha1UtilInstanceHolder {
 
-        private static final EasyThreadLocal<DigestUtil> INSTANCE = EasyThreadLocal.create(DigestAlgorithm.SHA1::createUtil);
+        private static final EasyThreadLocal<DigestUtil> INSTANCE = DigestAlgorithm.SHA1.getOrInitThreadLocalUtil();
 
     }
 
@@ -380,7 +405,7 @@ public class DigestUtil {
 
     private static final class Sha256UtilInstanceHolder {
 
-        private static final EasyThreadLocal<DigestUtil> INSTANCE = EasyThreadLocal.create(DigestAlgorithm.SHA256::createUtil);
+        private static final EasyThreadLocal<DigestUtil> INSTANCE = DigestAlgorithm.SHA256.getOrInitThreadLocalUtil();
 
     }
 
@@ -489,7 +514,7 @@ public class DigestUtil {
 
     private static final class Sha512UtilInstanceHolder {
 
-        private static final EasyThreadLocal<DigestUtil> INSTANCE = EasyThreadLocal.create(DigestAlgorithm.SHA512::createUtil);
+        private static final EasyThreadLocal<DigestUtil> INSTANCE = DigestAlgorithm.SHA512.getOrInitThreadLocalUtil();
 
     }
 
