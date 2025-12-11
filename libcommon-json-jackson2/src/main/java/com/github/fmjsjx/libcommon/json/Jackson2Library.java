@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -18,6 +19,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fmjsjx.libcommon.util.KotlinUtil;
@@ -57,23 +59,34 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
 
     }
 
-    private static final class DefaultObjectMapperInstanceHolder {
-        private static final ObjectMapper INSTANCE = createDefaultObjectMapper();
+    /**
+     * Returns the default singleton {@link JsonMapper} instance.
+     *
+     * @return the default singleton {@code JsonMapper} instance
+     * @since 4.0
+     */
+    public static final JsonMapper defaultJsonMapper() {
+        return DefaultJsonMapperInstanceHolder.MAPPER;
     }
 
-    private static final ObjectMapper createDefaultObjectMapper() {
-        var mapper = new ObjectMapper().setDefaultPropertyInclusion(Include.NON_ABSENT)
+    private static final class DefaultJsonMapperInstanceHolder {
+        private static final JsonMapper MAPPER = createDefaultJsonMapper();
+    }
+
+    private static final JsonMapper createDefaultJsonMapper() {
+        var mapperBuilder = JsonMapper.builder()
+                .defaultPropertyInclusion(JsonInclude.Value.construct(Include.NON_ABSENT, Include.NON_ABSENT))
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         ReflectUtil.<Module>findForName("com.fasterxml.jackson.datatype.jdk8.Jdk8Module").ifPresent(moduleClass -> {
             try {
-                mapper.registerModule(moduleClass.getDeclaredConstructor().newInstance());
+                mapperBuilder.addModule(moduleClass.getDeclaredConstructor().newInstance());
             } catch (Exception e) {
                 // jackson-module-jdk8 not available
             }
         });
         ReflectUtil.<Module>findForName("com.fasterxml.jackson.datatype.jsr310.JavaTimeModule").ifPresent(moduleClass -> {
             try {
-                mapper.registerModule(moduleClass.getDeclaredConstructor().newInstance());
+                mapperBuilder.addModule(moduleClass.getDeclaredConstructor().newInstance());
             } catch (Exception e) {
                 // jackson-module-jsr310 not available
             }
@@ -81,27 +94,31 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
         if (KotlinUtil.isKotlinPresent()) {
             ReflectUtil.<Module>findForName("com.fasterxml.jackson.module.kotlin.KotlinModule").ifPresent(moduleClass -> {
                 try {
-                    mapper.registerModule(moduleClass.getDeclaredConstructor().newInstance());
+                    mapperBuilder.addModule(moduleClass.getDeclaredConstructor().newInstance());
                 } catch (Exception e) {
                     // jackson-module-kotlin not available
                 }
             });
         }
-        return mapper;
+        if (JsoniterModule.isJsoniterAvailable()) {
+            mapperBuilder.addModule(JsoniterModule.getInstance());
+        }
+        return mapperBuilder.build();
     }
 
     /**
      * Returns the singleton (default) {@link ObjectMapper} instance.
      *
      * @return the singleton (default) {@code ObjectMapper} instance
+     * @deprecated since 4.0, please use {@link #defaultJsonMapper()} instead
      */
     public static final ObjectMapper defaultObjectMapper() {
-        return DefaultObjectMapperInstanceHolder.INSTANCE;
+        return defaultJsonMapper();
     }
 
     private static final class DefaultInstanceHolder {
 
-        private static final Jackson2Library INSTANCE = new Jackson2Library(defaultObjectMapper());
+        private static final Jackson2Library INSTANCE = new Jackson2Library();
 
     }
 
@@ -136,10 +153,10 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      * @return a {@code JavaType}
      */
     public static final JavaType toJavaType(Type type) {
-        return CachedJavaTypesHolder.javaTypes.computeIfAbsent(type, defaultObjectMapper()::constructType);
+        return CachedJavaTypesHolder.javaTypes.computeIfAbsent(type, defaultJsonMapper()::constructType);
     }
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
     private TypeReferenceFactory typeReferenceFactory = TypeReferenceFactory.getDefault();
 
     /**
@@ -147,28 +164,51 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      * {@code objectMapper}.
      *
      * @param objectMapper a {@code ObjectMapper}
+     * @deprecated since 4.0, please use {@link #Jackson2Library(JsonMapper)}
+     * constructor instead
      */
+    @Deprecated
     public Jackson2Library(ObjectMapper objectMapper) {
-        this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper must not be null");
-        if (JsoniterModule.isJsoniterAvailable()) {
-            objectMapper.registerModule(JsoniterModule.getInstance());
-        }
+        this((JsonMapper) objectMapper);
+    }
+
+    /**
+     * Creates a new {@link Jackson2Library} with the specified
+     * {@code jsonMapper}.
+     *
+     * @param jsonMapper a {@code JsonMapper}
+     * @since 4.0
+     */
+    public Jackson2Library(JsonMapper jsonMapper) {
+        this.jsonMapper = Objects.requireNonNull(jsonMapper, "jsonMapper must not be null");
     }
 
     /**
      * Creates a new {@link Jackson2Library} with the default {@link ObjectMapper}.
      */
     public Jackson2Library() {
-        this(defaultObjectMapper());
+        this(defaultJsonMapper());
     }
 
     /**
      * Returns the {@code ObjectMapper}.
      *
      * @return the {@code ObjectMapper}
+     * @deprecated since 4.0, please use {@link #jsonMapper()} instead
      */
+    @Deprecated
     public ObjectMapper objectMapper() {
-        return objectMapper;
+        return jsonMapper();
+    }
+
+    /**
+     * Returns the {@code JsonMapper}.
+     *
+     * @return the {@code JsonMapper}
+     * @since 4.0
+     */
+    public JsonMapper jsonMapper() {
+        return jsonMapper;
     }
 
     /**
@@ -189,7 +229,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      * @return a new {@code ObjectNode} instance
      */
     public ObjectNode createObjectNode() {
-        return objectMapper().createObjectNode();
+        return jsonMapper().createObjectNode();
     }
 
     /**
@@ -198,7 +238,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      * @return a new {@code ArrayNode} instance
      */
     public ArrayNode createArrayNode() {
-        return objectMapper().createArrayNode();
+        return jsonMapper().createArrayNode();
     }
 
     /**
@@ -209,7 +249,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     @SuppressWarnings("unchecked")
     public <T extends JsonNode> T loads(byte[] src) throws Jackson2Exception {
         try {
-            return (T) objectMapper.readTree(src);
+            return (T) jsonMapper().readTree(src);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
@@ -223,7 +263,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     @SuppressWarnings("unchecked")
     public <T extends JsonNode> T loads(String src) throws Jackson2Exception {
         try {
-            return (T) objectMapper.readTree(src);
+            return (T) jsonMapper().readTree(src);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
@@ -236,7 +276,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     @Override
     public <T extends JsonNode> T loads(InputStream src) throws Jackson2Exception {
         try {
-            return (T) objectMapper.readTree(src);
+            return (T) jsonMapper().readTree(src);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
@@ -248,7 +288,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     @Override
     public <T> T loads(byte[] src, Class<T> type) throws Jackson2Exception {
         try {
-            return objectMapper.readValue(src, type);
+            return jsonMapper().readValue(src, type);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
@@ -268,7 +308,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     @Override
     public <T> T loads(String src, Class<T> type) throws Jackson2Exception {
         try {
-            return objectMapper.readValue(src, type);
+            return jsonMapper().readValue(src, type);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
@@ -293,7 +333,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      */
     public <T> T loads(String src, JavaType type) throws Jackson2Exception {
         try {
-            return objectMapper.readValue(src, type);
+            return jsonMapper().readValue(src, type);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
@@ -310,7 +350,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      */
     public <T> T loads(String src, TypeReference<T> type) throws Jackson2Exception {
         try {
-            return objectMapper.readValue(src, type);
+            return jsonMapper().readValue(src, type);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
@@ -327,7 +367,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      */
     public <T> T loads(byte[] src, JavaType type) throws Jackson2Exception {
         try {
-            return objectMapper.readValue(src, type);
+            return jsonMapper().readValue(src, type);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
@@ -344,7 +384,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      */
     public <T> T loads(byte[] src, TypeReference<T> type) throws Jackson2Exception {
         try {
-            return objectMapper.readValue(src, type);
+            return jsonMapper().readValue(src, type);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
@@ -356,14 +396,14 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     @Override
     public <T> T loads(InputStream src, Class<T> type) throws Jackson2Exception {
         try {
-            return objectMapper.readValue(src, type);
+            return jsonMapper().readValue(src, type);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
     }
 
     /**
-     *  @throws Jackson2Exception if any JSON decode error occurs
+     * @throws Jackson2Exception if any JSON decode error occurs
      */
     @Override
     public <T> T loads(InputStream src, Type type) throws JsonException {
@@ -381,7 +421,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      */
     public <T> T loads(InputStream src, JavaType type) throws Jackson2Exception {
         try {
-            return objectMapper.readValue(src, type);
+            return jsonMapper().readValue(src, type);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
@@ -398,7 +438,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      */
     public <T> T loads(InputStream src, TypeReference<T> type) throws Jackson2Exception {
         try {
-            return objectMapper.readValue(src, type);
+            return jsonMapper().readValue(src, type);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
@@ -410,7 +450,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     @Override
     public byte[] dumpsToBytes(Object obj) throws Jackson2Exception {
         try {
-            return objectMapper.writeValueAsBytes(obj);
+            return jsonMapper().writeValueAsBytes(obj);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
@@ -422,7 +462,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     @Override
     public String dumpsToString(Object obj) throws Jackson2Exception {
         try {
-            return objectMapper.writeValueAsString(obj);
+            return jsonMapper().writeValueAsString(obj);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
@@ -434,7 +474,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
     @Override
     public void dumps(Object obj, OutputStream out) throws Jackson2Exception {
         try {
-            objectMapper.writeValue(out, obj);
+            jsonMapper().writeValue(out, obj);
         } catch (Exception e) {
             throw new Jackson2Exception(e);
         }
