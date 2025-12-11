@@ -5,8 +5,12 @@ import com.github.fmjsjx.libcommon.util.concurrent.EasyThreadLocal;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * The utility class for digests.
@@ -35,6 +39,54 @@ public class DigestUtil {
          * @since 1.1
          */
         SHA512("SHA-512"),
+        /**
+         * SHA-224
+         *
+         * @since 4.0
+         */
+        SHA224("SHA-224"),
+        /**
+         * SHA-384
+         *
+         * @since 4.0
+         */
+        SHA384("SHA-384"),
+        /**
+         * SHA-512/224
+         *
+         * @since 4.0
+         */
+        SHA512_224("SHA-512/224"),
+        /**
+         * SHA-512/256
+         *
+         * @since 4.0
+         */
+        SHA512_256("SHA-512/256"),
+        /**
+         * SHA3-224
+         *
+         * @since 4.0
+         */
+        SHA3_224("SHA3-224"),
+        /**
+         * SHA3-256
+         *
+         * @since 4.0
+         */
+        SHA3_256("SHA3-256"),
+        /**
+         * SHA3-384
+         *
+         * @since 4.0
+         */
+        SHA3_384("SHA3-384"),
+        /**
+         * SHA3-512
+         *
+         * @since 4.0
+         */
+        SHA3_512("SHA3-512"),
         // May add others...
         ;
 
@@ -44,13 +96,11 @@ public class DigestUtil {
          * @return the {@code DigestAlgorithm}
          */
         public static final DigestAlgorithm fromAlgorithm(String algorithm) {
-            return switch (algorithm) {
-                case "MD5" -> MD5;
-                case "SHA-1" -> SHA1;
-                case "SHA-256" -> SHA256;
-                case "SHA-512" -> SHA512;
-                default -> throw new NoSuchElementException("no such algorithm `" + algorithm + "`");
-            };
+            var value = DigestAlgorithmMappingsHolder.INSTANCE.get(algorithm);
+            if (value == null) {
+                throw new NoSuchElementException("no such algorithm `" + algorithm + "`");
+            }
+            return value;
         }
 
         private final String algorithm;
@@ -93,6 +143,11 @@ public class DigestUtil {
             return new DigestUtil(get());
         }
 
+    }
+
+    private static final class DigestAlgorithmMappingsHolder {
+        private static final Map<String, DigestAlgorithm> INSTANCE = Arrays.stream(DigestAlgorithm.values())
+                .collect(Collectors.toUnmodifiableMap(DigestAlgorithm::algorithm, Function.identity()));
     }
 
     /**
