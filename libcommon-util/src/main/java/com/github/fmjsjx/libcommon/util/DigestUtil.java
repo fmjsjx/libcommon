@@ -35,7 +35,7 @@ public class DigestUtil {
         SHA256("SHA-256"),
         /**
          * SHA-512
-         * 
+         *
          * @since 1.1
          */
         SHA512("SHA-512"),
@@ -112,7 +112,7 @@ public class DigestUtil {
 
         /**
          * Returns the algorithm
-         * 
+         *
          * @return the algorithm
          */
         public String algorithm() {
@@ -136,7 +136,7 @@ public class DigestUtil {
         /**
          * Creates and returns a new {@link DigestUtil} instance with this
          * {@code algorithm}.
-         * 
+         *
          * @return a {@code DigestUtil}
          * @since 1.1
          */
@@ -168,6 +168,23 @@ public class DigestUtil {
             return getOrInitThreadLocalUtil().get();
         }
 
+        /**
+         * Automatically select the appropriate method to return a
+         * DigestUtil. If the current thread is a virtual thread, a new
+         * DigestUtil will be returned. Otherwise, it will be returned from
+         * thread local variable.
+         *
+         * @return a {@code DigestUtil}
+         * @since 4.0
+         */
+        public DigestUtil digestUtil() {
+            // Always create new DigestUtil if current thread is a virtual thread.
+            if (Thread.currentThread().isVirtual()) {
+                return createUtil();
+            }
+            return threadLocalUtil();
+        }
+
     }
 
     private static final class DigestAlgorithmMappingsHolder {
@@ -178,7 +195,7 @@ public class DigestUtil {
     /**
      * Creates and returns a new {@link DigestUtil} instance with the specified
      * {@code algorithm}.
-     * 
+     *
      * @param algorithm the {@link DigestAlgorithm}
      * @return a {@code DigestUtil}
      * @deprecated Please use {@link DigestAlgorithm#createUtil()} instead since 1.1
@@ -197,16 +214,20 @@ public class DigestUtil {
 
     /**
      * Returns the {@link DigestUtil} with the {@code MD5} digest algorithm.
-     * 
+     *
      * @return the {@link DigestUtil} with the {@code MD5} digest algorithm
      */
     public static final DigestUtil md5() {
+        // Since 4.0, always create new DigestUtil if current thread is a virtual thread.
+        if (Thread.currentThread().isVirtual()) {
+            return DigestAlgorithm.MD5.createUtil();
+        }
         return Md5UtilInstanceHolder.INSTANCE.get();
     }
 
     /**
      * Calculates and returns the {@code MD5} digest using the specified string.
-     * 
+     *
      * @param input the string
      * @return the array of bytes for the resulting hash value
      */
@@ -230,7 +251,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code MD5} digest using the specified arrays of
      * bytes.
-     * 
+     *
      * @param input       the first array of bytes
      * @param otherInputs the other arrays of bytes
      * @return the array of bytes for the resulting hash value
@@ -241,7 +262,7 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the {@code MD5} digest using the specified buffers.
-     * 
+     *
      * @param input       the first {@link ByteBuffer}
      * @param otherInputs the other {@link ByteBuffer}s
      * @return the array of bytes for the resulting hash value
@@ -252,7 +273,7 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the {@code MD5} digest using the specified string.
-     * 
+     *
      * @param input the string
      * @return the hex string for the resulting hash value
      */
@@ -276,7 +297,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code MD5} digest using the specified arrays of
      * bytes.
-     * 
+     *
      * @param input       the first array of bytes
      * @param otherInputs the other arrays of bytes
      * @return the hex string for the resulting hash value
@@ -287,7 +308,7 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the {@code MD5} digest using the specified buffers.
-     * 
+     *
      * @param input       the first {@link ByteBuffer}
      * @param otherInputs the other {@link ByteBuffer}s
      * @return the hex string for the resulting hash value
@@ -304,16 +325,20 @@ public class DigestUtil {
 
     /**
      * Returns the {@link DigestUtil} with the {@code SHA-1} digest algorithm.
-     * 
+     *
      * @return the {@link DigestUtil} with the {@code SHA-1} digest algorithm
      */
     public static final DigestUtil sha1() {
+        // Since 4.0, always create new DigestUtil if current thread is a virtual thread.
+        if (Thread.currentThread().isVirtual()) {
+            return DigestAlgorithm.SHA1.createUtil();
+        }
         return Sha1UtilInstanceHolder.INSTANCE.get();
     }
 
     /**
      * Calculates and returns the {@code SHA-1} digest using the specified string.
-     * 
+     *
      * @param input the string
      * @return the array of bytes for the resulting hash value
      */
@@ -337,7 +362,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-1} digest using the specified arrays of
      * bytes.
-     * 
+     *
      * @param input       the first array of bytes
      * @param otherInputs the other arrays of bytes
      * @return the array of bytes for the resulting hash value
@@ -348,7 +373,7 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the {@code SHA-1} digest using the specified buffers.
-     * 
+     *
      * @param input       the first {@link ByteBuffer}
      * @param otherInputs the other {@link ByteBuffer}s
      * @return the array of bytes for the resulting hash value
@@ -359,7 +384,7 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the {@code SHA-1} digest using the specified string.
-     * 
+     *
      * @param input the string
      * @return the hex string for the resulting hash value
      */
@@ -383,7 +408,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-1} digest using the specified arrays of
      * bytes.
-     * 
+     *
      * @param input       the first array of bytes
      * @param otherInputs the other arrays of bytes
      * @return the hex string for the resulting hash value
@@ -394,7 +419,7 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the {@code SHA-1} digest using the specified buffers.
-     * 
+     *
      * @param input       the first {@link ByteBuffer}
      * @param otherInputs the other {@link ByteBuffer}s
      * @return the hex string for the resulting hash value
@@ -411,16 +436,20 @@ public class DigestUtil {
 
     /**
      * Returns the {@link DigestUtil} with the {@code SHA-256} digest algorithm.
-     * 
+     *
      * @return the {@link DigestUtil} with the {@code SHA-256} digest algorithm
      */
     public static final DigestUtil sha256() {
+        // Since 4.0, always create new DigestUtil if current thread is a virtual thread.
+        if (Thread.currentThread().isVirtual()) {
+            return DigestAlgorithm.SHA256.createUtil();
+        }
         return Sha256UtilInstanceHolder.INSTANCE.get();
     }
 
     /**
      * Calculates and returns the {@code SHA-256} digest using the specified string.
-     * 
+     *
      * @param input the string
      * @return the array of bytes for the resulting hash value
      */
@@ -444,7 +473,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-256} digest using the specified arrays
      * of bytes.
-     * 
+     *
      * @param input       the first array of bytes
      * @param otherInputs the other arrays of bytes
      * @return the array of bytes for the resulting hash value
@@ -456,7 +485,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-256} digest using the specified
      * buffers.
-     * 
+     *
      * @param input       the first {@link ByteBuffer}
      * @param otherInputs the other {@link ByteBuffer}s
      * @return the array of bytes for the resulting hash value
@@ -467,7 +496,7 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the {@code SHA-256} digest using the specified string.
-     * 
+     *
      * @param input the string
      * @return the hex string for the resulting hash value
      */
@@ -491,7 +520,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-256} digest using the specified arrays
      * of bytes.
-     * 
+     *
      * @param input       the first array of bytes
      * @param otherInputs the other arrays of bytes
      * @return the hex string for the resulting hash value
@@ -503,7 +532,7 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-256} digest using the specified
      * buffers.
-     * 
+     *
      * @param input       the first {@link ByteBuffer}
      * @param otherInputs the other {@link ByteBuffer}s
      * @return the hex string for the resulting hash value
@@ -520,21 +549,25 @@ public class DigestUtil {
 
     /**
      * Returns the {@link DigestUtil} with the {@code SHA-512} digest algorithm.
-     * 
+     *
      * @return the {@link DigestUtil} with the {@code SHA-512} digest algorithm
-     * 
+     *
      * @since 2.2
      */
     public static final DigestUtil sha512() {
+        // Since 4.0, always create new DigestUtil if current thread is a virtual thread.
+        if (Thread.currentThread().isVirtual()) {
+            return DigestAlgorithm.SHA512.createUtil();
+        }
         return Sha512UtilInstanceHolder.INSTANCE.get();
     }
 
     /**
      * Calculates and returns the {@code SHA-512} digest using the specified string.
-     * 
+     *
      * @param input the string
      * @return the array of bytes for the resulting hash value
-     * 
+     *
      * @since 2.2
      */
     public static final byte[] sha512(String input) {
@@ -549,7 +582,7 @@ public class DigestUtil {
      * @param offset the offset to start from in the array of bytes
      * @param len    the number of bytes to use, starting at
      * @return the array of bytes for the resulting hash value
-     * 
+     *
      * @since 2.2
      */
     public static final byte[] sha512(byte[] input, int offset, int len) {
@@ -559,11 +592,11 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-512} digest using the specified arrays
      * of bytes.
-     * 
+     *
      * @param input       the first array of bytes
      * @param otherInputs the other arrays of bytes
      * @return the array of bytes for the resulting hash value
-     * 
+     *
      * @since 2.2
      */
     public static final byte[] sha512(byte[] input, byte[]... otherInputs) {
@@ -573,11 +606,11 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-512} digest using the specified
      * buffers.
-     * 
+     *
      * @param input       the first {@link ByteBuffer}
      * @param otherInputs the other {@link ByteBuffer}s
      * @return the array of bytes for the resulting hash value
-     * 
+     *
      * @since 2.2
      */
     public static final byte[] sha512(ByteBuffer input, ByteBuffer... otherInputs) {
@@ -586,10 +619,10 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the {@code SHA-512} digest using the specified string.
-     * 
+     *
      * @param input the string
      * @return the hex string for the resulting hash value
-     * 
+     *
      * @since 2.2
      */
     public static final String sha512AsHex(String input) {
@@ -604,7 +637,7 @@ public class DigestUtil {
      * @param offset the offset to start from in the array of bytes
      * @param len    the number of bytes to use, starting at
      * @return the hex string of bytes for the resulting hash value
-     * 
+     *
      * @since 2.2
      */
     public static final String sha512AsHex(byte[] input, int offset, int len) {
@@ -614,11 +647,11 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-512} digest using the specified arrays
      * of bytes.
-     * 
+     *
      * @param input       the first array of bytes
      * @param otherInputs the other arrays of bytes
      * @return the hex string for the resulting hash value
-     * 
+     *
      * @since 2.2
      */
     public static final String sha512AsHex(byte[] input, byte[]... otherInputs) {
@@ -628,11 +661,11 @@ public class DigestUtil {
     /**
      * Calculates and returns the {@code SHA-512} digest using the specified
      * buffers.
-     * 
+     *
      * @param input       the first {@link ByteBuffer}
      * @param otherInputs the other {@link ByteBuffer}s
      * @return the hex string for the resulting hash value
-     * 
+     *
      * @since 2.2
      */
     public static final String sha512AsHex(ByteBuffer input, ByteBuffer... otherInputs) {
@@ -666,7 +699,7 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the digest using the specified arrays of bytes.
-     * 
+     *
      * @param input       the first array of bytes
      * @param otherInputs the other arrays of bytes
      * @return the array of bytes for the resulting hash value
@@ -686,7 +719,7 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the digest using the specified buffers.
-     * 
+     *
      * @param input       the first {@link ByteBuffer}
      * @param otherInputs the other {@link ByteBuffer}s
      * @return the array of bytes for the resulting hash value
@@ -706,7 +739,7 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the digest using the specified string.
-     * 
+     *
      * @param input the string
      * @return the array of bytes for the resulting hash value
      */
@@ -730,7 +763,7 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the digest using the specified arrays of bytes.
-     * 
+     *
      * @param input       the first array of bytes
      * @param otherInputs the other arrays of bytes
      * @return the hex string for the resulting hash value
@@ -741,7 +774,7 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the digest using the specified buffers.
-     * 
+     *
      * @param input       the first {@link ByteBuffer}
      * @param otherInputs the other {@link ByteBuffer}s
      * @return the hex string for the resulting hash value
@@ -752,7 +785,7 @@ public class DigestUtil {
 
     /**
      * Calculates and returns the digest using the specified string.
-     * 
+     *
      * @param input the string
      * @return the hex string for the resulting hash value
      */

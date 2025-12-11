@@ -149,6 +149,10 @@ public class ChecksumUtil {
      * @since 1.1
      */
     public static final WrappedChecksum<CRC32> wrappedCrc32() {
+        // since 4.0, always returns a new WrappedChecksum if current thread is a virtual thread.
+        if (Thread.currentThread().isVirtual()) {
+            return wrappedCRC32();
+        }
         return CRC32UtilInstanceHolder.INSTANCE.get();
     }
 
@@ -215,6 +219,10 @@ public class ChecksumUtil {
      * @since 1.1
      */
     public static final WrappedChecksum<CRC32C> wrappedCrc32c() {
+        // since 4.0, always returns a new WrappedChecksum if current thread is a virtual thread.
+        if (Thread.currentThread().isVirtual()) {
+            return wrappedCRC32C();
+        }
         return CRC32CUtilInstanceHolder.INSTANCE.get();
     }
 
