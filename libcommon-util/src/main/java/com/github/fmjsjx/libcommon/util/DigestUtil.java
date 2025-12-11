@@ -1,5 +1,7 @@
 package com.github.fmjsjx.libcommon.util;
 
+import com.github.fmjsjx.libcommon.util.concurrent.EasyThreadLocal;
+
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -53,7 +55,7 @@ public class DigestUtil {
 
         private final String algorithm;
 
-        private DigestAlgorithm(String algorithm) {
+        DigestAlgorithm(String algorithm) {
             this.algorithm = algorithm;
         }
 
@@ -109,8 +111,7 @@ public class DigestUtil {
 
     private static final class Md5UtilInstanceHolder {
 
-        private static final ThreadLocal<DigestUtil> instance = ThreadLocal
-                .withInitial(DigestAlgorithm.MD5::createUtil);
+        private static final EasyThreadLocal<DigestUtil> INSTANCE = EasyThreadLocal.create(DigestAlgorithm.MD5::createUtil);
 
     }
 
@@ -120,7 +121,7 @@ public class DigestUtil {
      * @return the {@link DigestUtil} with the {@code MD5} digest algorithm
      */
     public static final DigestUtil md5() {
-        return Md5UtilInstanceHolder.instance.get();
+        return Md5UtilInstanceHolder.INSTANCE.get();
     }
 
     /**
@@ -217,8 +218,7 @@ public class DigestUtil {
 
     private static final class Sha1UtilInstanceHolder {
 
-        private static final ThreadLocal<DigestUtil> instance = ThreadLocal
-                .withInitial(DigestAlgorithm.SHA1::createUtil);
+        private static final EasyThreadLocal<DigestUtil> INSTANCE = EasyThreadLocal.create(DigestAlgorithm.SHA1::createUtil);
 
     }
 
@@ -228,7 +228,7 @@ public class DigestUtil {
      * @return the {@link DigestUtil} with the {@code SHA-1} digest algorithm
      */
     public static final DigestUtil sha1() {
-        return Sha1UtilInstanceHolder.instance.get();
+        return Sha1UtilInstanceHolder.INSTANCE.get();
     }
 
     /**
@@ -325,8 +325,7 @@ public class DigestUtil {
 
     private static final class Sha256UtilInstanceHolder {
 
-        private static final ThreadLocal<DigestUtil> instance = ThreadLocal
-                .withInitial(DigestAlgorithm.SHA256::createUtil);
+        private static final EasyThreadLocal<DigestUtil> INSTANCE = EasyThreadLocal.create(DigestAlgorithm.SHA256::createUtil);
 
     }
 
@@ -336,7 +335,7 @@ public class DigestUtil {
      * @return the {@link DigestUtil} with the {@code SHA-256} digest algorithm
      */
     public static final DigestUtil sha256() {
-        return Sha256UtilInstanceHolder.instance.get();
+        return Sha256UtilInstanceHolder.INSTANCE.get();
     }
 
     /**
@@ -435,8 +434,7 @@ public class DigestUtil {
 
     private static final class Sha512UtilInstanceHolder {
 
-        private static final ThreadLocal<DigestUtil> instance = ThreadLocal
-                .withInitial(DigestAlgorithm.SHA512::createUtil);
+        private static final EasyThreadLocal<DigestUtil> INSTANCE = EasyThreadLocal.create(DigestAlgorithm.SHA512::createUtil);
 
     }
 
@@ -448,7 +446,7 @@ public class DigestUtil {
      * @since 2.2
      */
     public static final DigestUtil sha512() {
-        return Sha512UtilInstanceHolder.instance.get();
+        return Sha512UtilInstanceHolder.INSTANCE.get();
     }
 
     /**

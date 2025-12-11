@@ -1,5 +1,7 @@
 package com.github.fmjsjx.libcommon.util;
 
+import com.github.fmjsjx.libcommon.util.concurrent.EasyThreadLocal;
+
 import java.nio.ByteBuffer;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -45,7 +47,7 @@ public class ChecksumUtil {
         private final String typeName;
         private final Supplier<Checksum> factory;
 
-        private CheckType(String typeName, Supplier<Checksum> factory) {
+        CheckType(String typeName, Supplier<Checksum> factory) {
             this.typeName = typeName;
             this.factory = factory;
         }
@@ -122,8 +124,7 @@ public class ChecksumUtil {
     }
 
     private static final class CRC32UtilInstanceHolder {
-        private static final ThreadLocal<WrappedChecksum<CRC32>> instance = ThreadLocal
-                .withInitial(ChecksumUtil::wrappedCRC32);
+        private static final EasyThreadLocal<WrappedChecksum<CRC32>> INSTANCE = EasyThreadLocal.create(ChecksumUtil::wrappedCRC32);
     }
 
     /**
@@ -148,7 +149,7 @@ public class ChecksumUtil {
      * @since 1.1
      */
     public static final WrappedChecksum<CRC32> wrappedCrc32() {
-        return CRC32UtilInstanceHolder.instance.get();
+        return CRC32UtilInstanceHolder.INSTANCE.get();
     }
 
     /**
@@ -157,7 +158,7 @@ public class ChecksumUtil {
      * 
      * @param b   the byte array to calculate the checksum with
      * @param off the start offset of the data
-     * @param len the number of bytes to use for the calculate
+     * @param len the number of bytes to use for the calculation
      * @return the {@code CRC-32} checksum value
      */
     public static final long crc32(byte[] b, int off, int len) {
@@ -182,15 +183,14 @@ public class ChecksumUtil {
      * 
      * @param buffer       the first {@link ByteBuffer} to update the checksum with
      * @param otherBuffers the other {@link ByteBuffer}s to update the checksum with
-     * @return the the {@code CRC-32} checksum value
+     * @return the {@code CRC-32} checksum value
      */
     public static final long crc32(ByteBuffer buffer, ByteBuffer... otherBuffers) {
         return wrappedCrc32().calculateValue(buffer, otherBuffers);
     }
 
     private static final class CRC32CUtilInstanceHolder {
-        private static final ThreadLocal<WrappedChecksum<CRC32C>> instance = ThreadLocal
-                .withInitial(ChecksumUtil::wrappedCRC32C);
+        private static final EasyThreadLocal<WrappedChecksum<CRC32C>> INSTANCE = EasyThreadLocal.create(ChecksumUtil::wrappedCRC32C);
     }
 
     /**
@@ -215,7 +215,7 @@ public class ChecksumUtil {
      * @since 1.1
      */
     public static final WrappedChecksum<CRC32C> wrappedCrc32c() {
-        return CRC32CUtilInstanceHolder.instance.get();
+        return CRC32CUtilInstanceHolder.INSTANCE.get();
     }
 
     /**
@@ -224,7 +224,7 @@ public class ChecksumUtil {
      * 
      * @param b   the byte array to calculate the checksum with
      * @param off the start offset of the data
-     * @param len the number of bytes to use for the calculate
+     * @param len the number of bytes to use for the calculation
      * @return the {@code CRC-32C} checksum value
      */
     public static final long crc32c(byte[] b, int off, int len) {
@@ -249,7 +249,7 @@ public class ChecksumUtil {
      * 
      * @param buffer       the first {@link ByteBuffer} to update the checksum with
      * @param otherBuffers the other {@link ByteBuffer}s to update the checksum with
-     * @return the the {@code CRC-32C} checksum value
+     * @return the {@code CRC-32C} checksum value
      */
     public static final long crc32c(ByteBuffer buffer, ByteBuffer... otherBuffers) {
         return wrappedCrc32c().calculateValue(buffer, otherBuffers);
@@ -290,7 +290,7 @@ public class ChecksumUtil {
          * 
          * @param b   the byte array to calculate the checksum with
          * @param off the start offset of the data
-         * @param len the number of bytes to use for the calculate
+         * @param len the number of bytes to use for the calculation
          * @return the checksum value
          */
         public long calculateValue(byte[] b, int off, int len) {
@@ -383,7 +383,7 @@ public class ChecksumUtil {
      * 
      * @param b   the byte array to calculate the checksum with
      * @param off the start offset of the data
-     * @param len the number of bytes to use for the calculate
+     * @param len the number of bytes to use for the calculation
      * @return the checksum value
      */
     @Deprecated
