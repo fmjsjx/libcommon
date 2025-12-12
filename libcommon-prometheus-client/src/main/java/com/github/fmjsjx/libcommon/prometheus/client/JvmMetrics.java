@@ -110,4 +110,7 @@ public class JvmMetrics {
         }
     }
 
+    private JvmMetrics() {
+    }
+
 }

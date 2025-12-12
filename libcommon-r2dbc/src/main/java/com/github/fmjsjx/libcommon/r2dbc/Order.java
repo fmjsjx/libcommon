@@ -3,6 +3,8 @@ package com.github.fmjsjx.libcommon.r2dbc;
 /**
  * The Order record.
  *
+ * @param column the column name
+ * @param sort   the sort
  * @author MJ Fang
  * @since 3.12
  */
