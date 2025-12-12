@@ -36,4 +36,6 @@ public class DefaultTypeReferenceFactory implements TypeReferenceFactory {
         return (TypeReference<T>) typeReferences.computeIfAbsent(type, TypeReferenceFactory.getSimple());
     }
 
+    private DefaultTypeReferenceFactory() {}
+
 }

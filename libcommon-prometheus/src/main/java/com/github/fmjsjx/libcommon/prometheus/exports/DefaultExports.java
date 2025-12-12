@@ -81,4 +81,7 @@ public class DefaultExports {
         new VersionInfoExports(customLabelsProvider).register(registry);
     }
 
+    private DefaultExports() {
+    }
+
 }

@@ -22,7 +22,6 @@ import java.util.function.Function;
  */
 public class JvmMemoryMetrics {
 
-    private static final String JVM_MEMORY_OBJECTS_PENDING_FINALIZATION = "jvm_memory_objects_pending_finalization";
     private static final String JVM_MEMORY_USED_BYTES = "jvm_memory_used_bytes";
     private static final String JVM_MEMORY_COMMITTED_BYTES = "jvm_memory_committed_bytes";
     private static final String JVM_MEMORY_MAX_BYTES = "jvm_memory_max_bytes";
@@ -53,14 +52,6 @@ public class JvmMemoryMetrics {
     private void register(PrometheusRegistry registry) {
         var labelNames = customLabelsProvider.labelNames();
         var isLabelEmpty = labelNames.length == 0;
-
-        GaugeWithCallback.builder(config)
-                .name(JVM_MEMORY_OBJECTS_PENDING_FINALIZATION)
-                .help("The number of objects waiting in the finalizer queue.")
-                .constLabels(constLabels)
-                .labelNames(labelNames)
-                .callback(callback -> callback.call(memoryBean.getObjectPendingFinalizationCount(), customLabelsProvider.labelValues()))
-                .register(registry);
 
         var areaNames = Arrays.copyOf(labelNames, labelNames.length + 1);
         areaNames[labelNames.length] = "area";
