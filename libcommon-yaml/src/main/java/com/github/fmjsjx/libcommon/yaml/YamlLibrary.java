@@ -16,10 +16,13 @@ public interface YamlLibrary<O> extends JsonLibrary<O> {
 
     /**
      * Returns the default implementation of {@link YamlLibrary}.
-     * 
+     *
      * @return the default implementation of {@code YamlLibrary}
      * @see Jackson2YamlLibrary
+     * @deprecated since 4.0, please use the factory methods on
+     * implementations directly
      */
+    @Deprecated
     static Jackson2YamlLibrary defaultLibrary() {
         return Jackson2YamlLibrary.getInstance();
     }
