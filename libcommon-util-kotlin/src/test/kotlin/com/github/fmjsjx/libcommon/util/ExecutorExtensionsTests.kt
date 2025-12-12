@@ -20,6 +20,7 @@ class ExecutorExtensionsTests {
                 delay(1)
                 Thread.currentThread().name.substringBefore(" @")
             }
+            f.join()
             assertNotEquals("", name.get())
             assertEquals(name.get(), f.get())
         } finally {
