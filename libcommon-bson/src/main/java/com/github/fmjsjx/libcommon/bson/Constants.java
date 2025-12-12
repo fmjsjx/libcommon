@@ -22,6 +22,9 @@ public class Constants {
          * {@code "indexKey"}
          */
         public static final String INDEX_KEY = MetaDataKeyword.INDEX_KEY.value();
+
+        private MetaDataKeywords() {
+        }
     }
 
     /**
@@ -36,6 +39,9 @@ public class Constants {
          * {@code "indexKey"}
          */
         public static final BsonString INDEX_KEY = MetaDataKeyword.INDEX_KEY.toBsonString();
+
+        private BsonMetaDataKeywords() {
+        }
     }
 
     /**
@@ -78,6 +84,9 @@ public class Constants {
          * millisecond
          */
         public static final String MILLISECOND = DateUnit.MILLISECOND.value();
+
+        private DateUnits() {
+        }
     }
 
     /**
@@ -120,6 +129,9 @@ public class Constants {
          * millisecond
          */
         public static final BsonString MILLISECOND = DateUnit.MILLISECOND.toBsonString();
+
+        private BsonDateUnits() {
+        }
     }
 
     /**
@@ -156,6 +168,8 @@ public class Constants {
          */
         public static final String SATURDAY = "sat";
 
+        private DayOfWeeks() {
+        }
     }
 
     /**
@@ -192,6 +206,8 @@ public class Constants {
          */
         public static final BsonString SATURDAY = new BsonString(DayOfWeeks.SATURDAY);
 
+        private BsonDayOfWeeks() {
+        }
     }
 
     /**
@@ -234,6 +250,9 @@ public class Constants {
          * $$SEARCH_META
          */
         public static final String SEARCH_META = "$$SEARCH_META";
+
+        private SystemVariables() {
+        }
     }
 
     /**
@@ -276,6 +295,9 @@ public class Constants {
          * $$SEARCH_META
          */
         public static final BsonString SEARCH_META = new BsonString("$$SEARCH_META");
+
+        private BsonSystemVariables() {
+        }
     }
 
     private Constants() {

@@ -6,7 +6,8 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * 
+ * The implementation of {@link AbstractListSet} using {@link ArrayList}.
+ *
  * @param <E> the type of elements maintained by this set
  *
  * @author MJ Fang

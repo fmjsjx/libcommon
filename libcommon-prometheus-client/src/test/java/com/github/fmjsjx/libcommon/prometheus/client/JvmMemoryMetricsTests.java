@@ -32,8 +32,7 @@ public class JvmMemoryMetricsTests {
         when(mockMemoryBean.getHeapMemoryUsage()).thenReturn(memoryUsageHeap);
         when(mockMemoryBean.getNonHeapMemoryUsage()).thenReturn(memoryUsageNonHeap);
 
-        long val = 1L;
-        when(mockMemoryBean.getObjectPendingFinalizationCount()).thenReturn((int) val++);
+        long val = 2L;
 
         when(memoryUsageHeap.getUsed()).thenReturn(val++);
         when(memoryUsageHeap.getMax()).thenReturn(val++);
@@ -100,9 +99,6 @@ public class JvmMemoryMetricsTests {
                 # HELP jvm_memory_max_bytes Max (bytes) of a given JVM memory area.
                 jvm_memory_max_bytes{area="heap",scope="test"} 3.0
                 jvm_memory_max_bytes{area="nonheap",scope="test"} 7.0
-                # TYPE jvm_memory_objects_pending_finalization gauge
-                # HELP jvm_memory_objects_pending_finalization The number of objects waiting in the finalizer queue.
-                jvm_memory_objects_pending_finalization{scope="test"} 1.0
                 # TYPE jvm_memory_pool_collection_committed_bytes gauge
                 # UNIT jvm_memory_pool_collection_committed_bytes bytes
                 # HELP jvm_memory_pool_collection_committed_bytes Committed after last collection bytes of a given JVM memory pool.

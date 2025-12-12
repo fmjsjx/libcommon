@@ -2,10 +2,7 @@ package com.github.fmjsjx.libcommon.prometheus.client;
 
 import io.prometheus.metrics.model.registry.MetricNameFilter;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
-import io.prometheus.metrics.model.snapshots.GaugeSnapshot;
 import io.prometheus.metrics.model.snapshots.Labels;
-import io.prometheus.metrics.model.snapshots.MetricSnapshot;
-import io.prometheus.metrics.model.snapshots.MetricSnapshots;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -13,14 +10,10 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 import static com.github.fmjsjx.libcommon.prometheus.client.TestUtil.convertToOpenMetricsFormat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public class JvmThreadsMetricsTests {
@@ -126,78 +119,6 @@ public class JvmThreadsMetricsTests {
         }
         PrometheusRegistry registry = new PrometheusRegistry();
         JvmThreadsMetrics.builder().register(registry);
-
-        // Number of threads to create with invalid thread ids
-        int numberOfInvalidThreadIds = 2;
-
-        Map<String, Double> expected = getCountByState(registry.scrape());
-        expected.compute("UNKNOWN", (key, oldValue) -> oldValue == null ? numberOfInvalidThreadIds : oldValue + numberOfInvalidThreadIds);
-
-        final CountDownLatch countDownLatch = new CountDownLatch(numberOfInvalidThreadIds);
-
-        try {
-            // Create and start threads with invalid thread ids (id=0, id=-1, etc.)
-            for (int i = 0; i < numberOfInvalidThreadIds; i++) {
-                new ThreadWithInvalidId(-i, new TestRunnable(countDownLatch)).start();
-            }
-
-            Map<String, Double> actual = getCountByState(registry.scrape());
-
-            assertEquals(expected.size(), actual.size());
-            for (String threadState : expected.keySet()) {
-                assertEquals(expected.get(threadState), actual.get(threadState), 0.0);
-            }
-        } finally {
-            for (int i = 0; i < numberOfInvalidThreadIds; i++) {
-                countDownLatch.countDown();
-            }
-        }
-    }
-
-    private Map<String, Double> getCountByState(MetricSnapshots snapshots) {
-        Map<String, Double> result = new HashMap<>();
-        for (MetricSnapshot snapshot : snapshots) {
-            if (snapshot.getMetadata().getName().equals("jvm_threads_state")) {
-                for (GaugeSnapshot.GaugeDataPointSnapshot data : ((GaugeSnapshot) snapshot).getDataPoints()) {
-                    String state = data.getLabels().get("state");
-                    assertNotNull(state);
-                    result.put(state, data.getValue());
-                }
-            }
-        }
-        return result;
-    }
-
-    private static class ThreadWithInvalidId extends Thread {
-
-        private final long id;
-
-        public ThreadWithInvalidId(long id, Runnable runnable) {
-            super(runnable);
-            setDaemon(true);
-            this.id = id;
-        }
-
-        /**
-         * Note that only Java versions < 21 call this to get the thread id.
-         * With Java 21 and newer it's no longer possible to make an invalid thread id.
-         */
-        @Override
-        public long getId() {
-            return this.id;
-        }
-    }
-
-    private record TestRunnable(CountDownLatch countDownLatch) implements Runnable {
-
-        @Override
-        public void run() {
-            try {
-                countDownLatch.await();
-            } catch (InterruptedException e) {
-                // DO NOTHING
-            }
-        }
     }
 
 }

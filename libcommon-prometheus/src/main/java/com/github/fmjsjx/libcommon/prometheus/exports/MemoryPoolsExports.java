@@ -37,7 +37,6 @@ import static io.prometheus.client.SampleNameFilter.ALLOW_ALL;
  */
 public class MemoryPoolsExports extends Collector {
 
-    private static final String JVM_MEMORY_OBJECTS_PENDING_FINALIZATION = "jvm_memory_objects_pending_finalization";
     private static final String JVM_MEMORY_BYTES_USED = "jvm_memory_bytes_used";
     private static final String JVM_MEMORY_BYTES_COMMITTED = "jvm_memory_bytes_committed";
     private static final String JVM_MEMORY_BYTES_MAX = "jvm_memory_bytes_max";
@@ -111,13 +110,6 @@ public class MemoryPoolsExports extends Collector {
                               List<String> customLabelNames, List<String> customLabelValues) {
         var heapUsage = memoryBean.getHeapMemoryUsage();
         var nonHeapUsage = memoryBean.getNonHeapMemoryUsage();
-        if (nameFilter.test(JVM_MEMORY_OBJECTS_PENDING_FINALIZATION)) {
-            var finalizer = new GaugeMetricFamily(
-                    JVM_MEMORY_OBJECTS_PENDING_FINALIZATION,
-                    "The number of objects waiting in the finalizer queue.",
-                    customLabelNames).addMetric(customLabelValues, memoryBean.getObjectPendingFinalizationCount());
-            sampleFamilies.add(finalizer);
-        }
         var labelNames = new ArrayList<String>(customLabelNames.size() + 1);
         labelNames.addAll(customLabelNames);
         labelNames.add("area");

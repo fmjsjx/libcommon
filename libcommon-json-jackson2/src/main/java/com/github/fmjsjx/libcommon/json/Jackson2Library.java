@@ -112,6 +112,7 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
      * @return the singleton (default) {@code ObjectMapper} instance
      * @deprecated since 4.0, please use {@link #defaultJsonMapper()} instead
      */
+    @Deprecated
     public static final ObjectMapper defaultObjectMapper() {
         return defaultJsonMapper();
     }
