@@ -8,16 +8,22 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
 
     api(project(":libcommon-json"))
+    api(project(":libcommon-util"))
+    compileOnly(project(":libcommon-json-jackson3"))
+    api("tools.jackson.dataformat:jackson-dataformat-yaml")
 
-    api("com.fasterxml.jackson.core:jackson-databind")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
+    compileOnlyApi("com.fasterxml.jackson.core:jackson-databind")
+    compileOnlyApi("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+    compileOnlyApi("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    compileOnlyApi("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-
+    testImplementation("com.fasterxml.jackson.core:jackson-databind")
+    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
 
 }
