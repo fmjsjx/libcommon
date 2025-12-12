@@ -30,6 +30,14 @@ public abstract class KidKeyLocator implements KeyLocator {
     }
 
     /**
+     * Constructs a new {@link KidKeyLocator} instance.
+     *
+     * @since 4.0
+     */
+    protected KidKeyLocator() {
+    }
+
+    /**
      * Lookup and returns the associated {@link Key} instance by the
      * specified {@code keyId} given.
      *
@@ -124,6 +132,8 @@ public abstract class KidKeyLocator implements KeyLocator {
             return customized().fnLookup(fnLookup);
         }
 
+        private Builder() {
+        }
     }
 
     /**

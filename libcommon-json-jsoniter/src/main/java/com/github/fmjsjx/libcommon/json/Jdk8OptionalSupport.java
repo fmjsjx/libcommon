@@ -52,9 +52,9 @@ public class Jdk8OptionalSupport {
         /**
          * Returns {@code true} if {@code OptionalIntSupport} is enabled, {@code false}
          * otherwise.
-         * 
+         *
          * @return {@code true} if {@code OptionalIntSupport} is enabled, {@code false}
-         *         otherwise
+         * otherwise
          */
         public static final boolean enabled() {
             return enabled.get();
@@ -104,6 +104,9 @@ public class Jdk8OptionalSupport {
             }
         }
 
+        private OptionalIntSupport() {
+        }
+
     }
 
     /**
@@ -116,9 +119,9 @@ public class Jdk8OptionalSupport {
         /**
          * Returns {@code true} if {@code OptionalLongSupport} is enabled, {@code false}
          * otherwise.
-         * 
+         *
          * @return {@code true} if {@code OptionalLongSupport} is enabled, {@code false}
-         *         otherwise
+         * otherwise
          */
         public static final boolean enabled() {
             return enabled.get();
@@ -168,6 +171,9 @@ public class Jdk8OptionalSupport {
             }
         }
 
+        private OptionalLongSupport() {
+        }
+
     }
 
     /**
@@ -181,9 +187,9 @@ public class Jdk8OptionalSupport {
         /**
          * Returns {@code true} if {@code OptionalDoubleSupport} is enabled,
          * {@code false} otherwise.
-         * 
+         *
          * @return {@code true} if {@code OptionalDoubleSupport} is enabled,
-         *         {@code false} otherwise
+         * {@code false} otherwise
          */
         public static final boolean enabled() {
             return enabled.get();
@@ -231,6 +237,9 @@ public class Jdk8OptionalSupport {
             } else {
                 throw new IllegalStateException("OptionalDoubleSupport.enable can only be called once");
             }
+        }
+
+        private OptionalDoubleSupport() {
         }
 
     }

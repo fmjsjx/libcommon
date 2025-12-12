@@ -52,4 +52,7 @@ public final class JoseHeaderNames {
      */
     public static final String CRITICAL = "crit";
 
+    private JoseHeaderNames() {
+    }
+
 }

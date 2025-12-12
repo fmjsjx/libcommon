@@ -63,9 +63,9 @@ public class Jdk8TimeSupport {
         /**
          * Returns {@code true} if {@code LocalDateTimeSupport} is enabled,
          * {@code false} otherwise.
-         * 
+         *
          * @return {@code true} if {@code LocalDateTimeSupport} is enabled,
-         *         {@code false} otherwise
+         * {@code false} otherwise
          */
         public static final boolean enabled() {
             return enabled.get();
@@ -75,10 +75,7 @@ public class Jdk8TimeSupport {
          * Enables {@code LocalDateTimeSupport}.
          */
         public static final void enable() {
-            enable(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        }
-
-        private static final void enable(DateTimeFormatter formatter) {
+            var formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
             if (enabled.compareAndSet(false, true)) {
                 JsoniterSpi.registerTypeEncoder(LocalDateTime.class, new Encoder.ReflectionEncoder() {
                     @Override
@@ -120,9 +117,9 @@ public class Jdk8TimeSupport {
         /**
          * Returns {@code true} if {@code LocalDateSupport} is enabled, {@code false}
          * otherwise.
-         * 
+         *
          * @return {@code true} if {@code LocalDateSupport} is enabled, {@code false}
-         *         otherwise
+         * otherwise
          */
         public static final boolean enabled() {
             return enabled.get();
@@ -132,10 +129,7 @@ public class Jdk8TimeSupport {
          * Enables {@code LocalDateSupport}.
          */
         public static final void enable() {
-            enable(DateTimeFormatter.ISO_LOCAL_DATE);
-        }
-
-        private static final void enable(DateTimeFormatter formatter) {
+            var formatter = DateTimeFormatter.ISO_LOCAL_DATE;
             if (enabled.compareAndSet(false, true)) {
                 JsoniterSpi.registerTypeEncoder(LocalDate.class, new Encoder.ReflectionEncoder() {
                     @Override
@@ -177,9 +171,9 @@ public class Jdk8TimeSupport {
         /**
          * Returns {@code true} if {@code LocalTimeSupport} is enabled, {@code false}
          * otherwise.
-         * 
+         *
          * @return {@code true} if {@code LocalTimeSupport} is enabled, {@code false}
-         *         otherwise
+         * otherwise
          */
         public static final boolean enabled() {
             return enabled.get();
@@ -189,10 +183,7 @@ public class Jdk8TimeSupport {
          * Enables {@code LocalTimeSupport}.
          */
         public static final void enable() {
-            enable(DateTimeFormatter.ISO_LOCAL_TIME);
-        }
-
-        private static final void enable(DateTimeFormatter formatter) {
+            var formatter = DateTimeFormatter.ISO_LOCAL_TIME;
             if (enabled.compareAndSet(false, true)) {
                 JsoniterSpi.registerTypeEncoder(LocalTime.class, new Encoder.ReflectionEncoder() {
                     @Override
@@ -234,9 +225,9 @@ public class Jdk8TimeSupport {
         /**
          * Returns {@code true} if {@code OffsetDateTimeSupport} is enabled,
          * {@code false} otherwise.
-         * 
+         *
          * @return {@code true} if {@code OffsetDateTimeSupport} is enabled,
-         *         {@code false} otherwise
+         * {@code false} otherwise
          */
         public static final boolean enabled() {
             return enabled.get();
@@ -246,10 +237,7 @@ public class Jdk8TimeSupport {
          * Enables {@code OffsetDateTimeSupport}.
          */
         public static final void enable() {
-            enable(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        }
-
-        private static final void enable(DateTimeFormatter formatter) {
+            var formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
             if (enabled.compareAndSet(false, true)) {
                 JsoniterSpi.registerTypeEncoder(OffsetDateTime.class, new Encoder.ReflectionEncoder() {
                     @Override
@@ -276,6 +264,9 @@ public class Jdk8TimeSupport {
             }
         }
 
+        private OffsetDateTimeSupport() {
+        }
+
     }
 
     /**
@@ -288,9 +279,9 @@ public class Jdk8TimeSupport {
         /**
          * Returns {@code true} if {@code ZonedDateTimeSupport} is enabled,
          * {@code false} otherwise.
-         * 
+         *
          * @return {@code true} if {@code ZonedDateTimeSupport} is enabled,
-         *         {@code false} otherwise
+         * {@code false} otherwise
          */
         public static final boolean enabled() {
             return enabled.get();
@@ -300,10 +291,7 @@ public class Jdk8TimeSupport {
          * Enables {@code ZonedDateTimeSupport}.
          */
         public static final void enable() {
-            enable(DateTimeFormatter.ISO_ZONED_DATE_TIME);
-        }
-
-        private static final void enable(DateTimeFormatter formatter) {
+            var formatter = DateTimeFormatter.ISO_ZONED_DATE_TIME;
             if (enabled.compareAndSet(false, true)) {
                 JsoniterSpi.registerTypeEncoder(ZonedDateTime.class, new Encoder.ReflectionEncoder() {
                     @Override
@@ -328,6 +316,9 @@ public class Jdk8TimeSupport {
             } else {
                 throw new IllegalStateException("ZonedDateTimeSupport.enable can only be called once");
             }
+        }
+
+        private ZonedDateTimeSupport() {
         }
 
     }

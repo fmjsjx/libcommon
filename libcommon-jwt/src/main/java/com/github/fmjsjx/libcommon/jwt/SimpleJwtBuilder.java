@@ -41,6 +41,9 @@ public class SimpleJwtBuilder {
     private JSONObject claimsSet;
     private long expiredSeconds;
 
+    private SimpleJwtBuilder() {
+    }
+
     /**
      * Sets the header.
      *

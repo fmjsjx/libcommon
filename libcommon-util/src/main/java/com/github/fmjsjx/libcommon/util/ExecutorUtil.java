@@ -12,7 +12,7 @@ public class ExecutorUtil {
     /**
      * Returns a new Executor that submits a task to the given base executor after
      * the given delay (or no delay if non-positive).
-     * 
+     *
      * @param delay    how long to delay, in units of {@code unit}
      * @param unit     a {@code TimeUnit} determining how to interpret the
      *                 {@code delay} parameter
@@ -40,6 +40,9 @@ public class ExecutorUtil {
             executor.schedule(command, delay, unit);
         }
 
+    }
+
+    private ExecutorUtil() {
     }
 
 }
