@@ -55,6 +55,7 @@ dependencies {
         api("javax.annotation:javax.annotation-api:1.3.2")
         api("jakarta.annotation:jakarta.annotation-api:3.0.0")
         api("com.google.code.findbugs:jsr305:3.0.2")
+        api("com.fasterxml.uuid:java-uuid-generator:5.2.0")
     }
     // log4j2
     implementation(platform("org.apache.logging.log4j:log4j-bom:2.25.2"))

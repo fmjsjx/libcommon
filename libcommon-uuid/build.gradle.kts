@@ -7,7 +7,7 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api")
 
-    api("com.fasterxml.uuid:java-uuid-generator:5.0.0")
+    api("com.fasterxml.uuid:java-uuid-generator")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
