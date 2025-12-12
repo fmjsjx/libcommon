@@ -43,7 +43,7 @@ public final class UuidGenerators {
         return JdkGeneratorInstanceHolder.INSTANCE;
     }
 
-    private record FastxmlWrappedGenerator(NoArgGenerator generator) implements UuidGenerator {
+    private record FasterxmlWrappedGenerator(NoArgGenerator generator) implements UuidGenerator {
 
         @Override
         public UUID generate() {
@@ -63,7 +63,7 @@ public final class UuidGenerators {
      * @return the {@code UuidGenerator} instance
      */
     public static UuidGenerator uuidV1Generator() {
-        return fastxmlWrappedGenerator(Generators.defaultTimeBasedGenerator());
+        return fasterxmlWrappedGenerator(Generators.defaultTimeBasedGenerator());
     }
 
     /**
@@ -73,7 +73,7 @@ public final class UuidGenerators {
      * @return the {@code UuidGenerator} instance
      */
     public static UuidGenerator uuidV1Generator(byte[] address) {
-        return fastxmlWrappedGenerator(Generators.timeBasedGenerator(EthernetAddress.valueOf(address)));
+        return fasterxmlWrappedGenerator(Generators.timeBasedGenerator(EthernetAddress.valueOf(address)));
     }
 
     /**
@@ -83,7 +83,7 @@ public final class UuidGenerators {
      * @return the {@code UuidGenerator} instance
      */
     public static UuidGenerator uuidV1Generator(String address) {
-        return fastxmlWrappedGenerator(Generators.timeBasedGenerator(EthernetAddress.valueOf(address)));
+        return fasterxmlWrappedGenerator(Generators.timeBasedGenerator(EthernetAddress.valueOf(address)));
     }
 
     private static class UuidV1GeneratorInstanceHolder {
@@ -105,7 +105,7 @@ public final class UuidGenerators {
      * @return the {@code UuidGenerator} instance
      */
     public static UuidGenerator uuidV4Generator() {
-        return fastxmlWrappedGenerator(Generators.randomBasedGenerator());
+        return fasterxmlWrappedGenerator(Generators.randomBasedGenerator());
     }
 
     private static class UuidV4GeneratorInstanceHolder {
@@ -127,7 +127,7 @@ public final class UuidGenerators {
      * @return the {@code UuidGenerator} instance
      */
     public static UuidGenerator uuidV6Generator() {
-        return fastxmlWrappedGenerator(Generators.timeBasedReorderedGenerator(EthernetAddress.fromPreferredInterface()));
+        return fasterxmlWrappedGenerator(Generators.timeBasedReorderedGenerator(EthernetAddress.fromPreferredInterface()));
     }
 
     /**
@@ -137,7 +137,7 @@ public final class UuidGenerators {
      * @return the {@code UuidGenerator} instance
      */
     public static UuidGenerator uuidV6Generator(byte[] address) {
-        return fastxmlWrappedGenerator(Generators.timeBasedReorderedGenerator(EthernetAddress.valueOf(address)));
+        return fasterxmlWrappedGenerator(Generators.timeBasedReorderedGenerator(EthernetAddress.valueOf(address)));
     }
 
     /**
@@ -147,7 +147,7 @@ public final class UuidGenerators {
      * @return the {@code UuidGenerator} instance
      */
     public static UuidGenerator uuidV6Generator(String address) {
-        return fastxmlWrappedGenerator(Generators.timeBasedReorderedGenerator(EthernetAddress.valueOf(address)));
+        return fasterxmlWrappedGenerator(Generators.timeBasedReorderedGenerator(EthernetAddress.valueOf(address)));
     }
 
     private static class UuidV6GeneratorInstanceHolder {
@@ -169,7 +169,7 @@ public final class UuidGenerators {
      * @return the {@code UuidGenerator} instance
      */
     public static UuidGenerator uuidV7Generator() {
-        return fastxmlWrappedGenerator(Generators.timeBasedEpochGenerator());
+        return fasterxmlWrappedGenerator(Generators.timeBasedEpochGenerator());
     }
 
     private static class UuidV7GeneratorInstanceHolder {
@@ -186,13 +186,13 @@ public final class UuidGenerators {
     }
 
     /**
-     * Factory method for constructing fastxml wrapped {@link UuidGenerator}.
+     * Factory method for constructing fasterxml wrapped {@link UuidGenerator}.
      *
      * @param generator the {@link NoArgGenerator fastxml UUID Generator}
      * @return the {@code UuidGenerator} instance
      */
-    public static UuidGenerator fastxmlWrappedGenerator(NoArgGenerator generator) {
-        return new FastxmlWrappedGenerator(generator);
+    public static UuidGenerator fasterxmlWrappedGenerator(NoArgGenerator generator) {
+        return new FasterxmlWrappedGenerator(generator);
     }
 
     private UuidGenerators() {
