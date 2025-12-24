@@ -13,6 +13,8 @@ repositories {
 dependencies {
     // netty-bom
     api(platform("io.netty:netty-bom:4.2.9.Final"))
+    // mongodb-driver-bom
+    implementation(platform("org.mongodb:mongodb-driver-bom:5.6.2"))
     // junit-bom
     testImplementation(platform("org.junit:junit-bom:6.0.1"))
     // mockito
@@ -40,12 +42,6 @@ dependencies {
         val fastjson2Version = "2.0.60"
         api("com.alibaba.fastjson2:fastjson2:$fastjson2Version")
         api("com.alibaba.fastjson2:fastjson2-kotlin:$fastjson2Version")
-        val mongodbVersion = "5.6.1"
-        api("org.mongodb:bson:$mongodbVersion")
-        api("org.mongodb:mongodb-driver-core:$mongodbVersion")
-        api("org.mongodb:mongodb-driver-sync:$mongodbVersion")
-        api("org.mongodb:mongodb-driver-reactivestreams:$mongodbVersion")
-        api("org.mongodb:mongodb-driver-legacy:$mongodbVersion")
         val jrubyVersion = "10.0.2.0"
         implementation("org.jruby:jruby-complete:$jrubyVersion")
         implementation("org.jruby:jruby:$jrubyVersion")

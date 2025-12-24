@@ -145,17 +145,19 @@ public final class Operators {
     /**
      * Creates an $abs arithmetic expression operator.
      *
-     * @param expression can be any valid expression as long as it resolves to a number
+     * @param expression can be any valid expression as long as it
+     *                   resolves to a number
      * @return the $abs arithmetic expression operator
      */
     public static final Bson abs(Object expression) {
-        return new SimpleOperator("$abs", expression);
+        return simpleOperator("$abs", expression);
     }
 
     /**
      * Creates an $abs arithmetic expression operator.
      *
-     * @param expressions can be any valid expression as long as it resolves to numbers
+     * @param expressions can be any valid expression as long as it
+     *                    resolves to numbers
      * @return the $abs arithmetic expression operator
      */
     public static final Bson add(Iterable<?> expressions) {
@@ -165,7 +167,8 @@ public final class Operators {
     /**
      * Creates an $abs arithmetic expression operator.
      *
-     * @param expressions can be any valid expression as long as it resolves to numbers
+     * @param expressions can be any valid expression as long as it
+     *                    resolves to numbers
      * @return the $abs arithmetic expression operator
      */
     public static final Bson add(Object... expressions) {
@@ -175,18 +178,21 @@ public final class Operators {
     /**
      * Creates a $ceil arithmetic expression operator.
      *
-     * @param expression can be any valid expression as long as it resolves to a number
+     * @param expression can be any valid expression as long as it
+     *                   resolves to a number
      * @return the $ceil arithmetic expression operator
      */
     public static final Bson ceil(Object expression) {
-        return new SimpleOperator("$ceil", expression);
+        return simpleOperator("$ceil", expression);
     }
 
     /**
      * Creates a $divide arithmetic expression operator.
      *
-     * @param dividend can be any valid expression as long as it resolves to a number
-     * @param divisor  can be any valid expression as long as it resolves to a number
+     * @param dividend can be any valid expression as long as it resolves
+     *                 to a number
+     * @param divisor  can be any valid expression as long as it resolves
+     *                 to a number
      * @return the $divide arithmetic expression operator
      */
     public static final Bson divide(Object dividend, Object divisor) {
@@ -196,38 +202,43 @@ public final class Operators {
     /**
      * Creates an $exp arithmetic expression operator.
      *
-     * @param expression can be any valid expression as long as it resolves to a number
+     * @param expression can be any valid expression as long as it
+     *                   resolves to a number
      * @return the $exp arithmetic expression operator
      */
     public static final Bson exp(Object expression) {
-        return new SimpleOperator("$exp", expression);
+        return simpleOperator("$exp", expression);
     }
 
     /**
      * Creates a $floor arithmetic expression operator.
      *
-     * @param expression can be any valid expression as long as it resolves to a number
+     * @param expression can be any valid expression as long as it
+     *                   resolves to a number
      * @return the $floor arithmetic expression operator
      */
     public static final Bson floor(Object expression) {
-        return new SimpleOperator("$floor", expression);
+        return simpleOperator("$floor", expression);
     }
 
     /**
      * Creates a $ln arithmetic expression operator.
      *
-     * @param expression can be any valid expression as long as it resolves to a non-negative number
+     * @param expression can be any valid expression as long as it
+     *                   resolves to a non-negative number
      * @return the $ln arithmetic expression operator
      */
     public static final Bson ln(Object expression) {
-        return new SimpleOperator("$ln", expression);
+        return simpleOperator("$ln", expression);
     }
 
     /**
      * Creates a $log arithmetic expression operator.
      *
-     * @param number can be any valid expression as long as it resolves to a non-negative number
-     * @param base   can be any valid expression as long as it resolves to a positive number greater than {@code 1}
+     * @param number can be any valid expression as long as it resolves
+     *               to a non-negative number
+     * @param base   can be any valid expression as long as it resolves
+     *               to a positive number greater than {@code 1}
      * @return the $log arithmetic expression operator
      */
     public static final Bson log(Object number, Object base) {
@@ -237,18 +248,21 @@ public final class Operators {
     /**
      * Creates a $log10 arithmetic expression operator.
      *
-     * @param expression can be any valid expression as long as it resolves to a non-negative number
+     * @param expression can be any valid expression as long as it
+     *                   resolves to a non-negative number
      * @return the $log10 arithmetic expression operator
      */
     public static final Bson log10(Object expression) {
-        return new SimpleOperator("$log10", expression);
+        return simpleOperator("$log10", expression);
     }
 
     /**
      * Creates a $mod arithmetic expression operator.
      *
-     * @param dividend can be any valid expression as long as it resolves to a number
-     * @param divisor  can be any valid expression as long as it resolves to a number
+     * @param dividend can be any valid expression as long as it resolves
+     *                 to a number
+     * @param divisor  can be any valid expression as long as it resolves
+     *                 to a number
      * @return the $mod arithmetic expression operator
      */
     public static final Bson mod(Object dividend, Object divisor) {
@@ -258,7 +272,8 @@ public final class Operators {
     /**
      * Creates a $multiply arithmetic expression operator.
      *
-     * @param expressions can be any valid expression as long as it resolves to numbers
+     * @param expressions can be any valid expression as long as it
+     *                    resolves to numbers
      * @return the $multiply arithmetic expression operator
      */
     public static final Bson multiply(Object... expressions) {
@@ -268,8 +283,10 @@ public final class Operators {
     /**
      * Creates a $round arithmetic expression operator.
      *
-     * @param number can be any valid expression as long as it resolves to a number
-     * @param place  can be any valid expression as long as it resolves to a number
+     * @param number can be any valid expression as long as it resolves
+     *               to a number
+     * @param place  can be any valid expression as long as it resolves
+     *               to a number
      * @return the $round arithmetic expression operator
      */
     public static final Bson round(Object number, Object place) {
@@ -279,7 +296,8 @@ public final class Operators {
     /**
      * Creates a $round arithmetic expression operator.
      *
-     * @param number can be any valid expression as long as it resolves to a number
+     * @param number can be any valid expression as long as it resolves
+     *               to a number
      * @return the $round arithmetic expression operator
      */
     public static final Bson round(Object number) {
@@ -289,18 +307,21 @@ public final class Operators {
     /**
      * Creates a $sqrt arithmetic expression operator.
      *
-     * @param expression can be any valid expression as long as it resolves to a non-negative number
+     * @param expression can be any valid expression as long as it
+     *                   resolves to a non-negative number
      * @return the $sqrt arithmetic expression operator
      */
     public static final Bson sqrt(Object expression) {
-        return new SimpleOperator("$sqrt", expression);
+        return simpleOperator("$sqrt", expression);
     }
 
     /**
      * Creates a $subtract arithmetic expression operator.
      *
-     * @param expression1 can be any valid expression as long as they resolve to numbers and/or dates
-     * @param expression2 can be any valid expression as long as they resolve to numbers and/or dates
+     * @param expression1 can be any valid expression as long as they
+     *                    resolve to numbers and/or dates
+     * @param expression2 can be any valid expression as long as they
+     *                    resolve to numbers and/or dates
      * @return the $subtract arithmetic expression operator
      */
     public static final Bson subtract(Object expression1, Object expression2) {
@@ -310,8 +331,10 @@ public final class Operators {
     /**
      * Creates a $trunc arithmetic expression operator.
      *
-     * @param number can be any valid expression as long as it resolves to a number
-     * @param place  can be any valid expression as long as it resolves to a number
+     * @param number can be any valid expression as long as it resolves
+     *               to a number
+     * @param place  can be any valid expression as long as it resolves
+     *               to a number
      * @return the $trunc arithmetic expression operator
      */
     public static final Bson trunc(Object number, Object place) {
@@ -321,7 +344,8 @@ public final class Operators {
     /**
      * Creates a $trunc arithmetic expression operator.
      *
-     * @param number can be any valid expression as long as it resolves to a number
+     * @param number can be any valid expression as long as it resolves
+     *               to a number
      * @return the $trunc arithmetic expression operator
      */
     public static final Bson trunc(Object number) {
@@ -332,7 +356,8 @@ public final class Operators {
      * Creates an $arrayElemAt array expression operator.
      *
      * @param array can be any valid expression that resolves to an array
-     * @param idx   can be any valid expression that resolves to an integer
+     * @param idx   can be any valid expression that resolves to an
+     *              integer
      * @return the $arrayElemAt array expression operator
      */
     public static final Bson arrayElemAt(Object array, Object idx) {
@@ -369,7 +394,8 @@ public final class Operators {
      * Creates an $arrayElemAt array expression operator.
      *
      * @param array the array
-     * @param idx   can be any valid expression that resolves to an integer
+     * @param idx   can be any valid expression that resolves to an
+     *              integer
      * @return the $arrayElemAt array expression operator
      */
     public static final Bson arrayElemAt(Iterable<?> array, Object idx) {
@@ -379,7 +405,8 @@ public final class Operators {
     /**
      * Creates an $arrayElemAt array expression operator.
      *
-     * @param idx   can be any valid expression that resolves to an integer
+     * @param idx   can be any valid expression that resolves to an
+     *              integer
      * @param array the array
      * @return the $arrayElemAt array expression operator
      */
@@ -390,11 +417,12 @@ public final class Operators {
     /**
      * Creates an $arrayToObject array expression operator.
      *
-     * @param expression can be any valid expression that resolves to an array
+     * @param expression can be any valid expression that resolves to an
+     *                   array
      * @return the $arrayToObject array expression operator
      */
     public static final Bson arrayToObject(Object expression) {
-        return new SimpleOperator("$arrayToObject", expression);
+        return simpleOperator("$arrayToObject", expression);
     }
 
     /**
@@ -477,9 +505,13 @@ public final class Operators {
      * Creates a $filter array expression operator.
      *
      * @param input an expression that resolves to an array
-     * @param cond  an expression that resolves to a boolean value used to determine if an element should be included in the output array
-     * @param as    a name for the variable that represents each individual element of the input array
-     * @param limit an umber expression that restricts the number of matching array elements that $filter returns
+     * @param cond  an expression that resolves to a boolean value used
+     *              to determine if an element should be included in the
+     *              output array
+     * @param as    a name for the variable that represents each
+     *              individual element of the input array
+     * @param limit an umber expression that restricts the number of
+     *              matching array elements that $filter returns
      * @return the $filter array expression operator
      */
     public static final Bson filter(Object input, Object cond, String as, Object limit) {
@@ -525,7 +557,9 @@ public final class Operators {
      * Creates a $filter array expression operator.
      *
      * @param input an expression that resolves to an array
-     * @param cond  an expression that resolves to a boolean value used to determine if an element should be included in the output array
+     * @param cond  an expression that resolves to a boolean value used
+     *              to determine if an element should be included in
+     *              the output array
      * @return the $filter array expression operator
      */
     public static final Bson filter(Object input, Object cond) {
@@ -535,18 +569,20 @@ public final class Operators {
     /**
      * Creates a $first array expression operator.
      *
-     * @param expression can be any valid expression as long as it resolves to an array, null or missing
+     * @param expression can be any valid expression as long as it
+     *                   resolves to an array, null or missing
      * @return the $first array expression operator
      */
     public static final Bson first(Object expression) {
-        return new SimpleOperator("$first", expression);
+        return simpleOperator("$first", expression);
     }
 
     /**
      * Creates a $firstN array expression operator.
      *
      * @param n     an expression that resolves to a positive integer
-     * @param input an expression that resolves to the array from which to return {@code n} elements
+     * @param input an expression that resolves to the array from which
+     *              to return {@code n} elements
      * @return the $firstN array expression operator
      */
     public static final Bson firstN(Object n, Object input) {
@@ -557,7 +593,8 @@ public final class Operators {
      * Creates an $in array expression operator.
      *
      * @param expression      any valid expression expression
-     * @param arrayExpression any valid expression that resolves to an array
+     * @param arrayExpression any valid expression that resolves to an
+     *                        array
      * @return the $in array expression operator
      */
     public static final Bson in(Object expression, Object arrayExpression) {
@@ -567,12 +604,15 @@ public final class Operators {
     /**
      * Creates a $indexOfArray array expression operator.
      *
-     * @param array  can be any valid expression as long as it resolves to an array
+     * @param array  can be any valid expression as long as it resolves
+     *               to an array
      * @param search can be any valid expression
-     * @param start  the starting index position for the search, can be any valid expression that resolves to a
-     *               non-negative integral number
-     * @param end    the ending index position for the search, can be any valid expression that resolves to a
-     *               non-negative integral number
+     * @param start  the starting index position for the search, can be
+     *               any valid expression that resolves to a non-negative
+     *               integral number
+     * @param end    the ending index position for the search, can be any
+     *               valid expression that resolves to a non-negative
+     *               integral number
      * @return the $indexOfArray array expression operator
      */
     public static final Bson indexOfArray(Object array, Object search, Object start, Object end) {
@@ -596,7 +636,8 @@ public final class Operators {
     /**
      * Creates a $indexOfArray array expression operator.
      *
-     * @param array  can be any valid expression as long as it resolves to an array
+     * @param array  can be any valid expression as long as it resolves to
+     *               an array
      * @param search can be any valid expression
      * @return the $indexOfArray array expression operator
      */
@@ -607,10 +648,12 @@ public final class Operators {
     /**
      * Creates a $indexOfArray array expression operator.
      *
-     * @param array  can be any valid expression as long as it resolves to an array
+     * @param array  can be any valid expression as long as it resolves
+     *               to an array
      * @param search can be any valid expression
-     * @param start  the starting index position for the search, can be any valid expression that resolves to a
-     *               non-negative integral number
+     * @param start  the starting index position for the search, can be
+     *               any valid expression that resolves to a non-negative
+     *               integral number
      * @return the $indexOfArray array expression operator
      */
     public static final Bson indexOfArray(Object array, Object search, Object start) {
@@ -624,24 +667,26 @@ public final class Operators {
      * @return the $isArray array expression operator
      */
     public static final Bson isArray(Object expression) {
-        return new SimpleOperator("$isArray", expression);
+        return simpleOperator("$isArray", expression);
     }
 
     /**
      * Creates a $last array expression operator.
      *
-     * @param expression can be any valid expression as long as it resolves to an array, null, or missing
+     * @param expression can be any valid expression as long as it
+     *                   resolves to an array, null, or missing
      * @return the $last array expression operator
      */
     public static final Bson last(Object expression) {
-        return new SimpleOperator("$last", expression);
+        return simpleOperator("$last", expression);
     }
 
     /**
      * Creates a $lastN array expression operator.
      *
      * @param n     an expression that resolves to a positive integer
-     * @param input an expression that resolves to the array from which to return {@code n} elements
+     * @param input an expression that resolves to the array from which
+     *              to return {@code n} elements
      * @return the $lastN array expression operator
      */
     public static final Bson lastN(Object n, Object input) {
@@ -652,8 +697,10 @@ public final class Operators {
      * Creates a $map array expression operator.
      *
      * @param input an expression that resolves to an array
-     * @param as    a name for the variable that represents each individual element of the input array
-     * @param in    an expression that is applied to each element of the input array
+     * @param as    a name for the variable that represents each
+     *              individual element of the input array
+     * @param in    an expression that is applied to each element of the
+     *              input array
      * @return the $map array expression operator
      */
     public static final Bson map(Object input, String as, Object in) {
@@ -693,7 +740,8 @@ public final class Operators {
      * Creates a $map array expression operator.
      *
      * @param input an expression that resolves to an array
-     * @param in    an expression that is applied to each element of the input array
+     * @param in    an expression that is applied to each element of the
+     *              input array
      * @return the $map array expression operator
      */
     public static final Bson map(Object input, Object in) {
@@ -704,7 +752,8 @@ public final class Operators {
      * Creates a $maxN array expression operator.
      *
      * @param n     an expression that resolves to a positive integer
-     * @param input an expression that resolves to the array from which to return the maximal {@code n} elements
+     * @param input an expression that resolves to the array from which
+     *              to return the maximal {@code n} elements
      * @return the $maxN array expression operator
      */
     public static final Bson maxN(Object n, Object input) {
@@ -715,7 +764,8 @@ public final class Operators {
      * Creates a $minN array expression operator.
      *
      * @param n     an expression that resolves to a positive integer
-     * @param input an expression that resolves to the array from which to return the minimal {@code n} elements
+     * @param input an expression that resolves to the array from which
+     *              to return the minimal {@code n} elements
      * @return the $minN array expression operator
      */
     public static final Bson minN(Object n, Object input) {
@@ -725,22 +775,26 @@ public final class Operators {
     /**
      * Creates a $objectToArray array expression operator.
      *
-     * @param object can be any valid expression as long as it resolves to a document object
+     * @param object can be any valid expression as long as it resolves
+     *               to a document object
      * @return the $objectToArray array expression operator
      */
     public static final Bson objectToArray(Object object) {
-        return new SimpleOperator("$objectToArray", object);
+        return simpleOperator("$objectToArray", object);
     }
 
     /**
      * Creates a $range array expression operator.
      *
-     * @param start an integer that specifies the start of the sequence, can be any valid expression that resolves to an
+     * @param start an integer that specifies the start of the sequence,
+     *              can be any valid expression that resolves to an
      *              integer
-     * @param end   an integer that specifies the exclusive upper limit of the sequence, can be any valid expression
-     *              that resolves to an integer
-     * @param step  optional, an integer that specifies the increment value. Can be any valid expression that resolves
-     *              to a non-zero integer, defaults to {@code 1}.
+     * @param end   an integer that specifies the exclusive upper limit
+     *              of the sequence, can be any valid expression that
+     *              resolves to an integer
+     * @param step  optional, an integer that specifies the increment
+     *              value. Can be any valid expression that resolves to a
+     *              non-zero integer, defaults to {@code 1}.
      * @return the $range array expression operator
      */
     public static final Bson range(Object start, Object end, Object step) {
@@ -756,10 +810,12 @@ public final class Operators {
     /**
      * Creates a $range array expression operator.
      *
-     * @param start an integer that specifies the start of the sequence, can be any valid expression that resolves to an
+     * @param start an integer that specifies the start of the sequence,
+     *              can be any valid expression that resolves to an
      *              integer
-     * @param end   an integer that specifies the exclusive upper limit of the sequence, can be any valid expression
-     *              that resolves to an integer
+     * @param end   an integer that specifies the exclusive upper limit
+     *              of the sequence, can be any valid expression that
+     *              resolves to an integer
      * @return the $range array expression operator
      */
     public static final Bson range(Object start, Object end) {
@@ -769,9 +825,13 @@ public final class Operators {
     /**
      * Creates a $reduce array expression operator.
      *
-     * @param input        can be any valid expression that resolves to an array
-     * @param initialValue the initial cumulative value set before in is applied to the first element of the input array
-     * @param in           a valid expression that $reduce applies to each element in the input {@code array}
+     * @param input        can be any valid expression that resolves to
+     *                     an array
+     * @param initialValue the initial cumulative value set before in is
+     *                     applied to the first element of the input
+     *                     array
+     * @param in           a valid expression that $reduce applies to
+     *                     each element in the input {@code array}
      * @return the $reduce array expression operator
      */
     public static final Bson reduce(Object input, Object initialValue, Object in) {
@@ -781,29 +841,34 @@ public final class Operators {
     /**
      * Creates a $reverseArray array expression operator.
      *
-     * @param array can be any valid expression as long as it resolves to an array
+     * @param array can be any valid expression as long as it resolves to
+     *              an array
      * @return the $reverseArray array expression operator
      */
     public static final Bson reverseArray(Object array) {
-        return new SimpleOperator("$reverseArray", array);
+        return simpleOperator("$reverseArray", array);
     }
 
     /**
      * Creates a $size array expression operator.
      *
-     * @param expression can be any valid expression as long as it resolves to an array
+     * @param expression can be any valid expression as long as it
+     *                   resolves to an array
      * @return the $size array expression operator
      */
     public static final Bson size(Object expression) {
-        return new SimpleOperator("$size", expression);
+        return simpleOperator("$size", expression);
     }
 
     /**
      * Creates a $slice array expression operator.
      *
-     * @param array    any valid expression as long as it resolves to an array.
-     * @param position optional, any valid expression as long as it resolves to an integer
-     * @param n        any valid expression as long as it resolves to an integer, if {@code position} is specified,
+     * @param array    any valid expression as long as it resolves to an
+     *                 array.
+     * @param position optional, any valid expression as long as it
+     *                 resolves to an integer
+     * @param n        any valid expression as long as it resolves to an
+     *                 integer, if {@code position} is specified,
      *                 {@code n} must resolve to a positive integer
      * @return the $slice array expression operator
      */
@@ -820,8 +885,10 @@ public final class Operators {
     /**
      * Creates a $slice array expression operator.
      *
-     * @param array any valid expression as long as it resolves to an array.
-     * @param n     any valid expression as long as it resolves to an integer, if {@code position} is specified,
+     * @param array any valid expression as long as it resolves to an
+     *              array.
+     * @param n     any valid expression as long as it resolves to an
+     *              integer, if {@code position} is specified,
      *              {@code n} must resolve to a positive integer
      * @return the $slice array expression operator
      */
@@ -843,10 +910,13 @@ public final class Operators {
     /**
      * Creates a $zip array expression operator.
      *
-     * @param inputs           an array of expressions that resolve to arrays
-     * @param useLongestLength a boolean which specifies whether the length of the longest array determines the number
-     *                         of arrays in the output array
-     * @param defaults         an array of default element values to use if the input arrays have different lengths
+     * @param inputs           an array of expressions that resolve to
+     *                         arrays
+     * @param useLongestLength a boolean which specifies whether the
+     *                         length of the longest array determines the
+     *                         number of arrays in the output array
+     * @param defaults         an array of default element values to use
+     *                         if the input arrays have different lengths
      * @return the $zip array expression operator
      */
     public static final Bson zip(Iterable<?> inputs, boolean useLongestLength, Object defaults) {
@@ -899,10 +969,13 @@ public final class Operators {
     /**
      * Creates a $zip array expression operator.
      *
-     * @param useLongestLength a boolean which specifies whether the length of the longest array determines the number
-     *                         of arrays in the output array
-     * @param defaults         an array of default element values to use if the input arrays have different lengths
-     * @param inputs           an array of expressions that resolve to arrays
+     * @param useLongestLength a boolean which specifies whether the
+     *                         length of the longest array determines the
+     *                         number of arrays in the output array
+     * @param defaults         an array of default element values to use
+     *                         if the input arrays have different lengths
+     * @param inputs           an array of expressions that resolve to
+     *                         arrays
      * @return the $zip array expression operator
      */
     public static final Bson zip(boolean useLongestLength, Object defaults, Object... inputs) {
@@ -946,7 +1019,7 @@ public final class Operators {
      * @return the $expr operator
      */
     public static final Bson expr(Object expression) {
-        return new SimpleOperator("$expr", expression);
+        return simpleOperator("$expr", expression);
     }
 
     /**
@@ -1174,7 +1247,8 @@ public final class Operators {
     }
 
     /**
-     * Creates a new {@link IfNullBuilder} instance with one input expression.
+     * Creates a new {@link IfNullBuilder} instance with one input
+     * expression.
      *
      * @param inputExpression the input expression
      * @return the {@code IfNullBuilder} instance
@@ -1365,30 +1439,35 @@ public final class Operators {
     /**
      * Creates a $binarySize data size operator.
      *
-     * @param expression can be any valid expression as long as it resolves to either a string or binary data value
+     * @param expression can be any valid expression as long as it
+     *                   resolves to either a string or binary data value
      * @return the $binarySize data size operator
      */
     public static final Bson binarySize(Object expression) {
-        return new SimpleOperator("$binarySize", expression);
+        return simpleOperator("$binarySize", expression);
     }
 
     /**
      * Creates a $bsonSize data size operator.
      *
-     * @param expression can be any valid expression as long as it resolves to either an object or {@code null}
+     * @param expression can be any valid expression as long as it
+     *                   resolves to either an object or {@code null}
      * @return the $bsonSize data size operator
      */
     public static final Bson bsonSize(Object expression) {
-        return new SimpleOperator("$bsonSize", expression);
+        return simpleOperator("$bsonSize", expression);
     }
 
     /**
      * Creates a $dateAdd date expression operator.
      *
-     * @param startDate the beginning date, in UTC, for the addition operation, can be any expression that resolves to
+     * @param startDate the beginning date, in UTC, for the addition
+     *                  operation, can be any expression that resolves to
      *                  a Date, a Timestamp, or an ObjectID
-     * @param unit      the unit used to measure the amount of time added to the startDate
-     * @param amount    the number of units added to the startDate, can be an expression that resolves to an integer or
+     * @param unit      the unit used to measure the amount of time added
+     *                  to the startDate
+     * @param amount    the number of units added to the startDate, can
+     *                  be an expression that resolves to an integer or
      *                  long
      * @param timezone  optional, the timezone to carry out the operation
      * @return the $dateAdd date expression operator
@@ -1432,10 +1511,13 @@ public final class Operators {
     /**
      * Creates a $dateAdd date expression operator.
      *
-     * @param startDate the beginning date, in UTC, for the addition operation, can be any expression that resolves to
+     * @param startDate the beginning date, in UTC, for the addition
+     *                  operation, can be any expression that resolves to
      *                  a Date, a Timestamp, or an ObjectID
-     * @param unit      the unit used to measure the amount of time added to the startDate
-     * @param amount    the number of units added to the startDate, can be an expression that resolves to an integer or
+     * @param unit      the unit used to measure the amount of time added
+     *                  to the startDate
+     * @param amount    the number of units added to the startDate, can
+     *                  be an expression that resolves to an integer or
      *                  long
      * @return the $dateAdd date expression operator
      */
@@ -1447,11 +1529,14 @@ public final class Operators {
     /**
      * Creates a $dateDiff date expression operator.
      *
-     * @param startDate the start of the time period, can be any expression that resolves to a Date, a Timestamp, or an
+     * @param startDate the start of the time period, can be any
+     *                  expression that resolves to a Date, a Timestamp,
+     *                  or an ObjectID
+     * @param endDate   the end of the time period, can be any expression
+     *                  that resolves to a Date, a Timestamp, or an
      *                  ObjectID
-     * @param endDate   the end of the time period, can be any expression that resolves to a Date, a Timestamp, or an
-     *                  ObjectID
-     * @param unit      the time measurement unit between the startDate and endDate
+     * @param unit      the time measurement unit between the startDate
+     *                  and endDate
      * @return the $dateDiff date expression operator
      */
     public static final Bson dateDiff(Object startDate, Object endDate, Object unit) {
@@ -1461,13 +1546,18 @@ public final class Operators {
     /**
      * Creates a $dateDiff date expression operator.
      *
-     * @param startDate   the start of the time period, can be any expression that resolves to a Date, a Timestamp, or
-     *                    an ObjectID
-     * @param endDate     the end of the time period, can be any expression that resolves to a Date, a Timestamp, or an
-     *                    ObjectID
-     * @param unit        the time measurement unit between the startDate and endDate
-     * @param timezone    optional, the timezone to carry out the operation
-     * @param startOfWeek optional, used when the unit is equal to week, defaults to {@code Sunday}
+     * @param startDate   the start of the time period, can be any
+     *                    expression that resolves to a Date, a
+     *                    Timestamp, or an ObjectID
+     * @param endDate     the end of the time period, can be any
+     *                    expression that resolves to a Date, a
+     *                    Timestamp, or an ObjectID
+     * @param unit        the time measurement unit between the startDate
+     *                    and endDate
+     * @param timezone    optional, the timezone to carry out the
+     *                    operation
+     * @param startOfWeek optional, used when the unit is equal to week,
+     *                    defaults to {@code Sunday}
      * @return the $dateDiff date expression operator
      */
     public static final Bson dateDiff(Object startDate, Object endDate, Object unit, Object timezone, Object startOfWeek) {
@@ -1515,13 +1605,20 @@ public final class Operators {
     /**
      * Creates a $dateFromParts date expression operator.
      *
-     * @param year        calendar year, can be any expression that evaluates to a number
-     * @param month       optional, month, can be any expression that evaluates to a number
-     * @param day         optional, day of month, can be any expression that evaluates to a number
-     * @param hour        optional, hour, can be any expression that evaluates to a number
-     * @param minute      optional, minute, can be any expression that evaluates to a number
-     * @param second      optional, second, can be any expression that evaluates to a number
-     * @param millisecond optional, millisecond, can be any expression that evaluates to a number
+     * @param year        calendar year, can be any expression that
+     *                    evaluates to a number
+     * @param month       optional, month, can be any expression that
+     *                    evaluates to a number
+     * @param day         optional, day of month, can be any expression
+     *                    that evaluates to a number
+     * @param hour        optional, hour, can be any expression that
+     *                    evaluates to a number
+     * @param minute      optional, minute, can be any expression that
+     *                    evaluates to a number
+     * @param second      optional, second, can be any expression that
+     *                    evaluates to a number
+     * @param millisecond optional, millisecond, can be any expression
+     *                    that evaluates to a number
      * @param timezone    optional, the timezone
      * @return the $dateFromParts date expression operator
      */
@@ -1596,13 +1693,20 @@ public final class Operators {
     /**
      * Creates a $dateFromParts date expression operator.
      *
-     * @param isoWeekYear  ISO week date year, can be any expression that evaluates to a number
-     * @param isoWeek      week of year, can be any expression that evaluates to a number
-     * @param isoDayOfWeek day of week, can be any expression that evaluates to a number
-     * @param hour         optional, hour, can be any expression that evaluates to a number
-     * @param minute       optional, minute, can be any expression that evaluates to a number
-     * @param second       optional, second, can be any expression that evaluates to a number
-     * @param millisecond  optional, millisecond, can be any expression that evaluates to a number
+     * @param isoWeekYear  ISO week date year, can be any expression that
+     *                     evaluates to a number
+     * @param isoWeek      week of year, can be any expression that
+     *                     evaluates to a number
+     * @param isoDayOfWeek day of week, can be any expression that
+     *                     evaluates to a number
+     * @param hour         optional, hour, can be any expression that
+     *                     evaluates to a number
+     * @param minute       optional, minute, can be any expression that
+     *                     evaluates to a number
+     * @param second       optional, second, can be any expression that
+     *                     evaluates to a number
+     * @param millisecond  optional, millisecond, can be any expression
+     *                     that evaluates to a number
      * @param timezone     optional, the timezone
      * @return the $dateFromParts date expression operator
      */
@@ -1616,12 +1720,16 @@ public final class Operators {
      * Creates a $dateFromString date expression operator.
      *
      * @param dateString the date/time string to convert to a date object
-     * @param format     optional, the date format specification of the dateString, can be any expression that evaluates
+     * @param format     optional, the date format specification of the
+     *                   dateString, can be any expression that evaluates
      *                   to a string literal, containing 0 or more format specifiers
-     * @param timezone   optional, the time zone to use to format the date
-     * @param onError    optional, if an error occurs while parsing the given dateString, it outputs the result value of
+     * @param timezone   optional, the time zone to use to format the
+     *                   date
+     * @param onError    optional, if an error occurs while parsing the
+     *                   given dateString, it outputs the result value of
      *                   the provided expression
-     * @param onNull     optional, if the dateString is null or missing, it outputs the result value of the provided
+     * @param onNull     optional, if the dateString is null or missing,
+     *                   it outputs the result value of the provided
      *                   expression
      * @return the $dateFromString date expression operator
      */
@@ -1677,10 +1785,13 @@ public final class Operators {
     /**
      * Creates a $dateSubtract date expression operator.
      *
-     * @param startDate the beginning date, in UTC, for the addition operation, can be any expression that resolves to
+     * @param startDate the beginning date, in UTC, for the addition
+     *                  operation, can be any expression that resolves to
      *                  a Date, a Timestamp, or an ObjectID
-     * @param unit      the unit used to measure the amount of time added to the startDate
-     * @param amount    the number of units added to the startDate, can be an expression that resolves to an integer or
+     * @param unit      the unit used to measure the amount of time added
+     *                  to the startDate
+     * @param amount    the number of units added to the startDate, can
+     *                  be an expression that resolves to an integer or
      *                  long
      * @param timezone  optional, the timezone to carry out the operation
      * @return the $dateSubtract date expression operator
@@ -1725,10 +1836,13 @@ public final class Operators {
     /**
      * Creates a $dateSubtract date expression operator.
      *
-     * @param startDate the beginning date, in UTC, for the addition operation, can be any expression that resolves to
+     * @param startDate the beginning date, in UTC, for the addition
+     *                  operation, can be any expression that resolves to
      *                  a Date, a Timestamp, or an ObjectID
-     * @param unit      the unit used to measure the amount of time added to the startDate
-     * @param amount    the number of units added to the startDate, can be an expression that resolves to an integer or
+     * @param unit      the unit used to measure the amount of time added
+     *                  to the startDate
+     * @param amount    the number of units added to the startDate, can
+     *                  be an expression that resolves to an integer or
      *                  long
      * @return the $dateSubtract date expression operator
      */
@@ -1740,8 +1854,9 @@ public final class Operators {
     /**
      * Creates a $dateToParts date expression operator.
      *
-     * @param date the input date for which to return parts,  can be any expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the input date for which to return parts, can be any
+     *             expression that resolves to a Date, a Timestamp, or an
+     *             ObjectID
      * @return the $dateToParts date expression operator
      */
     public static final Bson dateToParts(Object date) {
@@ -1751,10 +1866,12 @@ public final class Operators {
     /**
      * Creates a $dateToParts date expression operator.
      *
-     * @param date     the input date for which to return parts,  can be any expression that resolves to a Date, a
+     * @param date     the input date for which to return parts, can be
+     *                 any expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone to use to format the date
-     * @param iso8601  optional, can be any expression that resolves to a Boolean
+     * @param iso8601  optional, can be any expression that resolves to a
+     *                 Boolean
      * @return the $dateToParts date expression operator
      */
     public static final Bson dateToParts(Object date, Object timezone, Object iso8601) {
@@ -1764,10 +1881,12 @@ public final class Operators {
     /**
      * Creates a $dateToParts date expression operator.
      *
-     * @param date     the input date for which to return parts,  can be any expression that resolves to a Date, a
+     * @param date     the input date for which to return parts, can be
+     *                 any expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone to use to format the date
-     * @param iso8601  if set to true, modifies the output document to use ISO week date fields
+     * @param iso8601  if set to true, modifies the output document to
+     *                 use ISO week date fields
      * @return the $dateToParts date expression operator
      */
     public static final Bson dateToParts(Object date, Object timezone, boolean iso8601) {
@@ -1809,12 +1928,15 @@ public final class Operators {
     /**
      * Creates a $dateToString date expression operator.
      *
-     * @param date     the date to convert to string, must be a valid expression that resolves to a Date, a Timestamp,
+     * @param date     the date to convert to string, must be a valid
+     *                 expression that resolves to a Date, a Timestamp,
      *                 or an ObjectID
-     * @param format   optional, the date format specification, can be any string literal, containing 0 or more format
+     * @param format   optional, the date format specification, can be
+     *                 any string literal, containing 0 or more format
      *                 specifiers
      * @param timezone optional, the timezone of the operation result
-     * @param onError  optional, the value to return if the date is null or missing
+     * @param onError  optional, the value to return if the date is null
+     *                 or missing
      * @return the $dateToString date expression operator
      */
     public static final Bson dateToString(Object date, Object format, Object timezone, Object onError) {
@@ -1861,8 +1983,9 @@ public final class Operators {
     /**
      * Creates a $dateTrunc date expression operator.
      *
-     * @param date the date to truncate, specified in UTC, can be any expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to truncate, specified in UTC, can be any
+     *             expression that resolves to a Date, a Timestamp, or an
+     *             ObjectID
      * @param unit the unit of time
      * @return the $dateTrunc date expression operator
      */
@@ -1874,13 +1997,16 @@ public final class Operators {
     /**
      * Creates a $dateTrunc date expression operator.
      *
-     * @param date        the date to truncate, specified in UTC, can be any expression that resolves to a Date, a
+     * @param date        the date to truncate, specified in UTC, can be
+     *                    any expression that resolves to a Date, a
      *                    Timestamp, or an ObjectID
      * @param unit        the unit of time
-     * @param binSize     optional, the numeric time value, specified as an expression that must resolve to a positive
+     * @param binSize     optional, the numeric time value, specified as
+     *                    an expression that must resolve to a positive
      *                    non-zero number
      * @param timezone    optional, the timezone
-     * @param startOfWeek optional, the start of the week, used when unit is {@code week}.
+     * @param startOfWeek optional, the start of the week, used when unit
+     *                    is {@code week}.
      * @return the $dateTrunc date expression operator
      */
     public static final Bson dateTrunc(Object date, Object unit, Object binSize, Object timezone, Object startOfWeek) {
@@ -1930,18 +2056,20 @@ public final class Operators {
     /**
      * Creates a $dayOfMonth date expression operator.
      *
-     * @param date the date to which the operator is applied, must be a valid expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to which the operator is applied, must be a
+     *             valid expression that resolves to a Date, a Timestamp,
+     *             or an ObjectID
      * @return the $dayOfMonth date expression operator
      */
     public static final Bson dayOfMonth(Object date) {
-        return new SimpleOperator("$dayOfMonth", date);
+        return simpleOperator("$dayOfMonth", date);
     }
 
     /**
      * Creates a $dayOfMonth date expression operator.
      *
-     * @param date     the date to which the operator is applied, must be a valid expression that resolves to a Date, a
+     * @param date     the date to which the operator is applied, must be
+     *                 a valid expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone
      * @return the $dayOfMonth date expression operator
@@ -1958,18 +2086,20 @@ public final class Operators {
     /**
      * Creates a $dayOfWeek date expression operator.
      *
-     * @param date the date to which the operator is applied, must be a valid expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to which the operator is applied, must be a
+     *             valid expression that resolves to a Date, a Timestamp,
+     *             or an ObjectID
      * @return the $dayOfWeek date expression operator
      */
     public static final Bson dayOfWeek(Object date) {
-        return new SimpleOperator("$dayOfWeek", date);
+        return simpleOperator("$dayOfWeek", date);
     }
 
     /**
      * Creates a $dayOfWeek date expression operator.
      *
-     * @param date     the date to which the operator is applied, must be a valid expression that resolves to a Date, a
+     * @param date     the date to which the operator is applied, must be
+     *                 a valid expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone
      * @return the $dayOfWeek date expression operator
@@ -1981,18 +2111,20 @@ public final class Operators {
     /**
      * Creates a $dayOfYear date expression operator.
      *
-     * @param date the date to which the operator is applied, must be a valid expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to which the operator is applied, must be a
+     *             valid expression that resolves to a Date, a Timestamp,
+     *             or an ObjectID
      * @return the $dayOfYear date expression operator
      */
     public static final Bson dayOfYear(Object date) {
-        return new SimpleOperator("$dayOfYear", date);
+        return simpleOperator("$dayOfYear", date);
     }
 
     /**
      * Creates a $dayOfYear date expression operator.
      *
-     * @param date     the date to which the operator is applied, must be a valid expression that resolves to a Date, a
+     * @param date     the date to which the operator is applied, must be
+     *                 a valid expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone
      * @return the $dayOfYear date expression operator
@@ -2004,18 +2136,20 @@ public final class Operators {
     /**
      * Creates an $hour date expression operator.
      *
-     * @param date the date to which the operator is applied, must be a valid expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to which the operator is applied, must be a
+     *             valid expression that resolves to a Date, a Timestamp,
+     *             or an ObjectID
      * @return the $hour date expression operator
      */
     public static final Bson hour(Object date) {
-        return new SimpleOperator("$hour", date);
+        return simpleOperator("$hour", date);
     }
 
     /**
      * Creates an $hour date expression operator.
      *
-     * @param date     the date to which the operator is applied, must be a valid expression that resolves to a Date, a
+     * @param date     the date to which the operator is applied, must be
+     *                 a valid expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone
      * @return the $hour date expression operator
@@ -2027,18 +2161,20 @@ public final class Operators {
     /**
      * Creates an $isoDayOfWeek date expression operator.
      *
-     * @param date the date to which the operator is applied, must be a valid expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to which the operator is applied, must be a
+     *             valid expression that resolves to a Date, a Timestamp,
+     *             or an ObjectID
      * @return the $isoDayOfWeek date expression operator
      */
     public static final Bson isoDayOfWeek(Object date) {
-        return new SimpleOperator("$isoDayOfWeek", date);
+        return simpleOperator("$isoDayOfWeek", date);
     }
 
     /**
      * Creates an $isoDayOfWeek date expression operator.
      *
-     * @param date     the date to which the operator is applied, must be a valid expression that resolves to a Date, a
+     * @param date     the date to which the operator is applied, must be
+     *                 a valid expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone
      * @return the $isoDayOfWeek date expression operator
@@ -2050,18 +2186,20 @@ public final class Operators {
     /**
      * Creates an $isoWeek date expression operator.
      *
-     * @param date the date to which the operator is applied, must be a valid expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to which the operator is applied, must be a
+     *             valid expression that resolves to a Date, a Timestamp,
+     *             or an ObjectID
      * @return the $isoWeek date expression operator
      */
     public static final Bson isoWeek(Object date) {
-        return new SimpleOperator("$isoWeek", date);
+        return simpleOperator("$isoWeek", date);
     }
 
     /**
      * Creates an $isoWeek date expression operator.
      *
-     * @param date     the date to which the operator is applied, must be a valid expression that resolves to a Date, a
+     * @param date     the date to which the operator is applied, must be
+     *                 a valid expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone
      * @return the $isoWeek date expression operator
@@ -2073,18 +2211,20 @@ public final class Operators {
     /**
      * Creates an $isoWeekYear date expression operator.
      *
-     * @param date the date to which the operator is applied, must be a valid expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to which the operator is applied, must be a
+     *             valid expression that resolves to a Date, a Timestamp,
+     *             or an ObjectID
      * @return the $isoWeekYear date expression operator
      */
     public static final Bson isoWeekYear(Object date) {
-        return new SimpleOperator("$isoWeekYear", date);
+        return simpleOperator("$isoWeekYear", date);
     }
 
     /**
      * Creates an $isoWeekYear date expression operator.
      *
-     * @param date     the date to which the operator is applied, must be a valid expression that resolves to a Date, a
+     * @param date     the date to which the operator is applied, must be
+     *                 a valid expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone
      * @return the $isoWeekYear date expression operator
@@ -2096,18 +2236,20 @@ public final class Operators {
     /**
      * Creates a $millisecond date expression operator.
      *
-     * @param date the date to which the operator is applied, must be a valid expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to which the operator is applied, must be a
+     *             valid expression that resolves to a Date, a Timestamp,
+     *             or an ObjectID
      * @return the $millisecond date expression operator
      */
     public static final Bson millisecond(Object date) {
-        return new SimpleOperator("$millisecond", date);
+        return simpleOperator("$millisecond", date);
     }
 
     /**
      * Creates a $millisecond date expression operator.
      *
-     * @param date     the date to which the operator is applied, must be a valid expression that resolves to a Date, a
+     * @param date     the date to which the operator is applied, must be
+     *                 a valid expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone
      * @return the $millisecond date expression operator
@@ -2119,18 +2261,20 @@ public final class Operators {
     /**
      * Creates a $minute date expression operator.
      *
-     * @param date the date to which the operator is applied, must be a valid expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to which the operator is applied, must be a
+     *             valid expression that resolves to a Date, a Timestamp,
+     *             or an ObjectID
      * @return the $minute date expression operator
      */
     public static final Bson minute(Object date) {
-        return new SimpleOperator("$minute", date);
+        return simpleOperator("$minute", date);
     }
 
     /**
      * Creates a $minute date expression operator.
      *
-     * @param date     the date to which the operator is applied, must be a valid expression that resolves to a Date, a
+     * @param date     the date to which the operator is applied, must be
+     *                 a valid expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone
      * @return the $minute date expression operator
@@ -2142,18 +2286,20 @@ public final class Operators {
     /**
      * Creates a $month date expression operator.
      *
-     * @param date the date to which the operator is applied, must be a valid expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to which the operator is applied, must be a
+     *             valid expression that resolves to a Date, a Timestamp,
+     *             or an ObjectID
      * @return the $month date expression operator
      */
     public static final Bson month(Object date) {
-        return new SimpleOperator("$month", date);
+        return simpleOperator("$month", date);
     }
 
     /**
      * Creates a $month date expression operator.
      *
-     * @param date     the date to which the operator is applied, must be a valid expression that resolves to a Date, a
+     * @param date     the date to which the operator is applied, must be
+     *                 a valid expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone
      * @return the $month date expression operator
@@ -2165,18 +2311,20 @@ public final class Operators {
     /**
      * Creates a $second date expression operator.
      *
-     * @param date the date to which the operator is applied, must be a valid expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to which the operator is applied, must be a
+     *             valid expression that resolves to a Date, a Timestamp,
+     *             or an ObjectID
      * @return the $second date expression operator
      */
     public static final Bson second(Object date) {
-        return new SimpleOperator("$second", date);
+        return simpleOperator("$second", date);
     }
 
     /**
      * Creates a $second date expression operator.
      *
-     * @param date     the date to which the operator is applied, must be a valid expression that resolves to a Date, a
+     * @param date     the date to which the operator is applied, must be
+     *                 a valid expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone
      * @return the $second date expression operator
@@ -2192,24 +2340,26 @@ public final class Operators {
      * @return the $toDate date expression operator
      */
     public static final Bson toDate(Object expression) {
-        return new SimpleOperator("$toDate", expression);
+        return simpleOperator("$toDate", expression);
     }
 
     /**
      * Creates a $week date expression operator.
      *
-     * @param date the date to which the operator is applied, must be a valid expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to which the operator is applied, must be a
+     *             valid expression that resolves to a Date, a Timestamp,
+     *             or an ObjectID
      * @return the $week date expression operator
      */
     public static final Bson week(Object date) {
-        return new SimpleOperator("$week", date);
+        return simpleOperator("$week", date);
     }
 
     /**
      * Creates a $week date expression operator.
      *
-     * @param date     the date to which the operator is applied, must be a valid expression that resolves to a Date, a
+     * @param date     the date to which the operator is applied, must be
+     *                 a valid expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone
      * @return the $week date expression operator
@@ -2221,18 +2371,20 @@ public final class Operators {
     /**
      * Creates a $year date expression operator.
      *
-     * @param date the date to which the operator is applied, must be a valid expression that resolves to a Date, a
-     *             Timestamp, or an ObjectID
+     * @param date the date to which the operator is applied, must be a
+     *             valid expression that resolves to a Date, a Timestamp,
+     *             or an ObjectID
      * @return the $year date expression operator
      */
     public static final Bson year(Object date) {
-        return new SimpleOperator("$year", date);
+        return simpleOperator("$year", date);
     }
 
     /**
      * Creates a $year date expression operator.
      *
-     * @param date     the date to which the operator is applied, must be a valid expression that resolves to a Date, a
+     * @param date     the date to which the operator is applied, must be
+     *                 a valid expression that resolves to a Date, a
      *                 Timestamp, or an ObjectID
      * @param timezone optional, the timezone
      * @return the $year date expression operator
@@ -2248,16 +2400,18 @@ public final class Operators {
      * @return the $literal literal expression operator
      */
     public static final Bson literal(Object expression) {
-        return new SimpleOperator("$literal", expression);
+        return simpleOperator("$literal", expression);
     }
 
     /**
      * Creates a $getField miscellaneous operator.
      *
-     * @param field the field in the input object for which you want to return a value, can be any valid expression that
+     * @param field the field in the input object for which you want to
+     *              return a value, can be any valid expression that
      *              resolves to a string constant
-     * @param input optional, a valid expression that contains the field for which you want to return a value, must
-     *              resolve to an object, missing, null, or undefined
+     * @param input optional, a valid expression that contains the field
+     *              for which you want to return a value, must resolve to
+     *              an object, missing, null, or undefined
      * @return the $getField miscellaneous operator
      */
     public static final Bson getField(Object field, Object input) {
@@ -2268,12 +2422,13 @@ public final class Operators {
     /**
      * Creates a $getField miscellaneous operator.
      *
-     * @param field the field in the input object for which you want to return a value, can be any valid expression that
+     * @param field the field in the input object for which you want to
+     *              return a value, can be any valid expression that
      *              resolves to a string constant
      * @return the $getField miscellaneous operator
      */
     public static final Bson getField(Object field) {
-        return new SimpleOperator("$getField", field);
+        return simpleOperator("$getField", field);
     }
 
     /**
@@ -2305,17 +2460,19 @@ public final class Operators {
     /**
      * Creates a $sampleRate miscellaneous operator.
      *
-     * @param expression can be any valid expression that resolves to a non-negative double value
+     * @param expression can be any valid expression that resolves to a
+     *                   non-negative double value
      * @return the $sampleRate miscellaneous operator
      */
     public static final Bson sampleRate(Object expression) {
-        return new SimpleOperator("$sampleRate", expression);
+        return simpleOperator("$sampleRate", expression);
     }
 
     /**
      * Creates a $mergeObjects object expression operator.
      *
-     * @param expressions can be any valid expression that resolves to documents
+     * @param expressions can be any valid expression that resolves to
+     *                    documents
      * @return the $mergeObjects object expression operator
      */
     public static final Bson mergeObjects(Iterable<?> expressions) {
@@ -2325,7 +2482,8 @@ public final class Operators {
     /**
      * Creates a $mergeObjects object expression operator.
      *
-     * @param expressions can be any valid expression that resolves to documents
+     * @param expressions can be any valid expression that resolves to
+     *                    documents
      * @return the $mergeObjects object expression operator
      */
     public static final Bson mergeObjects(Object... expressions) {
@@ -2335,11 +2493,14 @@ public final class Operators {
     /**
      * Creates a $setField object expression operator.
      *
-     * @param field the field in the input object that you want to add, update, or remove, can be any valid expression
-     *              that resolves to a string constant
-     * @param input the document that contains the field that you want to add or update, must resolve to an object,
-     *              missing, null, or undefined
-     * @param value the value that you want to assign to field, can be any valid expression
+     * @param field the field in the input object that you want to add,
+     *              update, or remove, can be any valid expression that
+     *              resolves to a string constant
+     * @param input the document that contains the field that you want to
+     *              add or update, must resolve to an object, missing,
+     *              null, or undefined
+     * @param value the value that you want to assign to field, can be
+     *              any valid expression
      * @return the $setField object expression operator
      */
     public static final Bson setField(Object field, Object input, Object value) {
@@ -2359,7 +2520,8 @@ public final class Operators {
     /**
      * Creates a $allElementsTrue set expression operator.
      *
-     * @param elements each element in elements can be any valid expression
+     * @param elements each element in elements can be any valid
+     *                 expression
      * @return the $allElementsTrue set expression operator
      */
     public static final Bson allElementsTrue(Iterable<?> elements) {
@@ -2393,7 +2555,8 @@ public final class Operators {
     /**
      * Creates a $allElementsTrue set expression operator.
      *
-     * @param elements each element in elements can be any valid expression
+     * @param elements each element in elements can be any valid
+     *                 expression
      * @return the $allElementsTrue set expression operator
      */
     public static final Bson allElementsTrue(Object... elements) {
@@ -2413,7 +2576,8 @@ public final class Operators {
     /**
      * Creates a $anyElementTrue set expression operator.
      *
-     * @param elements each element in elements can be any valid expression
+     * @param elements each element in elements can be any valid
+     *                 expression
      * @return the $anyElementTrue set expression operator
      */
     public static final Bson anyElementTrue(Iterable<?> elements) {
@@ -2423,7 +2587,8 @@ public final class Operators {
     /**
      * Creates a $anyElementTrue set expression operator.
      *
-     * @param elements each element in elements can be any valid expression
+     * @param elements each element in elements can be any valid
+     *                 expression
      * @return the $anyElementTrue set expression operator
      */
     public static final Bson anyElementTrue(Object... elements) {
@@ -2455,7 +2620,8 @@ public final class Operators {
     /**
      * Creates a $setIntersection set expression operator.
      *
-     * @param expressions can be any valid expression as long as they each resolve to an array
+     * @param expressions can be any valid expression as long as they
+     *                    each resolve to an array
      * @return the $setIntersection set expression operator
      */
     public static final Bson setIntersection(Object... expressions) {
@@ -2465,7 +2631,8 @@ public final class Operators {
     /**
      * Creates a $setIntersection set expression operator.
      *
-     * @param expressions can be any valid expression as long as they each resolve to an array
+     * @param expressions can be any valid expression as long as they
+     *                    each resolve to an array
      * @return the $setIntersection set expression operator
      */
     public static final Bson setIntersection(Iterable<?> expressions) {
@@ -2486,7 +2653,8 @@ public final class Operators {
     /**
      * Creates a $setUnion set expression operator.
      *
-     * @param expressions can be any valid expression as long as they each resolve to an array
+     * @param expressions can be any valid expression as long as they
+     *                    each resolve to an array
      * @return the $setUnion set expression operator
      */
     public static final Bson setUnion(Object... expressions) {
@@ -2496,7 +2664,8 @@ public final class Operators {
     /**
      * Creates a $setUnion set expression operator.
      *
-     * @param expressions can be any valid expression as long as they each resolve to an array
+     * @param expressions can be any valid expression as long as they
+     *                    each resolve to an array
      * @return the $setUnion set expression operator
      */
     public static final Bson setUnion(Iterable<?> expressions) {
@@ -2506,7 +2675,8 @@ public final class Operators {
     /**
      * Creates a $concat string expression operator.
      *
-     * @param expressions can be any valid expression as long as they resolve to strings
+     * @param expressions can be any valid expression as long as they
+     *                    resolve to strings
      * @return the $concat string expression operator
      */
     public static final Bson concat(Object... expressions) {
@@ -2516,7 +2686,8 @@ public final class Operators {
     /**
      * Creates a $concat string expression operator.
      *
-     * @param expressions can be any valid expression as long as they resolve to strings
+     * @param expressions can be any valid expression as long as they
+     *                    resolve to strings
      * @return the $concat string expression operator
      */
     public static final Bson concat(Iterable<?> expressions) {
@@ -2526,12 +2697,18 @@ public final class Operators {
     /**
      * Creates a $indexOfBytes string expression operator.
      *
-     * @param string    can be any valid expression as long as it resolves to a string
-     * @param subString can be any valid expression as long as it resolves to a string
-     * @param start     optional, an integral number that specifies the starting index position for the search, can be
-     *                  any valid expression that resolves to a non-negative integral number
-     * @param end       optional, n integral number that specifies the ending index position for the search, can be any
-     *                  valid expression that resolves to a non-negative integral number
+     * @param string    can be any valid expression as long as it
+     *                  resolves to a string
+     * @param subString can be any valid expression as long as it
+     *                  resolves to a string
+     * @param start     optional, an integral number that specifies the
+     *                  starting index position for the search, can be
+     *                  any valid expression that resolves to a
+     *                  non-negative integral number
+     * @param end       optional, n integral number that specifies the
+     *                  ending index position for the search, can be any
+     *                  valid expression that resolves to a non-negative
+     *                  integral number
      * @return the $indexOfBytes string expression operator
      */
     public static final Bson indexOfBytes(Object string, Object subString, Object start, Object end) {
@@ -2567,12 +2744,18 @@ public final class Operators {
     /**
      * Creates a $indexOfCP string expression operator.
      *
-     * @param string    can be any valid expression as long as it resolves to a string
-     * @param subString can be any valid expression as long as it resolves to a string
-     * @param start     optional, an integral number that specifies the starting index position for the search, can be
-     *                  any valid expression that resolves to a non-negative integral number
-     * @param end       optional, n integral number that specifies the ending index position for the search, can be any
-     *                  valid expression that resolves to a non-negative integral number
+     * @param string    can be any valid expression as long as it
+     *                  resolves to a string
+     * @param subString can be any valid expression as long as it
+     *                  resolves to a string
+     * @param start     optional, an integral number that specifies the
+     *                  starting index position for the search, can be
+     *                  any valid expression that resolves to a
+     *                  non-negative integral number
+     * @param end       optional, n integral number that specifies the
+     *                  ending index position for the search, can be any
+     *                  valid expression that resolves to a non-negative
+     *                  integral number
      * @return the $indexOfCP string expression operator
      */
     public static final Bson indexOfCP(Object string, Object subString, Object start, Object end) {
@@ -2582,7 +2765,8 @@ public final class Operators {
     /**
      * Creates a $ltrim string expression operator.
      *
-     * @param input the string to trim, can be any valid expression that resolves to a string
+     * @param input the string to trim, can be any valid expression that
+     *              resolves to a string
      * @return the $ltrim string expression operator
      */
     public static final Bson ltrim(Object input) {
@@ -2592,9 +2776,11 @@ public final class Operators {
     /**
      * Creates a $ltrim string expression operator.
      *
-     * @param input the string to trim, can be any valid expression that resolves to a string
-     * @param chars optional, the character(s) to trim from the beginning of the input,  can be any valid expression
-     *              that resolves to a string
+     * @param input the string to trim, can be any valid expression that
+     *              resolves to a string
+     * @param chars optional, the character(s) to trim from the beginning
+     *              of the input,  can be any valid expression that
+     *              resolves to a string
      * @return the $ltrim string expression operator
      */
     public static final Bson ltrim(Object input, Object chars) {
@@ -2609,10 +2795,14 @@ public final class Operators {
     /**
      * Creates a $regexFind string expression operator.
      *
-     * @param input   the string on which you wish to apply the regex pattern, can be a string or any valid expression
+     * @param input   the string on which you wish to apply the regex
+     *                pattern, can be a string or any valid expression
      *                that resolves to a string
-     * @param regex   the regex pattern to apply, can be any valid expression that resolves to a string ot regex pattern
-     * @param options optional, the regex options, can be any valid expression that resolves to a string
+     * @param regex   the regex pattern to apply, can be any valid
+     *                expression that resolves to a string ot regex
+     *                pattern
+     * @param options optional, the regex options, can be any valid
+     *                expression that resolves to a string
      * @return the $regexFind string expression operator
      */
     public static final Bson regexFind(Object input, Object regex, Object options) {
@@ -2627,10 +2817,14 @@ public final class Operators {
     /**
      * Creates a $regexFindAll string expression operator.
      *
-     * @param input   the string on which you wish to apply the regex pattern, can be a string or any valid expression
+     * @param input   the string on which you wish to apply the regex
+     *                pattern, can be a string or any valid expression
      *                that resolves to a string
-     * @param regex   the regex pattern to apply, can be any valid expression that resolves to a string ot regex pattern
-     * @param options optional, the regex options, can be any valid expression that resolves to a string
+     * @param regex   the regex pattern to apply, can be any valid
+     *                expression that resolves to a string ot regex
+     *                pattern
+     * @param options optional, the regex options, can be any valid
+     *                expression that resolves to a string
      * @return the $regexFindAll string expression operator
      */
     public static final Bson regexFindAll(Object input, Object regex, Object options) {
@@ -2640,10 +2834,14 @@ public final class Operators {
     /**
      * Creates a $regexMatch string expression operator.
      *
-     * @param input   the string on which you wish to apply the regex pattern, can be a string or any valid expression
+     * @param input   the string on which you wish to apply the regex
+     *                pattern, can be a string or any valid expression
      *                that resolves to a string
-     * @param regex   the regex pattern to apply, can be any valid expression that resolves to a string ot regex pattern
-     * @param options optional, the regex options, can be any valid expression that resolves to a string
+     * @param regex   the regex pattern to apply, can be any valid
+     *                expression that resolves to a string ot regex
+     *                pattern
+     * @param options optional, the regex options, can be any valid
+     *                expression that resolves to a string
      * @return the $regexMatch string expression operator
      */
     public static final Bson regexMatch(Object input, Object regex, Object options) {
@@ -2653,12 +2851,16 @@ public final class Operators {
     /**
      * Creates a $replaceOne string expression operator.
      *
-     * @param input       the string on which you wish to apply the {@code find}, can be any valid expression that
+     * @param input       the string on which you wish to apply the
+     *                    {@code find}, can be any valid expression that
      *                    resolves to a {@code string} or a {@code null}
-     * @param find        the string to search for within the given {@code input}, can be any valid expression that
+     * @param find        the string to search for within the given
+     *                    {@code input}, can be any valid expression that
      *                    resolves to a {@code string} or a {@code null}
-     * @param replacement the string to use to replace the first matched instance of {@code find} in {@code input}, can
-     *                    be any valid expression that resolves to a {@code string} or a {@code null}
+     * @param replacement the string to use to replace the first matched
+     *                    instance of {@code find} in {@code input}, can
+     *                    be any valid expression that resolves to a
+     *                    {@code string} or a {@code null}
      * @return the $replaceOne string expression operator
      */
     public static final Bson replaceOne(Object input, Object find, Object replacement) {
@@ -2672,12 +2874,16 @@ public final class Operators {
     /**
      * Creates a $replaceAll string expression operator.
      *
-     * @param input       the string on which you wish to apply the {@code find}, can be any valid expression that
+     * @param input       the string on which you wish to apply the
+     *                    {@code find}, can be any valid expression that
      *                    resolves to a {@code string} or a {@code null}
-     * @param find        the string to search for within the given {@code input}, can be any valid expression that
+     * @param find        the string to search for within the given
+     *                    {@code input}, can be any valid expression that
      *                    resolves to a {@code string} or a {@code null}
-     * @param replacement the string to use to replace the first matched instance of {@code find} in {@code input}, can
-     *                    be any valid expression that resolves to a {@code string} or a {@code null}
+     * @param replacement the string to use to replace the first matched
+     *                    instance of {@code find} in {@code input}, can
+     *                    be any valid expression that resolves to a
+     *                    {@code string} or a {@code null}
      * @return the $replaceAll string expression operator
      */
     public static final Bson replaceAll(Object input, Object find, Object replacement) {
@@ -2687,7 +2893,8 @@ public final class Operators {
     /**
      * Creates a $rtrim string expression operator.
      *
-     * @param input the string to trim, can be any valid expression that resolves to a string
+     * @param input the string to trim, can be any valid expression
+     *              that resolves to a string
      * @return the $rtrim string expression operator
      */
     public static final Bson rtrim(Object input) {
@@ -2697,9 +2904,11 @@ public final class Operators {
     /**
      * Creates a $rtrim string expression operator.
      *
-     * @param input the string to trim, can be any valid expression that resolves to a string
-     * @param chars optional, the character(s) to trim from the beginning of the input,  can be any valid expression
+     * @param input the string to trim, can be any valid expression
      *              that resolves to a string
+     * @param chars optional, the character(s) to trim from the beginning
+     *              of the input, can be any valid expression that
+     *              resolves to a string
      * @return the $rtrim string expression operator
      */
     public static final Bson rtrim(Object input, Object chars) {
@@ -2709,8 +2918,10 @@ public final class Operators {
     /**
      * Creates a $split string expression operator.
      *
-     * @param string    the string to be split, can be any valid expression as long as it resolves to a string
-     * @param delimiter the delimiter to use when splitting the string expression, can be any valid expression as long
+     * @param string    the string to be split, can be any valid
+     *                  expression as long as it resolves to a string
+     * @param delimiter the delimiter to use when splitting the string
+     *                  expression, can be any valid expression as long
      *                  as it resolves to a string
      * @return the $split string expression operator
      */
@@ -2721,28 +2932,32 @@ public final class Operators {
     /**
      * Creates a $strLenBytes string expression operator.
      *
-     * @param string can be any valid expression as long as it resolves to a string
+     * @param string can be any valid expression as long as it resolves
+     *               to a string
      * @return the $strLenBytes string expression operator
      */
     public static final Bson strLenBytes(Object string) {
-        return new SimpleOperator("$strLenBytes", string);
+        return simpleOperator("$strLenBytes", string);
     }
 
     /**
      * Creates a $strLenCP string expression operator.
      *
-     * @param string can be any valid expression as long as it resolves to a string
+     * @param string can be any valid expression as long as it resolves
+     *               to a string
      * @return the $strLenCP string expression operator
      */
     public static final Bson strLenCP(Object string) {
-        return new SimpleOperator("$strLenCP", string);
+        return simpleOperator("$strLenCP", string);
     }
 
     /**
      * Creates a $strcasecmp string expression operator.
      *
-     * @param expression1 the first string, can be any valid expression as long as it resolves to a string
-     * @param expression2 the second string, can be any valid expression as long as it resolves to a string
+     * @param expression1 the first string, can be any valid expression
+     *                    as long as it resolves to a string
+     * @param expression2 the second string, can be any valid expression
+     *                    as long as it resolves to a string
      * @return the $strcasecmp string expression operator
      */
     public static final Bson strcasecmp(Object expression1, Object expression2) {
@@ -2752,9 +2967,12 @@ public final class Operators {
     /**
      * Creates a $substr string expression operator.
      *
-     * @param string the string, can be any valid expression as long as it resolves to a string
-     * @param start  the starting index, can be any valid expression as long as it resolves to an integer
-     * @param length the char length, can be any valid expression as long as it resolves to an integer
+     * @param string the string, can be any valid expression as long as
+     *               it resolves to a string
+     * @param start  the starting index, can be any valid expression as
+     *               long as it resolves to an integer
+     * @param length the char length, can be any valid expression as long
+     *               as it resolves to an integer
      * @return the $substr string expression operator
      */
     public static final Bson substr(Object string, Object start, Object length) {
@@ -2764,9 +2982,12 @@ public final class Operators {
     /**
      * Creates a $substrBytes string expression operator.
      *
-     * @param string the string, can be any valid expression as long as it resolves to a string
-     * @param index  the byte index, can be any valid expression as long as it resolves to an integer
-     * @param count  the byte count, can be any valid expression as long as it resolves to an integer
+     * @param string the string, can be any valid expression as long as
+     *               it resolves to a string
+     * @param index  the byte index, can be any valid expression as long
+     *               as it resolves to an integer
+     * @param count  the byte count, can be any valid expression as long
+     *               as it resolves to an integer
      * @return the $substrBytes string expression operator
      */
     public static final Bson substrBytes(Object string, Object index, Object count) {
@@ -2776,9 +2997,12 @@ public final class Operators {
     /**
      * Creates a $substrCP string expression operator.
      *
-     * @param string the string, can be any valid expression as long as it resolves to a string
-     * @param index  the code point index, can be any valid expression as long as it resolves to an integer
-     * @param count  the code point count, can be any valid expression as long as it resolves to an integer
+     * @param string the string, can be any valid expression as long as
+     *               it resolves to a string
+     * @param index  the code point index, can be any valid expression as
+     *               long as it resolves to an integer
+     * @param count  the code point count, can be any valid expression as
+     *               long as it resolves to an integer
      * @return the $substrCP string expression operator
      */
     public static final Bson substrCP(Object string, Object index, Object count) {
@@ -2788,27 +3012,30 @@ public final class Operators {
     /**
      * Creates a $toLower string expression operator.
      *
-     * @param string can be any valid expression as long as it resolves to a string
+     * @param string can be any valid expression as long as it resolves
+     *               to a string
      * @return the $toLower string expression operator
      */
     public static final Bson toLower(Object string) {
-        return new SimpleOperator("$toLower", string);
+        return simpleOperator("$toLower", string);
     }
 
     /**
      * Creates a $toString string expression operator.
      *
-     * @param expression can be any valid expression as long as it resolves to a string
+     * @param expression can be any valid expression as long as it
+     *                   resolves to a string
      * @return the $toString string expression operator
      */
     public static final Bson toString(Object expression) {
-        return new SimpleOperator("$toString", expression);
+        return simpleOperator("$toString", expression);
     }
 
     /**
      * Creates a $trim string expression operator.
      *
-     * @param input the string to trim, can be any valid expression that resolves to a string
+     * @param input the string to trim, can be any valid expression
+     *              that resolves to a string
      * @return the $trim string expression operator
      */
     public static final Bson trim(Object input) {
@@ -2818,9 +3045,11 @@ public final class Operators {
     /**
      * Creates a $trim string expression operator.
      *
-     * @param input the string to trim, can be any valid expression that resolves to a string
-     * @param chars optional, the character(s) to trim from the beginning of the input,  can be any valid expression
+     * @param input the string to trim, can be any valid expression
      *              that resolves to a string
+     * @param chars optional, the character(s) to trim from the beginning
+     *              of the input,  can be any valid expression that
+     *              resolves to a string
      * @return the $trim string expression operator
      */
     public static final Bson trim(Object input, Object chars) {
@@ -2830,11 +3059,12 @@ public final class Operators {
     /**
      * Creates a $toUpper string expression operator.
      *
-     * @param string can be any valid expression as long as it resolves to a string
+     * @param string can be any valid expression as long as it resolves
+     *               to a string
      * @return the $toUpper string expression operator
      */
     public static final Bson toUpper(Object string) {
-        return new SimpleOperator("$toUpper", string);
+        return simpleOperator("$toUpper", string);
     }
 
     /**
@@ -2844,7 +3074,7 @@ public final class Operators {
      * @return the $meta text expression operator
      */
     public static final Bson meta(Object metaDataKeyword) {
-        return new SimpleOperator("$meta", metaDataKeyword);
+        return simpleOperator("$meta", metaDataKeyword);
     }
 
     /**
@@ -2854,7 +3084,7 @@ public final class Operators {
      * @return the $tsIncrement timestamp expression operator
      */
     public static final Bson tsIncrement(Object expression) {
-        return new SimpleOperator("$tsIncrement", expression);
+        return simpleOperator("$tsIncrement", expression);
     }
 
     /**
@@ -2864,7 +3094,7 @@ public final class Operators {
      * @return the $tsSecond timestamp expression operator
      */
     public static final Bson tsSecond(Object expression) {
-        return new SimpleOperator("$tsSecond", expression);
+        return simpleOperator("$tsSecond", expression);
     }
 
     /**
@@ -2874,7 +3104,7 @@ public final class Operators {
      * @return the $sin trigonometry expression operator
      */
     public static final Bson sin(Object expression) {
-        return new SimpleOperator("$sin", expression);
+        return simpleOperator("$sin", expression);
     }
 
     /**
@@ -2884,7 +3114,7 @@ public final class Operators {
      * @return the $cos trigonometry expression operator
      */
     public static final Bson cos(Object expression) {
-        return new SimpleOperator("$cos", expression);
+        return simpleOperator("$cos", expression);
     }
 
     /**
@@ -2894,7 +3124,7 @@ public final class Operators {
      * @return the $tan trigonometry expression operator
      */
     public static final Bson tan(Object expression) {
-        return new SimpleOperator("$tan", expression);
+        return simpleOperator("$tan", expression);
     }
 
     /**
@@ -2904,7 +3134,7 @@ public final class Operators {
      * @return the $asin trigonometry expression operator
      */
     public static final Bson asin(Object expression) {
-        return new SimpleOperator("$asin", expression);
+        return simpleOperator("$asin", expression);
     }
 
     /**
@@ -2914,7 +3144,7 @@ public final class Operators {
      * @return the $acos trigonometry expression operator
      */
     public static final Bson acos(Object expression) {
-        return new SimpleOperator("$acos", expression);
+        return simpleOperator("$acos", expression);
     }
 
     /**
@@ -2924,7 +3154,7 @@ public final class Operators {
      * @return the $atan trigonometry expression operator
      */
     public static final Bson atan(Object expression) {
-        return new SimpleOperator("$atan", expression);
+        return simpleOperator("$atan", expression);
     }
 
     /**
@@ -2945,7 +3175,7 @@ public final class Operators {
      * @return the $asinh trigonometry expression operator
      */
     public static final Bson asinh(Object expression) {
-        return new SimpleOperator("$asinh", expression);
+        return simpleOperator("$asinh", expression);
     }
 
     /**
@@ -2955,7 +3185,7 @@ public final class Operators {
      * @return the $acosh trigonometry expression operator
      */
     public static final Bson acosh(Object expression) {
-        return new SimpleOperator("$acosh", expression);
+        return simpleOperator("$acosh", expression);
     }
 
     /**
@@ -2965,7 +3195,7 @@ public final class Operators {
      * @return the $atanh trigonometry expression operator
      */
     public static final Bson atanh(Object expression) {
-        return new SimpleOperator("$atanh", expression);
+        return simpleOperator("$atanh", expression);
     }
 
     /**
@@ -2975,7 +3205,7 @@ public final class Operators {
      * @return the $sinh trigonometry expression operator
      */
     public static final Bson sinh(Object expression) {
-        return new SimpleOperator("$sinh", expression);
+        return simpleOperator("$sinh", expression);
     }
 
     /**
@@ -2985,7 +3215,7 @@ public final class Operators {
      * @return the $cosh trigonometry expression operator
      */
     public static final Bson cosh(Object expression) {
-        return new SimpleOperator("$cosh", expression);
+        return simpleOperator("$cosh", expression);
     }
 
     /**
@@ -2995,7 +3225,7 @@ public final class Operators {
      * @return the $tanh trigonometry expression operator
      */
     public static final Bson tanh(Object expression) {
-        return new SimpleOperator("$tanh", expression);
+        return simpleOperator("$tanh", expression);
     }
 
     /**
@@ -3005,7 +3235,7 @@ public final class Operators {
      * @return the $degreesToRadians trigonometry expression operator
      */
     public static final Bson degreesToRadians(Object expression) {
-        return new SimpleOperator("$degreesToRadians", expression);
+        return simpleOperator("$degreesToRadians", expression);
     }
 
     /**
@@ -3015,7 +3245,7 @@ public final class Operators {
      * @return the $radiansToDegrees trigonometry expression operator
      */
     public static final Bson radiansToDegrees(Object expression) {
-        return new SimpleOperator("$radiansToDegrees", expression);
+        return simpleOperator("$radiansToDegrees", expression);
     }
 
     /**
@@ -3034,8 +3264,10 @@ public final class Operators {
      *
      * @param input   can be any valid expression
      * @param to      the specified type
-     * @param onError optional, the value to return on encountering an error during conversion
-     * @param onNull  optional, the value to return if the input is null or missing
+     * @param onError optional, the value to return on encountering an
+     *                error during conversion
+     * @param onNull  optional, the value to return if the input is null
+     *                or missing
      * @return the $convert type expression operator
      */
     public static final Bson convert(Object input, Object to, Object onError, Object onNull) {
@@ -3083,7 +3315,7 @@ public final class Operators {
      * @return the $isNumber type expression operator
      */
     public static final Bson isNumber(Object expression) {
-        return new SimpleOperator("$isNumber", expression);
+        return simpleOperator("$isNumber", expression);
     }
 
     /**
@@ -3093,7 +3325,7 @@ public final class Operators {
      * @return the $toBool type expression operator
      */
     public static final Bson toBool(Object expression) {
-        return new SimpleOperator("$toBool", expression);
+        return simpleOperator("$toBool", expression);
     }
 
     /**
@@ -3103,7 +3335,7 @@ public final class Operators {
      * @return the $toDecimal type expression operator
      */
     public static final Bson toDecimal(Object expression) {
-        return new SimpleOperator("$toDecimal", expression);
+        return simpleOperator("$toDecimal", expression);
     }
 
     /**
@@ -3113,7 +3345,7 @@ public final class Operators {
      * @return the $toDouble type expression operator
      */
     public static final Bson toDouble(Object expression) {
-        return new SimpleOperator("$toDouble", expression);
+        return simpleOperator("$toDouble", expression);
     }
 
     /**
@@ -3123,7 +3355,7 @@ public final class Operators {
      * @return the $toInt type expression operator
      */
     public static final Bson toInt(Object expression) {
-        return new SimpleOperator("$toInt", expression);
+        return simpleOperator("$toInt", expression);
     }
 
     /**
@@ -3133,7 +3365,7 @@ public final class Operators {
      * @return the $toLong type expression operator
      */
     public static final Bson toLong(Object expression) {
-        return new SimpleOperator("$toLong", expression);
+        return simpleOperator("$toLong", expression);
     }
 
     /**
@@ -3143,7 +3375,7 @@ public final class Operators {
      * @return the $toObjectId type expression operator
      */
     public static final Bson toObjectId(Object expression) {
-        return new SimpleOperator("$toObjectId", expression);
+        return simpleOperator("$toObjectId", expression);
     }
 
     /**
@@ -3153,7 +3385,7 @@ public final class Operators {
      * @return the $type type expression operator
      */
     public static final Bson type(Object expression) {
-        return new SimpleOperator("$type", expression);
+        return simpleOperator("$type", expression);
     }
 
     /**
@@ -3163,7 +3395,7 @@ public final class Operators {
      * @return the $avg expression operator
      */
     public static final Bson avg(Object expression) {
-        return new SimpleOperator("$avg", expression);
+        return simpleOperator("$avg", expression);
     }
 
     /**
@@ -3183,7 +3415,7 @@ public final class Operators {
      * @return the $max expression operator
      */
     public static final Bson max(Object expression) {
-        return new SimpleOperator("$max", expression);
+        return simpleOperator("$max", expression);
     }
 
     /**
@@ -3203,7 +3435,7 @@ public final class Operators {
      * @return the $min expression operator
      */
     public static final Bson min(Object expression) {
-        return new SimpleOperator("$min", expression);
+        return simpleOperator("$min", expression);
     }
 
     /**
@@ -3223,7 +3455,7 @@ public final class Operators {
      * @return the $push expression operator
      */
     public static final Bson push(Object expression) {
-        return new SimpleOperator("$push", expression);
+        return simpleOperator("$push", expression);
     }
 
     /**
@@ -3233,7 +3465,7 @@ public final class Operators {
      * @return the $stdDevPop expression operator
      */
     public static final Bson stdDevPop(Object expression) {
-        return new SimpleOperator("$stdDevPop", expression);
+        return simpleOperator("$stdDevPop", expression);
     }
 
     /**
@@ -3253,7 +3485,7 @@ public final class Operators {
      * @return the $stdDevSamp expression operator
      */
     public static final Bson stdDevSamp(Object expression) {
-        return new SimpleOperator("$stdDevSamp", expression);
+        return simpleOperator("$stdDevSamp", expression);
     }
 
     /**
@@ -3273,7 +3505,7 @@ public final class Operators {
      * @return the $sum expression operator
      */
     public static final Bson sum(Object expression) {
-        return new SimpleOperator("$sum", expression);
+        return simpleOperator("$sum", expression);
     }
 
     /**
@@ -3289,7 +3521,8 @@ public final class Operators {
     /**
      * Creates a $let variable expression operator.
      *
-     * @param vars assignment block for the variables accessible in the {@code in} expression
+     * @param vars assignment block for the variables accessible in the
+     *             {@code in} expression
      * @param in   the expression to evaluate
      * @return the $let variable expression operator
      */
@@ -3301,7 +3534,8 @@ public final class Operators {
      * Creates a $let variable expression operator.
      *
      * @param in   the expression to evaluate
-     * @param vars assignment block for the variables accessible in the {@code in} expression
+     * @param vars assignment block for the variables accessible in the
+     *             {@code in} expression
      * @return the $let variable expression operator
      */
     @SafeVarargs
@@ -3410,6 +3644,58 @@ public final class Operators {
             return switchN(branches, defaultExpression);
         }
 
+    }
+
+    /**
+     * Creates a simple operator with the specified operator and the
+     * specified expression given.
+     * <p>
+     * Example: <pre>{@code
+     * simpleOperator("$abs", "$n");
+     * }</pre>
+     *
+     * @param operator   the operator
+     * @param expression the expression
+     * @return a simple operator
+     * @since 4.0
+     */
+    public static final Bson simpleOperator(String operator, Object expression) {
+        return new SimpleOperator(operator, expression);
+    }
+
+    /**
+     * Creates a simple array operator with the specified operator and
+     * the specified expressions given.
+     * <p>
+     * Example: <pre>{@code
+     * simpleArrayOperator("$add", "$n1", "$n2");
+     * }</pre>
+     *
+     * @param operator    the operator
+     * @param expressions the expressions array
+     * @return a simple array operator
+     * @since 4.0
+     */
+    public static final Bson simpleArrayOperator(String operator, Object... expressions) {
+        return new SimpleArrayOperator(operator, expressions);
+    }
+
+    /**
+     * Creates a simple iterable operator with the specified operator and
+     * the specified expressions given.
+     * <p>
+     * Example: <pre>{@code
+     * var fields = List.of("$n1", "$n2");
+     * simpleIterableOperator("$add", fields);
+     * }</pre>
+     *
+     * @param operator    the operator
+     * @param expressions the expressions iterable
+     * @return a simple array operator
+     * @since 4.0
+     */
+    public static final Bson simpleIterableOperator(String operator, Iterable<?> expressions) {
+        return new SimpleIterableOperator(operator, expressions);
     }
 
     private Operators() {

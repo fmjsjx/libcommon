@@ -2735,4 +2735,43 @@ public class OperatorsTests {
         );
     }
 
+    @Test
+    public void testSimpleOperator() {
+        assertEquals(simple("$abs"), simpleOperator("$abs", "$test").toBsonDocument());
+    }
+
+    @Test
+    public void testSimpleArrayOperator() {
+        assertEquals(
+                new BsonDocument(
+                        "$add",
+                        new BsonArray(
+                                List.of(
+                                        new BsonString("$n1"),
+                                        new BsonString("$n2"),
+                                        new BsonInt32(3)
+                                )
+                        )
+                ),
+                simpleArrayOperator("$add", "$n1", "$n2", 3).toBsonDocument()
+        );
+    }
+
+    @Test
+    public void testSimpleIterableOperator() {
+        assertEquals(
+                new BsonDocument(
+                        "$add",
+                        new BsonArray(
+                                List.of(
+                                        new BsonString("$n1"),
+                                        new BsonString("$n2"),
+                                        new BsonInt32(3)
+                                )
+                        )
+                ),
+                simpleIterableOperator("$add", List.of("$n1", "$n2", 3)).toBsonDocument()
+        );
+    }
+
 }
