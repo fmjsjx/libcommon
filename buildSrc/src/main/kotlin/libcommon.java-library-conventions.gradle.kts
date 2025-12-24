@@ -29,7 +29,7 @@ dependencies {
     // kotlin
     api(platform("org.jetbrains.kotlin:kotlin-bom:2.2.0"))
     // spring boot
-    api(platform("org.springframework.boot:spring-boot-dependencies:4.0.0"))
+    api(platform("org.springframework.boot:spring-boot-dependencies:4.0.1"))
 
     constraints {
         implementation("org.slf4j:slf4j-api:2.0.17")
@@ -58,7 +58,7 @@ dependencies {
         api("com.fasterxml.uuid:java-uuid-generator:5.2.0")
     }
     // log4j2
-    implementation(platform("org.apache.logging.log4j:log4j-bom:2.25.2"))
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.25.3"))
 
 }
 
