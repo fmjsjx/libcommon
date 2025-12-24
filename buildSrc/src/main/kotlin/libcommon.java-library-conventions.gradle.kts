@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     // netty-bom
-    api(platform("io.netty:netty-bom:4.2.7.Final"))
+    api(platform("io.netty:netty-bom:4.2.9.Final"))
     // junit-bom
     testImplementation(platform("org.junit:junit-bom:6.0.1"))
     // mockito
