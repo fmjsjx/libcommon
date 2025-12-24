@@ -250,6 +250,13 @@ public class Constants {
          * $$SEARCH_META
          */
         public static final String SEARCH_META = "$$SEARCH_META";
+        /**
+         * $$USER_ROLES
+         * <i>New in version 7.0.</i>
+         *
+         * @since 4.0
+         */
+        public static final String USER_ROLES = "$$USER_ROLES";
 
         private SystemVariables() {
         }
@@ -295,6 +302,13 @@ public class Constants {
          * $$SEARCH_META
          */
         public static final BsonString SEARCH_META = new BsonString("$$SEARCH_META");
+        /**
+         * $$USER_ROLES
+         * <i>New in version 7.0.</i>
+         *
+         * @since 4.0
+         */
+        public static final BsonString USER_ROLES = new BsonString("$$USER_ROLES");
 
         private BsonSystemVariables() {
         }
