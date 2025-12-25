@@ -16,7 +16,7 @@ A set of some common useful libraries.
       <dependency>
         <groupId>com.github.fmjsjx</groupId>
         <artifactId>libcommon-bom</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -52,7 +52,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation platform('com.github.fmjsjx:libcommon-bom:4.0.0-SNAPSHOT')
+    implementation platform('com.github.fmjsjx:libcommon-bom:4.0.0')
     // Common Utility
     implementation 'com.github.fmjsjx:libcommon-util'
     // JSON library based on Fastjson2
@@ -71,7 +71,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation(platform("com.github.fmjsjx:libcommon-bom:4.0.0-SNAPSHOT"))
+    implementation(platform("com.github.fmjsjx:libcommon-bom:4.0.0"))
     // Common Utility
     implementation("com.github.fmjsjx:libcommon-util")
     // JSON library based on Fastjson2
@@ -102,10 +102,6 @@ The [`libcommon-function`](libcommon-function) module provides additional functi
 ### libcommon-json
 
 The [`libcommon-json`](libcommon-json) module provides a library interface to encode/decode JSON.
-
-### libcommon-json-dsljson
-
-The [`libcommon-json-dsljson`](libcommon-json-dsljson) module provides an implementation of [`libcommon-json`](libcommon-json) based on [`DSL-JSON`](https://github.com/ngs-doo/dsl-json).
 
 ### libcommon-json-fastjson2
 
