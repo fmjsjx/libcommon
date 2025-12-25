@@ -175,7 +175,7 @@ public class DateTimeUtil {
     }
 
     /**
-     * Returns {@code true} if the specified to dates is in same week(Monday start),
+     * Returns {@code true} if the specified two dates is in same week(Monday start),
      * {@code false} otherwise.
      * 
      * @param date1 the first date
