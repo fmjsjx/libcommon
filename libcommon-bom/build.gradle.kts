@@ -13,7 +13,6 @@ dependencies {
         api(project(":libcommon-function"))
         api(project(":libcommon-jdbc"))
         api(project(":libcommon-json"))
-        api(project(":libcommon-json-dsljson"))
         api(project(":libcommon-json-fastjson2"))
         api(project(":libcommon-json-fastjson2-kotlin"))
         api(project(":libcommon-json-jackson2"))
