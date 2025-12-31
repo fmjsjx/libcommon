@@ -10,6 +10,7 @@ import java.util.function.Supplier;
  *
  * @author MJ Fang
  * @see DefaultRedisRemoteLock
+ * @see KeepAliveRedisRemoteLock
  * @since 4.1
  */
 public interface RedisRemoteLock<K, V> {

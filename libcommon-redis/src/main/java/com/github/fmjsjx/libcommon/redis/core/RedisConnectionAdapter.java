@@ -139,6 +139,8 @@ public interface RedisConnectionAdapter<K, V> extends AutoCloseable, AsyncClosea
      * @param value          the value
      * @param timeoutSeconds the timeout seconds
      * @return a new {@code RedisRemoteLock<K, V>} instance
+     * @author MJ Fang
+     * @since 4.1
      */
     default RedisRemoteLock<K, V> newLock(K key, V value, long timeoutSeconds) {
         return newLock(key, value, timeoutSeconds, false);
@@ -153,6 +155,8 @@ public interface RedisConnectionAdapter<K, V> extends AutoCloseable, AsyncClosea
      * @param timeoutSeconds the timeout seconds
      * @param keepAlive      {@code true} if keep alive, {@code false} otherwise
      * @return a new {@code RedisRemoteLock<K, V>} instance
+     * @author MJ Fang
+     * @since 4.1
      */
     default RedisRemoteLock<K, V> newLock(K key, V value, long timeoutSeconds, boolean keepAlive) {
         return keepAlive ? new KeepAliveRedisRemoteLock<>(this, key, value, timeoutSeconds)
@@ -168,6 +172,8 @@ public interface RedisConnectionAdapter<K, V> extends AutoCloseable, AsyncClosea
      * @param timeoutSeconds    the timeout seconds
      * @param keepAliveExecutor the keep alive scheduled executor
      * @return a new {@code RedisRemoteLock<K, V>} instance
+     * @author MJ Fang
+     * @since 4.1
      */
     default RedisRemoteLock<K, V> newLock(K key, V value, long timeoutSeconds,
                                           ScheduledExecutorService keepAliveExecutor) {
