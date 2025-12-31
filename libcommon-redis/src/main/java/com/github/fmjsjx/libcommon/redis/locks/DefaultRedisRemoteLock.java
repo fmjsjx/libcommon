@@ -14,8 +14,8 @@ import java.util.function.Supplier;
  * @param <K> the type of the key
  * @param <V> the type of the value
  * @author MJ Fang
- * @see AbstractRedisRemoteLock
  * @see RedisRemoteLock
+ * @see KeepAliveRedisRemoteLock
  * @since 4.1
  */
 public class DefaultRedisRemoteLock<K, V> extends AbstractRedisRemoteLock<K, V> {

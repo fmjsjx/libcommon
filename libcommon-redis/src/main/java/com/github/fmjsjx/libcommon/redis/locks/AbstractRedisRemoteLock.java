@@ -93,6 +93,16 @@ abstract class AbstractRedisRemoteLock<K, V> implements RedisRemoteLock<K, V> {
     }
 
     /**
+     * Returns whether the value of this lock is a byte array.
+     *
+     * @return {@code true} if the value of this lock is a byte array,
+     * {@code false} otherwise
+     */
+    protected boolean isValueIsByteArray() {
+        return valueIsByteArray;
+    }
+
+    /**
      * Gets the {@link SetArgs} for the {@code SET} command.
      *
      * @return a {@link SetArgs}
@@ -117,7 +127,7 @@ abstract class AbstractRedisRemoteLock<K, V> implements RedisRemoteLock<K, V> {
         if (v == null) {
             return false;
         }
-        if (valueIsByteArray) {
+        if (isValueIsByteArray()) {
             return Arrays.equals((byte[]) value, (byte[]) v);
         }
         return value.equals(v);
@@ -159,7 +169,9 @@ abstract class AbstractRedisRemoteLock<K, V> implements RedisRemoteLock<K, V> {
                     break;
                 }
                 var nextWaitMillis = Math.min(eachWaitMillis, deadline - now);
-                Thread.sleep(nextWaitMillis);
+                if (nextWaitMillis> 0) {
+                    Thread.sleep(nextWaitMillis);
+                }
                 r = tryLock();
                 if (r) {
                     break;
