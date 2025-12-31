@@ -1,5 +1,8 @@
 package com.github.fmjsjx.libcommon.redis.core;
 
+import com.github.fmjsjx.libcommon.redis.locks.DefaultRedisRemoteLock;
+import com.github.fmjsjx.libcommon.redis.locks.KeepAliveRedisRemoteLock;
+import com.github.fmjsjx.libcommon.redis.locks.RedisRemoteLock;
 import io.lettuce.core.api.AsyncCloseable;
 import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.api.StatefulRedisConnection;
@@ -9,6 +12,7 @@ import io.lettuce.core.cluster.api.reactive.RedisClusterReactiveCommands;
 import io.lettuce.core.cluster.api.sync.RedisClusterCommands;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * An adapter for redis connection.
@@ -126,5 +130,48 @@ public interface RedisConnectionAdapter<K, V> extends AutoCloseable, AsyncClosea
      */
     @Override
     CompletableFuture<Void> closeAsync();
+
+    /**
+     * Creates and returns a new {@link RedisRemoteLock} instance with the
+     * specified {@code key}, {@code value} and {@code timeoutSeconds} given.
+     *
+     * @param key            the key
+     * @param value          the value
+     * @param timeoutSeconds the timeout seconds
+     * @return a new {@code RedisRemoteLock<K, V>} instance
+     */
+    default RedisRemoteLock<K, V> newLock(K key, V value, long timeoutSeconds) {
+        return newLock(key, value, timeoutSeconds, false);
+    }
+
+    /**
+     * Creates and returns a new {@link RedisRemoteLock} instance with the
+     * specified {@code key}, {@code value} and {@code timeoutSeconds} given.
+     *
+     * @param key            the key
+     * @param value          the value
+     * @param timeoutSeconds the timeout seconds
+     * @param keepAlive      {@code true} if keep alive, {@code false} otherwise
+     * @return a new {@code RedisRemoteLock<K, V>} instance
+     */
+    default RedisRemoteLock<K, V> newLock(K key, V value, long timeoutSeconds, boolean keepAlive) {
+        return keepAlive ? new KeepAliveRedisRemoteLock<>(this, key, value, timeoutSeconds)
+                : new DefaultRedisRemoteLock<>(this, key, value, timeoutSeconds);
+    }
+
+    /**
+     * Creates and returns a new {@link RedisRemoteLock} instance with the
+     * specified {@code key}, {@code value} and {@code timeoutSeconds} given.
+     *
+     * @param key               the key
+     * @param value             the value
+     * @param timeoutSeconds    the timeout seconds
+     * @param keepAliveExecutor the keep alive scheduled executor
+     * @return a new {@code RedisRemoteLock<K, V>} instance
+     */
+    default RedisRemoteLock<K, V> newLock(K key, V value, long timeoutSeconds,
+                                          ScheduledExecutorService keepAliveExecutor) {
+        return new KeepAliveRedisRemoteLock<>(this, key, value, timeoutSeconds, keepAliveExecutor);
+    }
 
 }
