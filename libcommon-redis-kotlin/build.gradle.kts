@@ -22,14 +22,6 @@ dependencies {
 
 description = "libcommon/REDIS Kotlin"
 
-tasks.test {
-    // Use junit platform for unit tests.
-    useJUnitPlatform()
-    jvmArgs = listOf(
-        "-Xshare:off",
-    )
-}
-
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {

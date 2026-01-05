@@ -169,7 +169,7 @@ abstract class AbstractRedisRemoteLock<K, V> implements RedisRemoteLock<K, V> {
                     break;
                 }
                 var nextWaitMillis = Math.min(eachWaitMillis, deadline - now);
-                if (nextWaitMillis> 0) {
+                if (nextWaitMillis > 0) {
                     Thread.sleep(nextWaitMillis);
                 }
                 r = tryLock();

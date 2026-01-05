@@ -25,3 +25,12 @@ kotlin {
         freeCompilerArgs.addAll("-Xjsr305=strict", "-opt-in=kotlin.RequiresOptIn")
     }
 }
+
+tasks.test {
+    // Use junit platform for unit tests.
+    useJUnitPlatform()
+    jvmArgs = listOf(
+        "-Xshare:off",
+        "-XX:+EnableDynamicAgentLoading",
+    )
+}

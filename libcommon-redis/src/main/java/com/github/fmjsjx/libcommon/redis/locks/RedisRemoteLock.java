@@ -8,6 +8,8 @@ import java.util.function.Supplier;
 /**
  * A remote lock based on Redis.
  *
+ * @param <K> the type of the key
+ * @param <V> the type of the value
  * @author MJ Fang
  * @see DefaultRedisRemoteLock
  * @see KeepAliveRedisRemoteLock
