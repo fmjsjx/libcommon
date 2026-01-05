@@ -7,6 +7,7 @@ import com.github.fmjsjx.libcommon.redis.core.RedisConnectionAdapter;
 import com.github.fmjsjx.libcommon.util.ArrayUtil;
 import io.netty.util.concurrent.DefaultThreadFactory;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -17,6 +18,8 @@ import java.util.function.Supplier;
  * The difference between this class and {@link DefaultRedisRemoteLock}
  * is that it will keep the lock alive in the backend.
  *
+ * @param <K> the type of the key
+ * @param <V> the type of the value
  * @author MJ Fang
  * @see DefaultRedisRemoteLock
  * @see RedisRemoteLock
@@ -80,7 +83,7 @@ public class KeepAliveRedisRemoteLock<K, V> extends DefaultRedisRemoteLock<K, V>
     public KeepAliveRedisRemoteLock(RedisConnectionAdapter<K, V> connection, K key, V value, long timeoutSeconds,
                                     ScheduledExecutorService keepAliveExecutor) {
         super(connection, key, value, timeoutSeconds);
-        this.keepAliveExecutor = keepAliveExecutor;
+        this.keepAliveExecutor = Objects.requireNonNull(keepAliveExecutor, "keepAliveExecutor must not be null");
     }
 
     @SuppressWarnings("unchecked")
@@ -135,13 +138,22 @@ public class KeepAliveRedisRemoteLock<K, V> extends DefaultRedisRemoteLock<K, V>
      * @param inLock the flag to indicate whether the lock is in use
      * @return the keep alive task
      */
-    @SuppressWarnings("unchecked")
     protected Runnable keepAliveTask(AtomicBoolean inLock) {
         return () -> {
             if (inLock.get()) {
-                RedisUtil.eval(getConnection().async(), EXPIRE_IF_VALUE_EQUALS, getKeys(), getValue(), getTimeoutInValueType());
+                keepAliveAsync();
             }
         };
+    }
+
+    /**
+     * Keep the key alive asynchronously.
+     *
+     * @return a {@code CompletionStage<Boolean>}
+     */
+    @SuppressWarnings("unchecked")
+    protected CompletionStage<Boolean> keepAliveAsync() {
+        return RedisUtil.eval(getConnection().async(), EXPIRE_IF_VALUE_EQUALS, getKeys(), getValue(), getTimeoutInValueType());
     }
 
     @Override
