@@ -43,6 +43,7 @@ public interface RedisRemoteLock<K, V> {
      * acquired. And finally release the lock.
      *
      * @param action the action to execute when the lock is acquired
+     * @param <R>    the type of the action result
      * @return the result of the action, or {@code null} if the lock is not acquired
      */
     <R> Optional<R> tryInLock(Supplier<R> action);

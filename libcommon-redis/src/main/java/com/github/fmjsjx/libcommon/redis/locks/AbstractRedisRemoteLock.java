@@ -29,6 +29,11 @@ abstract class AbstractRedisRemoteLock<K, V> implements RedisRemoteLock<K, V> {
      */
     protected static final long DEFAULT_EACH_WAIT = 200;
 
+    /**
+     * The minimum value of the milliseconds to wait for each loop.
+     */
+    protected static final long MIN_EACH_WAIT = 5;
+
     private final RedisConnectionAdapter<K, V> connection;
     private final K key;
     private final V value;
@@ -163,12 +168,13 @@ abstract class AbstractRedisRemoteLock<K, V> implements RedisRemoteLock<K, V> {
         var r = tryLock();
         if (!r) {
             var deadline = now + maxWaitMillis;
+            var eachWait = Math.max(MIN_EACH_WAIT, eachWaitMillis);
             for (; ; ) {
                 now = System.currentTimeMillis();
                 if (deadline <= now) {
                     break;
                 }
-                var nextWaitMillis = Math.min(eachWaitMillis, deadline - now);
+                var nextWaitMillis = Math.min(eachWait, deadline - now);
                 if (nextWaitMillis > 0) {
                     Thread.sleep(nextWaitMillis);
                 }
@@ -182,16 +188,6 @@ abstract class AbstractRedisRemoteLock<K, V> implements RedisRemoteLock<K, V> {
     }
 
     /**
-     * Unlocks this lock.
-     *
-     * @return {@code true} if the lock is successfully unlocked,
-     * {@code false} otherwise
-     */
-    protected boolean unlock() {
-        return RedisUtil.unlock(getConnection().sync(), key, value);
-    }
-
-    /**
      * Runs the specified action in this lock and unlock this lock.
      *
      * @param <R>    the type of the result
@@ -202,7 +198,7 @@ abstract class AbstractRedisRemoteLock<K, V> implements RedisRemoteLock<K, V> {
         try {
             return Optional.ofNullable(action.get());
         } finally {
-            unlock();
+            unlockAsync();
         }
     }
 
@@ -271,6 +267,9 @@ abstract class AbstractRedisRemoteLock<K, V> implements RedisRemoteLock<K, V> {
          * The milliseconds to wait for each loop.
          */
         protected final long eachWaitMillis;
+        /**
+         * The executor to use, can be {@code null}.
+         */
         protected final Executor executor;
 
         /**
@@ -282,7 +281,7 @@ abstract class AbstractRedisRemoteLock<K, V> implements RedisRemoteLock<K, V> {
          */
         protected TryLockAsyncAction(long deadline, long eachWaitMillis, Executor executor) {
             this.deadline = deadline;
-            this.eachWaitMillis = eachWaitMillis;
+            this.eachWaitMillis = Math.max(MIN_EACH_WAIT, eachWaitMillis);
             this.executor = executor;
         }
 

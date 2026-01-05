@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.max
 import kotlin.math.min
 
 /**
@@ -48,8 +49,6 @@ class KeepAliveRedisCoroutineLock<K : Any, V : Any>(
 
     private val async: RedisClusterAsyncCommands<K, V> get() = connection.async()
 
-    private suspend fun remoteValue(): V? = async.get(key).await()
-
     private suspend fun tryLockAndAwait(): Boolean {
         return async.set(key, value, setArgs).await()?.let {
             async.get(key).await().let { isValueEqual(it) }
@@ -61,12 +60,13 @@ class KeepAliveRedisCoroutineLock<K : Any, V : Any>(
         var r = tryLockAndAwait()
         if (!r) {
             val deadline = now + maxWaitMillis
+            val eachWait = max(DEFAULT_EACH_WAIT, eachWaitMillis)
             while (!r) {
                 now = System.currentTimeMillis()
                 if (deadline <= now) {
                     break
                 }
-                val nextWaitMillis = min(eachWaitMillis, deadline - now)
+                val nextWaitMillis = min(eachWait, deadline - now)
                 if (nextWaitMillis > 0) {
                     delay(nextWaitMillis)
                 }

@@ -165,14 +165,8 @@ public class KeepAliveRedisRemoteLock<K, V> extends DefaultRedisRemoteLock<K, V>
         } finally {
             inLock.set(false);
             future.cancel(false);
-            unlock();
+            unlockAsync();
         }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    protected boolean unlock() {
-        return RedisUtil.eval(getConnection().sync(), LuaScripts.DEL_IF_VALUE_EQUALS, getKeys(), getValue());
     }
 
     @Override
