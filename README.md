@@ -2,8 +2,12 @@
 
 A set of some common useful libraries.
 
-> Since 4.0, members of libraries are always based on Java 21.
-
+## JDK version compatibility list
+| version | JDK version |
+|---------|-------------|
+| 4.x     | JDK 21+     |
+| 3.x     | JDK 17+     |
+| older   | JDK 11+     |
 
 ## Add Dependencies
 
