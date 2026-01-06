@@ -22,14 +22,6 @@ dependencies {
 
 description = "libcommon/JSON Jackson3 Kotlin"
 
-tasks.test {
-    // Use junit platform for unit tests.
-    useJUnitPlatform()
-    jvmArgs = listOf(
-        "-Xshare:off",
-    )
-}
-
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
