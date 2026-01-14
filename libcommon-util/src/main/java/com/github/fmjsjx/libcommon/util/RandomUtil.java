@@ -1,5 +1,6 @@
 package com.github.fmjsjx.libcommon.util;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,20 +36,27 @@ public class RandomUtil {
     }
 
     private static final class DefaultRandomInstanceHolder {
-        private static final Random instance = new Random();
+        private static final Random instance = useSecureRandom ? new SecureRandom() : new Random();
     }
 
+    private static final String USE_THREAD_LOCAL_KEY = "libcommon.util.random.useThreadLocal";
+    private static final String USE_SECURE_RANDOM_KEY = "libcommon.util.random.useSecureRandom";
+
     private static final boolean useThreadLocal;
+    private static final boolean useSecureRandom;
 
     static {
-        var propertyKey = "libcommon.util.random.useThreadLocal";
-        var value = SystemPropertyUtil.get(propertyKey);
-        logger.debug("-D{}: {}", propertyKey, value);
-        useThreadLocal = SystemPropertyUtil.getBoolean(propertyKey, true);
+        var useThreadLocalValue = SystemPropertyUtil.get(USE_THREAD_LOCAL_KEY);
+        logger.debug("-D{}: {}", USE_THREAD_LOCAL_KEY, useThreadLocalValue);
+        useThreadLocal = SystemPropertyUtil.getBoolean(USE_THREAD_LOCAL_KEY, true);
+
+        var useSecureRandomValue = SystemPropertyUtil.get(USE_SECURE_RANDOM_KEY);
+        logger.debug("-D{}: {}", USE_SECURE_RANDOM_KEY, useSecureRandomValue);
+        useSecureRandom = SystemPropertyUtil.getBoolean(USE_SECURE_RANDOM_KEY, false);
     }
 
     private static final Random defaultRandom() {
-        if (useThreadLocal) {
+        if (useThreadLocal && !Thread.currentThread().isVirtual()) {
             return ThreadLocalRandom.current();
         }
         return DefaultRandomInstanceHolder.instance;
@@ -205,7 +213,7 @@ public class RandomUtil {
         var size = values.size();
         return switch (size) {
             case 0 -> throw new IllegalArgumentException("values must not be empty");
-            case 1 -> values.get(0);
+            case 1 -> values.getFirst();
             default -> values.get(randomInt(size));
         };
     }
