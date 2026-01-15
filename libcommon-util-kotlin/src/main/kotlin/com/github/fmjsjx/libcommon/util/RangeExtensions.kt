@@ -4,8 +4,10 @@ import java.util.Random
 
 /**
  * Performs the given action on each [Int] element.
+ *
+ * @since 4.1
  */
-inline fun IntRange.forEach(action: (Int) -> Unit) {
+inline fun IntRange.each(action: (Int) -> Unit) {
     for (i in this) {
         action(i)
     }
@@ -13,8 +15,10 @@ inline fun IntRange.forEach(action: (Int) -> Unit) {
 
 /**
  * Performs the given action on each [Long] element.
+ *
+ * @since 4.1
  */
-inline fun LongRange.forEach(action: (Long) -> Unit) {
+inline fun LongRange.each(action: (Long) -> Unit) {
     for (i in this) {
         action(i)
     }
@@ -22,16 +26,45 @@ inline fun LongRange.forEach(action: (Long) -> Unit) {
 
 /**
  * Performs the given action on each [Char] element.
+ *
+ * @since 4.1
  */
-inline fun CharRange.forEach(action: (Char) -> Unit) {
+inline fun CharRange.each(action: (Char) -> Unit) {
     for (i in this) {
         action(i)
     }
 }
 
 /**
+ * Performs the given action on each [Int] element and returns the
+ * [IntRange] itself afterwards.
+ *
+ * @since 4.1
+ */
+inline fun IntRange.onEach(action: (Int) -> Unit): IntRange = apply { each(action) }
+
+/**
+ * Performs the given action on each [Long] element and returns the
+ * [LongRange] itself afterwards.
+ *
+ * @since 4.1
+ */
+
+inline fun LongRange.onEach(action: (Long) -> Unit): LongRange = apply { each(action) }
+
+/**
+ * Performs the given action on each [Char] element and returns the
+ * [CharRange] itself afterwards.
+ *
+ * @since 4.1
+ */
+inline fun CharRange.onEach(action: (Char) -> Unit): CharRange = apply { each(action) }
+
+/**
  * Performs the given action on each [Int] element, providing sequential
  * index with the element.
+ *
+ * @since 4.1
  */
 inline fun IntRange.forEachIndexed(action: (Int, Int) -> Unit) {
     var index = 0
@@ -43,6 +76,8 @@ inline fun IntRange.forEachIndexed(action: (Int, Int) -> Unit) {
 /**
  * Performs the given action on each [Long] element, providing sequential
  * index with the element.
+ *
+ * @since 4.1
  */
 inline fun LongRange.forEachIndexed(action: (Int, Long) -> Unit) {
     var index = 0
@@ -54,6 +89,8 @@ inline fun LongRange.forEachIndexed(action: (Int, Long) -> Unit) {
 /**
  * Performs the given action on each [Char] element, providing sequential
  * index with the element.
+ *
+ * @since 4.1
  */
 inline fun CharRange.forEachIndexed(action: (Int, Char) -> Unit) {
     var index = 0
@@ -79,6 +116,8 @@ internal fun checkIndexOverflow(index: Int): Int {
 
 
 /**
- * Returns a random Int in this range.
+ * Returns one random Int in this range.
+ *
+ * @since 4.1
  */
-fun IntRange.random(random: Random? = null): Int = RandomUtil.randomInRange(first, last, random)
+fun IntRange.randomOne(random: Random? = null): Int = RandomUtil.randomInRange(first, last, random)
