@@ -16,7 +16,7 @@ dependencies {
     // mongodb-driver-bom
     implementation(platform("org.mongodb:mongodb-driver-bom:5.6.3"))
     // junit-bom
-    testImplementation(platform("org.junit:junit-bom:6.0.1"))
+    testImplementation(platform("org.junit:junit-bom:6.0.2"))
     // mockito
     testImplementation(platform("org.mockito:mockito-bom:5.21.0"))
     // jackson2-bom
