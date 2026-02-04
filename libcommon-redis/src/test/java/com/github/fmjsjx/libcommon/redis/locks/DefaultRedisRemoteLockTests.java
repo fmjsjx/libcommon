@@ -540,12 +540,11 @@ public class DefaultRedisRemoteLockTests {
         DefaultRedisRemoteLock<String, String> lock = new DefaultRedisRemoteLock<>(adapter, key, value, timeout);
 
         Optional<String> result = lock.tryInLock(() -> null);
-
+        assertNotNull(result);
         assertTrue(result.isEmpty());
 
         // Verify lock is released
-        String keyValue = connection.sync().get(key);
-        assertNull(keyValue);
+        assertNull(connection.sync().get(key));
     }
 
     // ========== Byte Array Tests ==========
