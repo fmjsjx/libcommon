@@ -41,7 +41,7 @@ dependencies {
         val fastjson2Version = "2.0.60"
         api("com.alibaba.fastjson2:fastjson2:$fastjson2Version")
         api("com.alibaba.fastjson2:fastjson2-kotlin:$fastjson2Version")
-        val jrubyVersion = "10.0.2.0"
+        val jrubyVersion = "10.0.3.0"
         implementation("org.jruby:jruby-complete:$jrubyVersion")
         implementation("org.jruby:jruby:$jrubyVersion")
         implementation("org.jruby:jruby-core:$jrubyVersion")
