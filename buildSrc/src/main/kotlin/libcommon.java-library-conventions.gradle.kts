@@ -20,9 +20,9 @@ dependencies {
     // mockito
     testImplementation(platform("org.mockito:mockito-bom:5.20.0"))
     // jackson2-bom
-    api(platform("com.fasterxml.jackson:jackson-bom:2.20.1"))
+    api(platform("com.fasterxml.jackson:jackson-bom:2.21.0"))
     // jackson3-bom
-    api(platform("tools.jackson:jackson-bom:3.0.3"))
+    api(platform("tools.jackson:jackson-bom:3.0.4"))
     // kotlin coroutines
     api(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"))
     // prometheus
