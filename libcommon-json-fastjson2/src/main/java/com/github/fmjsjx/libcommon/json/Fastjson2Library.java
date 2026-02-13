@@ -1,9 +1,5 @@
 package com.github.fmjsjx.libcommon.json;
 
-import static com.alibaba.fastjson2.JSONWriter.Feature.WriteNonStringKeyAsString;
-import static com.alibaba.fastjson2.JSONWriter.Feature.WriteNulls;
-import static com.alibaba.fastjson2.TypeReference.parametricType;
-
 import com.alibaba.fastjson2.*;
 import com.github.fmjsjx.libcommon.util.ReflectUtil;
 
@@ -18,8 +14,13 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.alibaba.fastjson2.JSONWriter.Feature.WriteNonStringKeyAsString;
+import static com.alibaba.fastjson2.JSONWriter.Feature.WriteNulls;
+import static com.alibaba.fastjson2.TypeReference.parametricType;
 
 /**
  * The implementation of {@link JsonLibrary} using Fastjson2.
@@ -41,6 +42,8 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
             registerJackson3Library();
         }
         useISOFormatForDateTimeFields();
+        // Use LinkedHashMap as default object supplier since 4.1.2
+        JSONFactory.setDefaultObjectSupplier(LinkedHashMap::new);
     }
 
     private static final void registerJsoniterAny() {
