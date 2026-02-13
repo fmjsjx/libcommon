@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     // netty-bom
-    api(platform("io.netty:netty-bom:4.2.9.Final"))
+    api(platform("io.netty:netty-bom:4.2.10.Final"))
     // mongodb-driver-bom
     implementation(platform("org.mongodb:mongodb-driver-bom:5.6.3"))
     // junit-bom
