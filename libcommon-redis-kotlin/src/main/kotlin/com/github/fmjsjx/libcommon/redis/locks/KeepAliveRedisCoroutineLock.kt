@@ -138,7 +138,7 @@ class KeepAliveRedisCoroutineLock<K : Any, V : Any>(
         notAcquiredSupplier: () -> T,
         action: suspend () -> R
     ): R {
-        if (!tryLock(maxWaitMillis, eachWaitMillis)) {
+        if (!tryLockAndAwait(maxWaitMillis, eachWaitMillis)) {
             throw notAcquiredSupplier()
         }
         return action.invokeAndKeepAlive(keeperContext)

@@ -1,12 +1,18 @@
 package com.github.fmjsjx.libcommon.redis.locks
 
 import com.github.fmjsjx.libcommon.redis.core.RedisConnectionAdapter
+import com.github.fmjsjx.libcommon.util.launch
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.codec.ByteArrayCodec
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.withTimeout
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Assumptions
@@ -20,6 +26,7 @@ import java.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -257,33 +264,31 @@ class KeepAliveRedisCoroutineLockTests {
 
     @Test
     fun testTryInLockAndAwait_WithExceptionSupplier_Throws() {
-        runBlocking {
-            val key = "test:lock:${UUID.randomUUID()}"
-            val value1 = UUID.randomUUID().toString()
-            val value2 = UUID.randomUUID().toString()
-            val timeout = 10L
+        val key = "test:lock:${UUID.randomUUID()}"
+        val value1 = UUID.randomUUID().toString()
+        val value2 = UUID.randomUUID().toString()
+        val timeout = 10L
 
-            // Lock with another value
-            connection.sync().set(key, value2)
+        // Lock with another value
+        connection.sync().set(key, value2)
 
-            try {
-                val lock = KeepAliveRedisCoroutineLock(adapter, key, value1, timeout, scheduler)
+        try {
+            val lock = KeepAliveRedisCoroutineLock(adapter, key, value1, timeout, scheduler)
 
-                var actionExecuted = false
-                assertThrows(IllegalStateException::class.java) {
-                    runBlocking {
-                        lock.tryInLockAndAwait(
-                            notAcquiredSupplier = { IllegalStateException("Lock not acquired") }
-                        ) {
-                            actionExecuted = true
-                        }
+            var actionExecuted = false
+            assertThrows(IllegalStateException::class.java) {
+                runBlocking {
+                    lock.tryInLockAndAwait(
+                        notAcquiredSupplier = { IllegalStateException("Lock not acquired") }
+                    ) {
+                        actionExecuted = true
                     }
                 }
-
-                assertFalse(actionExecuted)
-            } finally {
-                connection.sync().del(key)
             }
+
+            assertFalse(actionExecuted)
+        } finally {
+            connection.sync().del(key)
         }
     }
 
@@ -364,6 +369,48 @@ class KeepAliveRedisCoroutineLockTests {
             // Verify lock is released
             val keyValue = connection.sync().get(key)
             assertNull(keyValue)
+        }
+    }
+
+    @Test
+    fun testRunInLockAndAwait_WithExceptionSupplier_Throws() {
+        val key = "test:lock:${UUID.randomUUID()}"
+        val value1 = UUID.randomUUID().toString()
+        val value2 = UUID.randomUUID().toString()
+        val timeout = 1L
+
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            runBlocking {
+                val job1 = executor.launch {
+                    val lock1 = KeepAliveRedisCoroutineLock(adapter, key, value1, timeout, scheduler)
+                    lock1.runInLockAndAwait(
+                        maxWaitMillis = 2000,
+                        notAcquiredSupplier = { IllegalStateException("Lock not acquired") }
+                    ) {
+                        delay(2000)
+                    }
+                }
+                val actionExecuted = AtomicBoolean()
+                val job2 = executor.launch {
+                    val lock2 = KeepAliveRedisCoroutineLock(adapter, key, value2, timeout, scheduler)
+                    try {
+                        lock2.runInLockAndAwait(
+                            maxWaitMillis = 2000,
+                            notAcquiredSupplier = { IllegalStateException("Lock not acquired") }
+                        ) {
+                            actionExecuted.set(true)
+                        }
+                    } catch (e: IllegalStateException) {
+                        // OK
+                    }
+
+                }
+                listOf(job1, job2).joinAll()
+                assertFalse(actionExecuted.get())
+            }
+        } finally {
+            executor.shutdown()
         }
     }
 
