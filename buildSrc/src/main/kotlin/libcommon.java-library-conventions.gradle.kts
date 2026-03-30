@@ -27,7 +27,7 @@ dependencies {
     api(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"))
     // prometheus
     api(platform("io.prometheus:simpleclient_bom:0.16.0"))
-    api(platform("io.prometheus:prometheus-metrics-bom:1.5.0"))
+    api(platform("io.prometheus:prometheus-metrics-bom:1.5.1"))
     // kotlin
     api(platform("org.jetbrains.kotlin:kotlin-bom:2.3.0"))
     // spring boot
