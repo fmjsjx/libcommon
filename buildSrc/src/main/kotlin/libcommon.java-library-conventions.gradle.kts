@@ -46,7 +46,7 @@ dependencies {
         implementation("org.jruby:jruby:$jrubyVersion")
         implementation("org.jruby:jruby-core:$jrubyVersion")
         implementation("org.jruby:jruby-stdlib:$jrubyVersion")
-        implementation("org.yaml:snakeyaml:2.5")
+        implementation("org.yaml:snakeyaml:2.6")
         api("javax.annotation:javax.annotation-api:1.3.2")
         api("jakarta.annotation:jakarta.annotation-api:3.0.0")
         api("com.google.code.findbugs:jsr305:3.0.2")
