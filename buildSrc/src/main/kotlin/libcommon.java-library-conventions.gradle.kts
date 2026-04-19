@@ -11,26 +11,26 @@ repositories {
 }
 
 dependencies {
-    // netty-bom
+    // Netty
     api(platform("io.netty:netty-bom:4.2.12.Final"))
-    // mongodb-driver-bom
+    // MongoDB Driver
     implementation(platform("org.mongodb:mongodb-driver-bom:5.6.5"))
-    // junit-bom
+    // Junit
     testImplementation(platform("org.junit:junit-bom:6.0.3"))
-    // mockito
+    // Mockito
     testImplementation(platform("org.mockito:mockito-bom:5.23.0"))
-    // jackson2-bom
+    // Jackson 2
     api(platform("com.fasterxml.jackson:jackson-bom:2.21.2"))
-    // jackson3-bom
+    // Jackson 3
     api(platform("tools.jackson:jackson-bom:3.1.2"))
-    // kotlin coroutines
+    // Kotlin Coroutines
     api(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"))
-    // prometheus
+    // Prometheus
     api(platform("io.prometheus:simpleclient_bom:0.16.0"))
     api(platform("io.prometheus:prometheus-metrics-bom:1.5.1"))
-    // kotlin
+    // Kotlin
     api(platform("org.jetbrains.kotlin:kotlin-bom:2.3.0"))
-    // spring boot
+    // Spring Boot
     api(platform("org.springframework.boot:spring-boot-dependencies:4.0.5"))
 
     constraints {
@@ -53,7 +53,7 @@ dependencies {
         api("com.fasterxml.uuid:java-uuid-generator:5.2.0")
     }
     // log4j2
-    implementation(platform("org.apache.logging.log4j:log4j-bom:2.25.3"))
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.25.4"))
 
 }
 
