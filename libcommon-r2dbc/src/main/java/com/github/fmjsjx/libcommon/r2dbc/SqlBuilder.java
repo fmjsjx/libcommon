@@ -1172,7 +1172,7 @@ public class SqlBuilder {
             return parent;
         }
         parent.s(key);
-        if (delimiter.equalsIgnoreCase(sqlParts.get(0))) {
+        if (delimiter.equalsIgnoreCase(sqlParts.getFirst())) {
             sqlParts.stream().skip(1).forEach(parent::s);
         } else {
             parent.s(sqlParts);
@@ -1546,7 +1546,7 @@ public class SqlBuilder {
      * @since 3.15
      */
     public SqlBuilder eqOrIn(List<?> values) {
-        return values.size() == 1 ? eq(values.get(0)) : in(values);
+        return values.size() == 1 ? eq(values.getFirst()) : in(values);
     }
 
     /**
@@ -2388,7 +2388,7 @@ public class SqlBuilder {
         if (entityList.isEmpty()) {
             throw new IllegalArgumentException("entityList must not be empty");
         }
-        Class<E> entityClass = (Class<E>) entityList.get(0).getClass();
+        Class<E> entityClass = (Class<E>) entityList.getFirst().getClass();
         return values(entityClass, entityList, generateId, false);
     }
 
@@ -2690,6 +2690,34 @@ public class SqlBuilder {
      */
     public <E> SqlBuilder set(Class<E> entityClass, E entity) {
         return set().assign(entityClass, entity);
+    }
+
+    /**
+     * Append a filter clause into SQL with the id of the specified entity.
+     *
+     * @param entity the entity object
+     * @param <E>    the entity type
+     * @return this {@link SqlBuilder}
+     * @since 4.2
+     */
+    @SuppressWarnings("unchecked")
+    public <E> SqlBuilder filterById(E entity) {
+        return filterById((Class<E>) entity.getClass(), entity);
+    }
+
+    /**
+     * Append a filter clause into SQL with the id of the specified entity.
+     *
+     * @param entityClass the entity class
+     * @param entity      the entity object
+     * @param <E>         the entity type
+     * @return this {@link SqlBuilder}
+     * @since 4.2
+     */
+    public <E> SqlBuilder filterById(Class<E> entityClass, E entity) {
+        var column = getPersistentEntityInfo(entityClass).map(PersistentEntityInfo::getIdColumn)
+                .orElseThrow(() -> new NoSuchElementException("The entity class " + entityClass + " doesn't have a field marked as @Id"));
+        return column(column.getColumnName()).eq(column.getValue(entity));
     }
 
 }

@@ -11,6 +11,7 @@ final class PersistentEntityInfo<T> {
 
     private final Class<T> entityClass;
     private final List<PersistentColumnInfo<T>> columns;
+    private final PersistentColumnInfo<T> idColumn;
     private final int insertColumns;
     private final int insertColumnsWithoutId;
     private final ConcurrentMap<String, String> cachedSelectColumns = new ConcurrentHashMap<>();
@@ -18,6 +19,7 @@ final class PersistentEntityInfo<T> {
     PersistentEntityInfo(Class<T> entityClass, List<PersistentColumnInfo.Builder> columnBuilders) {
         this.entityClass = entityClass;
         this.columns = columnBuilders.stream().map(column -> column.entityInfo(this).<T>build()).toList();
+        this.idColumn = columns.stream().filter(PersistentColumnInfo::isId).findFirst().orElse(null);
         this.insertColumns = columns.stream()
                 .filter(it -> !it.isReadOnly())
                 .mapToInt(it -> 1).sum();
@@ -32,6 +34,10 @@ final class PersistentEntityInfo<T> {
 
     List<PersistentColumnInfo<T>> getColumns() {
         return columns;
+    }
+
+    PersistentColumnInfo<T> getIdColumn() {
+        return idColumn;
     }
 
     int getInsertColumns() {

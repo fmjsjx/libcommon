@@ -18,7 +18,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
+@SuppressWarnings("SequencedCollectionMethodCanBeUsed")
 public class SqlBuilderTests {
 
     @SuppressWarnings("unchecked")
@@ -2537,6 +2539,61 @@ public class SqlBuilderTests {
         assertSame(sqlBuilder, sqlBuilder.set(TestEntityE1.class, e1));
         assertIterableEquals(List.of("SET", "address", "= ?"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of("address"), values(sqlBuilder));
+    }
+
+    @Test
+    public void testFilterById_Entity() {
+        var entity = new TestEntity();
+        entity.setId(1L);
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.where().filterById(entity));
+        assertIterableEquals(List.of("WHERE", "id", "= ?"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L), values(sqlBuilder));
+
+        entity.setId(0L);
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.where().filterById(entity));
+        assertIterableEquals(List.of("WHERE", "id", "= ?"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(0L), values(sqlBuilder));
+    }
+
+    @Test
+    public void testFilterById_Class_Entity() {
+        var entity = new TestEntity();
+        entity.setId(1L);
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.where().filterById(TestEntity.class, entity));
+        assertIterableEquals(List.of("WHERE", "id", "= ?"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L), values(sqlBuilder));
+
+        var e1 = new TestEntityE1();
+        e1.setId(2L);
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.where().filterById(TestEntity.class, e1));
+        assertIterableEquals(List.of("WHERE", "id", "= ?"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(2L), values(sqlBuilder));
+
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.where().filterById(TestEntityE1.class, e1));
+        assertIterableEquals(List.of("WHERE", "id", "= ?"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(2L), values(sqlBuilder));
+    }
+
+    @Test
+    public void testFilterById_NoId() {
+        try {
+            new SqlBuilder().filterById(new TestEntity2());
+            fail("Should throw NoSuchElementException");
+        } catch (NoSuchElementException e) {
+            assertEquals("The entity class " + TestEntity2.class + " doesn't have a field marked as @Id", e.getMessage());
+        }
+
+        try {
+            new SqlBuilder().filterById(TestEntity3.class, new TestEntity3());
+            fail("Should throw NoSuchElementException");
+        } catch (NoSuchElementException e) {
+            assertEquals("The entity class " + TestEntity3.class + " doesn't have a field marked as @Id", e.getMessage());
+        }
     }
 
 }
