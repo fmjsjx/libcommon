@@ -20,7 +20,7 @@ dependencies {
     // Mockito
     testImplementation(platform("org.mockito:mockito-bom:5.23.0"))
     // Jackson 2
-    api(platform("com.fasterxml.jackson:jackson-bom:2.21.2"))
+    api(platform("com.fasterxml.jackson:jackson-bom:2.21.3"))
     // Jackson 3
     api(platform("tools.jackson:jackson-bom:3.1.2"))
     // Kotlin Coroutines
