@@ -20,7 +20,7 @@ A set of some common useful libraries.
       <dependency>
         <groupId>com.github.fmjsjx</groupId>
         <artifactId>libcommon-bom</artifactId>
-        <version>4.1.7</version>
+        <version>4.2.0-alpha1-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -56,7 +56,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation platform('com.github.fmjsjx:libcommon-bom:4.1.7')
+    implementation platform('com.github.fmjsjx:libcommon-bom:4.2.0-alpha1-SNAPSHOT')
     // Common Utility
     implementation 'com.github.fmjsjx:libcommon-util'
     // JSON library based on Fastjson2
@@ -75,7 +75,7 @@ repositories {
 
 dependencies {
     // BOM
-    implementation(platform("com.github.fmjsjx:libcommon-bom:4.1.7"))
+    implementation(platform("com.github.fmjsjx:libcommon-bom:4.2.0-alpha1-SNAPSHOT"))
     // Common Utility
     implementation("com.github.fmjsjx:libcommon-util")
     // JSON library based on Fastjson2
