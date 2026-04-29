@@ -33,7 +33,7 @@ public class PersistentEntityInfoTests {
         var testEntity = new TestEntity();
         testEntity.setTest0("value0");
         testEntity.setTest1("value1");
-        var columnId = info.getColumns().get(0);
+        var columnId = info.getColumns().getFirst();
         assertNotNull(columnId);
         assertEquals("id", columnId.getColumnName());
         assertEquals(info, columnId.getEntityInfo());
@@ -43,6 +43,8 @@ public class PersistentEntityInfoTests {
         assertFalse(columnId.isReadOnly());
         assertFalse(columnId.isInsertOnly());
         assertNull(columnId.getValueGetter().apply(testEntity));
+        assertNotNull(info.getIdColumn());
+        assertEquals(columnId, info.getIdColumn());
         var column0 = info.getColumns().get(1);
         assertNotNull(column0);
         assertEquals("test0", column0.getColumnName());
