@@ -12,6 +12,7 @@ import org.springframework.data.relational.core.mapping.Embedded;
 import org.springframework.data.relational.core.mapping.InsertOnlyProperty;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -2702,22 +2703,26 @@ public class SqlBuilder {
      */
     @SuppressWarnings("unchecked")
     public <E> SqlBuilder filterById(E entity) {
-        return filterById((Class<E>) entity.getClass(), entity);
+        var entityClass = (Class<E>) entity.getClass();
+        var column = getPersistentEntityInfo(entityClass).map(PersistentEntityInfo::getIdColumn)
+                .orElseThrow(() -> new NoSuchElementException("The entity class " + entityClass + " doesn't have a field marked as @Id"));
+        return column(column.getColumnName()).eq(column.getValue(entity));
     }
 
     /**
      * Append a filter clause into SQL with the id of the specified entity.
      *
      * @param entityClass the entity class
-     * @param entity      the entity object
+     * @param id          the  id
      * @param <E>         the entity type
+     * @param <ID>        the id type
      * @return this {@link SqlBuilder}
      * @since 4.2
      */
-    public <E> SqlBuilder filterById(Class<E> entityClass, E entity) {
+    public <E, ID extends Serializable> SqlBuilder filterById(Class<E> entityClass, ID id) {
         var column = getPersistentEntityInfo(entityClass).map(PersistentEntityInfo::getIdColumn)
                 .orElseThrow(() -> new NoSuchElementException("The entity class " + entityClass + " doesn't have a field marked as @Id"));
-        return column(column.getColumnName()).eq(column.getValue(entity));
+        return column(column.getColumnName()).eq(id);
     }
 
 }

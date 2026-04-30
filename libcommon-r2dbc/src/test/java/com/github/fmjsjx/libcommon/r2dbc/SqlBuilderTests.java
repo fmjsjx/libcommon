@@ -14,6 +14,8 @@ import static com.github.fmjsjx.libcommon.r2dbc.Sort.DESC;
 import static com.github.fmjsjx.libcommon.r2dbc.SqlBuilder.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -825,7 +827,11 @@ public class SqlBuilderTests {
         assertEquals("test.test4", getTableName(TestEntity4.class));
     }
 
-    static class TestEntity {
+    static class TestEntity implements Serializable {
+
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         public static final int OK = 0;
         @Id
         private long id;
@@ -1372,7 +1378,7 @@ public class SqlBuilderTests {
     @Test
     public void testIn_IntArray() {
         var sqlBuilder = new SqlBuilder();
-        assertSame(sqlBuilder, sqlBuilder.in(new int[] { 1, 2, 3 }));
+        assertSame(sqlBuilder, sqlBuilder.in(new int[]{1, 2, 3}));
         assertIterableEquals(List.of("IN", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of(1, 2, 3), values(sqlBuilder));
     }
@@ -1380,7 +1386,7 @@ public class SqlBuilderTests {
     @Test
     public void testIn_LongArray() {
         var sqlBuilder = new SqlBuilder();
-        assertSame(sqlBuilder, sqlBuilder.in(new long[] { 1, 2, 3 }));
+        assertSame(sqlBuilder, sqlBuilder.in(new long[]{1, 2, 3}));
         assertIterableEquals(List.of("IN", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of(1L, 2L, 3L), values(sqlBuilder));
     }
@@ -2559,22 +2565,18 @@ public class SqlBuilderTests {
 
     @Test
     public void testFilterById_Class_Entity() {
-        var entity = new TestEntity();
-        entity.setId(1L);
         var sqlBuilder = new SqlBuilder();
-        assertSame(sqlBuilder, sqlBuilder.where().filterById(TestEntity.class, entity));
+        assertSame(sqlBuilder, sqlBuilder.where().filterById(TestEntity.class, 1L));
         assertIterableEquals(List.of("WHERE", "id", "= ?"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of(1L), values(sqlBuilder));
 
-        var e1 = new TestEntityE1();
-        e1.setId(2L);
         sqlBuilder = new SqlBuilder();
-        assertSame(sqlBuilder, sqlBuilder.where().filterById(TestEntity.class, e1));
+        assertSame(sqlBuilder, sqlBuilder.where().filterById(TestEntity.class, 2L));
         assertIterableEquals(List.of("WHERE", "id", "= ?"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of(2L), values(sqlBuilder));
 
         sqlBuilder = new SqlBuilder();
-        assertSame(sqlBuilder, sqlBuilder.where().filterById(TestEntityE1.class, e1));
+        assertSame(sqlBuilder, sqlBuilder.where().filterById(TestEntityE1.class, 2L));
         assertIterableEquals(List.of("WHERE", "id", "= ?"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of(2L), values(sqlBuilder));
     }
@@ -2589,7 +2591,7 @@ public class SqlBuilderTests {
         }
 
         try {
-            new SqlBuilder().filterById(TestEntity3.class, new TestEntity3());
+            new SqlBuilder().filterById(TestEntity3.class, "");
             fail("Should throw NoSuchElementException");
         } catch (NoSuchElementException e) {
             assertEquals("The entity class " + TestEntity3.class + " doesn't have a field marked as @Id", e.getMessage());
