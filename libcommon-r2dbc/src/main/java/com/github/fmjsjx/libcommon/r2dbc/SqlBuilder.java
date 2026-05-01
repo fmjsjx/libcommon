@@ -2713,7 +2713,7 @@ public class SqlBuilder {
      * Append a filter clause into SQL with the id of the specified entity.
      *
      * @param entityClass the entity class
-     * @param id          the  id
+     * @param id          the id
      * @param <E>         the entity type
      * @param <ID>        the id type
      * @return this {@link SqlBuilder}
@@ -2723,6 +2723,21 @@ public class SqlBuilder {
         var column = getPersistentEntityInfo(entityClass).map(PersistentEntityInfo::getIdColumn)
                 .orElseThrow(() -> new NoSuchElementException("The entity class " + entityClass + " doesn't have a field marked as @Id"));
         return column(column.getColumnName()).eq(id);
+    }
+
+    /**
+     * Append a filter clause into SQL with the ids of the specified entity.
+     *
+     * @param entityClass the entity class
+     * @param ids         the id list
+     * @param <E>         the entity type
+     * @param <ID>        the id type
+     * @return this {@link SqlBuilder}
+     */
+    public <E, ID extends Serializable> SqlBuilder filterByIds(Class<E> entityClass, List<ID> ids) {
+        var column = getPersistentEntityInfo(entityClass).map(PersistentEntityInfo::getIdColumn)
+                .orElseThrow(() -> new NoSuchElementException("The entity class " + entityClass + " doesn't have a field marked as @Id"));
+        return column(column.getColumnName()).eqOrIn(ids);
     }
 
 }

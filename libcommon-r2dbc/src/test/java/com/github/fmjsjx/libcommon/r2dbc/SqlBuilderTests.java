@@ -908,6 +908,32 @@ public class SqlBuilderTests {
     static class TestEntity4 {
     }
 
+    static class TestEntityWithStringId implements Serializable {
+
+        @Serial
+        private static final long serialVersionUID = 1L;
+
+        @Id
+        private String orderId;
+        private double amount;
+
+        public String getOrderId() {
+            return orderId;
+        }
+
+        public void setOrderId(String orderId) {
+            this.orderId = orderId;
+        }
+
+        public double getAmount() {
+            return amount;
+        }
+
+        public void setAmount(double amount) {
+            this.amount = amount;
+        }
+    }
+
     @Test
     public void testFrom_Class() {
         var sqlBuilder = new SqlBuilder();
@@ -2592,6 +2618,63 @@ public class SqlBuilderTests {
 
         try {
             new SqlBuilder().filterById(TestEntity3.class, "");
+            fail("Should throw NoSuchElementException");
+        } catch (NoSuchElementException e) {
+            assertEquals("The entity class " + TestEntity3.class + " doesn't have a field marked as @Id", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testFilterByIds_SingleLongId() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.where().filterByIds(TestEntity.class, List.of(1L)));
+        assertIterableEquals(List.of("WHERE", "id", "= ?"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L), values(sqlBuilder));
+    }
+
+    @Test
+    public void testFilterByIds_MultipleLongIds() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.where().filterByIds(TestEntity.class, List.of(1L, 2L, 3L)));
+        assertIterableEquals(List.of("WHERE", "id", "IN", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1L, 2L, 3L), values(sqlBuilder));
+    }
+
+    @Test
+    public void testFilterByIds_SingleStringId() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.where().filterByIds(TestEntityWithStringId.class, List.of("O001")));
+        assertIterableEquals(List.of("WHERE", "order_id", "= ?"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("O001"), values(sqlBuilder));
+    }
+
+    @Test
+    public void testFilterByIds_MultipleStringIds() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.where().filterByIds(TestEntityWithStringId.class, List.of("O001", "O002", "O003")));
+        assertIterableEquals(List.of("WHERE", "order_id", "IN", "(", "?, ?, ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of("O001", "O002", "O003"), values(sqlBuilder));
+    }
+
+    @Test
+    public void testFilterByIds_EmptyList() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.where().filterByIds(TestEntity.class, List.of()));
+        assertIterableEquals(List.of("WHERE", "id", "IN", "(", "", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(), values(sqlBuilder));
+    }
+
+    @Test
+    public void testFilterByIds_NoIdField() {
+        try {
+            new SqlBuilder().where().filterByIds(TestEntity2.class, List.of(1L));
+            fail("Should throw NoSuchElementException");
+        } catch (NoSuchElementException e) {
+            assertEquals("The entity class " + TestEntity2.class + " doesn't have a field marked as @Id", e.getMessage());
+        }
+
+        try {
+            new SqlBuilder().where().filterByIds(TestEntity3.class, List.of("A", "B"));
             fail("Should throw NoSuchElementException");
         } catch (NoSuchElementException e) {
             assertEquals("The entity class " + TestEntity3.class + " doesn't have a field marked as @Id", e.getMessage());
