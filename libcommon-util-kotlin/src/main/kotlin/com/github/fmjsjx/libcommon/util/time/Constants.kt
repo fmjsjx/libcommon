@@ -1,5 +1,7 @@
 package com.github.fmjsjx.libcommon.util.time
 
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 
 /**
@@ -36,3 +38,10 @@ val ASIA_TAIPEI: ZoneId = "Asia/Taipei".toZoneId()
  * @since 4.0
  */
 val AMERICA_NEW_YORK: ZoneId = "America/New_York".toZoneId()
+
+/**
+ * The [LocalDateTime] of EPOCH.
+ *
+ * @since 4.2
+ */
+val LOCAL_DATE_TIME_EPOCH: LocalDateTime = LocalDate.EPOCH.atStartOfDay()
