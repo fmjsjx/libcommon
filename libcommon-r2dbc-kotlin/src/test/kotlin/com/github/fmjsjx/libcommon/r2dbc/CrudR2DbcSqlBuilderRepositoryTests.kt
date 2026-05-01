@@ -342,4 +342,168 @@ class CrudR2DbcSqlBuilderRepositoryTests {
         assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
     }
 
+    @Test
+    fun testDeleteOneById() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.executeUpdate(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+
+        val result = userRepository.deleteOneById(TestUser::class, 1L).block()
+
+        assertNotNull(result)
+        assertEquals(1L, result)
+        val sql = sqlBuilderSlot.captured.buildSql()
+        assertEquals("DELETE FROM test_users WHERE id = ?", sql)
+        assertIterableEquals(listOf(1L), sqlBuilderSlot.captured.values)
+        verify { operations.executeUpdate(any()) }
+    }
+
+    @Test
+    fun testDeleteOneByIdWithZeroRowsAffected() {
+        every { operations.executeUpdate(any()) } returns Mono.just(0L)
+
+        val result = userRepository.deleteOneById(TestUser::class, 999L).block()
+
+        assertNotNull(result)
+        assertEquals(0L, result)
+    }
+
+    @Test
+    fun testDeleteOneByIdWithDifferentEntity() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.executeUpdate(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+
+        val result = orderRepository.deleteOneById(TestOrder::class, "O001").block()
+
+        assertNotNull(result)
+        assertEquals(1L, result)
+        val sql = sqlBuilderSlot.captured.buildSql()
+        assertEquals($$"DELETE FROM test_orders WHERE order_id = $1", sql)
+        assertIterableEquals(listOf("O001"), sqlBuilderSlot.captured.values)
+    }
+
+    @Test
+    fun testDeleteOneByIdInlineExtension() {
+        every { operations.executeUpdate(any()) } returns Mono.just(1L)
+
+        val result = userRepository.deleteOneById(1L).block()
+
+        assertNotNull(result)
+        assertEquals(1L, result)
+        verify { operations.executeUpdate(any()) }
+    }
+
+    @Test
+    fun testDeleteOneByIdParameterStyleIsPassed() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.executeUpdate(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+
+        orderRepository.deleteOneById(TestOrder::class, "O002").block()
+
+        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+    }
+
+    @Test
+    fun testDeleteOneByIdDefaultParameterStyleIsNone() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.executeUpdate(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+
+        userRepository.deleteOneById(TestUser::class, 1L).block()
+
+        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+    }
+
+    @Test
+    fun testDeleteManyByIds() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.executeUpdate(capture(sqlBuilderSlot)) } returns Mono.just(3L)
+
+        val result = userRepository.deleteManyByIds(TestUser::class, listOf(1L, 2L, 3L)).block()
+
+        assertNotNull(result)
+        assertEquals(3L, result)
+        val sql = sqlBuilderSlot.captured.buildSql()
+        assertEquals("DELETE FROM test_users WHERE id IN ( ?, ?, ? )", sql)
+        assertIterableEquals(listOf(1L, 2L, 3L), sqlBuilderSlot.captured.values)
+        verify { operations.executeUpdate(any()) }
+    }
+
+    @Test
+    fun testDeleteManyByIdsSingleId() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.executeUpdate(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+
+        val result = userRepository.deleteManyByIds(TestUser::class, listOf(1L)).block()
+
+        assertNotNull(result)
+        assertEquals(1L, result)
+        val sql = sqlBuilderSlot.captured.buildSql()
+        assertEquals("DELETE FROM test_users WHERE id = ?", sql)
+        assertIterableEquals(listOf(1L), sqlBuilderSlot.captured.values)
+        verify { operations.executeUpdate(any()) }
+    }
+
+    @Test
+    fun testDeleteManyByIdsWithZeroRowsAffected() {
+        every { operations.executeUpdate(any()) } returns Mono.just(0L)
+
+        val result = userRepository.deleteManyByIds(TestUser::class, listOf(998L, 999L)).block()
+
+        assertNotNull(result)
+        assertEquals(0L, result)
+    }
+
+    @Test
+    fun testDeleteManyByIdsWithDifferentEntity() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.executeUpdate(capture(sqlBuilderSlot)) } returns Mono.just(3L)
+
+        val result = orderRepository.deleteManyByIds(TestOrder::class, listOf("O001", "O002", "O003")).block()
+
+        assertNotNull(result)
+        assertEquals(3L, result)
+        val sql = sqlBuilderSlot.captured.buildSql()
+        assertEquals($$"DELETE FROM test_orders WHERE order_id IN ( $1, $2, $3 )", sql)
+        assertIterableEquals(listOf("O001", "O002", "O003"), sqlBuilderSlot.captured.values)
+    }
+
+    @Test
+    fun testDeleteManyByIdsInlineExtension() {
+        every { operations.executeUpdate(any()) } returns Mono.just(2L)
+
+        val result = userRepository.deleteManyByIds(listOf(1L, 2L)).block()
+
+        assertNotNull(result)
+        assertEquals(2L, result)
+        verify { operations.executeUpdate(any()) }
+    }
+
+    @Test
+    fun testDeleteManyByIdsParameterStyleIsPassed() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.executeUpdate(capture(sqlBuilderSlot)) } returns Mono.just(2L)
+
+        orderRepository.deleteManyByIds(TestOrder::class, listOf("O001", "O002")).block()
+
+        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+    }
+
+    @Test
+    fun testDeleteManyByIdsDefaultParameterStyleIsNone() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.executeUpdate(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+
+        userRepository.deleteManyByIds(TestUser::class, listOf(1L)).block()
+
+        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+    }
+
 }

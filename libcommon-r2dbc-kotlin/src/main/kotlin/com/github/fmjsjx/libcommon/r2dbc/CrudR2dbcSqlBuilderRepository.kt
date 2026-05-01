@@ -47,6 +47,32 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
             .let { r2dbcEntityOperations.executeUpdate(it) }
 
     /**
+     * Deletes the specified entity by [id].
+     *
+     * @param entityType the type of the entity
+     * @param id the ID of the entity
+     * @return the number of deleted rows
+     */
+    fun deleteOneById(entityType: KClass<E>, id: ID): Mono<Long> =
+        SqlBuilder().parameterStyle(parameterStyle)
+            .deleteFrom(entityType.java)
+            .where().filterById(entityType.java, id)
+            .let { r2dbcEntityOperations.executeUpdate(it) }
+
+    /**
+     * Deletes the specified entities by [ids].
+     *
+     * @param entityType the type of the entity
+     * @param ids the IDs of the entities
+     * @return the number of deleted rows
+     */
+    fun deleteManyByIds(entityType: KClass<E>, ids: List<ID>): Mono<Long> =
+        SqlBuilder().parameterStyle(parameterStyle)
+            .deleteFrom(entityType.java)
+            .where().filterByIds(entityType.java, ids)
+            .let { r2dbcEntityOperations.executeUpdate(it) }
+
+    /**
      * Updates the specified [entity].
      *
      * @param entity the entity to update
@@ -90,13 +116,34 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
 }
 
 /**
+ * Deletes the specified entity by [id].
+ *
+ * @since 4.2
+ */
+inline fun <reified E : Any, ID : Serializable, O : CrudR2dbcSqlBuilderRepository<E, ID>> O.deleteOneById(id: ID): Mono<Long> =
+    deleteOneById(E::class, id)
+
+/**
+ * Deletes the specified entities by [ids].
+ *
+ * @since 4.2
+ */
+inline fun <reified E : Any, ID : Serializable, O : CrudR2dbcSqlBuilderRepository<E, ID>> O.deleteManyByIds(ids: List<ID>): Mono<Long> =
+    deleteManyByIds(E::class, ids)
+
+
+/**
  * Finds the entity by the specified [id].
+ *
+ * @since 4.2
  */
 inline fun <reified E : Any, ID : Serializable, O : CrudR2dbcSqlBuilderRepository<E, ID>> O.findOneById(id: ID): Mono<E> =
     findOneById(E::class, id)
 
 /**
  * Finds all entities by the specified [ids].
+ *
+ * @since 4.2
  */
 inline fun <reified E : Any, ID : Serializable, O : CrudR2dbcSqlBuilderRepository<E, ID>> O.findAllByIds(ids: List<ID>): Flux<E> =
     findAllByIds(E::class, ids)
