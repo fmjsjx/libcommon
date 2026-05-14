@@ -14,7 +14,7 @@ dependencies {
     // Netty
     api(platform("io.netty:netty-bom:4.2.13.Final"))
     // MongoDB Driver
-    implementation(platform("org.mongodb:mongodb-driver-bom:5.6.5"))
+    implementation(platform("org.mongodb:mongodb-driver-bom:5.7.0"))
     // Junit
     testImplementation(platform("org.junit:junit-bom:6.0.3"))
     // Mockito
