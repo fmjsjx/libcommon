@@ -48,6 +48,7 @@ public class BsonValueUtil {
 
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     private static final class CommonEncodersHolder {
         private static final Map<Class<?>, Function<Object, BsonValue>> encoders;
 
@@ -150,14 +151,18 @@ public class BsonValueUtil {
      * @return the encoded {@code BsonValue}
      */
     public static final BsonValue encode(Object value) {
-        if (value == null) {
-            return BsonNull.VALUE;
-        }
-        if (value instanceof BsonValue bson) {
-            return bson;
-        }
-        if (value instanceof Number number) {
-            return encode(number);
+        switch (value) {
+            case null -> {
+                return BsonNull.VALUE;
+            }
+            case BsonValue bson -> {
+                return bson;
+            }
+            case Number number -> {
+                return encode(number);
+            }
+            default -> {
+            }
         }
         var valueType = value.getClass();
         var encoder = CommonEncodersHolder.encoders.get(valueType);
@@ -167,22 +172,26 @@ public class BsonValueUtil {
         if (valueType.isArray()) {
             return encodeList((Object[]) value);
         }
-        if (value instanceof Iterable<?> iterable) {
-            var bsonArray = new BsonArray(iterable instanceof Collection<?> collection ? collection.size() : 10);
-            for (var v : iterable) {
-                bsonArray.add(encode(v));
+        switch (value) {
+            case Iterable<?> iterable -> {
+                var bsonArray = new BsonArray(iterable instanceof Collection<?> collection ? collection.size() : 10);
+                for (var v : iterable) {
+                    bsonArray.add(encode(v));
+                }
+                return bsonArray;
             }
-            return bsonArray;
-        }
-        if (value instanceof Map<?, ?> map) {
-            BsonDocument doc = new BsonDocument(map.size() << 1);
-            for (var entry : map.entrySet()) {
-                doc.append(entry.getKey().toString(), encode(entry.getValue()));
+            case Map<?, ?> map -> {
+                BsonDocument doc = new BsonDocument(map.size() << 1);
+                for (var entry : map.entrySet()) {
+                    doc.append(entry.getKey().toString(), encode(entry.getValue()));
+                }
+                return doc;
             }
-            return doc;
-        }
-        if (value instanceof ZoneId zoneId) {
-            return new BsonString(zoneId.getId());
+            case ZoneId zoneId -> {
+                return new BsonString(zoneId.getId());
+            }
+            default -> {
+            }
         }
         return new BsonString(value.toString());
     }
