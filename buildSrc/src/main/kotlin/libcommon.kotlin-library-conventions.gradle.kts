@@ -8,13 +8,13 @@ dependencies {
     // kotlin
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.3.0"))
     // kotlin coroutines
-    implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"))
+    implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.11.0"))
 
     constraints {
         // reactor-kotlin-extensions
         implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.3.0")
         // mockk
-        testImplementation("io.mockk:mockk:1.14.7")
+        testImplementation("io.mockk:mockk:1.14.9")
     }
 
 }
