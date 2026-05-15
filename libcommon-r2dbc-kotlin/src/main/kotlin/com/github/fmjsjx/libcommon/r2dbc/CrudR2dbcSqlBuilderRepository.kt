@@ -113,6 +113,52 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
             .where().filterByIds(entityType.java, ids)
             .let { r2dbcEntityOperations.select(entityType, it) }
 
+    /**
+     * Finds all entities.
+     *
+     * @param entityType the type of the entity
+     * @return the found entities
+     */
+    fun findAll(entityType: KClass<E>): Flux<E> =
+        SqlBuilder().parameterStyle(parameterStyle)
+            .selectAll()
+            .from(entityType.java)
+            .let { r2dbcEntityOperations.select(entityType, it) }
+
+    /**
+     * Counts all entities.
+     *
+     * @param entityType the type of the entity
+     * @return the count of entities
+     */
+    fun countAll(entityType: KClass<E>): Mono<Long> =
+        SqlBuilder().parameterStyle(parameterStyle)
+            .selectCount()
+            .from(entityType.java)
+            .let { r2dbcEntityOperations.selectLong(it) }
+
+    /**
+     * Counts the entities by the specified [id].
+     *
+     * @param entityType the type of the entity
+     * @param id the ID of the entity
+     * @return the count of entities
+     */
+    fun countById(entityType: KClass<E>, id: ID): Mono<Long> =
+        SqlBuilder().parameterStyle(parameterStyle)
+            .selectCount()
+            .from(entityType.java)
+            .where().filterById(entityType.java, id)
+            .let(r2dbcEntityOperations::selectLong)
+
+    /**
+     * Checks if an entity with the given [id] exists.
+     *
+     * @param entityType the type of the entity
+     * @param id the ID of the entity
+     */
+    fun existsById(entityType: KClass<E>, id: ID): Mono<Boolean> = countById(entityType, id).map { it > 0 }
+
 }
 
 /**
@@ -147,3 +193,36 @@ inline fun <reified E : Any, ID : Serializable, O : CrudR2dbcSqlBuilderRepositor
  */
 inline fun <reified E : Any, ID : Serializable, O : CrudR2dbcSqlBuilderRepository<E, ID>> O.findAllByIds(ids: List<ID>): Flux<E> =
     findAllByIds(E::class, ids)
+
+/**
+ * Finds all entities
+ *
+ * @since 4.2
+ */
+inline fun <reified E : Any, ID : Serializable, O : CrudR2dbcSqlBuilderRepository<E, ID>> O.findAll(): Flux<E> =
+    findAll(E::class)
+
+/**
+ * Counts all entities.
+ *
+ * @since 4.2
+ */
+inline fun <reified E : Any, ID : Serializable, O : CrudR2dbcSqlBuilderRepository<E, ID>> O.countAll(): Mono<Long> =
+    countAll(E::class)
+
+/**
+ * Counts the entities by the specified [id].
+ *
+ * @since 4.2
+ */
+inline fun <reified E : Any, ID : Serializable, O : CrudR2dbcSqlBuilderRepository<E, ID>> O.countById(id: ID): Mono<Long> =
+    countById(E::class, id)
+
+
+/**
+ * Checks if an entity with the given [id] exists.
+ *
+ * @since 4.2
+ */
+inline fun <reified E : Any, ID : Serializable, O : CrudR2dbcSqlBuilderRepository<E, ID>> O.existsById(id: ID): Mono<Boolean> =
+    existsById(E::class, id)
