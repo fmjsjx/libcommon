@@ -506,4 +506,372 @@ class CrudR2DbcSqlBuilderRepositoryTests {
         assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
     }
 
+    // ========== findAll tests ==========
+
+    @Test
+    fun testFindAll() {
+        val users = listOf(
+            TestUser(id = 1L, username = "Alice", age = 30),
+            TestUser(id = 2L, username = "Bob", age = 25),
+            TestUser(id = 3L, username = "Charlie", age = 35)
+        )
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.select(TestUser::class, capture(sqlBuilderSlot)) } returns Flux.fromIterable(users)
+
+        val result = userRepository.findAll(TestUser::class).collectList().block()
+
+        assertNotNull(result)
+        assertEquals(users, result)
+        val sql = sqlBuilderSlot.captured.buildSql()
+        assertEquals("SELECT * FROM test_users", sql)
+        assertEquals(emptyList<Any>(), sqlBuilderSlot.captured.values)
+        verify { operations.select(TestUser::class, any()) }
+    }
+
+    @Test
+    fun testFindAllReturnsEmpty() {
+        every { operations.select(TestUser::class, any()) } returns Flux.empty()
+
+        val result = userRepository.findAll(TestUser::class).collectList().block()
+
+        assertNotNull(result)
+        assertEquals(emptyList<TestUser>(), result)
+    }
+
+    @Test
+    fun testFindAllWithDifferentEntity() {
+        val orders = listOf(
+            TestOrder(orderId = "O001", amount = 199.99),
+            TestOrder(orderId = "O002", amount = 299.99)
+        )
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.select(TestOrder::class, capture(sqlBuilderSlot)) } returns Flux.fromIterable(orders)
+
+        val result = orderRepository.findAll(TestOrder::class).collectList().block()
+
+        assertNotNull(result)
+        assertEquals(orders, result)
+        val sql = sqlBuilderSlot.captured.buildSql()
+        assertEquals("SELECT * FROM test_orders", sql)
+        assertEquals(emptyList<Any>(), sqlBuilderSlot.captured.values)
+    }
+
+    @Test
+    fun testFindAllParameterStyleIsPassed() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.select(TestOrder::class, capture(sqlBuilderSlot)) } returns Flux.empty()
+
+        orderRepository.findAll(TestOrder::class).collectList().block()
+
+        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+    }
+
+    @Test
+    fun testFindAllDefaultParameterStyleIsNone() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.select(TestUser::class, capture(sqlBuilderSlot)) } returns Flux.empty()
+
+        userRepository.findAll(TestUser::class).collectList().block()
+
+        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+    }
+
+    @Test
+    fun testFindAllInlineExtension() {
+        val users = listOf(
+            TestUser(id = 1L, username = "Alice", age = 30),
+            TestUser(id = 2L, username = "Bob", age = 25)
+        )
+
+        every { operations.select(TestUser::class, any()) } returns Flux.fromIterable(users)
+
+        val result = userRepository.findAll().collectList().block()
+
+        assertNotNull(result)
+        assertEquals(users, result)
+        verify { operations.select(TestUser::class, any()) }
+    }
+
+    @Test
+    fun testFindAllInlineExtensionReturnsEmpty() {
+        every { operations.select(TestUser::class, any()) } returns Flux.empty()
+
+        val result = userRepository.findAll().collectList().block()
+
+        assertNotNull(result)
+        assertEquals(emptyList<TestUser>(), result)
+    }
+
+    // ========== countAll tests ==========
+
+    @Test
+    fun testCountAll() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(5L)
+
+        val result = userRepository.countAll(TestUser::class).block()
+
+        assertNotNull(result)
+        assertEquals(5L, result)
+        val sql = sqlBuilderSlot.captured.buildSql()
+        assertEquals("SELECT COUNT(*) FROM test_users", sql)
+        assertEquals(emptyList<Any>(), sqlBuilderSlot.captured.values)
+        verify { operations.selectLong(any()) }
+    }
+
+    @Test
+    fun testCountAllReturnsZero() {
+        every { operations.selectLong(any()) } returns Mono.just(0L)
+
+        val result = userRepository.countAll(TestUser::class).block()
+
+        assertNotNull(result)
+        assertEquals(0L, result)
+    }
+
+    @Test
+    fun testCountAllWithDifferentEntity() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(10L)
+
+        val result = orderRepository.countAll(TestOrder::class).block()
+
+        assertNotNull(result)
+        assertEquals(10L, result)
+        val sql = sqlBuilderSlot.captured.buildSql()
+        assertEquals("SELECT COUNT(*) FROM test_orders", sql)
+        assertEquals(emptyList<Any>(), sqlBuilderSlot.captured.values)
+    }
+
+    @Test
+    fun testCountAllParameterStyleIsPassed() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(0L)
+
+        orderRepository.countAll(TestOrder::class).block()
+
+        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+    }
+
+    @Test
+    fun testCountAllDefaultParameterStyleIsNone() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(0L)
+
+        userRepository.countAll(TestUser::class).block()
+
+        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+    }
+
+    @Test
+    fun testCountAllInlineExtension() {
+        every { operations.selectLong(any()) } returns Mono.just(3L)
+
+        val result = userRepository.countAll().block()
+
+        assertNotNull(result)
+        assertEquals(3L, result)
+        verify { operations.selectLong(any()) }
+    }
+
+    @Test
+    fun testCountAllInlineExtensionReturnsZero() {
+        every { operations.selectLong(any()) } returns Mono.just(0L)
+
+        val result = userRepository.countAll().block()
+
+        assertNotNull(result)
+        assertEquals(0L, result)
+    }
+
+    // ========== countById tests ==========
+
+    @Test
+    fun testCountById() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+
+        val result = userRepository.countById(TestUser::class, 1L).block()
+
+        assertNotNull(result)
+        assertEquals(1L, result)
+        val sql = sqlBuilderSlot.captured.buildSql()
+        assertEquals("SELECT COUNT(*) FROM test_users WHERE id = ?", sql)
+        assertIterableEquals(listOf(1L), sqlBuilderSlot.captured.values)
+        verify { operations.selectLong(any()) }
+    }
+
+    @Test
+    fun testCountByIdReturnsZero() {
+        every { operations.selectLong(any()) } returns Mono.just(0L)
+
+        val result = userRepository.countById(TestUser::class, 999L).block()
+
+        assertNotNull(result)
+        assertEquals(0L, result)
+    }
+
+    @Test
+    fun testCountByIdWithDifferentEntity() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+
+        val result = orderRepository.countById(TestOrder::class, "O001").block()
+
+        assertNotNull(result)
+        assertEquals(1L, result)
+        val sql = sqlBuilderSlot.captured.buildSql()
+        assertEquals($$"SELECT COUNT(*) FROM test_orders WHERE order_id = $1", sql)
+        assertIterableEquals(listOf("O001"), sqlBuilderSlot.captured.values)
+    }
+
+    @Test
+    fun testCountByIdParameterStyleIsPassed() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+
+        orderRepository.countById(TestOrder::class, "O001").block()
+
+        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+    }
+
+    @Test
+    fun testCountByIdDefaultParameterStyleIsNone() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+
+        userRepository.countById(TestUser::class, 1L).block()
+
+        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+    }
+
+    @Test
+    fun testCountByIdInlineExtension() {
+        every { operations.selectLong(any()) } returns Mono.just(1L)
+
+        val result = userRepository.countById(1L).block()
+
+        assertNotNull(result)
+        assertEquals(1L, result)
+        verify { operations.selectLong(any()) }
+    }
+
+    @Test
+    fun testCountByIdInlineExtensionReturnsZero() {
+        every { operations.selectLong(any()) } returns Mono.just(0L)
+
+        val result = userRepository.countById(999L).block()
+
+        assertNotNull(result)
+        assertEquals(0L, result)
+    }
+
+    // ========== existsById tests ==========
+
+    @Test
+    fun testExistsByIdReturnsTrue() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+
+        val result = userRepository.existsById(TestUser::class, 1L).block()
+
+        assertNotNull(result)
+        assertEquals(true, result)
+        val sql = sqlBuilderSlot.captured.buildSql()
+        assertEquals("SELECT COUNT(*) FROM test_users WHERE id = ?", sql)
+        assertIterableEquals(listOf(1L), sqlBuilderSlot.captured.values)
+        verify { operations.selectLong(any()) }
+    }
+
+    @Test
+    fun testExistsByIdReturnsFalse() {
+        every { operations.selectLong(any()) } returns Mono.just(0L)
+
+        val result = userRepository.existsById(TestUser::class, 999L).block()
+
+        assertNotNull(result)
+        assertEquals(false, result)
+    }
+
+    @Test
+    fun testExistsByIdWithDifferentEntity() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+
+        val result = orderRepository.existsById(TestOrder::class, "O001").block()
+
+        assertNotNull(result)
+        assertEquals(true, result)
+        val sql = sqlBuilderSlot.captured.buildSql()
+        assertEquals($$"SELECT COUNT(*) FROM test_orders WHERE order_id = $1", sql)
+        assertIterableEquals(listOf("O001"), sqlBuilderSlot.captured.values)
+    }
+
+    @Test
+    fun testExistsByIdParameterStyleIsPassed() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(0L)
+
+        orderRepository.existsById(TestOrder::class, "O999").block()
+
+        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+    }
+
+    @Test
+    fun testExistsByIdDefaultParameterStyleIsNone() {
+        val sqlBuilderSlot = slot<SqlBuilder>()
+
+        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(0L)
+
+        userRepository.existsById(TestUser::class, 1L).block()
+
+        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+    }
+
+    @Test
+    fun testExistsByIdInlineExtensionReturnsTrue() {
+        every { operations.selectLong(any()) } returns Mono.just(1L)
+
+        val result = userRepository.existsById(1L).block()
+
+        assertNotNull(result)
+        assertEquals(true, result)
+        verify { operations.selectLong(any()) }
+    }
+
+    @Test
+    fun testExistsByIdInlineExtensionReturnsFalse() {
+        every { operations.selectLong(any()) } returns Mono.just(0L)
+
+        val result = userRepository.existsById(999L).block()
+
+        assertNotNull(result)
+        assertEquals(false, result)
+    }
+
+    @Test
+    fun testExistsByIdWithCountGreaterThanOne() {
+        every { operations.selectLong(any()) } returns Mono.just(5L)
+
+        val result = userRepository.existsById(TestUser::class, 1L).block()
+
+        assertNotNull(result)
+        assertEquals(true, result)
+    }
+
 }
