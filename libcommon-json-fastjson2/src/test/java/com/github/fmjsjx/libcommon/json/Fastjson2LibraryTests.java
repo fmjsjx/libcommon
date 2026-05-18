@@ -2,6 +2,7 @@ package com.github.fmjsjx.libcommon.json;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.*;
@@ -11,6 +12,7 @@ import com.jsoniter.any.Any;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -285,6 +287,43 @@ public class Fastjson2LibraryTests {
             assertNotNull(o.getJn3());
             assertEquals(tools.jackson.databind.node.JsonNodeType.BOOLEAN, o.getJn3().getNodeType());
             assertFalse(o.getJn3().booleanValue());
+            // JSONObject
+            JSONObject jo = Fastjson2Library.getInstance().loads(json, JSONObject.class);
+            assertNotNull(jo);
+            assertEquals(1, jo.size());
+            assertFalse(jo.getBooleanValue("jn3"));
+            Type type = JSONObject.class;
+            jo = Fastjson2Library.getInstance().loads(json, type);
+            assertNotNull(jo);
+            assertEquals(1, jo.size());
+            assertFalse(jo.getBooleanValue("jn3"));
+            jo = Fastjson2Library.getInstance().loads(json.getBytes(StandardCharsets.UTF_8), JSONObject.class);
+            assertNotNull(jo);
+            assertEquals(1, jo.size());
+            assertFalse(jo.getBooleanValue("jn3"));
+            jo = Fastjson2Library.getInstance().loads(json.getBytes(StandardCharsets.UTF_8), type);
+            assertNotNull(jo);
+            assertEquals(1, jo.size());
+            assertFalse(jo.getBooleanValue("jn3"));
+            // ["a"] JSONArray
+            json = "[\"a\"]";
+            JSONArray ja = Fastjson2Library.getInstance().loads(json, JSONArray.class);
+            assertNotNull(ja);
+            assertEquals(1, ja.size());
+            assertEquals("a", ja.getString(0));
+            type = JSONArray.class;
+            ja = Fastjson2Library.getInstance().loads(json, type);
+            assertNotNull(ja);
+            assertEquals(1, ja.size());
+            assertEquals("a", ja.getString(0));
+            ja = Fastjson2Library.getInstance().loads(json.getBytes(StandardCharsets.UTF_8), JSONArray.class);
+            assertNotNull(ja);
+            assertEquals(1, ja.size());
+            assertEquals("a", ja.getString(0));
+            ja = Fastjson2Library.getInstance().loads(json.getBytes(StandardCharsets.UTF_8), type);
+            assertNotNull(ja);
+            assertEquals(1, ja.size());
+            assertEquals("a", ja.getString(0));
         } catch (Exception e) {
             fail(e);
         }
