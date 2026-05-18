@@ -3,10 +3,7 @@ package com.github.fmjsjx.libcommon.json;
 import com.alibaba.fastjson2.*;
 import com.github.fmjsjx.libcommon.util.ReflectUtil;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serial;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -461,9 +458,15 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
     /**
      * @throws Fastjson2Exception if any JSON decode error occurs
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T loads(byte[] src, Class<T> type) throws Fastjson2Exception {
         try {
+            if (type == JSONObject.class) {
+                return (T) JSON.parseObject(src, readerFeatures);
+            } else if (type == JSONArray.class) {
+                return (T) JSON.parseArray(new ByteArrayInputStream(src), readerFeatures);
+            }
             return JSON.parseObject(src, type, readerFeatures);
         } catch (Exception e) {
             throw new Fastjson2Exception(e);
@@ -473,8 +476,12 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
     /**
      * @throws Fastjson2Exception if any JSON decode error occurs
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T loads(byte[] src, Type type) throws Fastjson2Exception {
+        if (type instanceof Class<?> clazz) {
+            return (T) loads(src, clazz);
+        }
         try {
             return JSON.parseObject(src, type, readerFeatures);
         } catch (Exception e) {
@@ -498,9 +505,15 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
     /**
      * @throws Fastjson2Exception if any JSON decode error occurs
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T loads(String src, Class<T> type) throws Fastjson2Exception {
         try {
+            if (type == JSONObject.class) {
+                return (T) JSON.parseObject(src, readerFeatures);
+            } else if (type == JSONArray.class) {
+                return (T) JSON.parseArray(src, readerFeatures);
+            }
             return JSON.parseObject(src, type, readerFeatures);
         } catch (Exception e) {
             throw new Fastjson2Exception(e);
@@ -510,8 +523,12 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
     /**
      * @throws Fastjson2Exception if any JSON decode error occurs
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T loads(String src, Type type) throws Fastjson2Exception {
+        if (type instanceof Class<?> clazz) {
+            return (T) loads(src, clazz);
+        }
         try {
             return JSON.parseObject(src, type, readerFeatures);
         } catch (Exception e) {
@@ -522,9 +539,15 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
     /**
      * @throws Fastjson2Exception if any JSON decode error occurs
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T loads(InputStream src, Class<T> type) throws JsonException {
         try {
+            if (type == JSONObject.class) {
+                return (T) JSON.parseObject(src, readerFeatures);
+            } else if (type == JSONArray.class) {
+                return (T) JSON.parseArray(src, readerFeatures);
+            }
             return JSON.parseObject(src, type, readerFeatures);
         } catch (Exception e) {
             throw new Fastjson2Exception(e);
@@ -576,8 +599,12 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
      * @return a data object as given type
      * @throws Fastjson2Exception if any JSON decode error occurs
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T loads(InputStream src, Type type) throws Fastjson2Exception {
+        if (type instanceof Class<?> clazz) {
+            return (T) loads(src, clazz);
+        }
         try {
             return JSON.parseObject(src, type, readerFeatures);
         } catch (Exception e) {
