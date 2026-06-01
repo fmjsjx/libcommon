@@ -11,7 +11,7 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.jvm.javaField
 
 /**
- * An alias for the method [SqlBuilder.in].
+ * An alias for the method [SqlBuilder. in].
  *
  * @return this [SqlBuilder]
  * @since 3.11
@@ -19,7 +19,7 @@ import kotlin.reflect.jvm.javaField
 fun SqlBuilder.isIn(values: List<Any>): SqlBuilder = `in`(values)
 
 /**
- * An alias for the method [SqlBuilder.in].
+ * An alias for the method [SqlBuilder. in].
  *
  * @return this [SqlBuilder]
  * @since 3.11
@@ -27,7 +27,7 @@ fun SqlBuilder.isIn(values: List<Any>): SqlBuilder = `in`(values)
 fun SqlBuilder.isIn(vararg values: Any): SqlBuilder = `in`(*values)
 
 /**
- * An alias for the method [SqlBuilder.in].
+ * An alias for the method [SqlBuilder. in].
  *
  * @return this [SqlBuilder]
  * @since 3.17
@@ -35,7 +35,7 @@ fun SqlBuilder.isIn(vararg values: Any): SqlBuilder = `in`(*values)
 fun SqlBuilder.isIn(vararg values: Int): SqlBuilder = `in`(values)
 
 /**
- * An alias for the method [SqlBuilder.in].
+ * An alias for the method [SqlBuilder. in].
  *
  * @return this [SqlBuilder]
  * @since 3.17
@@ -439,3 +439,15 @@ fun SqlBuilder.column(column: KProperty1<*, *>): SqlBuilder = column(column.toCo
  * @since 3.17
  */
 fun SqlBuilder.beginGroup(column: KProperty1<*, *>): SqlBuilder = beginGroup(column.toColumn())
+
+/**
+ * Append the next assignment into SQL with the specified `column` and
+ * the specified `value` given.
+ *
+ * @param column the column
+ * @param value the value
+ * @return this [SqlBuilder]
+ * @since 4.2
+ */
+fun SqlBuilder.appendAssignment(column: KProperty1<*, *>, value: Any?): SqlBuilder =
+    appendAssignment(column.toColumn(), value)
