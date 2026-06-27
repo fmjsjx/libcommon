@@ -61,7 +61,7 @@ final class PersistentEntityInfo<T> {
         var key1 = key.substring(sepIndex + 1);
         var table = key0.isBlank() ? getTableName(entityClass) : key0;
         var columnsAliasPrefix = key1.isBlank() ? null : key1;
-        return columns.stream().filter(it -> !it.isInsertOnly()).map(it -> {
+        return columns.stream().map(it -> {
             var columnBuilder = new StringBuilder().append(table).append('.').append(it.getColumnName());
             if (columnsAliasPrefix != null) {
                 columnBuilder.append(" ").append(columnsAliasPrefix).append(it.getColumnName());

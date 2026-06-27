@@ -100,56 +100,56 @@ class SqlBuilderExtensionsTests {
         assertSame(sqlBuilder, sqlBuilder.select().appendColumns<TestEntity>())
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("test_entity.id, test_entity.name, test_entity.update_time"),
+            listOf("test_entity.id, test_entity.name, test_entity.create_time, test_entity.update_time"),
             sqlBuilder.selectColumns
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select().appendColumns<TestEntity>(tableAlias = null))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("test_entity.id, test_entity.name, test_entity.update_time"),
+            listOf("test_entity.id, test_entity.name, test_entity.create_time, test_entity.update_time"),
             sqlBuilder.selectColumns,
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select().appendColumns<TestEntity>(tableAlias = " "))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("test_entity.id, test_entity.name, test_entity.update_time"),
+            listOf("test_entity.id, test_entity.name, test_entity.create_time, test_entity.update_time"),
             sqlBuilder.selectColumns,
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select().appendColumns<TestEntity>(tableAlias = "a"))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("a.id, a.name, a.update_time"),
+            listOf("a.id, a.name, a.create_time, a.update_time"),
             sqlBuilder.selectColumns,
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select().appendColumns<TestEntity>(columnsAliasPrefix = null))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("test_entity.id, test_entity.name, test_entity.update_time"),
+            listOf("test_entity.id, test_entity.name, test_entity.create_time, test_entity.update_time"),
             sqlBuilder.selectColumns,
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select().appendColumns<TestEntity>(columnsAliasPrefix = " "))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("test_entity.id, test_entity.name, test_entity.update_time"),
+            listOf("test_entity.id, test_entity.name, test_entity.create_time, test_entity.update_time"),
             sqlBuilder.selectColumns,
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select().appendColumns<TestEntity>(columnsAliasPrefix = "a_"))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("test_entity.id a_id, test_entity.name a_name, test_entity.update_time a_update_time"),
+            listOf("test_entity.id a_id, test_entity.name a_name, test_entity.create_time a_create_time, test_entity.update_time a_update_time"),
             sqlBuilder.selectColumns,
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select().appendColumns<TestEntity>("a", "a_"))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("a.id a_id, a.name a_name, a.update_time a_update_time"),
+            listOf("a.id a_id, a.name a_name, a.create_time a_create_time, a.update_time a_update_time"),
             sqlBuilder.selectColumns,
         )
     }
@@ -160,56 +160,56 @@ class SqlBuilderExtensionsTests {
         assertSame(sqlBuilder, sqlBuilder.select<TestEntity>())
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("test_entity.id, test_entity.name, test_entity.update_time"),
+            listOf("test_entity.id, test_entity.name, test_entity.create_time, test_entity.update_time"),
             sqlBuilder.selectColumns
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select<TestEntity>(tableAlias = null))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("test_entity.id, test_entity.name, test_entity.update_time"),
+            listOf("test_entity.id, test_entity.name, test_entity.create_time, test_entity.update_time"),
             sqlBuilder.selectColumns,
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select<TestEntity>(tableAlias = " "))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("test_entity.id, test_entity.name, test_entity.update_time"),
+            listOf("test_entity.id, test_entity.name, test_entity.create_time, test_entity.update_time"),
             sqlBuilder.selectColumns,
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select<TestEntity>(tableAlias = "a"))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("a.id, a.name, a.update_time"),
+            listOf("a.id, a.name, a.create_time, a.update_time"),
             sqlBuilder.selectColumns,
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select<TestEntity>(columnsAliasPrefix = null))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("test_entity.id, test_entity.name, test_entity.update_time"),
+            listOf("test_entity.id, test_entity.name, test_entity.create_time, test_entity.update_time"),
             sqlBuilder.selectColumns,
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select<TestEntity>(columnsAliasPrefix = " "))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("test_entity.id, test_entity.name, test_entity.update_time"),
+            listOf("test_entity.id, test_entity.name, test_entity.create_time, test_entity.update_time"),
             sqlBuilder.selectColumns,
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select<TestEntity>(columnsAliasPrefix = "a_"))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("test_entity.id a_id, test_entity.name a_name, test_entity.update_time a_update_time"),
+            listOf("test_entity.id a_id, test_entity.name a_name, test_entity.create_time a_create_time, test_entity.update_time a_update_time"),
             sqlBuilder.selectColumns,
         )
         sqlBuilder = SqlBuilder()
         assertSame(sqlBuilder, sqlBuilder.select<TestEntity>("a", "a_"))
         assertIterableEquals(listOf("SELECT"), sqlBuilder.sqlPartsValue)
         assertIterableEquals(
-            listOf("a.id a_id, a.name a_name, a.update_time a_update_time"),
+            listOf("a.id a_id, a.name a_name, a.create_time a_create_time, a.update_time a_update_time"),
             sqlBuilder.selectColumns,
         )
     }
