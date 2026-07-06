@@ -89,7 +89,7 @@ inline fun <reified T : Any> R2dbcEntityOperations.selectValue(sqlBuilder: SqlBu
  * @since 3.14
  */
 fun <T : Any> R2dbcEntityOperations.selectValue(valueClass: KClass<T>, sqlBuilder: SqlBuilder): Flux<T> =
-    execute(sqlBuilder).filter { it.fetchSize(2) }.mapValue(valueClass.java).all()
+    execute(sqlBuilder).mapValue(valueClass.java).all()
 
 /**
  * Execute SQL for select and returns all matching values in the first column.
