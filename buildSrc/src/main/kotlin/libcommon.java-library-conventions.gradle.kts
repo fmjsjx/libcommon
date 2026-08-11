@@ -53,7 +53,7 @@ dependencies {
         api("com.fasterxml.uuid:java-uuid-generator:5.2.0")
     }
     // log4j2
-    implementation(platform("org.apache.logging.log4j:log4j-bom:2.25.4"))
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.26.1"))
 
 }
 
