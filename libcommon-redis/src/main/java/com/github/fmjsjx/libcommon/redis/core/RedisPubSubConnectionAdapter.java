@@ -57,7 +57,7 @@ public interface RedisPubSubConnectionAdapter<K, V> extends RedisConnectionAdapt
      * @return a new {@link RedisPubSubConnectionAdapter} instance
      */
     static <K, V> RedisPubSubConnectionAdapter<K, V> ofCluster(StatefulRedisClusterPubSubConnection<K, V> connection) {
-        return new RedisDirectPubSubConnectionAdapter<>(connection);
+        return new RedisClusterPubSubConnectionAdapter<>(connection);
     }
 
     @Override
