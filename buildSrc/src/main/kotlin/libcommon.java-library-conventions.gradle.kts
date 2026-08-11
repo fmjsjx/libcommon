@@ -22,7 +22,7 @@ dependencies {
     // Jackson 2
     api(platform("com.fasterxml.jackson:jackson-bom:2.22.1"))
     // Jackson 3
-    api(platform("tools.jackson:jackson-bom:3.1.3"))
+    api(platform("tools.jackson:jackson-bom:3.2.1"))
     // Kotlin Coroutines
     api(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.11.0"))
     // Prometheus
