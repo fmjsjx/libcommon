@@ -31,7 +31,7 @@ dependencies {
     // Kotlin
     api(platform("org.jetbrains.kotlin:kotlin-bom:2.4.10"))
     // Spring Boot
-    api(platform("org.springframework.boot:spring-boot-dependencies:4.0.6"))
+    api(platform("org.springframework.boot:spring-boot-dependencies:4.0.7"))
 
     constraints {
         implementation("org.slf4j:slf4j-api:2.0.17")
