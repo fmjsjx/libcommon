@@ -34,7 +34,7 @@ dependencies {
     api(platform("org.springframework.boot:spring-boot-dependencies:4.0.7"))
 
     constraints {
-        implementation("org.slf4j:slf4j-api:2.0.17")
+        implementation("org.slf4j:slf4j-api:2.0.18")
         implementation("ch.qos.logback:logback-classic:1.5.32")
         api("io.lettuce:lettuce-core:7.6.0.RELEASE")
         api("com.jsoniter:jsoniter:0.9.23")
