@@ -35,7 +35,7 @@ dependencies {
 
     constraints {
         implementation("org.slf4j:slf4j-api:2.0.18")
-        implementation("ch.qos.logback:logback-classic:1.5.32")
+        implementation("ch.qos.logback:logback-classic:1.6.1")
         api("io.lettuce:lettuce-core:7.6.0.RELEASE")
         api("com.jsoniter:jsoniter:0.9.23")
         val fastjson2Version = "2.0.62"
