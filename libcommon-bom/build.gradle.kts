@@ -23,7 +23,6 @@ dependencies {
         api(project(":libcommon-json-jsoniter-kotlin"))
         api(project(":libcommon-jwt"))
         api(project(":libcommon-jwt-kotlin"))
-        api(project(":libcommon-prometheus"))
         api(project(":libcommon-prometheus-client"))
         api(project(":libcommon-r2dbc"))
         api(project(":libcommon-r2dbc-kotlin"))
