@@ -11,7 +11,6 @@ dependencies {
         api(project(":libcommon-bson-kotlin"))
         api(project(":libcommon-collection"))
         api(project(":libcommon-function"))
-        api(project(":libcommon-jdbc"))
         api(project(":libcommon-json"))
         api(project(":libcommon-json-fastjson2"))
         api(project(":libcommon-json-fastjson2-kotlin"))
