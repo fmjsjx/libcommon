@@ -162,7 +162,3 @@ The [`libcommon-bson`](libcommon-bson) module provides some additional utility f
 ### libcommon-bson-kotlin
 
 The [`libcommon-bson-kotlin`](libcommon-bson-kotlin) module provides some additional kotlin extensions for [`BSON`](https://www.mongodb.com/basics/bson).
-
-### libcommon-uuid
-
-The [`libcommon-uuid`](libcommon-uuid) module provides additional implementations of `UUID`.

@@ -27,7 +27,6 @@ dependencies {
         api(project(":libcommon-redis-kotlin"))
         api(project(":libcommon-util"))
         api(project(":libcommon-util-kotlin"))
-        api(project(":libcommon-uuid"))
         api(project(":libcommon-yaml"))
     }
 }
