@@ -8,6 +8,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
 
     compileOnly("io.netty:netty-common")
+    annotationProcessor("org.jspecify:jspecify:1.0.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

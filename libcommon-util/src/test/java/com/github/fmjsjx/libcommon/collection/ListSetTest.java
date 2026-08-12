@@ -1,12 +1,11 @@
 package com.github.fmjsjx.libcommon.collection;
 
-import static org.junit.jupiter.api.Assertions.*;
+import com.github.fmjsjx.libcommon.collection.ImmutableCollections.ListSetN;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
-
-import com.github.fmjsjx.libcommon.collection.ImmutableCollections.ListSetN;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ListSetTest {
 
@@ -20,13 +19,13 @@ public class ListSetTest {
 
         ls = ListSet.of("a", "b", "c");
         assertNotNull(ls);
-        assertTrue(ls instanceof ListSetN);
+        assertInstanceOf(ListSetN.class, ls);
         assertEquals(3, ls.size());
         assertArrayEquals(new Object[] { "a", "b", "c" }, ls.internalList().toArray());
 
         ls = ListSet.of("a", "b", "a");
         assertNotNull(ls);
-        assertTrue(ls instanceof ListSetN);
+        assertInstanceOf(ListSetN.class, ls);
         assertEquals(2, ls.size());
         assertArrayEquals(new Object[] { "a", "b" }, ls.internalList().toArray());
     }
@@ -41,13 +40,13 @@ public class ListSetTest {
 
         ls = ListSet.copyOf(List.of("a", "b", "c"));
         assertNotNull(ls);
-        assertTrue(ls instanceof ListSetN);
+        assertInstanceOf(ListSetN.class, ls);
         assertEquals(3, ls.size());
         assertArrayEquals(new Object[] { "a", "b", "c" }, ls.internalList().toArray());
 
         ls = ListSet.copyOf(List.of("a", "b", "a"));
         assertNotNull(ls);
-        assertTrue(ls instanceof ListSetN);
+        assertInstanceOf(ListSetN.class, ls);
         assertEquals(2, ls.size());
         assertArrayEquals(new Object[] { "a", "b" }, ls.internalList().toArray());
 

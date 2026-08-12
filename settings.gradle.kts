@@ -12,7 +12,6 @@ rootProject.name = "libcommon"
 include(":libcommon-bom")
 include(":libcommon-bson")
 include(":libcommon-bson-kotlin")
-include(":libcommon-collection")
 include(":libcommon-json")
 include(":libcommon-json-fastjson2")
 include(":libcommon-json-fastjson2-kotlin")

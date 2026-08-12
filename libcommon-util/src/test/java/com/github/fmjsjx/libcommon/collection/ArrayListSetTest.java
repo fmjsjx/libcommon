@@ -1,14 +1,14 @@
 package com.github.fmjsjx.libcommon.collection;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ArrayListSetTest {
 
     @Test
     public void testContains() {
-        var ls = new ArrayListSet<String>("a", "b", "c");
+        var ls = new ArrayListSet<>("a", "b", "c");
         assertTrue(ls.contains("a"));
         assertTrue(ls.contains("b"));
         assertTrue(ls.contains("c"));
@@ -20,13 +20,13 @@ public class ArrayListSetTest {
 
     @Test
     public void testSize() {
-        var ls = new ArrayListSet<String>("a", "b", "c");
+        var ls = new ArrayListSet<>("a", "b", "c");
         assertEquals(3, ls.size());
 
-        ls = new ArrayListSet<String>("a", "b");
+        ls = new ArrayListSet<>("a", "b");
         assertEquals(2, ls.size());
 
-        ls = new ArrayListSet<String>();
+        ls = new ArrayListSet<>();
         assertEquals(0, ls.size());
     }
 
@@ -53,7 +53,7 @@ public class ArrayListSetTest {
 
     @Test
     public void testRemove() {
-        var ls = new ArrayListSet<String>("a", "b", "c");
+        var ls = new ArrayListSet<>("a", "b", "c");
         assertFalse(ls.remove("d"));
         assertEquals(3, ls.size());
 
@@ -75,9 +75,10 @@ public class ArrayListSetTest {
         assertFalse(ls.remove("d"));
     }
 
+    @SuppressWarnings("ConstantValue")
     @Test
     public void testClear() {
-        var ls = new ArrayListSet<String>("a", "b", "c");
+        var ls = new ArrayListSet<>("a", "b", "c");
         assertEquals(3, ls.size());
 
         ls.clear();

@@ -1,8 +1,8 @@
 package com.github.fmjsjx.libcommon.collection;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ListSet12Test {
 
@@ -26,6 +26,7 @@ public class ListSet12Test {
         assertEquals(1, ls.size());
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Test
     public void testImmutable() {
         var ls = new ImmutableCollections.ListSet12<>("a", "b");
@@ -48,7 +49,7 @@ public class ListSet12Test {
             // OK
         }
         try {
-            ls.internalList().remove(0);
+            ls.internalList().removeFirst();
             fail();
         } catch (Exception e) {
             // OK

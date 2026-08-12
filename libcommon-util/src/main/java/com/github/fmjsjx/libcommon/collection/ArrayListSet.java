@@ -1,5 +1,7 @@
 package com.github.fmjsjx.libcommon.collection;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,7 +64,7 @@ public class ArrayListSet<E> extends AbstractListSet<E> {
     }
 
     @Override
-    public boolean addAll(Collection<? extends E> c) {
+    public boolean addAll(@NonNull Collection<? extends E> c) {
         if (c instanceof Set) {
             super.addAll(c);
         }

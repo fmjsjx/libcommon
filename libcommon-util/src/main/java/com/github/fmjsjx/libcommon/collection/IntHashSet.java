@@ -1,7 +1,8 @@
 package com.github.fmjsjx.libcommon.collection;
 
-import static io.netty.util.collection.IntObjectHashMap.DEFAULT_CAPACITY;
-import static io.netty.util.collection.IntObjectHashMap.DEFAULT_LOAD_FACTOR;
+import io.netty.util.collection.IntObjectHashMap;
+import io.netty.util.collection.IntObjectMap.PrimitiveEntry;
+import org.jspecify.annotations.NonNull;
 
 import java.util.AbstractSet;
 import java.util.Collection;
@@ -10,8 +11,8 @@ import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
-import io.netty.util.collection.IntObjectHashMap;
-import io.netty.util.collection.IntObjectMap.PrimitiveEntry;
+import static io.netty.util.collection.IntObjectHashMap.DEFAULT_CAPACITY;
+import static io.netty.util.collection.IntObjectHashMap.DEFAULT_LOAD_FACTOR;
 
 /**
  * This class implements the {@link IntSet} interface, backed by a hash table
@@ -98,7 +99,7 @@ public class IntHashSet extends AbstractSet<Integer> implements IntSet {
     }
 
     @Override
-    public Iterator<Integer> iterator() {
+    public @NonNull Iterator<Integer> iterator() {
         return map.keySet().iterator();
     }
 
@@ -115,12 +116,12 @@ public class IntHashSet extends AbstractSet<Integer> implements IntSet {
     }
 
     @Override
-    public Object[] toArray() {
+    public Object @NonNull [] toArray() {
         return map.keySet().toArray();
     }
 
     @Override
-    public <T> T[] toArray(T[] a) {
+    public <T> T @NonNull [] toArray(T @NonNull [] a) {
         return map.keySet().toArray(a);
     }
 

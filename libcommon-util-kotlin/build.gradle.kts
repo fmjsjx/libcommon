@@ -1,5 +1,3 @@
-@file:Suppress("AvoidDuplicateDependencies")
-
 plugins {
     id("libcommon.java-library-conventions")
     id("libcommon.kotlin-library-conventions")
@@ -20,7 +18,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
 
 }
