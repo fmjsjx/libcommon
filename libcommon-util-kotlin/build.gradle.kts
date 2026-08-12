@@ -1,3 +1,5 @@
+@file:Suppress("AvoidDuplicateDependencies")
+
 plugins {
     id("libcommon.java-library-conventions")
     id("libcommon.kotlin-library-conventions")
@@ -9,6 +11,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
 
     api(project(":libcommon-util"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactive")
