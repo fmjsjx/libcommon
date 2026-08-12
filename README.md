@@ -93,15 +93,15 @@ There are a number of modules in LibCommon, here is a quick overview:
 
 ### libcommon-util
 
-The [`libcommon-util`](libcommon-util) module provides some common utility classes.
+The [`libcommon-util`](libcommon-util) module provides some common utility classes, additional functional interfaces.
+
+### libcommon-util-kotlin
+
+The [`libcommon-util-kotlin`](libcommon-util-kotlin) module provides some utility class for [**Kotlin**](https://kotlinlang.org/).
 
 ### libcommon-collection
 
 The [`libcommon-collection`](libcommon-collection) module provides additional collection/map.
-
-### libcommon-function
-
-The [`libcommon-function`](libcommon-function) module provides additional functional interfaces.
 
 ### libcommon-json
 
@@ -143,14 +143,6 @@ The [`libcommon-json-jsoniter-kotlin`](libcommon-json-jsoniter-kotlin) module pr
 
 The [`libcommon-jwt`](libcommon-jwt) module provides a library to build/parse JWTs.
 
-### libcommon-kotlin
-
-The [`libcommon-kotlin`](libcommon-kotlin) module provides some utilitiy class for [**Kotlin**](https://kotlinlang.org/).
-
-### libcommon-prometheus (legacy)
-
-The [`libcommon-prometheus`](libcommon-prometheus) module provides Hotspot JVM metrics exports, that allow users set custom labels, based on [**prometheus simple client**](https://github.com/prometheus/client_java/tree/simpleclient).
-
 ### libcommon-prometheus-client
 
 The [`libcommon-prometheus-client`](libcommon-prometheus-client) module provides Hotspot JVM metrics exports, that allow users set custom labels, based on [**prometheus client java**](https://prometheus.github.io/client_java/).
@@ -166,10 +158,6 @@ The [`libcommon-redis`](libcommon-redis) module provides additional utility func
 ### libcommon-redis-kotlin
 
 The [`libcommon-redis-kotlin`](libcommon-redis-kotlin) module provides the kotlin extensions of [`Lettuce`](https://lettuce.io/).
-
-### libcommon-jdbc
-
-The [`libcommon-util`](libcommon-util) module provides additional utility functions for JDBC.
 
 ### libcommon-bson
 
