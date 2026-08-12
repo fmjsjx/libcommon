@@ -10,6 +10,9 @@ dependencies {
     // kotlin coroutines
     implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.11.0"))
 
+    // Kotest
+    testImplementation(platform("io.kotest:kotest-bom:6.2.4"))
+
     constraints {
         // reactor-kotlin-extensions
         implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.3.0")

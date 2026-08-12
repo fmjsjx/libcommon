@@ -7,10 +7,10 @@ import org.bson.types.ObjectId
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.*
-import java.util.*
+import java.util.Date
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
-import kotlin.jvm.Throws
 
 
 /**
@@ -240,7 +240,7 @@ fun <E : BsonValue, T : Iterable<E>> T.toBsonArray() = BsonArray(
  * @author MJ Fang
  * @since 3.1
  */
-inline fun <E : Any?, T : Iterable<E>> T.toBsonArray(transform: (E) -> BsonValue) =
+inline fun <E, T : Iterable<E>> T.toBsonArray(transform: (E) -> BsonValue) =
     mapTo(BsonArray(if (this is Collection<*>) size else 10), transform)
 
 /**
@@ -248,7 +248,7 @@ inline fun <E : Any?, T : Iterable<E>> T.toBsonArray(transform: (E) -> BsonValue
  * @author MJ Fang
  * @since 3.1
  */
-inline fun <E : Any?, T : Iterable<E>> T?.toBsonArrayOrNull(transform: (E) -> BsonValue): BsonValue =
+inline fun <E, T : Iterable<E>> T?.toBsonArrayOrNull(transform: (E) -> BsonValue): BsonValue =
     this?.toBsonArray(transform) ?: BsonNull.VALUE
 
 /**
@@ -256,14 +256,14 @@ inline fun <E : Any?, T : Iterable<E>> T?.toBsonArrayOrNull(transform: (E) -> Bs
  * @author MJ Fang
  * @since 3.1
  */
-inline fun <E : Any?> Array<E>.toBsonArray(transform: (E) -> BsonValue) = mapTo(BsonArray(size), transform)
+inline fun <E> Array<E>.toBsonArray(transform: (E) -> BsonValue) = mapTo(BsonArray(size), transform)
 
 /**
  * Extension to construct a new [BsonArray] instance or the singleton [BsonNull] instance with this [Array].
  * @author MJ Fang
  * @since 3.1
  */
-inline fun <E : Any?> Array<E>?.toBsonArrayOrNull(transform: (E) -> BsonValue): BsonValue =
+inline fun <E> Array<E>?.toBsonArrayOrNull(transform: (E) -> BsonValue): BsonValue =
     this?.toBsonArray(transform) ?: BsonNull.VALUE
 
 /**

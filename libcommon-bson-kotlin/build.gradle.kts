@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     implementation("org.slf4j:slf4j-api")
+
     api(project(":libcommon-bson"))
     implementation(project(":libcommon-util"))
 
@@ -14,6 +15,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
     testImplementation("io.mockk:mockk")
+    testImplementation("io.kotest:kotest-assertions-core")
 }
 
 description = "libcommon/BSON Kotlin"

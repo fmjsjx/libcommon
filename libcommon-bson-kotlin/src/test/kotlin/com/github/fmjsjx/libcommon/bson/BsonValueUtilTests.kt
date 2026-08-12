@@ -1,12 +1,13 @@
 package com.github.fmjsjx.libcommon.bson
 
 import com.github.fmjsjx.libcommon.util.DateTimeUtil
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import org.bson.*
 import org.bson.types.Decimal128
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
@@ -14,7 +15,8 @@ import java.math.BigInteger
 import java.time.DayOfWeek
 import java.time.ZoneId
 import java.time.ZoneOffset
-import java.util.*
+import java.util.Date
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 
@@ -28,30 +30,37 @@ class BsonValueUtilTests {
 
     @Test
     fun testEncodeNumber() {
-        assertEquals(BsonNull.VALUE, BsonValueUtil.encode(null as Number?))
-        assertEquals(BsonInt32(1), BsonValueUtil.encode(1))
-        assertEquals(BsonInt32(123), BsonValueUtil.encode(123.toByte()))
-        assertEquals(BsonInt32(12345), BsonValueUtil.encode(12345.toShort()))
-        assertEquals(BsonInt32(123456), BsonValueUtil.encode(AtomicInteger(123456)))
-        assertEquals(BsonInt64(1234567), BsonValueUtil.encode(1234567L))
-        assertEquals(BsonInt64(12345678), BsonValueUtil.encode(AtomicLong(12345678L)))
-        assertEquals(BsonDouble(1234.5678), BsonValueUtil.encode(1234.5678))
-        assertEquals(BsonDouble(12.3f.toDouble()), BsonValueUtil.encode(12.3f))
-        assertEquals(
-            BsonDecimal128(Decimal128(BigDecimal("12345678.87654321"))),
-            BsonValueUtil.encode(Decimal128(BigDecimal("12345678.87654321")))
+        BsonValueUtil.encode(null as Number?) shouldBe BsonNull.VALUE
+        BsonValueUtil.encode(1) shouldBe BsonInt32(1)
+
+        BsonValueUtil.encode(123.toByte()) shouldBe BsonInt32(123)
+        BsonValueUtil.encode(12345.toShort()) shouldBe BsonInt32(12345)
+        BsonValueUtil.encode(AtomicInteger(123456)) shouldBe BsonInt32(123456)
+        BsonValueUtil.encode(1234567L) shouldBe BsonInt64(1234567)
+        BsonValueUtil.encode(AtomicLong(12345678L)) shouldBe BsonInt64(12345678)
+        BsonValueUtil.encode(1234.5678) shouldBe BsonDouble(1234.5678)
+        BsonValueUtil.encode(12.3f) shouldBe BsonDouble(12.3f.toDouble())
+        BsonValueUtil.encode(Decimal128(BigDecimal("12345678.87654321"))) shouldBe BsonDecimal128(
+            Decimal128(
+                BigDecimal(
+                    "12345678.87654321"
+                )
+            )
         )
-        assertEquals(
-            BsonDecimal128(Decimal128(BigDecimal("1234567890.0987654321"))),
-            BsonValueUtil.encode(BigDecimal("1234567890.0987654321"))
+        BsonValueUtil.encode(BigDecimal("1234567890.0987654321")) shouldBe BsonDecimal128(Decimal128(BigDecimal("1234567890.0987654321")))
+        BsonValueUtil.encode(BigInteger("1234567890987654321")) shouldBe BsonDecimal128(
+            Decimal128(
+                BigDecimal(
+                    BigInteger(
+                        "1234567890987654321"
+                    )
+                )
+            )
         )
-        assertEquals(
-            BsonDecimal128(Decimal128(BigDecimal(BigInteger("1234567890987654321")))),
-            BsonValueUtil.encode(BigInteger("1234567890987654321"))
-        )
-        assertEquals(
-            BsonDecimal128(Decimal128(BigDecimal("12345678987654321"))),
-            BsonValueUtil.encode(TestBigNumber(BigInteger("12345678987654321")))
+        BsonValueUtil.encode(TestBigNumber(BigInteger("12345678987654321"))) shouldBe BsonDecimal128(
+            Decimal128(
+                BigDecimal("12345678987654321")
+            )
         )
     }
 
@@ -69,98 +78,82 @@ class BsonValueUtilTests {
 
     @Test
     fun testEncode() {
-        assertEquals(BsonNull.VALUE, BsonValueUtil.encode(null as Any?))
-        assertEquals(BsonNull.VALUE, BsonValueUtil.encode(BsonNull.VALUE))
-        BsonInt32(123).apply { assertEquals(this, BsonValueUtil.encode(this)) }
-        assertEquals(BsonInt32(123), BsonValueUtil.encode(123))
-        assertEquals(BsonString("abcdefg hijklmn"), BsonValueUtil.encode("abcdefg hijklmn"))
-        assertEquals(BsonString("abcdefg hijklmn"), BsonValueUtil.encode("abcdefg hijklmn".toCharArray()))
-        assertEquals(BsonBoolean.TRUE, BsonValueUtil.encode(true))
-        assertEquals(BsonBoolean.FALSE, BsonValueUtil.encode(false))
-        assertEquals(BsonDateTime(1234567890123), BsonValueUtil.encode(Date(1234567890123)))
-        assertEquals(BsonDateTime(1234567890123), BsonValueUtil.encode(DateTimeUtil.ofEpochMilli(1234567890123)))
-        assertEquals(
-            BsonDateTime(1234567890123),
-            BsonValueUtil.encode(DateTimeUtil.ofEpochMilli(1234567890123).atZone(ZoneId.systemDefault()))
-        )
-        assertEquals(
-            BsonDateTime(1234567890123),
-            BsonValueUtil.encode(DateTimeUtil.ofEpochMilli(1234567890123).atOffset(ZoneOffset.ofHours(8)))
-        )
+        BsonValueUtil.encode(null as Any?) shouldBe BsonNull.VALUE
+        BsonValueUtil.encode(BsonNull.VALUE) shouldBe BsonNull.VALUE
+        BsonInt32(123).apply { BsonValueUtil.encode(this) shouldBe this }
+        BsonValueUtil.encode(123) shouldBe BsonInt32(123)
+        BsonValueUtil.encode("abcdefg hijklmn") shouldBe BsonString("abcdefg hijklmn")
+        BsonValueUtil.encode("abcdefg hijklmn".toCharArray()) shouldBe BsonString("abcdefg hijklmn")
+        BsonValueUtil.encode(true) shouldBe BsonBoolean.TRUE
+        BsonValueUtil.encode(false) shouldBe BsonBoolean.FALSE
+        BsonValueUtil.encode(Date(1234567890123)) shouldBe BsonDateTime(1234567890123)
+        BsonValueUtil.encode(DateTimeUtil.ofEpochMilli(1234567890123)) shouldBe BsonDateTime(1234567890123)
+        BsonValueUtil.encode(DateTimeUtil.ofEpochMilli(1234567890123).atZone(ZoneId.systemDefault())) shouldBe
+                BsonDateTime(1234567890123)
+        BsonValueUtil.encode(DateTimeUtil.ofEpochMilli(1234567890123).atOffset(ZoneOffset.ofHours(8))) shouldBe
+                BsonDateTime(1234567890123)
         DateUnit.entries.forEach {
-            assertEquals(it.toBsonString(), BsonValueUtil.encode(it))
+            BsonValueUtil.encode(it) shouldBe it.toBsonString()
         }
         MetaDataKeyword.entries.forEach {
-            assertEquals(it.toBsonString(), BsonValueUtil.encode(it))
+            BsonValueUtil.encode(it) shouldBe it.toBsonString()
         }
         BsonType.entries.forEach {
-            assertEquals(BsonInt32(it.value), BsonValueUtil.encode(it))
+            BsonValueUtil.encode(it) shouldBe BsonInt32(it.value)
         }
-        assertEquals(BsonString("sun"), BsonValueUtil.encode(DayOfWeek.SUNDAY))
-        assertEquals(BsonString("mon"), BsonValueUtil.encode(DayOfWeek.MONDAY))
-        assertEquals(BsonString("tue"), BsonValueUtil.encode(DayOfWeek.TUESDAY))
-        assertEquals(BsonString("wed"), BsonValueUtil.encode(DayOfWeek.WEDNESDAY))
-        assertEquals(BsonString("thu"), BsonValueUtil.encode(DayOfWeek.THURSDAY))
-        assertEquals(BsonString("fri"), BsonValueUtil.encode(DayOfWeek.FRIDAY))
-        assertEquals(BsonString("sat"), BsonValueUtil.encode(DayOfWeek.SATURDAY))
+        BsonValueUtil.encode(DayOfWeek.SUNDAY) shouldBe BsonString("sun")
+        BsonValueUtil.encode(DayOfWeek.MONDAY) shouldBe BsonString("mon")
+        BsonValueUtil.encode(DayOfWeek.TUESDAY) shouldBe BsonString("tue")
+        BsonValueUtil.encode(DayOfWeek.WEDNESDAY) shouldBe BsonString("wed")
+        BsonValueUtil.encode(DayOfWeek.THURSDAY) shouldBe BsonString("thu")
+        BsonValueUtil.encode(DayOfWeek.FRIDAY) shouldBe BsonString("fri")
+        BsonValueUtil.encode(DayOfWeek.SATURDAY) shouldBe BsonString("sat")
         "abcdefg".encodeToByteArray().run {
-            assertEquals(BsonBinary(this), BsonValueUtil.encode(this))
+            BsonValueUtil.encode(this) shouldBe BsonBinary(this)
         }
         UUID.randomUUID().run {
-            assertEquals(BsonBinary(this), BsonValueUtil.encode(this))
+            BsonValueUtil.encode(this) shouldBe BsonBinary(this)
         }
         BsonValueUtil.encode(shortArrayOf(1, 2, 3)).run {
-            assertTrue(this is BsonArray)
-            assertArrayEquals(arrayOf(BsonInt32(1), BsonInt32(2), BsonInt32(3)), (this as BsonArray).toArray())
+            shouldBeInstanceOf<BsonArray>()
+            values shouldBe listOf(BsonInt32(1), BsonInt32(2), BsonInt32(3))
         }
         BsonValueUtil.encode(intArrayOf(1, 2, 3)).run {
-            assertTrue(this is BsonArray)
-            assertArrayEquals(arrayOf(BsonInt32(1), BsonInt32(2), BsonInt32(3)), (this as BsonArray).toArray())
+            shouldBeInstanceOf<BsonArray>()
+            values shouldBe listOf(BsonInt32(1), BsonInt32(2), BsonInt32(3))
         }
         BsonValueUtil.encode(longArrayOf(1, 2, 3)).run {
-            assertTrue(this is BsonArray)
-            assertArrayEquals(arrayOf(BsonInt64(1), BsonInt64(2), BsonInt64(3)), (this as BsonArray).toArray())
+            shouldBeInstanceOf<BsonArray>()
+            values shouldBe listOf(BsonInt64(1), BsonInt64(2), BsonInt64(3))
         }
         BsonValueUtil.encode(doubleArrayOf(1.1, 2.2)).run {
-            assertTrue(this is BsonArray)
-            assertArrayEquals(arrayOf(BsonDouble(1.1), BsonDouble(2.2)), (this as BsonArray).toArray())
+            shouldBeInstanceOf<BsonArray>()
+            values shouldBe listOf(BsonDouble(1.1), BsonDouble(2.2))
         }
         BsonValueUtil.encode(floatArrayOf(1.1f, 2.2f)).run {
-            assertTrue(this is BsonArray)
-            assertArrayEquals(
-                arrayOf(BsonDouble(1.1f.toDouble()), BsonDouble(2.2f.toDouble())),
-                (this as BsonArray).toArray()
-            )
+            shouldBeInstanceOf<BsonArray>()
+            values shouldBe listOf(BsonDouble(1.1f.toDouble()), BsonDouble(2.2f.toDouble()))
         }
         BsonValueUtil.encode(booleanArrayOf(true, false, true)).run {
-            assertTrue(this is BsonArray)
-            assertArrayEquals(
-                arrayOf(BsonBoolean.TRUE, BsonBoolean.FALSE, BsonBoolean.TRUE),
-                (this as BsonArray).toArray()
-            )
+            shouldBeInstanceOf<BsonArray>()
+            values shouldBe listOf(BsonBoolean.TRUE, BsonBoolean.FALSE, BsonBoolean.TRUE)
         }
         BsonValueUtil.encode(listOf(1, "b", true)).run {
-            assertTrue(this is BsonArray)
-            assertArrayEquals(
-                arrayOf(BsonInt32(1), BsonString("b"), BsonBoolean.TRUE),
-                (this as BsonArray).toArray()
-            )
+            shouldBeInstanceOf<BsonArray>()
+            values shouldBe listOf(BsonInt32(1), BsonString("b"), BsonBoolean.TRUE)
         }
-        assertEquals(
-            BsonDocument("a", BsonInt32(1)).append("b", BsonBoolean.TRUE).append("c", BsonString("hello"))
-                .append("d", BsonDouble(2.2)),
-            BsonValueUtil.encode(
-                linkedMapOf(
-                    "a" to 1,
-                    "b" to true,
-                    "c" to "hello",
-                    "d" to 2.2,
-                )
+        BsonValueUtil.encode(
+            linkedMapOf(
+                "a" to 1,
+                "b" to true,
+                "c" to "hello",
+                "d" to 2.2,
             )
-        )
-        assertEquals(BsonString("Asia/Shanghai"), BsonValueUtil.encode(ZoneId.of("Asia/Shanghai")))
-        assertEquals(BsonString("+08:00"), BsonValueUtil.encode(ZoneOffset.ofHours(8)))
-        assertEquals(BsonString("-08:00"), BsonValueUtil.encode(ZoneOffset.ofHours(-8)))
+        ) shouldBe BsonDocument("a", BsonInt32(1)).append("b", BsonBoolean.TRUE).append("c", BsonString("hello"))
+            .append("d", BsonDouble(2.2))
+        BsonValueUtil.encode(ZoneId.of("Asia/Shanghai")) shouldBe BsonString("Asia/Shanghai")
+        BsonValueUtil.encode(ZoneOffset.ofHours(8)) shouldBe BsonString("+08:00")
+        BsonValueUtil.encode(ZoneOffset.ofHours(-8)) shouldBe BsonString("-08:00")
     }
 
     @Test
@@ -169,8 +162,8 @@ class BsonValueUtilTests {
         every { BsonValueUtil.encode(any<Any>()) } returns mockk()
 
         BsonValueUtil.encodeList(1, "2", 3.0).run {
-            assertTrue(this is BsonArray)
-            assertEquals(3, (this as BsonArray).size)
+            shouldBeInstanceOf<BsonArray>()
+            size shouldBe 3
             verify(exactly = 3) { BsonValueUtil.encode(any<Any>()) }
         }
     }
