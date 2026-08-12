@@ -1,18 +1,14 @@
 package com.github.fmjsjx.libcommon.collection;
 
-import static java.util.Collections.emptyIterator;
+import org.jspecify.annotations.NonNull;
 
-import java.util.AbstractSet;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
+
+import static java.util.Collections.emptyIterator;
 
 /**
  * This class consists exclusively of static methods that operate on or return
@@ -87,17 +83,17 @@ public class PrimitiveCollections {
         }
 
         @Override
-        public Iterator<Integer> iterator() {
+        public @NonNull Iterator<Integer> iterator() {
             return new IteratorImpl(s.iterator());
         }
 
         @Override
-        public Object[] toArray() {
+        public Object @NonNull [] toArray() {
             return s.toArray();
         }
 
         @Override
-        public <T> T[] toArray(T[] a) {
+        public <T> T @NonNull [] toArray(T @NonNull [] a) {
             return s.toArray(a);
         }
 
@@ -112,22 +108,22 @@ public class PrimitiveCollections {
         }
 
         @Override
-        public boolean containsAll(Collection<?> c) {
+        public boolean containsAll(@NonNull Collection<?> c) {
             return s.containsAll(c);
         }
 
         @Override
-        public boolean addAll(Collection<? extends Integer> c) {
+        public boolean addAll(@NonNull Collection<? extends Integer> c) {
             throw new UnsupportedOperationException("addAll");
         }
 
         @Override
-        public boolean retainAll(Collection<?> c) {
+        public boolean retainAll(@NonNull Collection<?> c) {
             throw new UnsupportedOperationException("retainAll");
         }
 
         @Override
-        public boolean removeAll(Collection<?> c) {
+        public boolean removeAll(@NonNull Collection<?> c) {
             throw new UnsupportedOperationException("removeAll");
         }
 
@@ -171,11 +167,6 @@ public class PrimitiveCollections {
                 return iter.next();
             }
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("remove");
-            }
-
         }
 
     }
@@ -184,7 +175,7 @@ public class PrimitiveCollections {
 
         private static final EmptyIntSet INSTANCE = new EmptyIntSet();
 
-        public Iterator<Integer> iterator() {
+        public @NonNull Iterator<Integer> iterator() {
             return emptyIterator();
         }
 
@@ -207,11 +198,11 @@ public class PrimitiveCollections {
             return c.isEmpty();
         }
 
-        public Object[] toArray() {
+        public Object @NonNull [] toArray() {
             return new Object[0];
         }
 
-        public <T> T[] toArray(T[] a) {
+        public <T> T @NonNull [] toArray(T @NonNull [] a) {
             if (a.length > 0)
                 a[0] = null;
             return a;
@@ -224,13 +215,13 @@ public class PrimitiveCollections {
         }
 
         @Override
-        public boolean removeIf(Predicate<? super Integer> filter) {
+        public boolean removeIf(@NonNull Predicate<? super Integer> filter) {
             Objects.requireNonNull(filter);
             return false;
         }
 
         @Override
-        public Spliterator<Integer> spliterator() {
+        public @NonNull Spliterator<Integer> spliterator() {
             return Spliterators.emptySpliterator();
         }
 
@@ -250,7 +241,7 @@ public class PrimitiveCollections {
         }
 
         @Override
-        public boolean retainAll(Collection<?> c) {
+        public boolean retainAll(@NonNull Collection<?> c) {
             throw new UnsupportedOperationException("retainAll");
         }
 
@@ -284,17 +275,17 @@ public class PrimitiveCollections {
         }
 
         @Override
-        public Iterator<Long> iterator() {
+        public @NonNull Iterator<Long> iterator() {
             return new IteratorImpl(s.iterator());
         }
 
         @Override
-        public Object[] toArray() {
+        public Object @NonNull [] toArray() {
             return s.toArray();
         }
 
         @Override
-        public <T> T[] toArray(T[] a) {
+        public <T> T @NonNull [] toArray(T @NonNull [] a) {
             return s.toArray(a);
         }
 
@@ -309,22 +300,22 @@ public class PrimitiveCollections {
         }
 
         @Override
-        public boolean containsAll(Collection<?> c) {
+        public boolean containsAll(@NonNull Collection<?> c) {
             return s.containsAll(c);
         }
 
         @Override
-        public boolean addAll(Collection<? extends Long> c) {
+        public boolean addAll(@NonNull Collection<? extends Long> c) {
             throw new UnsupportedOperationException("addAll");
         }
 
         @Override
-        public boolean retainAll(Collection<?> c) {
+        public boolean retainAll(@NonNull Collection<?> c) {
             throw new UnsupportedOperationException("retainAll");
         }
 
         @Override
-        public boolean removeAll(Collection<?> c) {
+        public boolean removeAll(@NonNull Collection<?> c) {
             throw new UnsupportedOperationException("removeAll");
         }
 
@@ -368,11 +359,6 @@ public class PrimitiveCollections {
                 return iter.next();
             }
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("remove");
-            }
-
         }
 
     }
@@ -381,7 +367,7 @@ public class PrimitiveCollections {
 
         private static final EmptyLongSet INSTANCE = new EmptyLongSet();
 
-        public Iterator<Long> iterator() {
+        public @NonNull Iterator<Long> iterator() {
             return emptyIterator();
         }
 
@@ -404,11 +390,11 @@ public class PrimitiveCollections {
             return c.isEmpty();
         }
 
-        public Object[] toArray() {
+        public Object @NonNull [] toArray() {
             return new Object[0];
         }
 
-        public <T> T[] toArray(T[] a) {
+        public <T> T @NonNull [] toArray(T @NonNull [] a) {
             if (a.length > 0)
                 a[0] = null;
             return a;
@@ -421,13 +407,13 @@ public class PrimitiveCollections {
         }
 
         @Override
-        public boolean removeIf(Predicate<? super Long> filter) {
+        public boolean removeIf(@NonNull Predicate<? super Long> filter) {
             Objects.requireNonNull(filter);
             return false;
         }
 
         @Override
-        public Spliterator<Long> spliterator() {
+        public @NonNull Spliterator<Long> spliterator() {
             return Spliterators.emptySpliterator();
         }
 
@@ -447,7 +433,7 @@ public class PrimitiveCollections {
         }
 
         @Override
-        public boolean retainAll(Collection<?> c) {
+        public boolean retainAll(@NonNull Collection<?> c) {
             throw new UnsupportedOperationException("retainAll");
         }
 

@@ -1,18 +1,15 @@
 package com.github.fmjsjx.libcommon.collection;
 
-import java.util.AbstractSet;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import org.jspecify.annotations.NonNull;
+
+import java.util.*;
 import java.util.function.IntFunction;
 
 /**
  * This class implements {@link ListSet} interface backed by an
  * {@link ArrayList}.
- * 
- * @param <E> the type of elements maintained by this set
  *
+ * @param <E> the type of elements maintained by this set
  * @author MJ Fang
  * @see ListSet
  * @see ArrayListSet
@@ -49,6 +46,7 @@ public abstract class AbstractListSet<E> extends AbstractSet<E> implements ListS
         return true;
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     @Override
     public boolean remove(Object o) {
         var list = internalList;
@@ -76,7 +74,7 @@ public abstract class AbstractListSet<E> extends AbstractSet<E> implements ListS
     }
 
     @Override
-    public Iterator<E> iterator() {
+    public @NonNull Iterator<E> iterator() {
         return internalList.iterator();
     }
 
@@ -84,7 +82,7 @@ public abstract class AbstractListSet<E> extends AbstractSet<E> implements ListS
      * @since 2.6.1
      */
     @Override
-    public Object[] toArray() {
+    public Object @NonNull [] toArray() {
         return internalList.toArray();
     }
 
@@ -92,7 +90,7 @@ public abstract class AbstractListSet<E> extends AbstractSet<E> implements ListS
      * @since 2.6.1
      */
     @Override
-    public <T> T[] toArray(T[] a) {
+    public <T> T @NonNull [] toArray(T @NonNull [] a) {
         return internalList.toArray(a);
     }
 
@@ -100,7 +98,7 @@ public abstract class AbstractListSet<E> extends AbstractSet<E> implements ListS
      * @since 2.6.1
      */
     @Override
-    public <T> T[] toArray(IntFunction<T[]> generator) {
+    public <T> T[] toArray(@NonNull IntFunction<T[]> generator) {
         return internalList.toArray(generator);
     }
 

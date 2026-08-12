@@ -1,12 +1,9 @@
 package com.github.fmjsjx.libcommon.collection;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.Serializable;
-import java.util.AbstractCollection;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -29,7 +26,7 @@ final class ImmutableCollections {
         }
 
         @Override
-        public boolean addAll(Collection<? extends E> c) {
+        public boolean addAll(@NonNull Collection<? extends E> c) {
             throw uoe();
         }
 
@@ -44,17 +41,17 @@ final class ImmutableCollections {
         }
 
         @Override
-        public boolean removeAll(Collection<?> c) {
+        public boolean removeAll(@NonNull Collection<?> c) {
             throw uoe();
         }
 
         @Override
-        public boolean removeIf(Predicate<? super E> filter) {
+        public boolean removeIf(@NonNull Predicate<? super E> filter) {
             throw uoe();
         }
 
         @Override
-        public boolean retainAll(Collection<?> c) {
+        public boolean retainAll(@NonNull Collection<?> c) {
             throw uoe();
         }
     }
@@ -72,7 +69,7 @@ final class ImmutableCollections {
         }
 
         @Override
-        public Iterator<E> iterator() {
+        public @NonNull Iterator<E> iterator() {
             return internalList().iterator();
         }
 
@@ -81,9 +78,8 @@ final class ImmutableCollections {
             if (o == this)
                 return true;
 
-            if (!(o instanceof ListSet))
+            if (!(o instanceof ListSet<?> c))
                 return false;
-            Collection<?> c = (Collection<?>) o;
             if (c.size() != size())
                 return false;
             try {

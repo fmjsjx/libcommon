@@ -1,5 +1,8 @@
 package com.github.fmjsjx.libcommon.collection;
 
+import io.netty.util.collection.IntObjectHashMap;
+import io.netty.util.collection.IntObjectMap;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BinaryOperator;
@@ -7,9 +10,6 @@ import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import io.netty.util.collection.IntObjectHashMap;
-import io.netty.util.collection.IntObjectMap;
 
 /**
  * Utility class for {@link Collector}s.

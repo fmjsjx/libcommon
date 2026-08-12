@@ -93,15 +93,11 @@ There are a number of modules in LibCommon, here is a quick overview:
 
 ### libcommon-util
 
-The [`libcommon-util`](libcommon-util) module provides some common utility classes, additional functional interfaces.
+The [`libcommon-util`](libcommon-util) module provides some common utility classes, additional functional interfaces, additional collection/map utilities.
 
 ### libcommon-util-kotlin
 
 The [`libcommon-util-kotlin`](libcommon-util-kotlin) module provides some utility class for [**Kotlin**](https://kotlinlang.org/).
-
-### libcommon-collection
-
-The [`libcommon-collection`](libcommon-collection) module provides additional collection/map.
 
 ### libcommon-json
 
