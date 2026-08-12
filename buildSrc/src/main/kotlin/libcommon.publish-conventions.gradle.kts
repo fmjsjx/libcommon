@@ -26,3 +26,30 @@ publishing {
 tasks.withType<PublishToMavenRepository>().configureEach {
     System.setProperty("org.gradle.internal.publish.checksums.insecure", "true")
 }
+
+// Use standard TaskContainer.register(...) to perfectly comply with Gradle 9+ configuration avoidance API
+val deleteLocalMavenMetadata = tasks.register("deleteLocalMavenMetadata") {
+    group = "publishing"
+    description = "Removes redundant maven-metadata.xml files from staging directory."
+
+    val stagingDir = rootProject.layout.buildDirectory.dir("staging-deploy")
+
+    doLast {
+        val dirFile = stagingDir.get().asFile
+        if (dirFile.exists()) {
+            dirFile.walkTopDown().forEach { file ->
+                if (file.name.startsWith("maven-metadata.xml")) {
+                    val deleted = file.delete()
+                    if (deleted) {
+                        logger.lifecycle("Cleaned up redundant artifact: ${file.relativeTo(dirFile)}")
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Automatically trigger this cleanup task AFTER the publishing tasks are done
+tasks.withType<PublishToMavenRepository>().configureEach {
+    finalizedBy(deleteLocalMavenMetadata)
+}
