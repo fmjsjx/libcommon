@@ -32,27 +32,27 @@ public class KotlinReflectionUtilTests {
     @Test
     public void testFindKotlinFunction() throws Exception {
         var showName = Arrays.stream(TestClass.class.getMethods())
-                .filter(it -> it.getName().equals("showName")).findFirst().get();
+                .filter(it -> it.getName().equals("showName")).findFirst().orElseThrow();
         var kShowName = KotlinReflectionUtil.findKotlinFunction(showName);
         assertTrue(kShowName.isPresent());
 
         var suspendingName = Arrays.stream(TestClass.class.getMethods())
-                .filter(it -> it.getName().equals("suspendingName")).findFirst().get();
+                .filter(it -> it.getName().equals("suspendingName")).findFirst().orElseThrow();
         var kSuspendingName = KotlinReflectionUtil.findKotlinFunction(suspendingName);
         assertTrue(kSuspendingName.isPresent());
 
         var testKt = Class.forName("com.github.fmjsjx.libcommon.util.kotlin.TestKt");
         Assertions.assertTrue(KotlinReflectionUtil.findKotlinFunction(Arrays.stream(testKt.getMethods())
-                .filter(it -> it.getName().equals("helloWorld")).findFirst().get()).isPresent());
+                .filter(it -> it.getName().equals("helloWorld")).findFirst().orElseThrow()).isPresent());
     }
 
     @Test
     public void testIsSuspend() throws Exception {
         var showName = Arrays.stream(TestClass.class.getMethods())
-                .filter(it -> it.getName().equals("showName")).findFirst().get();
+                .filter(it -> it.getName().equals("showName")).findFirst().orElseThrow();
         Assertions.assertFalse(KotlinReflectionUtil.isSuspend(showName));
         var suspendingName = Arrays.stream(TestClass.class.getMethods())
-                .filter(it -> it.getName().equals("suspendingName")).findFirst().get();
+                .filter(it -> it.getName().equals("suspendingName")).findFirst().orElseThrow();
         Assertions.assertTrue(KotlinReflectionUtil.isSuspend(suspendingName));
 
         Assertions.assertFalse(KotlinReflectionUtil.isSuspend(getClass().getMethod("testIsDataClass")));
@@ -61,16 +61,16 @@ public class KotlinReflectionUtilTests {
     @Test
     public void testGetReturnType() throws Exception {
         var showName = Arrays.stream(TestClass.class.getMethods())
-                .filter(it -> it.getName().equals("showName")).findFirst().get();
+                .filter(it -> it.getName().equals("showName")).findFirst().orElseThrow();
         Assertions.assertEquals(String.class, KotlinReflectionUtil.getReturnType(showName));
 
         var suspendingName = Arrays.stream(TestClass.class.getMethods())
-                .filter(it -> it.getName().equals("suspendingName")).findFirst().get();
+                .filter(it -> it.getName().equals("suspendingName")).findFirst().orElseThrow();
         Assertions.assertEquals(String.class, KotlinReflectionUtil.getReturnType(suspendingName));
 
         var testKt = Class.forName("com.github.fmjsjx.libcommon.util.kotlin.TestKt");
         var helloWorld = Arrays.stream(testKt.getMethods())
-                .filter(it -> it.getName().equals("helloWorld")).findFirst().get();
+                .filter(it -> it.getName().equals("helloWorld")).findFirst().orElseThrow();
         Assertions.assertEquals(Unit.class, KotlinReflectionUtil.getReturnType(helloWorld));
     }
 
