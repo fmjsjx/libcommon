@@ -1,7 +1,10 @@
 plugins {
     id("libcommon.java-library-conventions")
+    id("libcommon.kotlin-library-conventions")
     id("libcommon.publish-conventions")
 }
+
+ext["kotlin.stdlib.default.dependency"] = "false"
 
 dependencies {
 
@@ -15,20 +18,20 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     compileOnlyApi("com.jsoniter:jsoniter")
 
+    compileOnlyApi(kotlin("stdlib"))
+    compileOnlyApi("com.fasterxml.jackson.module:jackson-module-kotlin")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
-    testImplementation("com.jsoniter:jsoniter")
+    testImplementation("io.mockk:mockk")
+    testImplementation("io.kotest:kotest-assertions-core")
+
 
 }
 
 description = "libcommon/JSON Jackson2"
-
-tasks.test {
-    // Use junit platform for unit tests.
-    useJUnitPlatform()
-}
 
 publishing {
     publications {

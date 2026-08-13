@@ -1,7 +1,10 @@
 plugins {
     id("libcommon.java-library-conventions")
+    id("libcommon.kotlin-library-conventions")
     id("libcommon.publish-conventions")
 }
+
+ext["kotlin.stdlib.default.dependency"] = "false"
 
 dependencies {
 
@@ -12,22 +15,17 @@ dependencies {
     compileOnlyApi(project(":libcommon-json-fastjson2"))
     compileOnlyApi(project(":libcommon-json-jackson3"))
 
+    compileOnlyApi(kotlin("stdlib"))
+
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
-    testImplementation(project(":libcommon-json-jackson2"))
-    testImplementation(project(":libcommon-json-fastjson2"))
-    testImplementation(project(":libcommon-json-jackson3"))
-
+    testImplementation("io.mockk:mockk")
+    testImplementation("io.kotest:kotest-assertions-core")
 }
 
 description = "libcommon/JSON Jsoniter"
-
-tasks.test {
-    // Use junit platform for unit tests.
-    useJUnitPlatform()
-}
 
 publishing {
     publications {
