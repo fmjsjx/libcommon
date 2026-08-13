@@ -1,8 +1,8 @@
 plugins {
     id("libcommon.java-library-conventions")
+    id("libcommon.kotlin-library-conventions")
     id("libcommon.publish-conventions")
 }
-
 
 dependencies {
 
@@ -10,18 +10,21 @@ dependencies {
     compileOnly("com.google.code.findbugs:jsr305")
     implementation(project(":libcommon-util"))
     api("org.springframework.data:spring-data-r2dbc")
+    implementation(project(":libcommon-util-kotlin"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
     testImplementation("org.mockito:mockito-core")
+    testImplementation("io.mockk:mockk")
 }
 
 description = "libcommon/R2DBC"
 
 tasks.test {
-    // Use junit platform for unit tests.
+    // Use JUnit platform for unit tests.
     useJUnitPlatform()
     jvmArgs = listOf(
         "-XX:+EnableDynamicAgentLoading",
