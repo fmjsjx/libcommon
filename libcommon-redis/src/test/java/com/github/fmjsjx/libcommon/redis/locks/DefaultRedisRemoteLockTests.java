@@ -12,11 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -539,12 +535,25 @@ public class DefaultRedisRemoteLockTests {
 
         DefaultRedisRemoteLock<String, String> lock = new DefaultRedisRemoteLock<>(adapter, key, value, timeout);
 
-        Optional<String> result = lock.tryInLock(() -> null);
+        Optional<?> result = lock.tryInLock(this::testReturnNull);
         assertNotNull(result);
         assertTrue(result.isEmpty());
 
         // Verify lock is released
         assertNull(connection.sync().get(key));
+    }
+
+    Object testReturnNull() {
+        var highOrLow = ThreadLocalRandom.current().ints(10, 0, 100).filter(it -> it < 50).count() > 5;
+        var sleepMillis = highOrLow ? 100L : 50L;
+        if (highOrLow) {
+            try {
+                Thread.sleep(sleepMillis);
+            } catch (InterruptedException e) {
+                // NOOP
+            }
+        }
+        return null;
     }
 
     // ========== Byte Array Tests ==========
@@ -956,7 +965,7 @@ public class DefaultRedisRemoteLockTests {
 
         DefaultRedisRemoteLock<byte[], byte[]> lock = new DefaultRedisRemoteLock<>(byteAdapter, key, value, timeout);
 
-        Optional<byte[]> result = lock.tryInLock(() -> null);
+        Optional<?> result = lock.tryInLock(this::testReturnNull);
 
         assertTrue(result.isEmpty());
 
