@@ -32,12 +32,12 @@ A set of some common useful libraries.
       <groupId>com.github.fmjsjx</groupId>
       <artifactId>libcommon-util</artifactId>
     </dependency>
-    <!-- JSON library based on Jackson2 -->
+    <!-- JSON library based on Jackson3 -->
     <dependency>
       <groupId>com.github.fmjsjx</groupId>
-      <artifactId>libcommon-json-jackson2</artifactId>
+      <artifactId>libcommon-json-jackson3</artifactId>
     </dependency>
-    <!-- JSON library based on Json-Iter -->
+    <!-- JSON library based on Jsoniter -->
     <dependency>
       <groupId>com.github.fmjsjx</groupId>
       <artifactId>libcommon-json-jsoniter</artifactId>
@@ -61,8 +61,8 @@ dependencies {
     implementation 'com.github.fmjsjx:libcommon-util'
     // JSON library based on Fastjson2
     implementation 'com.github.fmjsjx:libcommon-json-fastjson2'
-    // JSON library based on Jackson2
-    implementation 'com.github.fmjsjx:libcommon-json-jackson2'
+    // JSON library based on Jackson3
+    implementation 'com.github.fmjsjx:libcommon-json-jackson3'
     // JSON library based on Json-Iter
     implementation 'com.github.fmjsjx:libcommon-json-jsoniter'
 }
@@ -80,8 +80,8 @@ dependencies {
     implementation("com.github.fmjsjx:libcommon-util")
     // JSON library based on Fastjson2
     implementation("com.github.fmjsjx:libcommon-json-fastjson2")
-    // JSON library based on Jackson2
-    implementation("com.github.fmjsjx:libcommon-json-jackson2")
+    // JSON library based on Jackson3
+    implementation("com.github.fmjsjx:libcommon-json-jackson3")
     // JSON library based on Json-Iter
     implementation("com.github.fmjsjx:libcommon-json-jsoniter")
 }
@@ -143,10 +143,6 @@ The [`libcommon-jwt`](libcommon-jwt) module provides a library to build/parse JW
 
 The [`libcommon-prometheus-client`](libcommon-prometheus-client) module provides Hotspot JVM metrics exports, that allow users set custom labels, based on [**prometheus client java**](https://prometheus.github.io/client_java/).
 
-### libcommon-yaml
-
-The [`libcommon-yaml`](libcommon-yaml) module provides a library interface to encode/decode YAML, with the default implementation based on [`Jackson2`](https://github.com/FasterXML/jackson).
-
 ### libcommon-redis
 
 The [`libcommon-redis`](libcommon-redis) module provides additional utility functions for [`Lettuce`](https://lettuce.io/).
@@ -157,8 +153,4 @@ The [`libcommon-redis-kotlin`](libcommon-redis-kotlin) module provides the kotli
 
 ### libcommon-bson
 
-The [`libcommon-bson`](libcommon-bson) module provides some additional utility functions for [`BSON`](https://www.mongodb.com/basics/bson).
-
-### libcommon-bson-kotlin
-
-The [`libcommon-bson-kotlin`](libcommon-bson-kotlin) module provides some additional kotlin extensions for [`BSON`](https://www.mongodb.com/basics/bson).
+The [`libcommon-bson`](libcommon-bson) module provides some additional utility functions and optional kotlin extensions for [`BSON`](https://www.mongodb.com/basics/bson).
