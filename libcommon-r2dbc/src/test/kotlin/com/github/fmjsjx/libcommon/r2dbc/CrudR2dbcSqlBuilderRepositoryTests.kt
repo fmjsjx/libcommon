@@ -1,5 +1,10 @@
 package com.github.fmjsjx.libcommon.r2dbc
 
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeSameInstanceAs
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -7,10 +12,6 @@ import io.mockk.slot
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertIterableEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.annotation.Id
@@ -22,7 +23,7 @@ import java.io.Serializable
 
 
 @Suppress("ReactiveStreamsUnusedPublisher")
-class CrudR2DbcSqlBuilderRepositoryTests {
+class CrudR2dbcSqlBuilderRepositoryTests {
 
     @Table("test_users")
     data class TestUser(
@@ -74,8 +75,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.insertOne(user).block()
 
-        assertNotNull(result)
-        assertEquals(savedUser, result)
+        result.shouldNotBeNull()
+        result shouldBe savedUser
         verify { operations.insert(user) }
     }
 
@@ -88,11 +89,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.deleteOne(user).block()
 
-        assertNotNull(result)
-        assertEquals(1L, result)
+        result.shouldNotBeNull()
+        result shouldBe 1L
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("DELETE FROM test_users WHERE id = ?", sql)
-        assertIterableEquals(listOf(1L), sqlBuilderSlot.captured.values)
+        sql shouldBe "DELETE FROM test_users WHERE id = ?"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf(1L)
         verify { operations.executeUpdate(any()) }
     }
 
@@ -104,8 +105,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.deleteOne(user).block()
 
-        assertNotNull(result)
-        assertEquals(0L, result)
+        result.shouldNotBeNull()
+        result shouldBe 0L
     }
 
     @Test
@@ -117,11 +118,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.updateOne(user).block()
 
-        assertNotNull(result)
-        assertEquals(1L, result)
+        result.shouldNotBeNull()
+        result shouldBe 1L
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("UPDATE test_users SET username = ? , age = ? WHERE id = ?", sql)
-        assertIterableEquals(listOf("Alice", 30, 1L), sqlBuilderSlot.captured.values)
+        sql shouldBe "UPDATE test_users SET username = ? , age = ? WHERE id = ?"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf("Alice", 30, 1L)
         verify { operations.executeUpdate(any()) }
     }
 
@@ -133,8 +134,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.updateOne(user).block()
 
-        assertNotNull(result)
-        assertEquals(0L, result)
+        result.shouldNotBeNull()
+        result shouldBe 0L
     }
 
     @Test
@@ -146,11 +147,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.findOneById(TestUser::class, 1L).block()
 
-        assertNotNull(result)
-        assertEquals(user, result)
+        result.shouldNotBeNull()
+        result shouldBe user
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("SELECT * FROM test_users WHERE id = ?", sql)
-        assertIterableEquals(listOf(1L), sqlBuilderSlot.captured.values)
+        sql shouldBe "SELECT * FROM test_users WHERE id = ?"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf(1L)
         verify { operations.selectOne(TestUser::class, any()) }
     }
 
@@ -162,8 +163,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.findOneById(2L).block()
 
-        assertNotNull(result)
-        assertEquals(user, result)
+        result.shouldNotBeNull()
+        result shouldBe user
         verify { operations.selectOne(TestUser::class, any()) }
     }
 
@@ -173,7 +174,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.findOneById(TestUser::class, 999L).block()
 
-        assertEquals(null, result)
+        result.shouldBeNull()
     }
 
     @Test
@@ -185,11 +186,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = orderRepository.findOneById(TestOrder::class, "O001").block()
 
-        assertNotNull(result)
-        assertEquals(order, result)
+        result.shouldNotBeNull()
+        result shouldBe order
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals($$"SELECT * FROM test_orders WHERE order_id = $1", sql)
-        assertIterableEquals(listOf("O001"), sqlBuilderSlot.captured.values)
+        sql shouldBe $$"SELECT * FROM test_orders WHERE order_id = $1"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf("O001")
     }
 
     @Test
@@ -202,8 +203,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
         orderRepository.deleteOne(order).block()
 
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals($$"DELETE FROM test_orders WHERE order_id = $1", sql)
-        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+        sql shouldBe $$"DELETE FROM test_orders WHERE order_id = $1"
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.POSTGRESQL
     }
 
     @Test
@@ -215,7 +216,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         userRepository.deleteOne(user).block()
 
-        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.NONE
     }
 
     @Test
@@ -227,7 +228,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val mono = userRepository.insertOne(user)
 
-        assertSame(savedUser, mono.block())
+        mono.block() shouldBeSameInstanceAs savedUser
         verify(exactly = 1) { operations.insert(user) }
     }
 
@@ -244,11 +245,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.findAllByIds(TestUser::class, listOf(1L, 2L, 3L)).collectList().block()
 
-        assertNotNull(result)
-        assertEquals(users, result)
+        result.shouldNotBeNull()
+        result shouldBe users
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("SELECT * FROM test_users WHERE id IN ( ?, ?, ? )", sql)
-        assertIterableEquals(listOf(1L, 2L, 3L), sqlBuilderSlot.captured.values)
+        sql shouldBe "SELECT * FROM test_users WHERE id IN ( ?, ?, ? )"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf(1L, 2L, 3L)
         verify { operations.select(TestUser::class, any()) }
     }
 
@@ -261,11 +262,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.findAllByIds(TestUser::class, listOf(1L)).collectList().block()
 
-        assertNotNull(result)
-        assertEquals(listOf(user), result)
+        result.shouldNotBeNull()
+        result shouldBe listOf(user)
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("SELECT * FROM test_users WHERE id = ?", sql)
-        assertIterableEquals(listOf(1L), sqlBuilderSlot.captured.values)
+        sql shouldBe "SELECT * FROM test_users WHERE id = ?"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf(1L)
         verify { operations.select(TestUser::class, any()) }
     }
 
@@ -275,8 +276,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.findAllByIds(TestUser::class, listOf(998L, 999L)).collectList().block()
 
-        assertNotNull(result)
-        assertEquals(emptyList<TestUser>(), result)
+        result.shouldNotBeNull()
+        result shouldBe emptyList<TestUser>()
     }
 
     @Test
@@ -292,11 +293,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = orderRepository.findAllByIds(TestOrder::class, listOf("O001", "O002", "O003")).collectList().block()
 
-        assertNotNull(result)
-        assertEquals(orders, result)
+        result.shouldNotBeNull()
+        result shouldBe orders
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals($$"SELECT * FROM test_orders WHERE order_id IN ( $1, $2, $3 )", sql)
-        assertIterableEquals(listOf("O001", "O002", "O003"), sqlBuilderSlot.captured.values)
+        sql shouldBe $$"SELECT * FROM test_orders WHERE order_id IN ( $1, $2, $3 )"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf("O001", "O002", "O003")
     }
 
     @Test
@@ -310,8 +311,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.findAllByIds(listOf(1L, 2L)).collectList().block()
 
-        assertNotNull(result)
-        assertEquals(users, result)
+        result.shouldNotBeNull()
+        result shouldBe users
         verify { operations.select(TestUser::class, any()) }
     }
 
@@ -327,7 +328,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         orderRepository.findAllByIds(TestOrder::class, listOf("O001", "O002")).collectList().block()
 
-        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.POSTGRESQL
     }
 
     @Test
@@ -339,7 +340,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         userRepository.findAllByIds(TestUser::class, listOf(1L)).collectList().block()
 
-        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.NONE
     }
 
     @Test
@@ -350,11 +351,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.deleteOneById(TestUser::class, 1L).block()
 
-        assertNotNull(result)
-        assertEquals(1L, result)
+        result.shouldNotBeNull()
+        result shouldBe 1L
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("DELETE FROM test_users WHERE id = ?", sql)
-        assertIterableEquals(listOf(1L), sqlBuilderSlot.captured.values)
+        sql shouldBe "DELETE FROM test_users WHERE id = ?"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf(1L)
         verify { operations.executeUpdate(any()) }
     }
 
@@ -364,8 +365,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.deleteOneById(TestUser::class, 999L).block()
 
-        assertNotNull(result)
-        assertEquals(0L, result)
+        result.shouldNotBeNull()
+        result shouldBe 0L
     }
 
     @Test
@@ -376,11 +377,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = orderRepository.deleteOneById(TestOrder::class, "O001").block()
 
-        assertNotNull(result)
-        assertEquals(1L, result)
+        result.shouldNotBeNull()
+        result shouldBe 1L
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals($$"DELETE FROM test_orders WHERE order_id = $1", sql)
-        assertIterableEquals(listOf("O001"), sqlBuilderSlot.captured.values)
+        sql shouldBe $$"DELETE FROM test_orders WHERE order_id = $1"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf("O001")
     }
 
     @Test
@@ -389,8 +390,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.deleteOneById(1L).block()
 
-        assertNotNull(result)
-        assertEquals(1L, result)
+        result.shouldNotBeNull()
+        result shouldBe 1L
         verify { operations.executeUpdate(any()) }
     }
 
@@ -402,7 +403,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         orderRepository.deleteOneById(TestOrder::class, "O002").block()
 
-        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.POSTGRESQL
     }
 
     @Test
@@ -413,7 +414,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         userRepository.deleteOneById(TestUser::class, 1L).block()
 
-        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.NONE
     }
 
     @Test
@@ -424,11 +425,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.deleteManyByIds(TestUser::class, listOf(1L, 2L, 3L)).block()
 
-        assertNotNull(result)
-        assertEquals(3L, result)
+        result.shouldNotBeNull()
+        result shouldBe 3L
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("DELETE FROM test_users WHERE id IN ( ?, ?, ? )", sql)
-        assertIterableEquals(listOf(1L, 2L, 3L), sqlBuilderSlot.captured.values)
+        sql shouldBe "DELETE FROM test_users WHERE id IN ( ?, ?, ? )"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf(1L, 2L, 3L)
         verify { operations.executeUpdate(any()) }
     }
 
@@ -440,11 +441,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.deleteManyByIds(TestUser::class, listOf(1L)).block()
 
-        assertNotNull(result)
-        assertEquals(1L, result)
+        result.shouldNotBeNull()
+        result shouldBe 1L
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("DELETE FROM test_users WHERE id = ?", sql)
-        assertIterableEquals(listOf(1L), sqlBuilderSlot.captured.values)
+        sql shouldBe "DELETE FROM test_users WHERE id = ?"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf(1L)
         verify { operations.executeUpdate(any()) }
     }
 
@@ -454,8 +455,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.deleteManyByIds(TestUser::class, listOf(998L, 999L)).block()
 
-        assertNotNull(result)
-        assertEquals(0L, result)
+        result.shouldNotBeNull()
+        result shouldBe 0L
     }
 
     @Test
@@ -466,11 +467,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = orderRepository.deleteManyByIds(TestOrder::class, listOf("O001", "O002", "O003")).block()
 
-        assertNotNull(result)
-        assertEquals(3L, result)
+        result.shouldNotBeNull()
+        result shouldBe 3L
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals($$"DELETE FROM test_orders WHERE order_id IN ( $1, $2, $3 )", sql)
-        assertIterableEquals(listOf("O001", "O002", "O003"), sqlBuilderSlot.captured.values)
+        sql shouldBe $$"DELETE FROM test_orders WHERE order_id IN ( $1, $2, $3 )"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf("O001", "O002", "O003")
     }
 
     @Test
@@ -479,8 +480,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.deleteManyByIds(listOf(1L, 2L)).block()
 
-        assertNotNull(result)
-        assertEquals(2L, result)
+        result.shouldNotBeNull()
+        result shouldBe 2L
         verify { operations.executeUpdate(any()) }
     }
 
@@ -492,7 +493,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         orderRepository.deleteManyByIds(TestOrder::class, listOf("O001", "O002")).block()
 
-        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.POSTGRESQL
     }
 
     @Test
@@ -503,7 +504,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         userRepository.deleteManyByIds(TestUser::class, listOf(1L)).block()
 
-        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.NONE
     }
 
     // ========== findAll tests ==========
@@ -521,11 +522,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.findAll(TestUser::class).collectList().block()
 
-        assertNotNull(result)
-        assertEquals(users, result)
+        result.shouldNotBeNull()
+        result shouldBe users
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("SELECT * FROM test_users", sql)
-        assertEquals(emptyList<Any>(), sqlBuilderSlot.captured.values)
+        sql shouldBe "SELECT * FROM test_users"
+        sqlBuilderSlot.captured.values shouldContainExactly emptyList<Any>()
         verify { operations.select(TestUser::class, any()) }
     }
 
@@ -535,8 +536,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.findAll(TestUser::class).collectList().block()
 
-        assertNotNull(result)
-        assertEquals(emptyList<TestUser>(), result)
+        result.shouldNotBeNull()
+        result shouldBe emptyList<TestUser>()
     }
 
     @Test
@@ -551,11 +552,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = orderRepository.findAll(TestOrder::class).collectList().block()
 
-        assertNotNull(result)
-        assertEquals(orders, result)
+        result.shouldNotBeNull()
+        result shouldBe orders
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("SELECT * FROM test_orders", sql)
-        assertEquals(emptyList<Any>(), sqlBuilderSlot.captured.values)
+        sql shouldBe "SELECT * FROM test_orders"
+        sqlBuilderSlot.captured.values shouldContainExactly emptyList<Any>()
     }
 
     @Test
@@ -566,7 +567,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         orderRepository.findAll(TestOrder::class).collectList().block()
 
-        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.POSTGRESQL
     }
 
     @Test
@@ -577,7 +578,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         userRepository.findAll(TestUser::class).collectList().block()
 
-        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.NONE
     }
 
     @Test
@@ -591,8 +592,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.findAll().collectList().block()
 
-        assertNotNull(result)
-        assertEquals(users, result)
+        result.shouldNotBeNull()
+        result shouldBe users
         verify { operations.select(TestUser::class, any()) }
     }
 
@@ -602,8 +603,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.findAll().collectList().block()
 
-        assertNotNull(result)
-        assertEquals(emptyList<TestUser>(), result)
+        result.shouldNotBeNull()
+        result shouldBe emptyList<TestUser>()
     }
 
     // ========== countAll tests ==========
@@ -616,11 +617,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.countAll(TestUser::class).block()
 
-        assertNotNull(result)
-        assertEquals(5L, result)
+        result.shouldNotBeNull()
+        result shouldBe 5L
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("SELECT COUNT(*) FROM test_users", sql)
-        assertEquals(emptyList<Any>(), sqlBuilderSlot.captured.values)
+        sql shouldBe "SELECT COUNT(*) FROM test_users"
+        sqlBuilderSlot.captured.values shouldContainExactly emptyList<Any>()
         verify { operations.selectLong(any()) }
     }
 
@@ -630,8 +631,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.countAll(TestUser::class).block()
 
-        assertNotNull(result)
-        assertEquals(0L, result)
+        result.shouldNotBeNull()
+        result shouldBe 0L
     }
 
     @Test
@@ -642,11 +643,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = orderRepository.countAll(TestOrder::class).block()
 
-        assertNotNull(result)
-        assertEquals(10L, result)
+        result.shouldNotBeNull()
+        result shouldBe 10L
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("SELECT COUNT(*) FROM test_orders", sql)
-        assertEquals(emptyList<Any>(), sqlBuilderSlot.captured.values)
+        sql shouldBe "SELECT COUNT(*) FROM test_orders"
+        sqlBuilderSlot.captured.values shouldContainExactly emptyList<Any>()
     }
 
     @Test
@@ -657,7 +658,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         orderRepository.countAll(TestOrder::class).block()
 
-        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.POSTGRESQL
     }
 
     @Test
@@ -668,7 +669,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         userRepository.countAll(TestUser::class).block()
 
-        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.NONE
     }
 
     @Test
@@ -677,8 +678,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.countAll().block()
 
-        assertNotNull(result)
-        assertEquals(3L, result)
+        result.shouldNotBeNull()
+        result shouldBe 3L
         verify { operations.selectLong(any()) }
     }
 
@@ -688,8 +689,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.countAll().block()
 
-        assertNotNull(result)
-        assertEquals(0L, result)
+        result.shouldNotBeNull()
+        result shouldBe 0L
     }
 
     // ========== countById tests ==========
@@ -702,11 +703,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.countById(TestUser::class, 1L).block()
 
-        assertNotNull(result)
-        assertEquals(1L, result)
+        result.shouldNotBeNull()
+        result shouldBe 1L
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("SELECT COUNT(*) FROM test_users WHERE id = ?", sql)
-        assertIterableEquals(listOf(1L), sqlBuilderSlot.captured.values)
+        sql shouldBe "SELECT COUNT(*) FROM test_users WHERE id = ?"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf(1L)
         verify { operations.selectLong(any()) }
     }
 
@@ -716,8 +717,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.countById(TestUser::class, 999L).block()
 
-        assertNotNull(result)
-        assertEquals(0L, result)
+        result.shouldNotBeNull()
+        result shouldBe 0L
     }
 
     @Test
@@ -728,11 +729,11 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = orderRepository.countById(TestOrder::class, "O001").block()
 
-        assertNotNull(result)
-        assertEquals(1L, result)
+        result.shouldNotBeNull()
+        result shouldBe 1L
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals($$"SELECT COUNT(*) FROM test_orders WHERE order_id = $1", sql)
-        assertIterableEquals(listOf("O001"), sqlBuilderSlot.captured.values)
+        sql shouldBe $$"SELECT COUNT(*) FROM test_orders WHERE order_id = $1"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf("O001")
     }
 
     @Test
@@ -743,7 +744,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         orderRepository.countById(TestOrder::class, "O001").block()
 
-        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.POSTGRESQL
     }
 
     @Test
@@ -754,7 +755,7 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         userRepository.countById(TestUser::class, 1L).block()
 
-        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.NONE
     }
 
     @Test
@@ -763,8 +764,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.countById(1L).block()
 
-        assertNotNull(result)
-        assertEquals(1L, result)
+        result.shouldNotBeNull()
+        result shouldBe 1L
         verify { operations.selectLong(any()) }
     }
 
@@ -774,8 +775,8 @@ class CrudR2DbcSqlBuilderRepositoryTests {
 
         val result = userRepository.countById(999L).block()
 
-        assertNotNull(result)
-        assertEquals(0L, result)
+        result.shouldNotBeNull()
+        result shouldBe 0L
     }
 
     // ========== existsById tests ==========
@@ -784,94 +785,94 @@ class CrudR2DbcSqlBuilderRepositoryTests {
     fun testExistsByIdReturnsTrue() {
         val sqlBuilderSlot = slot<SqlBuilder>()
 
-        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+        every { operations.selectOneValue<Int>(capture(sqlBuilderSlot)) } returns Mono.just(1)
 
         val result = userRepository.existsById(TestUser::class, 1L).block()
 
-        assertNotNull(result)
-        assertEquals(true, result)
+        result.shouldNotBeNull()
+        result shouldBe true
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals("SELECT COUNT(*) FROM test_users WHERE id = ?", sql)
-        assertIterableEquals(listOf(1L), sqlBuilderSlot.captured.values)
-        verify { operations.selectLong(any()) }
+        sql shouldBe "SELECT 1 FROM test_users WHERE id = ? LIMIT ?"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf<Any>(1L, 1)
+        verify { operations.selectOneValue<Int>(any()) }
     }
 
     @Test
     fun testExistsByIdReturnsFalse() {
-        every { operations.selectLong(any()) } returns Mono.just(0L)
+        every { operations.selectOneValue<Int>(any()) } returns Mono.empty()
 
         val result = userRepository.existsById(TestUser::class, 999L).block()
 
-        assertNotNull(result)
-        assertEquals(false, result)
+        result.shouldNotBeNull()
+        result shouldBe false
     }
 
     @Test
     fun testExistsByIdWithDifferentEntity() {
         val sqlBuilderSlot = slot<SqlBuilder>()
 
-        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(1L)
+        every { operations.selectOneValue<Int>(capture(sqlBuilderSlot)) } returns Mono.just(1)
 
         val result = orderRepository.existsById(TestOrder::class, "O001").block()
 
-        assertNotNull(result)
-        assertEquals(true, result)
+        result.shouldNotBeNull()
+        result shouldBe true
         val sql = sqlBuilderSlot.captured.buildSql()
-        assertEquals($$"SELECT COUNT(*) FROM test_orders WHERE order_id = $1", sql)
-        assertIterableEquals(listOf("O001"), sqlBuilderSlot.captured.values)
+        sql shouldBe $$"SELECT 1 FROM test_orders WHERE order_id = $1 LIMIT $2"
+        sqlBuilderSlot.captured.values shouldContainExactly listOf("O001", 1)
     }
 
     @Test
     fun testExistsByIdParameterStyleIsPassed() {
         val sqlBuilderSlot = slot<SqlBuilder>()
 
-        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(0L)
+        every { operations.selectOneValue<Int>(capture(sqlBuilderSlot)) } returns Mono.empty()
 
         orderRepository.existsById(TestOrder::class, "O999").block()
 
-        assertEquals(ParameterStyle.POSTGRESQL, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.POSTGRESQL
     }
 
     @Test
     fun testExistsByIdDefaultParameterStyleIsNone() {
         val sqlBuilderSlot = slot<SqlBuilder>()
 
-        every { operations.selectLong(capture(sqlBuilderSlot)) } returns Mono.just(0L)
+        every { operations.selectOneValue<Int>(capture(sqlBuilderSlot)) } returns Mono.empty()
 
         userRepository.existsById(TestUser::class, 1L).block()
 
-        assertEquals(ParameterStyle.NONE, sqlBuilderSlot.captured.parameterStyle)
+        sqlBuilderSlot.captured.parameterStyle shouldBe ParameterStyle.NONE
     }
 
     @Test
     fun testExistsByIdInlineExtensionReturnsTrue() {
-        every { operations.selectLong(any()) } returns Mono.just(1L)
+        every { operations.selectOneValue<Int>(any()) } returns Mono.just(1)
 
         val result = userRepository.existsById(1L).block()
 
-        assertNotNull(result)
-        assertEquals(true, result)
-        verify { operations.selectLong(any()) }
+        result.shouldNotBeNull()
+        result shouldBe true
+        verify { operations.selectOneValue<Int>(any()) }
     }
 
     @Test
     fun testExistsByIdInlineExtensionReturnsFalse() {
-        every { operations.selectLong(any()) } returns Mono.just(0L)
+        every { operations.selectOneValue<Int>(any()) } returns Mono.empty()
 
         val result = userRepository.existsById(999L).block()
 
-        assertNotNull(result)
-        assertEquals(false, result)
+        result.shouldNotBeNull()
+        result shouldBe false
     }
 
     @Test
     fun testExistsByIdWithCountGreaterThanOne() {
-        every { operations.selectLong(any()) } returns Mono.just(5L)
+        every { operations.selectOneValue<Int>(any()) } returns Mono.just(1)
 
         val result = userRepository.existsById(TestUser::class, 1L).block()
 
-        assertNotNull(result)
-        assertEquals(true, result)
+        result.shouldNotBeNull()
+        result shouldBe true
     }
 
 }
