@@ -1,8 +1,10 @@
 plugins {
     id("libcommon.java-library-conventions")
+    id("libcommon.kotlin-library-conventions")
     id("libcommon.publish-conventions")
 }
 
+ext["kotlin.stdlib.default.dependency"] = "false"
 
 dependencies {
 
@@ -10,18 +12,26 @@ dependencies {
     implementation(project(":libcommon-json-jsoniter"))
     implementation(project(":libcommon-json-fastjson2"))
     implementation(project(":libcommon-util"))
+    compileOnly(kotlin("stdlib"))
+    compileOnly(project(":libcommon-json-jsoniter-kotlin"))
+    compileOnly(project(":libcommon-json-fastjson2-kotlin"))
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactive")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
     testImplementation("org.mockito:mockito-core")
+    testImplementation("io.mockk:mockk")
 }
 
 description = "libcommon/JWT"
 
 tasks.test {
-    // Use junit platform for unit tests.
+    // Use JUnit platform for unit tests.
     useJUnitPlatform()
     jvmArgs = listOf(
         "-XX:+EnableDynamicAgentLoading",
