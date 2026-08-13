@@ -11,8 +11,8 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
     implementation(project(":libcommon-util"))
     api("io.lettuce:lettuce-core")
-    compileOnly(kotlin("stdlib"))
-    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
+    compileOnlyApi(kotlin("stdlib"))
+    compileOnlyApi("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -24,11 +24,6 @@ dependencies {
 }
 
 description = "libcommon/REDIS"
-
-tasks.test {
-    // Use JUnit platform for unit tests.
-    useJUnitPlatform()
-}
 
 publishing {
     publications {

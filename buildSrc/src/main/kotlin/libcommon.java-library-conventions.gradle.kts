@@ -77,7 +77,10 @@ configurations {
         extendsFrom(configurations.annotationProcessor.get())
     }
     testImplementation {
-        extendsFrom(configurations.compileOnly.get())
+        extendsFrom(
+            configurations.compileOnly.get(),
+            configurations.compileOnlyApi.get(),
+        )
     }
 }
 

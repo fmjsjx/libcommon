@@ -1,5 +1,6 @@
 plugins {
     id("libcommon.java-library-conventions")
+    id("libcommon.kotlin-library-conventions")
     id("libcommon.publish-conventions")
 }
 
@@ -13,20 +14,19 @@ dependencies {
     api("tools.jackson.core:jackson-databind")
     compileOnlyApi("com.jsoniter:jsoniter")
 
+    compileOnlyApi(kotlin("stdlib"))
+    compileOnlyApi("tools.jackson.module:jackson-module-kotlin")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
-    testImplementation("com.jsoniter:jsoniter")
+    testImplementation("io.mockk:mockk")
+    testImplementation("io.kotest:kotest-assertions-core")
 
 }
 
 description = "libcommon/JSON Jackson3"
-
-tasks.test {
-    // Use junit platform for unit tests.
-    useJUnitPlatform()
-}
 
 publishing {
     publications {
