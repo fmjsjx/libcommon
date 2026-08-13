@@ -28,6 +28,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.time.Duration.Companion.milliseconds
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class KeepAliveRedisCoroutineLockTests {
@@ -220,7 +221,7 @@ class KeepAliveRedisCoroutineLockTests {
             val (acquired, result) = lock.tryInLockAndAwait {
                 actionExecuted = true
                 // Sleep longer than timeout, keep-alive should refresh the lock
-                delay(3000)
+                delay(3000.milliseconds)
                 // Check if lock still exists
                 connection.sync().ttl(key)
             }
@@ -388,7 +389,7 @@ class KeepAliveRedisCoroutineLockTests {
                         maxWaitMillis = 2000,
                         notAcquiredSupplier = { IllegalStateException("Lock not acquired") }
                     ) {
-                        delay(2000)
+                        delay(2000.milliseconds)
                     }
                 }
                 val actionExecuted = AtomicBoolean()
@@ -434,7 +435,7 @@ class KeepAliveRedisCoroutineLockTests {
                     startSemaphore.acquire() // 获取信号量，等待父协程释放
                     lock.runInLockAndAwait(1000, 50) {
                         counter.incrementAndGet()
-                        delay(100)
+                        delay(100.milliseconds)
                         counter.get()
                     }
                 } catch (e: Exception) {
@@ -448,12 +449,12 @@ class KeepAliveRedisCoroutineLockTests {
             val job2 = launch(Dispatchers.IO) { task(lock2) }
 
             // 等待两个协程都启动后，同时释放信号量让它们开始执行
-            delay(100) // 确保两个协程都在等待
+            delay(100.milliseconds) // 确保两个协程都在等待
             startSemaphore.release() // 释放第一个许可
             startSemaphore.release() // 释放第二个许可
 
             // 等待两个任务完成
-            withTimeout(10000) {
+            withTimeout(10000.milliseconds) {
                 job1.join()
                 job2.join()
             }
@@ -582,7 +583,7 @@ class KeepAliveRedisCoroutineLockTests {
             val (acquired, result) = lock.tryInLockAndAwait {
                 actionExecuted = true
                 // Sleep longer than timeout, keep-alive should refresh the lock
-                delay(3000)
+                delay(3000.milliseconds)
                 // Check if lock still exists
                 byteConnection.sync().ttl(key)
             }
@@ -671,7 +672,7 @@ class KeepAliveRedisCoroutineLockTests {
                     startSemaphore.acquire() // 获取信号量，等待父协程释放
                     lock.runInLockAndAwait(1000, 50) {
                         counter.incrementAndGet()
-                        delay(100)
+                        delay(100.milliseconds)
                         counter.get().toString().toByteArray()
                     }
                 } catch (e: Exception) {
@@ -685,12 +686,12 @@ class KeepAliveRedisCoroutineLockTests {
             val job2 = launch(Dispatchers.IO) { task(lock2) }
 
             // 等待两个协程都启动后，同时释放信号量让它们开始执行
-            delay(100) // 确保两个协程都在等待
+            delay(100.milliseconds) // 确保两个协程都在等待
             startSemaphore.release() // 释放第一个许可
             startSemaphore.release() // 释放第二个许可
 
             // 等待两个任务完成
-            withTimeout(10000) {
+            withTimeout(10000.milliseconds) {
                 job1.join()
                 job2.join()
             }

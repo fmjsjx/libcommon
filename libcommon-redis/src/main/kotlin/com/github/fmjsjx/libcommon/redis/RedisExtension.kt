@@ -9,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.await
 import java.util.concurrent.CompletionStage
 import kotlin.math.min
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Try to lock the specified key with the specified value.
@@ -30,7 +31,7 @@ suspend fun <K, V, C : RedisStringAsyncCommands<K, V>> C.tryLock(
         if (now >= deadline) {
             return false
         }
-        delay(min(eachWait, deadline - now))
+        delay(min(eachWait, deadline - now).milliseconds)
     }
     return true
 }

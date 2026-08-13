@@ -145,11 +145,7 @@ The [`libcommon-prometheus-client`](libcommon-prometheus-client) module provides
 
 ### libcommon-redis
 
-The [`libcommon-redis`](libcommon-redis) module provides additional utility functions for [`Lettuce`](https://lettuce.io/).
-
-### libcommon-redis-kotlin
-
-The [`libcommon-redis-kotlin`](libcommon-redis-kotlin) module provides the kotlin extensions of [`Lettuce`](https://lettuce.io/).
+The [`libcommon-redis`](libcommon-redis) module provides additional utility functions and optional kotlin extensions for [`Lettuce`](https://lettuce.io/).
 
 ### libcommon-bson
 
