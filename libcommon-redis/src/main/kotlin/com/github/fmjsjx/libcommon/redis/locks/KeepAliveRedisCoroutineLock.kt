@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * The implementation of [RedisCoroutineLock] with keep alive feature.
@@ -68,7 +69,7 @@ class KeepAliveRedisCoroutineLock<K : Any, V : Any>(
                 }
                 val nextWaitMillis = min(eachWait, deadline - now)
                 if (nextWaitMillis > 0) {
-                    delay(nextWaitMillis)
+                    delay(nextWaitMillis.milliseconds)
                 }
                 r = tryLockAndAwait()
             }
@@ -93,7 +94,7 @@ class KeepAliveRedisCoroutineLock<K : Any, V : Any>(
         val keeper = launch(keeperContext) {
             val intervalMillis = keepAliveIntervalMillis
             do {
-                delay(intervalMillis)
+                delay(intervalMillis.milliseconds)
                 keepAliveAsync()
             } while (inLock.get() && isActive)
         }

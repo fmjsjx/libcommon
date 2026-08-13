@@ -21,7 +21,6 @@ dependencies {
         api(project(":libcommon-prometheus-client"))
         api(project(":libcommon-r2dbc"))
         api(project(":libcommon-redis"))
-        api(project(":libcommon-redis-kotlin"))
         api(project(":libcommon-util"))
         api(project(":libcommon-util-kotlin"))
     }
