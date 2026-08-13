@@ -8,7 +8,6 @@ description = "libcommon/BOM"
 dependencies {
     constraints {
         api(project(":libcommon-bson"))
-        api(project(":libcommon-bson-kotlin"))
         api(project(":libcommon-json"))
         api(project(":libcommon-json-fastjson2"))
         api(project(":libcommon-json-fastjson2-kotlin"))

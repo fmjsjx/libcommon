@@ -11,7 +11,6 @@ pluginManagement {
 rootProject.name = "libcommon"
 include(":libcommon-bom")
 include(":libcommon-bson")
-include(":libcommon-bson-kotlin")
 include(":libcommon-json")
 include(":libcommon-json-fastjson2")
 include(":libcommon-json-fastjson2-kotlin")

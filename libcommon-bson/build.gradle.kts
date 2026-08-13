@@ -1,18 +1,24 @@
 plugins {
     id("libcommon.java-library-conventions")
+    id("libcommon.kotlin-library-conventions")
     id("libcommon.publish-conventions")
 }
+
+ext["kotlin.stdlib.default.dependency"] = "false"
 
 dependencies {
     implementation("org.slf4j:slf4j-api")
     implementation(project(":libcommon-util"))
     api("org.mongodb:bson")
     api("org.mongodb:mongodb-driver-core")
+    compileOnly(kotlin("stdlib"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
+    testImplementation("io.mockk:mockk")
+    testImplementation("io.kotest:kotest-assertions-core")
 }
 
 description = "libcommon/BSON"

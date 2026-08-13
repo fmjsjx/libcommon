@@ -1,6 +1,7 @@
 package com.github.fmjsjx.libcommon.bson
 
 import com.github.fmjsjx.libcommon.util.DateTimeUtil
+import com.mongodb.MongoClientSettings
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
@@ -15,8 +16,8 @@ import java.math.BigInteger
 import java.time.DayOfWeek
 import java.time.ZoneId
 import java.time.ZoneOffset
-import java.util.Date
 import java.util.UUID
+import java.util.Date
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 
@@ -26,6 +27,25 @@ class BsonValueUtilTests {
     @AfterEach
     fun tearDown() {
         unmockkAll()
+    }
+
+    @Test
+    fun testEncodeValue() {
+        val codecRegistry = MongoClientSettings.getDefaultCodecRegistry()
+        BsonDocumentWriter(BsonDocument()).use { writer ->
+            writer.writeStartDocument()
+            writer.writeName("null")
+            BsonValueUtil.encodeValue(writer, null, codecRegistry)
+            writer.writeName("bson")
+            BsonValueUtil.encodeValue(writer, BsonString("value"), codecRegistry)
+            writer.writeName("string")
+            BsonValueUtil.encodeValue(writer, "This is a string!", codecRegistry)
+            writer.writeEndDocument()
+            val document = writer.document
+            document["null"] shouldBe BsonNull.VALUE
+            document["bson"] shouldBe BsonString("value")
+            document["string"] shouldBe BsonString("This is a string!")
+        }
     }
 
     @Test
