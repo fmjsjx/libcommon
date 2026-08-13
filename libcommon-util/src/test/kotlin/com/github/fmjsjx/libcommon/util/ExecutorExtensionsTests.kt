@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.time.Duration.Companion.milliseconds
 
 class ExecutorExtensionsTests {
 
@@ -17,7 +18,7 @@ class ExecutorExtensionsTests {
         try {
             executor.execute { name.set(Thread.currentThread().name) }
             val f = executor.future {
-                delay(1)
+                delay(1.milliseconds)
                 Thread.currentThread().name.substringBefore(" @")
             }
             f.join()
@@ -36,7 +37,7 @@ class ExecutorExtensionsTests {
             executor.execute { name.set(Thread.currentThread().name) }
             var threadName = ""
             val job = executor.launch {
-                delay(1)
+                delay(1.milliseconds)
                 threadName = Thread.currentThread().name.substringBefore(" @")
             }
             runBlocking {
@@ -56,7 +57,7 @@ class ExecutorExtensionsTests {
         try {
             executor.execute { name.set(Thread.currentThread().name) }
             val deferred = executor.async {
-                delay(1)
+                delay(1.milliseconds)
                 Thread.currentThread().name.substringBefore(" @")
             }
             var threadName: String

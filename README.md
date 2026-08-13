@@ -95,10 +95,6 @@ There are a number of modules in LibCommon, here is a quick overview:
 
 The [`libcommon-util`](libcommon-util) module provides some common utility classes, additional functional interfaces, additional collection/map utilities.
 
-### libcommon-util-kotlin
-
-The [`libcommon-util-kotlin`](libcommon-util-kotlin) module provides some utility class for [**Kotlin**](https://kotlinlang.org/).
-
 ### libcommon-json
 
 The [`libcommon-json`](libcommon-json) module provides a library interface to encode/decode JSON.

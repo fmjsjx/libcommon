@@ -50,7 +50,6 @@ infix fun LocalDateTime.toEpochMilli(offset: ZoneOffset): Long =
  * Returns `true` if this date and the specified date is in same week
  * (Monday start), `false` otherwise.
  *
- * @param this  the first date
  * @param other the second date
  * @return `true` if the specified to dates is in same week (Monday
  *         start), `false` otherwise
@@ -58,11 +57,7 @@ infix fun LocalDateTime.toEpochMilli(offset: ZoneOffset): Long =
  * @since 4.0
  */
 infix fun LocalDate.isSameWeek(other: LocalDate): Boolean =
-    if (isEqual(other)) {
-        true
-    } else {
-        DateTimeUtil.isSameWeek(this, other)
-    }
+    isEqual(other) || DateTimeUtil.isSameWeek(this, other)
 
 /**
  * Converts this date-time to an [Instant].

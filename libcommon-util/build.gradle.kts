@@ -1,15 +1,25 @@
 plugins {
     id("libcommon.java-library-conventions")
+    id("libcommon.kotlin-library-conventions")
     id("libcommon.publish-conventions")
 }
+
+ext["kotlin.stdlib.default.dependency"] = "false"
 
 dependencies {
 
     implementation("org.slf4j:slf4j-api")
 
-    compileOnly("io.netty:netty-common")
-    compileOnly("com.fasterxml.uuid:java-uuid-generator")
+    compileOnlyApi("io.netty:netty-common")
+    compileOnlyApi("com.fasterxml.uuid:java-uuid-generator")
     annotationProcessor("org.jspecify:jspecify:1.0.1")
+
+    compileOnlyApi(kotlin("stdlib"))
+    compileOnlyApi("org.jetbrains.kotlin:kotlin-reflect")
+    compileOnlyApi("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    compileOnlyApi("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
+    compileOnlyApi("org.jetbrains.kotlinx:kotlinx-coroutines-reactive")
+    compileOnlyApi("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -22,10 +32,13 @@ dependencies {
 description = "libcommon/Util"
 
 tasks.test {
-    // Use junit platform for unit tests.
+    // Use JUnit platform for unit tests.
     useJUnitPlatform()
     jvmArgs = listOf(
-        "--add-opens", "java.base/java.util=ALL-UNNAMED",
+        "-Xshare:off",
+        "-XX:+EnableDynamicAgentLoading",
+        "--add-opens",
+        "java.base/java.util=ALL-UNNAMED",
     )
 }
 

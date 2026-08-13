@@ -9,7 +9,7 @@ public class KotlinUtilTests {
     @Test
     public void testIsKotlinPresent() {
         try {
-            assertFalse(KotlinUtil.isKotlinPresent());
+            assertTrue(KotlinUtil.isKotlinPresent());
         } catch (Exception e) {
             fail(e);
         }
@@ -18,7 +18,7 @@ public class KotlinUtilTests {
     @Test
     public void testIsKotlinReflectPresent() {
         try {
-            assertFalse(KotlinUtil.isKotlinReflectPresent());
+            assertTrue(KotlinUtil.isKotlinReflectPresent());
         } catch (Exception e) {
             fail(e);
         }

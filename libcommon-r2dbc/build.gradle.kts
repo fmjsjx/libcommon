@@ -10,8 +10,11 @@ dependencies {
     compileOnly("com.google.code.findbugs:jsr305")
     implementation(project(":libcommon-util"))
     api("org.springframework.data:spring-data-r2dbc")
-    implementation(project(":libcommon-util-kotlin"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
