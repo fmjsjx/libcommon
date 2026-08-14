@@ -25,13 +25,13 @@ public interface RedisPubSubConnectionAdapter<K, V> extends RedisConnectionAdapt
      * @param <V>        Value type.
      * @param <C>        Connection type.
      * @return a new {@link RedisPubSubConnectionAdapter} instance
+     * @since 4.3
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    static <K, V, C extends StatefulRedisPubSubConnection<K, V>> RedisPubSubConnectionAdapter<K, V> of(C connection) {
-        if (connection instanceof StatefulRedisClusterPubSubConnection c) {
-            return ofCluster(c);
-        }
-        return ofDirect(connection);
+    @SuppressWarnings("unchecked")
+    static <K, V, C extends StatefulRedisPubSubConnection<K, V>> RedisPubSubConnectionAdapter<K, V> autoPubSub(C connection) {
+        return connection instanceof StatefulRedisClusterPubSubConnection<?, ?>
+                ? ofClusterPubSub((StatefulRedisClusterPubSubConnection<K, V>) connection)
+                : ofDirectPubSub(connection);
     }
 
     /**
@@ -42,8 +42,9 @@ public interface RedisPubSubConnectionAdapter<K, V> extends RedisConnectionAdapt
      * @param <K>        Key type.
      * @param <V>        Value type.
      * @return a new {@link RedisPubSubConnectionAdapter} instance
+     * @since 4.3
      */
-    static <K, V> RedisPubSubConnectionAdapter<K, V> ofDirect(StatefulRedisPubSubConnection<K, V> connection) {
+    static <K, V> RedisPubSubConnectionAdapter<K, V> ofDirectPubSub(StatefulRedisPubSubConnection<K, V> connection) {
         return new RedisDirectPubSubConnectionAdapter<>(connection);
     }
 
@@ -55,9 +56,56 @@ public interface RedisPubSubConnectionAdapter<K, V> extends RedisConnectionAdapt
      * @param <K>        Key type.
      * @param <V>        Value type.
      * @return a new {@link RedisPubSubConnectionAdapter} instance
+     * @since 4.3
      */
-    static <K, V> RedisPubSubConnectionAdapter<K, V> ofCluster(StatefulRedisClusterPubSubConnection<K, V> connection) {
+    static <K, V> RedisPubSubConnectionAdapter<K, V> ofClusterPubSub(StatefulRedisClusterPubSubConnection<K, V> connection) {
         return new RedisClusterPubSubConnectionAdapter<>(connection);
+    }
+
+    /**
+     * Creates and returns a new {@link RedisPubSubConnectionAdapter}
+     * instance.
+     *
+     * @param connection the delegated connection
+     * @param <K>        Key type.
+     * @param <V>        Value type.
+     * @param <C>        Connection type.
+     * @return a new {@link RedisPubSubConnectionAdapter} instance
+     * @deprecated since 4.3, please use {@link #autoPubSub(StatefulRedisPubSubConnection)} instead
+     */
+    @Deprecated(since = "4.3")
+    static <K, V, C extends StatefulRedisPubSubConnection<K, V>> RedisPubSubConnectionAdapter<K, V> of(C connection) {
+        return autoPubSub(connection);
+    }
+
+    /**
+     * Creates and returns a new {@link RedisPubSubConnectionAdapter}
+     * instance with the specified direct {@code connection} given.
+     *
+     * @param connection the delegated connection
+     * @param <K>        Key type.
+     * @param <V>        Value type.
+     * @return a new {@link RedisPubSubConnectionAdapter} instance
+     * @deprecated since 4.3, please use {@link #ofDirectPubSub(StatefulRedisPubSubConnection)} instead
+     */
+    @Deprecated(since = "4.3")
+    static <K, V> RedisPubSubConnectionAdapter<K, V> ofDirect(StatefulRedisPubSubConnection<K, V> connection) {
+        return ofDirectPubSub(connection);
+    }
+
+    /**
+     * Creates and returns a new {@link RedisPubSubConnectionAdapter}
+     * instance with the specified cluster {@code connection} given.
+     *
+     * @param connection the delegated connection
+     * @param <K>        Key type.
+     * @param <V>        Value type.
+     * @return a new {@link RedisPubSubConnectionAdapter} instance
+     * @deprecated since 4.3, please use {@link #ofClusterPubSub(StatefulRedisClusterPubSubConnection)} instead
+     */
+    @Deprecated(since = "4.3")
+    static <K, V> RedisPubSubConnectionAdapter<K, V> ofCluster(StatefulRedisClusterPubSubConnection<K, V> connection) {
+        return ofClusterPubSub(connection);
     }
 
     @Override

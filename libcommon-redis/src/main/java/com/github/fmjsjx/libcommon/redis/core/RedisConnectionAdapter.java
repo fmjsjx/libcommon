@@ -32,9 +32,10 @@ public interface RedisConnectionAdapter<K, V> extends AutoCloseable, AsyncClosea
      * @param <V>        Value type.
      * @param <C>        Connection type.
      * @return a new {@link RedisConnectionAdapter} instance
+     * @since 4.3
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    static <K, V, C extends StatefulConnection<K, V>> RedisConnectionAdapter<K, V> of(C connection) {
+    static <K, V, C extends StatefulConnection<K, V>> RedisConnectionAdapter<K, V> auto(C connection) {
         if (connection instanceof StatefulRedisClusterConnection c) {
             return ofCluster(c);
         }
@@ -42,6 +43,21 @@ public interface RedisConnectionAdapter<K, V> extends AutoCloseable, AsyncClosea
             return ofDirect(c);
         }
         throw new UnsupportedOperationException("unsupported connection type " + connection.getClass());
+    }
+
+    /**
+     * Creates and returns a new {@link RedisConnectionAdapter} instance.
+     *
+     * @param connection the delegated connection
+     * @param <K>        Key type.
+     * @param <V>        Value type.
+     * @param <C>        Connection type.
+     * @return a new {@link RedisConnectionAdapter} instance
+     * @deprecated since 4.3, use {@link #auto(StatefulConnection)} instead
+     */
+    @Deprecated(since = "4.3")
+    static <K, V, C extends StatefulConnection<K, V>> RedisConnectionAdapter<K, V> of(C connection) {
+        return auto(connection);
     }
 
     /**
