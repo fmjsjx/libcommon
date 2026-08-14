@@ -427,6 +427,17 @@ class SqlBuilderExtensionsTests {
     }
 
     @Test
+    fun testSubquery() {
+        val sqlBuilder = SqlBuilder()
+        sqlBuilder.subquery("test") {
+            selectAll()
+            from<TestEntity>()
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("(", "SELECT", "*", "FROM", "test_entity", ")", "test")
+    }
+
+    @Test
     fun testIsIn_Subquery() {
         val sqlBuilder = SqlBuilder()
         sqlBuilder.isIn {

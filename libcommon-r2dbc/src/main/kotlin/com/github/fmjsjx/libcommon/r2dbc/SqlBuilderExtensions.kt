@@ -463,6 +463,17 @@ fun SqlBuilder.appendAssignment(column: KProperty1<*, *>, value: Any?): SqlBuild
 fun SqlBuilder.groupBy(vararg columns: KProperty1<*, *>): SqlBuilder = groupBy(columns.map { it.toColumn() })
 
 /**
+ * Append a subquery into SQL.
+ *
+ * @param name the name of the subquery
+ * @param block the subquery block
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+inline fun SqlBuilder.subquery(name: String, block: SqlBuilder.() -> Unit): SqlBuilder =
+    subquery().apply { block() }.endSubquery(name)
+
+/**
  * Append `IN` clause into SQL with the specified subquery.
  *
  * @param subqueryBlock the subquery block
