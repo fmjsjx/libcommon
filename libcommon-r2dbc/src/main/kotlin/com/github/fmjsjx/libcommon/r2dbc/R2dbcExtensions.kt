@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.github.fmjsjx.libcommon.r2dbc
 
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations

@@ -1640,6 +1640,17 @@ public class SqlBuilder {
     }
 
     /**
+     * Append {@code AS alias} into SQL.
+     *
+     * @param alias the alias
+     * @return this {@link SqlBuilder}
+     * @since 4.3
+     */
+    public SqlBuilder alias(String alias) {
+        return as().s(alias);
+    }
+
+    /**
      * Append {@code WITH} into SQL.
      *
      * @return this {@link SqlBuilder}
@@ -2738,6 +2749,15 @@ public class SqlBuilder {
         var column = getPersistentEntityInfo(entityClass).map(PersistentEntityInfo::getIdColumn)
                 .orElseThrow(() -> new NoSuchElementException("The entity class " + entityClass + " doesn't have a field marked as @Id"));
         return column(column.getColumnName()).eqOrIn(ids);
+    }
+
+    /**
+     * Append {@code ON DUPLICATE KEY} into SQL.
+     *
+     * @return this {@link SqlBuilder}
+     */
+    public SqlBuilder onDuplicateKey() {
+        return on().s("DUPLICATE KEY");
     }
 
 }

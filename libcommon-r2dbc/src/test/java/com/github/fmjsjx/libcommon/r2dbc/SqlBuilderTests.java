@@ -1539,6 +1539,13 @@ public class SqlBuilderTests {
     }
 
     @Test
+    public void testAlias() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.alias("name"));
+        assertIterableEquals(List.of("AS", "name"), sqlParts(sqlBuilder));
+    }
+
+    @Test
     public void testWith() {
         var sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, sqlBuilder.with());
@@ -2679,6 +2686,14 @@ public class SqlBuilderTests {
         } catch (NoSuchElementException e) {
             assertEquals("The entity class " + TestEntity3.class + " doesn't have a field marked as @Id", e.getMessage());
         }
+    }
+
+
+    @Test
+    public void testOnDuplicateKey() {
+        var sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, sqlBuilder.onDuplicateKey());
+        assertIterableEquals(List.of("ON", "DUPLICATE KEY"), sqlParts(sqlBuilder));
     }
 
 }

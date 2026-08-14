@@ -27,6 +27,14 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
     val parameterStyle: ParameterStyle get() = ParameterStyle.NONE
 
     /**
+     * Returns a new [SqlBuilder] instance with the [parameterStyle] set.
+     *
+     * @return a new [SqlBuilder] instance with the [parameterStyle] set
+     * @since 4.3
+     */
+    fun sqlBuilder(): SqlBuilder = SqlBuilder().parameterStyle(parameterStyle)
+
+    /**
      * Inserts the specified [entity].
      *
      * @param entity the entity to insert
@@ -41,7 +49,7 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
      * @return the number of deleted rows
      */
     fun deleteOne(entity: E): Mono<Long> =
-        SqlBuilder().parameterStyle(parameterStyle)
+        sqlBuilder()
             .deleteFrom(entity::class.java)
             .where().filterById(entity)
             .let { r2dbcEntityOperations.executeUpdate(it) }
@@ -54,7 +62,7 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
      * @return the number of deleted rows
      */
     fun deleteOneById(entityType: KClass<E>, id: ID): Mono<Long> =
-        SqlBuilder().parameterStyle(parameterStyle)
+        sqlBuilder()
             .deleteFrom(entityType.java)
             .where().filterById(entityType.java, id)
             .let { r2dbcEntityOperations.executeUpdate(it) }
@@ -67,7 +75,7 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
      * @return the number of deleted rows
      */
     fun deleteManyByIds(entityType: KClass<E>, ids: List<ID>): Mono<Long> =
-        SqlBuilder().parameterStyle(parameterStyle)
+        sqlBuilder()
             .deleteFrom(entityType.java)
             .where().filterByIds(entityType.java, ids)
             .let { r2dbcEntityOperations.executeUpdate(it) }
@@ -79,7 +87,7 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
      * @return the number of updated rows
      */
     fun updateOne(entity: E): Mono<Long> =
-        SqlBuilder().parameterStyle(parameterStyle)
+        sqlBuilder()
             .update(entity::class.java)
             .set(entity)
             .where().filterById(entity)
@@ -93,7 +101,7 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
      * @return the found entity or empty [Mono]
      */
     fun findOneById(entityType: KClass<E>, id: ID): Mono<E> =
-        SqlBuilder().parameterStyle(parameterStyle)
+        sqlBuilder()
             .selectAll()
             .from(entityType.java)
             .where().filterById(entityType.java, id)
@@ -107,7 +115,7 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
      * @return the found entities
      */
     fun findAllByIds(entityType: KClass<E>, ids: List<ID>): Flux<E> =
-        SqlBuilder().parameterStyle(parameterStyle)
+        sqlBuilder()
             .selectAll()
             .from(entityType.java)
             .where().filterByIds(entityType.java, ids)
@@ -120,7 +128,7 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
      * @return the found entities
      */
     fun findAll(entityType: KClass<E>): Flux<E> =
-        SqlBuilder().parameterStyle(parameterStyle)
+        sqlBuilder()
             .selectAll()
             .from(entityType.java)
             .let { r2dbcEntityOperations.select(entityType, it) }
@@ -132,7 +140,7 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
      * @return the count of entities
      */
     fun countAll(entityType: KClass<E>): Mono<Long> =
-        SqlBuilder().parameterStyle(parameterStyle)
+        sqlBuilder()
             .selectCount()
             .from(entityType.java)
             .let { r2dbcEntityOperations.selectLong(it) }
@@ -145,7 +153,7 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
      * @return the count of entities
      */
     fun countById(entityType: KClass<E>, id: ID): Mono<Long> =
-        SqlBuilder().parameterStyle(parameterStyle)
+        sqlBuilder()
             .selectCount()
             .from(entityType.java)
             .where().filterById(entityType.java, id)
@@ -157,7 +165,14 @@ interface CrudR2dbcSqlBuilderRepository<E : Any, ID : Serializable> {
      * @param entityType the type of the entity
      * @param id the ID of the entity
      */
-    fun existsById(entityType: KClass<E>, id: ID): Mono<Boolean> = countById(entityType, id).map { it > 0 }
+    fun existsById(entityType: KClass<E>, id: ID): Mono<Boolean> =
+        sqlBuilder()
+            .select("1")
+            .from(entityType.java)
+            .where().filterById(entityType.java, id)
+            .limit(1)
+            .let { r2dbcEntityOperations.selectOneValue<Int>(it) }
+            .hasElement()
 
 }
 

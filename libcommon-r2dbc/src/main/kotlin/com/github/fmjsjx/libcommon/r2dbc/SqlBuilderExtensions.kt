@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.github.fmjsjx.libcommon.r2dbc
 
 import com.github.fmjsjx.libcommon.r2dbc.Sort.ASC
@@ -370,8 +372,7 @@ fun <T, V> KProperty1<T, V>.desc(): Order = toOrder(DESC)
  * @return this [SqlBuilder]
  * @since 3.12
  */
-fun SqlBuilder.select(vararg columns: KProperty1<*, *>): SqlBuilder =
-    select(*columns.map { it.toColumn() }.toTypedArray())
+fun SqlBuilder.select(vararg columns: KProperty1<*, *>): SqlBuilder = select(columns.map { it.toColumn() })
 
 /**
  * Select distinct columns.
@@ -381,7 +382,7 @@ fun SqlBuilder.select(vararg columns: KProperty1<*, *>): SqlBuilder =
  * @since 3.15
  */
 fun SqlBuilder.selectDistinct(vararg columns: KProperty1<*, *>): SqlBuilder =
-    selectDistinct(*columns.map { it.toColumn() }.toTypedArray())
+    selectDistinct(columns.map { it.toColumn() })
 
 /**
  * Append `WHERE` and the specified `column` into SQL.
@@ -451,3 +452,64 @@ fun SqlBuilder.beginGroup(column: KProperty1<*, *>): SqlBuilder = beginGroup(col
  */
 fun SqlBuilder.appendAssignment(column: KProperty1<*, *>, value: Any?): SqlBuilder =
     appendAssignment(column.toColumn(), value)
+
+/**
+ * Append `GROUP BY` clause into SQL with the specified `columns` given.
+ *
+ * @param columns the columns
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+fun SqlBuilder.groupBy(vararg columns: KProperty1<*, *>): SqlBuilder = groupBy(columns.map { it.toColumn() })
+
+/**
+ * Append `IN` clause into SQL with the specified subquery.
+ *
+ * @param subqueryBlock the subquery block
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+inline fun SqlBuilder.isIn(subqueryBlock: SqlBuilder.() -> Unit): SqlBuilder =
+    inSubquery().apply { subqueryBlock() }.endSubquery()
+
+/**
+ * Append `INNER JOIN` clause into SQL with the specified subquery.
+ *
+ * @param name the name of the subquery
+ * @param subqueryBlock the subquery block
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+inline fun SqlBuilder.innerJoin(name: String, subqueryBlock: SqlBuilder.() -> Unit): SqlBuilder =
+    innerJoinSubquery().apply { subqueryBlock() }.endSubquery(name)
+
+/**
+ * Append `LEFT JOIN` clause into SQL with the specified subquery.
+ *
+ * @param name the name of the subquery
+ * @param subqueryBlock the subquery block
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+inline fun SqlBuilder.leftJoin(name: String, subqueryBlock: SqlBuilder.() -> Unit): SqlBuilder =
+    leftJoinSubquery().apply { subqueryBlock() }.endSubquery(name)
+
+/**
+ * Append `RIGHT JOIN` clause into SQL with the specified subquery.
+ *
+ * @param name the name of the subquery
+ * @param subqueryBlock the subquery block
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+inline fun SqlBuilder.rightJoin(name: String, subqueryBlock: SqlBuilder.() -> Unit): SqlBuilder =
+    rightJoinSubquery().apply { subqueryBlock() }.endSubquery(name)
+
+/**
+ * Append `USING` clause into SQL with the specified columns.
+ *
+ * @param columns the columns
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+fun SqlBuilder.using(vararg columns: KProperty1<*, *>): SqlBuilder = using(columns.map { it.toColumn() })

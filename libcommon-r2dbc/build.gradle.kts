@@ -22,6 +22,7 @@ dependencies {
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
     testImplementation("org.mockito:mockito-core")
     testImplementation("io.mockk:mockk")
+    testImplementation("io.kotest:kotest-assertions-core")
 }
 
 description = "libcommon/R2DBC"
