@@ -533,3 +533,56 @@ fun SqlBuilder.using(vararg columns: KProperty1<*, *>): SqlBuilder = using(colum
  * @since 4.3
  */
 fun SqlBuilder.columns(vararg columns: KProperty1<*, *>): SqlBuilder = columns(columns.map { it.toColumn() })
+
+/**
+ * Append select clause into SQL with the specified block.
+ *
+ * > **Note**: This method will trigger a [finishSelect] call after
+ * ending the `block`
+ *
+ * @param block the select block
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+inline fun SqlBuilder.select(block: SqlBuilder.() -> Unit): SqlBuilder =
+    select().apply { block() }.finishSelect()
+
+/**
+ * Append set clause into SQL with the specified block.
+ *
+ * @param block the set block
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+inline fun SqlBuilder.setClause(block: SqlBuilder.() -> Unit): SqlBuilder =
+    setClause().apply { block() }.endSetClause()
+
+/**
+ * Append where clause into SQL with the specified block.
+ *
+ * @param block the where block
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+inline fun SqlBuilder.where(block: SqlBuilder.() -> Unit): SqlBuilder =
+    whereClause().apply { block() }.endWhereClause()
+
+/**
+ * Append group by clause into SQL with the specified block.
+ *
+ * @param block the group block
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+inline fun SqlBuilder.group(block: SqlBuilder.() -> Unit): SqlBuilder =
+    beginGroup().apply { block() }.endGroup()
+
+/**
+ * Append having clause into SQL with the specified block.
+ *
+ * @param block the having block
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+inline fun SqlBuilder.having(block: SqlBuilder.() -> Unit): SqlBuilder =
+    havingClause().apply { block() }.endHavingClause()
