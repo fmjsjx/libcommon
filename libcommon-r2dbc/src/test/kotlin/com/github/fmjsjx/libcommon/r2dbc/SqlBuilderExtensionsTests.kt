@@ -488,4 +488,127 @@ class SqlBuilderExtensionsTests {
         sqlBuilder.sqlPartsValue shouldContainExactly listOf("USING", "(", "id, name", ")")
     }
 
+    @Test
+    fun testColumns_KProperty1Array() {
+        val sqlBuilder = SqlBuilder()
+        sqlBuilder.columns(TestEntity::id, TestEntity::name) shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly listOf("(", "id, name", ")")
+    }
+
+    @Test
+    fun testSelect_Block() {
+        var sqlBuilder = SqlBuilder()
+        sqlBuilder.select {
+            appendColumns<TestEntity>()
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("SELECT", "test_entity.id, test_entity.name, test_entity.create_time, test_entity.update_time")
+        sqlBuilder.selectColumns.shouldBeNull()
+        sqlBuilder = SqlBuilder()
+        sqlBuilder.select {
+            appendColumns<TestEntity>("a", "a_")
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("SELECT", "a.id a_id, a.name a_name, a.create_time a_create_time, a.update_time a_update_time")
+    }
+
+    @Test
+    fun testSetClause_Block() {
+        val now = LocalDateTime.now()
+        val sqlBuilder = SqlBuilder()
+        sqlBuilder.setClause {
+            appendAssignment(TestEntity::name, "test")
+            appendAssignment(TestEntity::createTime, now)
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly listOf("SET", "name", "= ?", ",", "create_time", "= ?")
+        sqlBuilder.valuesValue shouldContainExactly listOf("test", now)
+    }
+
+    @Test
+    fun testWhere_Block() {
+        val now = LocalDateTime.now()
+        var sqlBuilder = SqlBuilder()
+        sqlBuilder.where {
+            and(TestEntity::id).eq(1)
+            and(TestEntity::name).eq("test")
+            and(TestEntity::createTime).gt(now)
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("WHERE", "id", "= ?", "AND", "name", "= ?", "AND", "create_time", "> ?")
+        sqlBuilder.valuesValue shouldContainExactly listOf(1, "test", now)
+
+        sqlBuilder = SqlBuilder()
+        sqlBuilder.where {
+            or(TestEntity::id).eq(1)
+            or(TestEntity::name).eq("test")
+            or(TestEntity::createTime).gt(now)
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("WHERE", "id", "= ?", "OR", "name", "= ?", "OR", "create_time", "> ?")
+        sqlBuilder.valuesValue shouldContainExactly listOf(1, "test", now)
+
+        sqlBuilder = SqlBuilder()
+        sqlBuilder.where {
+            and(TestEntity::name).eq("test")
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly listOf("WHERE", "name", "= ?")
+        sqlBuilder.valuesValue shouldContainExactly listOf("test")
+
+        sqlBuilder = SqlBuilder()
+        sqlBuilder.where {
+            or(TestEntity::name).eq("test")
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly listOf("WHERE", "name", "= ?")
+        sqlBuilder.valuesValue shouldContainExactly listOf("test")
+    }
+
+    @Test
+    fun testGroup_Block() {
+        val now = LocalDateTime.now()
+        var sqlBuilder = SqlBuilder()
+        sqlBuilder.group {
+            and(TestEntity::name).eq("test")
+            and(TestEntity::createTime).gt(now)
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("(", "name", "= ?", "AND", "create_time", "> ?", ")")
+        sqlBuilder.valuesValue shouldContainExactly listOf("test", now)
+
+        sqlBuilder = SqlBuilder()
+        sqlBuilder.group {
+            or(TestEntity::name).eq("test")
+            or(TestEntity::createTime).gt(now)
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("(", "name", "= ?", "OR", "create_time", "> ?", ")")
+        sqlBuilder.valuesValue shouldContainExactly listOf("test", now)
+
+        sqlBuilder = SqlBuilder()
+        sqlBuilder.where().column("id").eq(1).group {
+            and("name").eq("test")
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("WHERE", "id", "= ?", "(", "name", "= ?", ")")
+        sqlBuilder.valuesValue shouldContainExactly listOf(1, "test")
+
+        sqlBuilder = SqlBuilder()
+        sqlBuilder.where().column("id").eq(1).group {
+            or("name").eq("test")
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("WHERE", "id", "= ?", "(", "name", "= ?", ")")
+        sqlBuilder.valuesValue shouldContainExactly listOf(1, "test")
+    }
+
+    @Test
+    fun testHaving_Block() {
+        val sqlBuilder = SqlBuilder()
+        sqlBuilder.groupBy(TestEntity::name).having {
+            s("COUNT(*)").gt(1)
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("GROUP BY", "name", "HAVING", "COUNT(*)", "> ?")
+        sqlBuilder.valuesValue shouldContainExactly listOf(1)
+    }
+
 }

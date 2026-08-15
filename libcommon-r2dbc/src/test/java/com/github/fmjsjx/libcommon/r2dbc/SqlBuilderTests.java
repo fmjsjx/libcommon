@@ -1169,6 +1169,17 @@ public class SqlBuilderTests {
         assertIterableEquals(List.of("WHERE", "id", "= ?", "AND", "state", "= ?"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of(1, 1), values(sqlBuilder));
 
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, new SqlBuilder(sqlBuilder, WHERE_CLAUSE).s("and", "id", "= ?", "AND", "state", "= ?").v(1, 1).endWhereClause());
+        assertIterableEquals(List.of("WHERE", "id", "= ?", "AND", "state", "= ?"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1, 1), values(sqlBuilder));
+
+
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, new SqlBuilder(sqlBuilder, WHERE_CLAUSE).s("OR", "id", "= ?", "AND", "state", "= ?").v(1, 1).endWhereClause());
+        assertIterableEquals(List.of("WHERE", "id", "= ?", "AND", "state", "= ?"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1, 1), values(sqlBuilder));
+
         try {
             new SqlBuilder().endWhereClause();
             fail("Should throw IllegalStateException");
@@ -1499,6 +1510,20 @@ public class SqlBuilderTests {
         assertIterableEquals(List.of("(", "id", "= ?", "OR", "state", "= ?", ")"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of(1, 1), values(group));
 
+        sqlBuilder = new SqlBuilder();
+        group = new SqlBuilder(sqlBuilder.s("("), GROUP)
+                .s("and", "id", "= ?", "OR", "state", "= ?").v(1, 1);
+        assertSame(sqlBuilder, group.endGroup());
+        assertIterableEquals(List.of("(", "id", "= ?", "OR", "state", "= ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1, 1), values(group));
+
+        sqlBuilder = new SqlBuilder();
+        group = new SqlBuilder(sqlBuilder.s("("), GROUP)
+                .s("OR", "id", "= ?", "OR", "state", "= ?").v(1, 1);
+        assertSame(sqlBuilder, group.endGroup());
+        assertIterableEquals(List.of("(", "id", "= ?", "OR", "state", "= ?", ")"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1, 1), values(group));
+
         try {
             new SqlBuilder().endGroup();
             fail("Should throw IllegalStateException");
@@ -1623,6 +1648,16 @@ public class SqlBuilderTests {
 
         sqlBuilder = new SqlBuilder();
         assertSame(sqlBuilder, new SqlBuilder(sqlBuilder, HAVING_CLAUSE).s("id", "= ?", "AND", "state", "= ?").v(1, 1).endHavingClause());
+        assertIterableEquals(List.of("HAVING", "id", "= ?", "AND", "state", "= ?"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1, 1), values(sqlBuilder));
+
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, new SqlBuilder(sqlBuilder, HAVING_CLAUSE).s("AND", "id", "= ?", "AND", "state", "= ?").v(1, 1).endHavingClause());
+        assertIterableEquals(List.of("HAVING", "id", "= ?", "AND", "state", "= ?"), sqlParts(sqlBuilder));
+        assertIterableEquals(List.of(1, 1), values(sqlBuilder));
+
+        sqlBuilder = new SqlBuilder();
+        assertSame(sqlBuilder, new SqlBuilder(sqlBuilder, HAVING_CLAUSE).s("or", "id", "= ?", "AND", "state", "= ?").v(1, 1).endHavingClause());
         assertIterableEquals(List.of("HAVING", "id", "= ?", "AND", "state", "= ?"), sqlParts(sqlBuilder));
         assertIterableEquals(List.of(1, 1), values(sqlBuilder));
 
