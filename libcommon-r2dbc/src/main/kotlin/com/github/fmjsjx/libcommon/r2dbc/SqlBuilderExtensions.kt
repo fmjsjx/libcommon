@@ -524,3 +524,12 @@ inline fun SqlBuilder.rightJoin(name: String, subqueryBlock: SqlBuilder.() -> Un
  * @since 4.3
  */
 fun SqlBuilder.using(vararg columns: KProperty1<*, *>): SqlBuilder = using(columns.map { it.toColumn() })
+
+/**
+ * Append columns into SQL with the specified columns.
+ *
+ * @param columns the columns
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+fun SqlBuilder.columns(vararg columns: KProperty1<*, *>): SqlBuilder = columns(columns.map { it.toColumn() })

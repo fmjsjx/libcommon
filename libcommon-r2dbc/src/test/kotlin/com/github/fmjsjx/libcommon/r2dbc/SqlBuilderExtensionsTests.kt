@@ -488,4 +488,11 @@ class SqlBuilderExtensionsTests {
         sqlBuilder.sqlPartsValue shouldContainExactly listOf("USING", "(", "id, name", ")")
     }
 
+    @Test
+    fun testColumns_KProperty1Array() {
+        val sqlBuilder = SqlBuilder()
+        sqlBuilder.columns(TestEntity::id, TestEntity::name) shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly listOf("(", "id, name", ")")
+    }
+
 }
