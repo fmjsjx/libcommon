@@ -1161,10 +1161,10 @@ public class SqlBuilder {
      * @return the parent {@link SqlBuilder}
      */
     public SqlBuilder endWhereClause() {
-        return endClause("WHERE", WHERE_CLAUSE, "not in a where clause", "AND");
+        return endClause("WHERE", WHERE_CLAUSE, "not in a where clause", "AND", "OR");
     }
 
-    SqlBuilder endClause(String key, int mode, String errorMessage, String delimiter) {
+    SqlBuilder endClause(String key, int mode, String errorMessage, String... delimiters) {
         if (this.mode != mode) {
             throw new IllegalStateException(errorMessage);
         }
@@ -1173,12 +1173,22 @@ public class SqlBuilder {
             return parent;
         }
         parent.s(key);
-        if (delimiter.equalsIgnoreCase(sqlParts.getFirst())) {
+        var first = sqlParts.getFirst();
+        if (anyMatch(first, delimiters)) {
             sqlParts.stream().skip(1).forEach(parent::s);
         } else {
             parent.s(sqlParts);
         }
         return parent.v(values);
+    }
+
+    private static boolean anyMatch(String part, String... delimiters) {
+        for (var delimiter : delimiters) {
+            if (delimiter.equalsIgnoreCase(part)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -1614,7 +1624,13 @@ public class SqlBuilder {
         if (mode != GROUP) {
             throw new IllegalStateException("not in group");
         }
-        return parent.append(this).s(")");
+        var first = sqlParts.getFirst();
+        if ("OR".equalsIgnoreCase(first) || "AND".equalsIgnoreCase(first)) {
+            sqlParts.stream().skip(1).forEach(parent::s);
+        } else {
+            parent.s(sqlParts);
+        }
+        return parent.v(values).s(")");
     }
 
     /**
@@ -1624,8 +1640,8 @@ public class SqlBuilder {
      */
     public SqlBuilder endAllGroups() {
         var current = this;
-        for (; current.mode == GROUP; current = current.parent) {
-            current.parent.append(current).s(")");
+        while (current.mode == GROUP) {
+            current = current.endGroup();
         }
         return current;
     }
@@ -1754,7 +1770,7 @@ public class SqlBuilder {
      * @return the parent {@link SqlBuilder}
      */
     public SqlBuilder endHavingClause() {
-        return endClause("HAVING", HAVING_CLAUSE, "not in a having clause", "AND");
+        return endClause("HAVING", HAVING_CLAUSE, "not in a having clause", "AND", "OR");
     }
 
     /**
