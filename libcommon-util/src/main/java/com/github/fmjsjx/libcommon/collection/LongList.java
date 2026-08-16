@@ -1,17 +1,17 @@
 package com.github.fmjsjx.libcommon.collection;
 
 import java.util.List;
-import java.util.function.IntConsumer;
-import java.util.stream.IntStream;
+import java.util.function.LongConsumer;
+import java.util.stream.LongStream;
 
 /**
- * Interface for a primitive list of {@code int} values, a specialization of
- * {@code List<Integer>} that avoids boxing and unboxing overhead.
+ * Interface for a primitive list of {@code long} values, a specialization of
+ * {@code List<Long>} that avoids boxing and unboxing overhead.
  *
  * @author MJ Fang
  * @since 4.3
  */
-public interface IntList extends List<Integer> {
+public interface LongList extends List<Long> {
 
     /**
      * Returns {@code true} if this list contains the specified value, {@code false}
@@ -21,7 +21,7 @@ public interface IntList extends List<Integer> {
      * @return {@code true} if this list contains the specified value, {@code false}
      *         otherwise
      */
-    boolean contains(int value);
+    boolean contains(long value);
 
     /**
      * Appends the specified value to the end of this list.
@@ -29,7 +29,7 @@ public interface IntList extends List<Integer> {
      * @param value the value
      * @return {@code true} if this list changed as a result of the call
      */
-    boolean add(int value);
+    boolean add(long value);
 
     /**
      * Returns the value at the specified position in this list.
@@ -37,7 +37,7 @@ public interface IntList extends List<Integer> {
      * @param index the index of the value to return
      * @return the value at the specified position in this list
      */
-    int valueAt(int index);
+    long valueAt(int index);
 
     /**
      * Replaces the value at the specified position in this list with the
@@ -47,7 +47,7 @@ public interface IntList extends List<Integer> {
      * @param value the value to be stored at the specified position
      * @return the value previously at the specified position
      */
-    int set(int index, int value);
+    long set(int index, long value);
 
     /**
      * Inserts the specified value at the specified position in this list.
@@ -55,7 +55,7 @@ public interface IntList extends List<Integer> {
      * @param index the index at which the specified value is to be inserted
      * @param value the value to be inserted
      */
-    void add(int index, int value);
+    void add(int index, long value);
 
     /**
      * Returns the index of the first occurrence of the specified value in this
@@ -65,7 +65,7 @@ public interface IntList extends List<Integer> {
      * @return the index of the first occurrence of the specified value in this
      *         list, or {@code -1} if this list does not contain the value
      */
-    int indexOf(int value);
+    int indexOf(long value);
 
     /**
      * Returns the index of the last occurrence of the specified value in this
@@ -75,7 +75,7 @@ public interface IntList extends List<Integer> {
      * @return the index of the last occurrence of the specified value in this
      *         list, or {@code -1} if this list does not contain the value
      */
-    int lastIndexOf(int value);
+    int lastIndexOf(long value);
 
     /**
      * Removes the value at the specified position in this list.
@@ -83,7 +83,7 @@ public interface IntList extends List<Integer> {
      * @param index the index of the value to be removed
      * @return the value previously at the specified position
      */
-    int removeAt(int index);
+    long removeAt(int index);
 
     /**
      * Removes the first occurrence of the specified value from this list, if it
@@ -93,7 +93,7 @@ public interface IntList extends List<Integer> {
      * @return {@code true} if this list contained the specified value, {@code false}
      *         otherwise
      */
-    boolean removeFirst(int value);
+    boolean removeFirst(long value);
 
     /**
      * Removes all occurrences of the specified value from this list.
@@ -102,7 +102,7 @@ public interface IntList extends List<Integer> {
      * @return {@code true} if this list contained the specified value, {@code false}
      *         otherwise
      */
-    default boolean removeAllValue(int value) {
+    default boolean removeAllValue(long value) {
         var modified = false;
         while (removeFirst(value)) {
             modified = true;
@@ -111,19 +111,19 @@ public interface IntList extends List<Integer> {
     }
 
     /**
-     * Returns a sequential {@link IntStream} with this list as its source.
+     * Returns a sequential {@link LongStream} with this list as its source.
      * 
-     * @return a sequential {@code IntStream} over the values in this list
+     * @return a sequential {@code LongStream} over the values in this list
      */
-    IntStream intStream();
+    LongStream longStream();
 
     /**
      * Returns an array containing the values of this list.
      * 
      * @return an array containing the values of this list
      */
-    default int[] toIntArray() {
-        return intStream().toArray();
+    default long[] toLongArray() {
+        return longStream().toArray();
     }
 
     /**
@@ -131,8 +131,8 @@ public interface IntList extends List<Integer> {
      * 
      * @param action The action to be performed for each value
      */
-    default void forEach(IntConsumer action) {
-        intStream().forEach(action);
+    default void forEach(LongConsumer action) {
+        longStream().forEach(action);
     }
 
     /**
@@ -141,7 +141,7 @@ public interface IntList extends List<Integer> {
      * @param values the values
      * @return {@code true} if this list changed as a result of the call
      */
-    default boolean addAll(int... values) {
+    default boolean addAll(long... values) {
         var modified = false;
         for (var value : values) {
             modified |= add(value);
@@ -157,7 +157,7 @@ public interface IntList extends List<Integer> {
      * @return {@code true} if this list contains all of the specified values,
      *         {@code false} otherwise
      */
-    default boolean containsAll(int... values) {
+    default boolean containsAll(long... values) {
         for (var e : values) {
             if (!contains(e)) {
                 return false;
@@ -173,6 +173,6 @@ public interface IntList extends List<Integer> {
      * @param values the values
      * @return {@code true} if this list changed as a result of the call
      */
-    boolean removeAll(int... values);
+    boolean removeAll(long... values);
 
 }
