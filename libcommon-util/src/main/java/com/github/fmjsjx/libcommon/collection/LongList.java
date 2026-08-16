@@ -1,5 +1,7 @@
 package com.github.fmjsjx.libcommon.collection;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.List;
 import java.util.function.LongConsumer;
 import java.util.stream.LongStream;
@@ -11,7 +13,7 @@ import java.util.stream.LongStream;
  * @author MJ Fang
  * @since 4.3
  */
-public interface LongList extends List<Long> {
+public interface LongList extends List<@NonNull Long> {
 
     /**
      * Returns {@code true} if this list contains the specified value, {@code false}

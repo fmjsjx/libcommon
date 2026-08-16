@@ -1,5 +1,7 @@
 package com.github.fmjsjx.libcommon.collection;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.List;
 import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
@@ -11,7 +13,7 @@ import java.util.stream.IntStream;
  * @author MJ Fang
  * @since 4.3
  */
-public interface IntList extends List<Integer> {
+public interface IntList extends List<@NonNull Integer> {
 
     /**
      * Returns {@code true} if this list contains the specified value, {@code false}
