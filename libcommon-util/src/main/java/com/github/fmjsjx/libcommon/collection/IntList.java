@@ -117,14 +117,14 @@ public interface IntList extends List<@NonNull Integer> {
      * 
      * @return a sequential {@code IntStream} over the values in this list
      */
-    IntStream intStream();
+    @NonNull IntStream intStream();
 
     /**
      * Returns an array containing the values of this list.
      * 
      * @return an array containing the values of this list
      */
-    default int[] toIntArray() {
+    default int @NonNull [] toIntArray() {
         return intStream().toArray();
     }
 
@@ -133,7 +133,7 @@ public interface IntList extends List<@NonNull Integer> {
      * 
      * @param action The action to be performed for each value
      */
-    default void forEach(IntConsumer action) {
+    default void forEach(@NonNull IntConsumer action) {
         intStream().forEach(action);
     }
 
@@ -143,7 +143,7 @@ public interface IntList extends List<@NonNull Integer> {
      * @param values the values
      * @return {@code true} if this list changed as a result of the call
      */
-    default boolean addAll(int... values) {
+    default boolean addAll(int @NonNull ... values) {
         var modified = false;
         for (var value : values) {
             modified |= add(value);
@@ -159,7 +159,7 @@ public interface IntList extends List<@NonNull Integer> {
      * @return {@code true} if this list contains all of the specified values,
      *         {@code false} otherwise
      */
-    default boolean containsAll(int... values) {
+    default boolean containsAll(int @NonNull ... values) {
         for (var e : values) {
             if (!contains(e)) {
                 return false;
@@ -175,6 +175,6 @@ public interface IntList extends List<@NonNull Integer> {
      * @param values the values
      * @return {@code true} if this list changed as a result of the call
      */
-    boolean removeAll(int... values);
+    boolean removeAll(int @NonNull ... values);
 
 }
