@@ -556,4 +556,27 @@ public class IntArrayListTests {
         assertTrue(list.subList(2, 2).isEmpty());
     }
 
+    @Test
+    public void testBoundaryValues() {
+        var list = new IntArrayList(Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE);
+        assertEquals(Integer.MIN_VALUE, valuesOf(list)[0]);
+        assertEquals(Integer.MAX_VALUE, valuesOf(list)[4]);
+        assertTrue(list.contains(Integer.MIN_VALUE));
+        assertTrue(list.contains(Integer.MAX_VALUE));
+        assertTrue(list.containsAll(Integer.MIN_VALUE, Integer.MAX_VALUE));
+
+        list.set(0, Integer.MAX_VALUE);
+        assertEquals(Integer.MAX_VALUE, valuesOf(list)[0]);
+        list.set(0, Integer.MIN_VALUE);
+        assertEquals(Integer.MIN_VALUE, valuesOf(list)[0]);
+
+        list.add(Integer.MAX_VALUE);
+        assertEquals(6, sizeOf(list));
+        assertEquals(Integer.MAX_VALUE, valuesOf(list)[5]);
+        list.add(Integer.MIN_VALUE);
+        assertEquals(7, sizeOf(list));
+        assertEquals(Integer.MIN_VALUE, valuesOf(list)[6]);
+
+    }
+
 }
