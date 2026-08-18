@@ -42,6 +42,31 @@ public class IntArrayList extends AbstractList<@NonNull Integer>
      */
     private static final int[] DEFAULT_CAPACITY_EMPTY_VALUES = {};
 
+    @SuppressWarnings("SuspiciousSystemArraycopy")
+    static void fastRemoveByIndices(@NonNull Object values, int start, int end, @NonNull IntArrayList toRemoveIndices) {
+        var base = start - 1;
+        var prevIndex = base;
+        var prevDestIndex = -1;
+        for (var i = 0; i < toRemoveIndices.size(); i++) {
+            // Use valueData method to avoid unnecessary range check
+            var index = toRemoveIndices.valueData(i);
+            if (prevIndex == base) {
+                prevDestIndex = index;
+            } else {
+                var length = index - prevIndex - 1;
+                if (length > 0) {
+                    System.arraycopy(values, prevIndex + 1, values, prevDestIndex, length);
+                    prevDestIndex += length;
+                }
+            }
+            prevIndex = index;
+        }
+        var length = end - prevIndex - 1;
+        if (length > 0) {
+            System.arraycopy(values, prevIndex + 1, values, prevDestIndex, length);
+        }
+    }
+
     private int[] values;
     private int size;
 
@@ -123,12 +148,7 @@ public class IntArrayList extends AbstractList<@NonNull Integer>
 
     @Override
     public boolean contains(int value) {
-        for (var i = 0; i < size; i++) {
-            if (values[i] == value) {
-                return true;
-            }
-        }
-        return false;
+        return ArrayUtil.contains(values, 0, size, value);
     }
 
     /**
@@ -161,7 +181,7 @@ public class IntArrayList extends AbstractList<@NonNull Integer>
         return valueData(index);
     }
 
-    private int valueData(int index) {
+    int valueData(int index) {
         return values[index];
     }
 
@@ -245,12 +265,39 @@ public class IntArrayList extends AbstractList<@NonNull Integer>
     }
 
     @Override
-    public boolean removeAll(int @NonNull ... values) {
-        var modified = false;
-        for (var value : values) {
-            modified |= removeAllValue(value);
+    public boolean removeAllValue(int value) {
+        var values = this.values;
+        var size = this.size;
+        var toRemoveIndices = new IntArrayList();
+        for (var i = 0; i < size; i++) {
+            if (values[i] == value) {
+                toRemoveIndices.add(i);
+            }
         }
-        return modified;
+        return fastRemove(values, 0, size, toRemoveIndices);
+    }
+
+    private boolean fastRemove(int @NonNull [] values, @SuppressWarnings("SameParameterValue") int start, int end, @NonNull IntArrayList toRemoveIndices) {
+        if (toRemoveIndices.isEmpty()) {
+            return false;
+        }
+        modCount++;
+        fastRemoveByIndices(values, start, end, toRemoveIndices);
+        size -= toRemoveIndices.size();
+        return true;
+    }
+
+    @Override
+    public boolean removeAll(int @NonNull ... values) {
+        var size = this.size;
+        var valuesData = this.values;
+        var toRemoveIndices = new IntArrayList();
+        for (var i = 0; i < size; i++) {
+            if (ArrayUtil.contains(values, valuesData[i])) {
+                toRemoveIndices.add(i);
+            }
+        }
+        return fastRemove(valuesData, 0, size, toRemoveIndices);
     }
 
     @Override

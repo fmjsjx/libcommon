@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.function.LongConsumer;
 import java.util.stream.LongStream;
 
+import static com.github.fmjsjx.libcommon.collection.IntArrayList.fastRemoveByIndices;
 import static java.util.Objects.checkIndex;
 
 /**
@@ -123,12 +124,7 @@ public class LongArrayList extends AbstractList<@NonNull Long>
 
     @Override
     public boolean contains(long value) {
-        for (var i = 0; i < size; i++) {
-            if (values[i] == value) {
-                return true;
-            }
-        }
-        return false;
+        return ArrayUtil.contains(values, 0, size, value);
     }
 
     /**
@@ -161,7 +157,7 @@ public class LongArrayList extends AbstractList<@NonNull Long>
         return valueData(index);
     }
 
-    private long valueData(int index) {
+    long valueData(int index) {
         return values[index];
     }
 
@@ -242,6 +238,29 @@ public class LongArrayList extends AbstractList<@NonNull Long>
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean removeAllValue(long value) {
+        var values = this.values;
+        var size = this.size;
+        var toRemoveIndices = new IntArrayList();
+        for (var i = 0; i < size; i++) {
+            if (values[i] == value) {
+                toRemoveIndices.add(i);
+            }
+        }
+        return fastRemove(values, 0, size, toRemoveIndices);
+    }
+
+    private boolean fastRemove(long @NonNull [] values, @SuppressWarnings("SameParameterValue") int start, int end, @NonNull IntArrayList toRemoveIndices) {
+        if (toRemoveIndices.isEmpty()) {
+            return false;
+        }
+        modCount++;
+        fastRemoveByIndices(values, start, end, toRemoveIndices);
+        size -= toRemoveIndices.size();
+        return true;
     }
 
     @Override

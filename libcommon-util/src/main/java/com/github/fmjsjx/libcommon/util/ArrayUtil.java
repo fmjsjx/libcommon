@@ -361,6 +361,7 @@ public class ArrayUtil {
      * limit might depend on some JVM implementation-specific characteristics such
      * as the object header size. The soft maximum value is chosen conservatively so
      * as to be smaller than any implementation limit that is likely to be encountered.
+     * @since 4.3
      */
     public static final int SOFT_MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
 
@@ -404,6 +405,7 @@ public class ArrayUtil {
      * @param prefGrowth preferred growth amount
      * @return the new array length
      * @throws OutOfMemoryError if the new length would exceed Integer.MAX_VALUE
+     * @since 4.3
      */
     public static int newLength(int oldLength, int minGrowth, int prefGrowth) {
         // preconditions not checked because of inlining
@@ -426,6 +428,76 @@ public class ArrayUtil {
                     "Required array length " + oldLength + " + " + minGrowth + " is too large");
         }
         return Math.max(minLength, SOFT_MAX_ARRAY_LENGTH);
+    }
+
+    /**
+     * Returns {@code true} if the specified array contains the specified
+     * value.
+     *
+     * @param array the array
+     * @param value the value to be checked
+     * @return {@code true} if the specified array contains the specified
+     * value.
+     * @since 4.3
+     */
+    public static boolean contains(int[] array, int value) {
+        return contains(array, 0, array.length, value);
+    }
+
+    /**
+     * Returns {@code true} if the specified array contains the specified
+     * value.
+     *
+     * @param array the array
+     * @param start the start index
+     * @param end   the end index
+     * @param value the value to be checked
+     * @return {@code true} if the specified array contains the specified
+     * value.
+     * @since 4.3
+     */
+    public static boolean contains(int[] array, int start, int end, int value) {
+        for (var i = start; i < end; i++) {
+            if (array[i] == value) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns {@code true} if the specified array contains the specified
+     * value.
+     *
+     * @param array the array
+     * @param value the value to be checked
+     * @return {@code true} if the specified array contains the specified
+     * value.
+     * @since 4.3
+     */
+    public static boolean contains(long[] array, long value) {
+        return contains(array, 0, array.length, value);
+    }
+
+    /**
+     * Returns {@code true} if the specified array contains the specified
+     * value.
+     *
+     * @param array the array
+     * @param start the start index
+     * @param end   the end index
+     * @param value the value to be checked
+     * @return {@code true} if the specified array contains the specified
+     * value.
+     * @since 4.3
+     */
+    public static boolean contains(long[] array, int start, int end, long value) {
+        for (var i = start; i < end; i++) {
+            if (array[i] == value) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private ArrayUtil() {
