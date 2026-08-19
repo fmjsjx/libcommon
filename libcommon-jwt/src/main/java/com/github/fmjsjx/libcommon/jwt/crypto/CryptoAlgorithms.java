@@ -51,6 +51,7 @@ public final class CryptoAlgorithms {
      * @return the previous algorithm with the same name, or {@code null}
      * if there was no algorithm for the same name
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static CryptoAlgorithm registerAlgorithm(CryptoAlgorithm algorithm) {
         JCA_ALGORITHMS.put(algorithm.getJcaName(), algorithm);
         return ALGORITHMS.put(algorithm.getName(), algorithm);
@@ -116,6 +117,12 @@ public final class CryptoAlgorithms {
          * RSASSA-PSS using SHA-512 and MGF1 with SHA-512
          */
         public static final JwsCryptoAlgorithm PS512 = JwsCryptoAlgorithms.PS512;
+        /**
+         * EdDSA using Ed25519
+         *
+         * @since 4.3
+         */
+        public static final JwsCryptoAlgorithm EdDSA = JwsCryptoAlgorithms.EdDSA;
 
         private JWSs() {
         }

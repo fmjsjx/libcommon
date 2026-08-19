@@ -2,9 +2,9 @@ package com.github.fmjsjx.libcommon.jwt.crypto;
 
 import com.github.fmjsjx.libcommon.util.concurrent.EasyThreadLocal;
 
+import java.math.BigInteger;
 import java.security.*;
-import java.security.spec.MGF1ParameterSpec;
-import java.security.spec.PSSParameterSpec;
+import java.security.spec.*;
 
 /**
  * The implementation of {@link JwsCryptoAlgorithm} for Digital
@@ -42,6 +42,15 @@ final class SignatureCryptoAlgorithm extends AbstractCryptoAlgorithm implements 
                 "SHA" + digestBitLength + "withRSAandMGF1",
                 true,
                 new PssSignatureProvider(digestBitLength));
+    }
+
+    static SignatureCryptoAlgorithm createEdDSA() {
+        return new SignatureCryptoAlgorithm(
+                "EdDSA",
+                "EdDSA using Ed25519",
+                "Ed25519",
+                true,
+                new EdDSASignatureProvider());
     }
 
     private final SignatureProvider signatureProvider;
@@ -206,6 +215,58 @@ final class SignatureCryptoAlgorithm extends AbstractCryptoAlgorithm implements 
             var signature = super.getInstance();
             signature.setParameter(getParameterSpec());
             return signature;
+        }
+
+    }
+
+    private static class EdDSASignatureProvider extends ThreadLocalSignatureProvider implements SignatureProvider {
+
+        private static final String ALGORITHM = "Ed25519";
+
+        private static final KeyFactory ED25519_KEY_FACTORY;
+
+        private static byte[] reverseBytes(byte[] input) {
+            byte[] reversed = new byte[input.length];
+            for (int i = 0; i < input.length; i++) {
+                reversed[i] = input[input.length - 1 - i];
+            }
+            return reversed;
+        }
+
+        static {
+            try {
+                ED25519_KEY_FACTORY = KeyFactory.getInstance(ALGORITHM);
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private EdDSASignatureProvider() {
+        }
+
+        @Override
+        public String getAlgorithm() {
+            return ALGORITHM;
+        }
+
+        @Override
+        public KeyFactory getKeyFactory() {
+            return ED25519_KEY_FACTORY;
+        }
+
+        @Override
+        public PrivateKey generatePrivateKey(byte[] keyBytes) throws InvalidKeySpecException {
+            return getKeyFactory().generatePrivate(new EdECPrivateKeySpec(NamedParameterSpec.ED25519, keyBytes));
+        }
+
+        @Override
+        public PublicKey generatePublicKey(byte[] keyBytes) throws InvalidKeySpecException {
+            var invertedPublicKeyBytes = reverseBytes(keyBytes);
+            var xOdd = (invertedPublicKeyBytes[0] & 0x80) != 0;
+            invertedPublicKeyBytes[0] &= 0x7F;
+            BigInteger yCoordinate = new BigInteger(1, invertedPublicKeyBytes);
+            EdECPoint edECPoint = new EdECPoint(xOdd, yCoordinate);
+            return getKeyFactory().generatePublic(new EdECPublicKeySpec(NamedParameterSpec.ED25519, edECPoint));
         }
 
     }

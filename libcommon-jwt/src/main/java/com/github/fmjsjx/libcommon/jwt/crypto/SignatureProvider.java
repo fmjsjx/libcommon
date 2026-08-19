@@ -25,22 +25,18 @@ public interface SignatureProvider extends SecureProvider {
      * Returns the {@link KeyFactory}.
      *
      * @return the key factory
-     * @throws NoSuchAlgorithmException if no {@code Provider} supports a {@code KeyFactorySpi} implementation for the
-     *                                  specified algorithm
      */
-    KeyFactory getKeyFactory() throws NoSuchAlgorithmException;
+    KeyFactory getKeyFactory();
 
     /**
      * Generates a public key object from the provided byte array.
      *
      * @param keyBytes the byte array
      * @return a {@link PublicKey}
-     * @throws NoSuchAlgorithmException if no {@code Provider} supports a {@code KeyFactorySpi} implementation for the
-     *                                  specified algorithm
      * @throws InvalidKeySpecException  if the given key specification is inappropriate for this key factory to produce
      *                                  a private key
      */
-    default PublicKey generatePublicKey(byte[] keyBytes) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    default PublicKey generatePublicKey(byte[] keyBytes) throws InvalidKeySpecException {
         return getKeyFactory().generatePublic(new X509EncodedKeySpec(keyBytes));
     }
 
@@ -49,12 +45,10 @@ public interface SignatureProvider extends SecureProvider {
      *
      * @param keyBytes the byte array, must be pkcs8
      * @return a {@link PrivateKey}
-     * @throws NoSuchAlgorithmException if no {@code Provider} supports a {@code KeyFactorySpi} implementation for the
-     *                                  specified algorithm
      * @throws InvalidKeySpecException  if the given key specification is inappropriate for this key factory to produce
      *                                  a private key
      */
-    default PrivateKey generatePrivateKey(byte[] keyBytes) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    default PrivateKey generatePrivateKey(byte[] keyBytes) throws InvalidKeySpecException {
         return getKeyFactory().generatePrivate(new PKCS8EncodedKeySpec(keyBytes));
     }
 
