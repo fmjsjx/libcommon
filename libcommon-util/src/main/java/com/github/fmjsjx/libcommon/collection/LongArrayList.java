@@ -3,8 +3,6 @@ package com.github.fmjsjx.libcommon.collection;
 import com.github.fmjsjx.libcommon.util.ArrayUtil;
 import org.jspecify.annotations.NonNull;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.LongConsumer;
@@ -21,10 +19,7 @@ import static java.util.Objects.checkIndex;
  * @since 4.3
  */
 public class LongArrayList extends AbstractList<@NonNull Long>
-        implements LongList, RandomAccess, Cloneable, Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 8990172562371752475L;
+        implements LongList, RandomAccess, Cloneable {
 
     /**
      * Default initial capacity.
