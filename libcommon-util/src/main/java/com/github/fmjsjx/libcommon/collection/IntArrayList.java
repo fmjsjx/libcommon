@@ -3,8 +3,6 @@ package com.github.fmjsjx.libcommon.collection;
 import com.github.fmjsjx.libcommon.util.ArrayUtil;
 import org.jspecify.annotations.NonNull;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.IntConsumer;
@@ -20,10 +18,7 @@ import static java.util.Objects.checkIndex;
  * @since 4.3
  */
 public class IntArrayList extends AbstractList<@NonNull Integer>
-        implements IntList, RandomAccess, Cloneable, Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 3609076143219247729L;
+        implements IntList, RandomAccess, Cloneable {
 
     /**
      * Default initial capacity.
