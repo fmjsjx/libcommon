@@ -1,7 +1,9 @@
 package com.github.fmjsjx.libcommon.jwt;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.fmjsjx.libcommon.json.Fastjson2Library;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -92,6 +94,18 @@ public class Fastjson2JsonRepresented implements JsonRepresented {
     @Override
     public <T> List<T> getList(String name, Class<T> elementType) {
         return json.getList(name, elementType);
+    }
+
+    @Override
+    @NonNull public List<String> getStringList(String name) {
+        var v = json.get(name);
+        if (v == null) {
+            return List.of();
+        }
+        if (v instanceof JSONArray array) {
+            return array.toJavaList(String.class);
+        }
+        return List.of(v.toString());
     }
 
 }

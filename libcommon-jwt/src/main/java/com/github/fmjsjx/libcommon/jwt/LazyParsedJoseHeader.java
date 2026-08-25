@@ -1,6 +1,7 @@
 package com.github.fmjsjx.libcommon.jwt;
 
 import com.alibaba.fastjson2.JSON;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -86,6 +87,11 @@ public class LazyParsedJoseHeader implements JoseHeader {
     @Override
     public <T> List<T> getList(String name, Class<T> elementType) {
         return parsedDelegated().getList(name, elementType);
+    }
+
+    @Override
+    @NonNull public List<String> getStringList(String name) {
+        return parsedDelegated().getStringList(name);
     }
 
     @Override

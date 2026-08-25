@@ -12,7 +12,7 @@ import static com.github.fmjsjx.libcommon.jwt.DefaultJwtClaimsSetTests.EMPTY_JSO
 import static com.github.fmjsjx.libcommon.jwt.DefaultJwtClaimsSetTests.TEST_RAW_JSON;
 import static org.junit.jupiter.api.Assertions.*;
 
-
+@SuppressWarnings("deprecation")
 public class JsoniterJsonRepresentedTests {
 
     static JsoniterJsonRepresented createEmpty() {
@@ -114,6 +114,13 @@ public class JsoniterJsonRepresentedTests {
         var header = createTest("{\"x5c\":[\"AA\",\"BB\",\"CC\"]}");
         assertArrayEquals(new String[]{"AA", "BB", "CC"}, header.getList("x5c", String.class).toArray(String[]::new));
         assertArrayEquals(new int[]{1, 2, 3}, createTest("{\"i\":[1,2,3]}").getList("i", Integer.class).stream().mapToInt(Integer::intValue).toArray());
+    }
+
+    @Test
+    public void testGetStringList() {
+        assertIterableEquals(List.of(), createEmpty().getStringList("x5c"));
+        var header = createTest("{\"x5c\":[\"AA\",\"BB\",\"CC\"]}");
+        assertIterableEquals(List.of("AA", "BB", "CC"), header.getStringList("x5c"));
     }
 
 }

@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("deprecation")
 public class LazyParsedJoseHeaderTests {
 
     @Test
@@ -172,6 +173,13 @@ public class LazyParsedJoseHeaderTests {
         var header = create("{\"x5c\":[\"AA\",\"BB\",\"CC\"]}");
         assertArrayEquals(new String[]{"AA", "BB", "CC"}, header.getList("x5c", String.class).toArray(String[]::new));
         assertArrayEquals(new int[]{1, 2, 3}, create("{\"i\":[1,2,3]}").getList("i", Integer.class).stream().mapToInt(Integer::intValue).toArray());
+    }
+
+    @Test
+    public void testGetStringList() {
+        assertIterableEquals(List.of(), create("{}").getStringList("x5c"));
+        var header = create("{\"x5c\":[\"AA\",\"BB\",\"CC\"]}");
+        assertIterableEquals(List.of("AA", "BB", "CC"), header.getStringList("x5c"));
     }
 
 }

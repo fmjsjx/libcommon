@@ -1,12 +1,14 @@
 package com.github.fmjsjx.libcommon.jwt;
 
-import static com.github.fmjsjx.libcommon.jwt.JwtClaimNames.*;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+
+import static com.github.fmjsjx.libcommon.jwt.JwtClaimNames.*;
 
 /**
  * A JWT <a href="https://datatracker.ietf.org/doc/html/rfc7519#section-4">Claims Set</a>.
@@ -63,7 +65,18 @@ public interface JwtClaimsSet extends JsonRepresented {
      * @return the "aud" (audience) claim value
      */
     default String getAudience() {
-        return getString(AUDIENCE);
+        var audiences = getAudiences();
+        return audiences.isEmpty() ? null : audiences.getFirst();
+    }
+
+    /**
+     * Returns the "aud" (audience) claim values.
+     *
+     * @return the "aud" (audience) claim values
+     * @since 4.3
+     */
+    default @NonNull List<String> getAudiences() {
+        return getStringList(AUDIENCE);
     }
 
     /**

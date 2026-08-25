@@ -10,6 +10,8 @@ import com.github.fmjsjx.libcommon.util.DateTimeUtil;
 
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static com.github.fmjsjx.libcommon.jwt.JoseHeaderNames.*;
@@ -40,6 +42,7 @@ public class SimpleJwtBuilder {
     private byte[] content;
     private JSONObject claimsSet;
     private long expiredSeconds;
+    private final List<String> audiences = new ArrayList<>();
 
     private SimpleJwtBuilder() {
     }
@@ -161,7 +164,32 @@ public class SimpleJwtBuilder {
      * @return this builder
      */
     public SimpleJwtBuilder audience(String audience) {
-        return claimsSet(AUDIENCE, audience);
+        audiences.add(audience);
+        return this;
+    }
+
+    /**
+     * Sets the {@code "aud"} (Audience) Claim.
+     *
+     * @param audiences the {@code "aud"} (Audience) Claim
+     * @return this builder
+     * @since 4.3
+     */
+    public SimpleJwtBuilder audiences(String... audiences) {
+        return audiences(List.of(audiences));
+    }
+
+    /**
+     * Sets the {@code "aud"} (Audience) Claim.
+     *
+     * @param audiences the {@code "aud"} (Audience) Claim
+     * @return this builder
+     * @since 4.3
+     */
+    public SimpleJwtBuilder audiences(List<String> audiences) {
+        this.audiences.clear();
+        this.audiences.addAll(audiences);
+        return this;
     }
 
     /**
@@ -235,6 +263,14 @@ public class SimpleJwtBuilder {
     }
 
     private byte[] encodePayload() {
+        var audiences = this.audiences;
+        if (!audiences.isEmpty()) {
+            if (audiences.size() == 1) {
+                ensureClaimsSet().put(AUDIENCE, audiences.getFirst());
+            } else {
+                ensureClaimsSet().putArray(AUDIENCE).fluentAddAll(audiences);
+            }
+        }
         var expiredSeconds = this.expiredSeconds;
         if (expiredSeconds > 0) {
             var now = DateTimeUtil.unixTime();
