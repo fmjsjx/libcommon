@@ -3,11 +3,15 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
-    maven {
-        url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
+    exclusiveContent {
+        forRepositories(
+            maven { url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/") },
+            mavenCentral(),
+        )
+        filter {
+            includeGroupByRegex(".*")
+        }
     }
-    mavenCentral()
 }
 
 dependencies {
