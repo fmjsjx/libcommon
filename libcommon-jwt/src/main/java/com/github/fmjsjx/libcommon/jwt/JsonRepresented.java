@@ -1,5 +1,7 @@
 package com.github.fmjsjx.libcommon.jwt;
 
+import org.jspecify.annotations.NonNull;
+
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.OptionalDouble;
@@ -88,5 +90,14 @@ public interface JsonRepresented {
      * @return the list value or {@code null} if not present
      */
     <T> List<T> getList(String name, Class<T> elementType);
+
+    /**
+     * Returns the specified JSON string list value by the name given.
+     *
+     * @param name the name
+     * @return the list value or {@code null} if not present
+     * @since 4.3
+     */
+    @NonNull List<String> getStringList(String name);
 
 }

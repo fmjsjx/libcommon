@@ -5,6 +5,7 @@ import com.github.fmjsjx.libcommon.json.JsoniterLibrary;
 import com.jsoniter.ValueType;
 import com.jsoniter.any.Any;
 import com.jsoniter.spi.TypeLiteral;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -20,7 +21,11 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author MJ Fang
  * @since 3.10
+ * @deprecated Please use {@link Fastjson2JsonRepresented} instead
+ * because Fastjson2 is much faster than Jsoniter now
  */
+@SuppressWarnings("DeprecatedIsStillUsed")
+@Deprecated(since = "4.3")
 public class JsoniterJsonRepresented implements JsonRepresented {
 
     private static final JsonRepresentedFactory<JsoniterJsonRepresented> FACTORY =
@@ -133,6 +138,20 @@ public class JsoniterJsonRepresented implements JsonRepresented {
         }
         var type = CACHED_LIST_TYPES.computeIfAbsent(elementType, k -> JsoniterLibrary.getInstance().listTypeLiteral(k));
         return (List<T>) v.as(type);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    @NonNull public List<String> getStringList(String name) {
+        var v = json.get(name);
+        if (notFoundOrNull(v)) {
+            return List.of();
+        }
+        if (v.valueType() == ValueType.ARRAY) {
+            var type = CACHED_LIST_TYPES.computeIfAbsent(String.class, k -> JsoniterLibrary.getInstance().listTypeLiteral(k));
+            return (List<String>) v.as(type);
+        }
+        return List.of(v.toString());
     }
 
 }

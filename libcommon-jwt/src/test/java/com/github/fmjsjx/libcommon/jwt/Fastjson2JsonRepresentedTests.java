@@ -116,4 +116,11 @@ public class Fastjson2JsonRepresentedTests {
         assertArrayEquals(new int[]{1, 2, 3}, createTest("{\"i\":[1,2,3]}").getList("i", Integer.class).stream().mapToInt(Integer::intValue).toArray());
     }
 
+    @Test
+    public void testGetStringList() {
+        assertIterableEquals(List.of(), createEmpty().getStringList("x5c"));
+        var header = createTest("{\"x5c\":[\"AA\",\"BB\",\"CC\"]}");
+        assertIterableEquals(List.of("AA", "BB", "CC"), header.getStringList("x5c"));
+    }
+
 }

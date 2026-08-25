@@ -173,4 +173,19 @@ public class DefaultJwtClaimsSetTests {
         assertArrayEquals(new int[]{1, 2, 3}, createTest("{\"i\":[1,2,3]}").getList("i", Integer.class).stream().mapToInt(Integer::intValue).toArray());
     }
 
+    @Test
+    public void getStringList() {
+        assertIterableEquals(List.of(), createEmpty().getStringList("x5c"));
+        var header = createTest("{\"x5c\":[\"AA\",\"BB\",\"CC\"]}");
+        assertIterableEquals(List.of("AA", "BB", "CC"), header.getStringList("x5c"));
+    }
+
+    @Test
+    public void testGetAudiences() {
+        assertIterableEquals(List.of(), createTest().getAudiences());
+        assertIterableEquals(List.of("audience"), createTest("{\"aud\":[\"audience\"]}").getAudiences());
+        assertIterableEquals(List.of("audience1", "audience2"), createTest("{\"aud\":[\"audience1\",\"audience2\"]}").getAudiences());
+    }
+
+
 }

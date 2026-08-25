@@ -20,13 +20,14 @@ public class JoseHeaderTests {
 
     @Test
     public void testParse() {
-        mockStatic(DefaultJoseHeader.class);
-        var result = mock(DefaultJoseHeader.class);
-        when(DefaultJoseHeader.parse(any())).thenReturn(result);
-        when(DefaultJoseHeader.parse(any(), any())).thenReturn(result);
-        var rawJson = "{\"alg\":\"RS512\",\"typ\":\"JWT\",\"kid\":\"tY9fuGA5DXjEUObRLfngQ6eeZgeHr5_-9CKy7QBjEjc\"}".getBytes(StandardCharsets.UTF_8);
-        assertEquals(result, JoseHeader.parse(rawJson));
-        assertEquals(result, JoseHeader.parse(rawJson, mock()));
+        try (var ignored = mockStatic(DefaultJoseHeader.class)) {
+            var result = mock(DefaultJoseHeader.class);
+            when(DefaultJoseHeader.parse(any())).thenReturn(result);
+            when(DefaultJoseHeader.parse(any(), any())).thenReturn(result);
+            var rawJson = "{\"alg\":\"RS512\",\"typ\":\"JWT\",\"kid\":\"tY9fuGA5DXjEUObRLfngQ6eeZgeHr5_-9CKy7QBjEjc\"}".getBytes(StandardCharsets.UTF_8);
+            assertEquals(result, JoseHeader.parse(rawJson));
+            assertEquals(result, JoseHeader.parse(rawJson, mock()));
+        }
     }
 
     @Test

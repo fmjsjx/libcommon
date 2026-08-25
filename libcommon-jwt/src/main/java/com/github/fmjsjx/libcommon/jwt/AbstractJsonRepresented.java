@@ -1,5 +1,7 @@
 package com.github.fmjsjx.libcommon.jwt;
 
+import org.jspecify.annotations.NonNull;
+
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.OptionalDouble;
@@ -70,6 +72,11 @@ public abstract class AbstractJsonRepresented implements JsonRepresented {
     @Override
     public <T> List<T> getList(String name, Class<T> elementType) {
         return delegated.getList(name, elementType);
+    }
+
+    @Override
+    @NonNull public List<String> getStringList(String name) {
+        return delegated.getStringList(name);
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.github.fmjsjx.libcommon.util.DateTimeUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.OptionalLong;
 
 
@@ -22,12 +23,13 @@ public class JwtClaimsSetTests {
 
     @Test
     public void testParse() {
-        mockStatic(DefaultJwtClaimsSet.class);
-        var result = mock(DefaultJwtClaimsSet.class);
-        when(DefaultJwtClaimsSet.parse(any())).thenReturn(result);
-        when(DefaultJwtClaimsSet.parse(any(), any())).thenReturn(result);
-        assertEquals(result, JwtClaimsSet.parse(TEST_RAW_JSON));
-        assertEquals(result, JwtClaimsSet.parse(TEST_RAW_JSON, mock()));
+        try (var ignored = mockStatic(DefaultJwtClaimsSet.class)) {
+            var result = mock(DefaultJwtClaimsSet.class);
+            when(DefaultJwtClaimsSet.parse(any())).thenReturn(result);
+            when(DefaultJwtClaimsSet.parse(any(), any())).thenReturn(result);
+            assertEquals(result, JwtClaimsSet.parse(TEST_RAW_JSON));
+            assertEquals(result, JwtClaimsSet.parse(TEST_RAW_JSON, mock()));
+        }
     }
 
     static JwtClaimsSet mockClaimsSet() {
@@ -51,7 +53,7 @@ public class JwtClaimsSetTests {
     @Test
     public void testGetAudience() {
         var claimsSet = mockClaimsSet();
-        when(claimsSet.getString(AUDIENCE)).thenReturn("audience");
+        when(claimsSet.getStringList(AUDIENCE)).thenReturn(List.of("audience"));
         assertEquals("audience", claimsSet.getAudience());
     }
 
