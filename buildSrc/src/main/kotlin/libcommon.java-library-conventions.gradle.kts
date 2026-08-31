@@ -18,7 +18,7 @@ dependencies {
     // Netty
     api(platform("io.netty:netty-bom:4.2.17.Final"))
     // MongoDB Driver
-    implementation(platform("org.mongodb:mongodb-driver-bom:5.9.1"))
+    implementation(platform("org.mongodb:mongodb-driver-bom:5.11.0"))
     // Junit
     testImplementation(platform("org.junit:junit-bom:6.1.3"))
     // Mockito
@@ -35,7 +35,7 @@ dependencies {
     // Kotlin
     api(platform("org.jetbrains.kotlin:kotlin-bom:2.4.10"))
     // Spring Boot
-    api(platform("org.springframework.boot:spring-boot-dependencies:4.0.7"))
+    api(platform("org.springframework.boot:spring-boot-dependencies:4.0."))
     // assertj
     testImplementation(platform("org.assertj:assertj-bom:3.27.7"))
 
