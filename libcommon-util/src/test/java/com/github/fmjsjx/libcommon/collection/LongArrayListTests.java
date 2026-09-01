@@ -1,5 +1,9 @@
 package com.github.fmjsjx.libcommon.collection;
 
+import com.jsoniter.JsonIterator;
+import com.jsoniter.output.JsonStream;
+import com.jsoniter.spi.JsonException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -576,6 +580,60 @@ public class LongArrayListTests {
         list.add(Long.MIN_VALUE);
         assertEquals(7, sizeOf(list));
         assertEquals(Long.MIN_VALUE, valuesOf(list)[6]);
+    }
+
+    @BeforeAll
+    public static void enableJsoniterSupport() {
+        if (!LongArrayList.LongArrayListJsoniterSupport.enabled()) {
+            LongArrayList.LongArrayListJsoniterSupport.enable();
+        }
+    }
+
+    @Test
+    public void testJsoniterSupportEnabled() {
+        assertTrue(LongArrayList.LongArrayListJsoniterSupport.enabled());
+        // enable can only be called once
+        assertThrows(IllegalStateException.class, LongArrayList.LongArrayListJsoniterSupport::enable);
+    }
+
+    @Test
+    public void testJsoniterEncode() {
+        assertEquals("[1,2,3]", JsonStream.serialize(new LongArrayList(1L, 2L, 3L)));
+        assertEquals("[]", JsonStream.serialize(new LongArrayList()));
+        assertEquals("[-9223372036854775808,-1,0,1,9223372036854775807]",
+                JsonStream.serialize(new LongArrayList(Long.MIN_VALUE, -1L, 0L, 1L, Long.MAX_VALUE)));
+        assertEquals("{\"ids\":[1,2,3]}", JsonStream.serialize(Map.of("ids", new LongArrayList(1L, 2L, 3L))));
+    }
+
+    @Test
+    public void testJsoniterDecode() {
+        var list = JsonIterator.deserialize("[1,2,3]", LongArrayList.class);
+        assertValues(list, 1, 2, 3);
+
+        assertValues(JsonIterator.deserialize("[]", LongArrayList.class));
+
+        assertValues(JsonIterator.deserialize("[-9223372036854775808,-1,0,1,9223372036854775807]", LongArrayList.class),
+                Long.MIN_VALUE, -1, 0, 1, Long.MAX_VALUE);
+
+        // whitespace between elements must be accepted
+        assertValues(JsonIterator.deserialize("[ 1 , 2 , 3 ]", LongArrayList.class), 1, 2, 3);
+
+        // non-numeric elements must be rejected
+        assertThrows(JsonException.class, () -> JsonIterator.deserialize("[1,\"a\"]", LongArrayList.class));
+    }
+
+    @Test
+    public void testJsoniterRoundTrip() {
+        var list = new LongArrayList(1L, 2L, 3L);
+        var json = JsonStream.serialize(list);
+        assertEquals("[1,2,3]", json);
+        assertValues(JsonIterator.deserialize(json, LongArrayList.class), 1, 2, 3);
+
+        var boundaries = new LongArrayList(Long.MIN_VALUE, -1L, 0L, 1L, Long.MAX_VALUE);
+        assertValues(JsonIterator.deserialize(JsonStream.serialize(boundaries), LongArrayList.class),
+                Long.MIN_VALUE, -1, 0, 1, Long.MAX_VALUE);
+
+        assertValues(JsonIterator.deserialize(JsonStream.serialize(new LongArrayList()), LongArrayList.class));
     }
 
 }

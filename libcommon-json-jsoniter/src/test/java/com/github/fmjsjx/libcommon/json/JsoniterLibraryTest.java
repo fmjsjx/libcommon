@@ -14,6 +14,8 @@ import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.fmjsjx.libcommon.collection.IntArrayList;
+import com.github.fmjsjx.libcommon.collection.LongArrayList;
 import com.jsoniter.ValueType;
 import org.junit.jupiter.api.Test;
 
@@ -391,6 +393,23 @@ public class JsoniterLibraryTest {
         assertEquals("0.1234567890123456789012345", JsoniterLibrary.getInstance().dumpsToString(object.path("bigDecimal")));
         assertEquals("{\"name\":\"test\"}", JsoniterLibrary.getInstance().dumpsToString(object.path("object")));
         assertEquals("[1,2,3]", JsoniterLibrary.getInstance().dumpsToString(object.path("array")));
+    }
+
+    @Test
+    public void testAutoEnableIntAndLongArrayListSupport() {
+        // the default instance must auto-enable the jsoniter supports for IntArrayList & LongArrayList
+        //noinspection ResultOfMethodCallIgnored
+        JsoniterLibrary.getInstance();
+        assertTrue(IntArrayList.IntArrayListJsoniterSupport.enabled());
+        assertTrue(LongArrayList.LongArrayListJsoniterSupport.enabled());
+
+        // simple encode
+        assertEquals("[1,2,3]", JsoniterLibrary.getInstance().dumpsToString(new IntArrayList(1, 2, 3)));
+        assertEquals("[1,2,3]", JsoniterLibrary.getInstance().dumpsToString(new LongArrayList(1L, 2L, 3L)));
+
+        // simple decode
+        assertEquals(new IntArrayList(1, 2, 3), JsoniterLibrary.getInstance().loads("[1,2,3]", IntArrayList.class));
+        assertEquals(new LongArrayList(1L, 2L, 3L), JsoniterLibrary.getInstance().loads("[1,2,3]", LongArrayList.class));
     }
 
 }

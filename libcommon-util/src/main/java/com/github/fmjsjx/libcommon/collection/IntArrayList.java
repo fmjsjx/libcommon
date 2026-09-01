@@ -1,10 +1,18 @@
 package com.github.fmjsjx.libcommon.collection;
 
 import com.github.fmjsjx.libcommon.util.ArrayUtil;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
+import com.jsoniter.output.JsonStream;
+import com.jsoniter.spi.Encoder;
+import com.jsoniter.spi.JsonException;
+import com.jsoniter.spi.JsoniterSpi;
 import org.jspecify.annotations.NonNull;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 
@@ -430,6 +438,82 @@ public class IntArrayList extends AbstractList<@NonNull Integer>
 
     private @NonNull String outOfBoundsMsg(int index) {
         return "Index: " + index + ", Size: " + size;
+    }
+
+    /**
+     * {@code IntArrayList} jsoniter support.
+     */
+    public static final class IntArrayListJsoniterSupport {
+
+        private static final AtomicBoolean enabled = new AtomicBoolean();
+
+        /**
+         * Returns {@code true} if {@code IntArrayListJsoniterSupport} is enabled,
+         * {@code false} otherwise.
+         *
+         * @return {@code true} if {@code IntArrayListJsoniterSupport} is enabled,
+         *         {@code false} otherwise
+         */
+        public static final boolean enabled() {
+            return enabled.get();
+        }
+
+        /**
+         * Enables {@code IntArrayListJsoniterSupport}.
+         */
+        public static final void enable() {
+            if (enabled.compareAndSet(false, true)) {
+                JsoniterSpi.registerTypeEncoder(IntArrayList.class, new Encoder.ReflectionEncoder() {
+
+                    @Override
+                    public void encode(Object obj, JsonStream stream) throws IOException {
+                        if (obj == null) {
+                            stream.writeNull();
+                            return;
+                        }
+                        IntArrayList list = (IntArrayList) obj;
+                        var len = list.size();
+                        if (len == 0) {
+                            stream.writeEmptyArray();
+                            return;
+                        }
+                        stream.writeArrayStart();
+                        stream.writeIndention();
+                        stream.writeVal(list.valueData(0));
+                        for (var i = 1; i < len; i++) {
+                            stream.writeMore();
+                            stream.writeVal(list.valueData(i));
+                        }
+                        stream.writeArrayEnd();
+                    }
+
+                    @Override
+                    public Any wrap(Object obj) {
+                        IntArrayList list = (IntArrayList) obj;
+                        return Any.wrap(list.toIntArray());
+                    }
+
+                });
+                JsoniterSpi.registerTypeDecoder(IntArrayList.class, iter -> {
+                    var list = new IntArrayList();
+                    iter.readArrayCB((subIter, attachment) -> {
+                        var valueType = subIter.whatIsNext();
+                        if (valueType != ValueType.NUMBER) {
+                            throw new JsonException("expect int, but found " + valueType);
+                        }
+                        ((IntArrayList) attachment).add(subIter.readInt());
+                        return true;
+                    }, list);
+                    return list;
+                });
+            } else {
+                throw new IllegalStateException("IntArrayListSupport.enable can only be called once");
+            }
+        }
+
+        private IntArrayListJsoniterSupport() {
+        }
+
     }
 
 }

@@ -1,10 +1,19 @@
 package com.github.fmjsjx.libcommon.collection;
 
 import com.github.fmjsjx.libcommon.util.ArrayUtil;
+import com.jsoniter.JsonIterator;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
+import com.jsoniter.output.JsonStream;
+import com.jsoniter.spi.Encoder;
+import com.jsoniter.spi.JsonException;
+import com.jsoniter.spi.JsoniterSpi;
 import org.jspecify.annotations.NonNull;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.LongConsumer;
 import java.util.stream.LongStream;
 
@@ -403,6 +412,85 @@ public class LongArrayList extends AbstractList<@NonNull Long>
 
     private @NonNull String outOfBoundsMsg(int index) {
         return "Index: " + index + ", Size: " + size;
+    }
+
+
+    /**
+     * {@code LongArrayList} jsoniter support.
+     */
+    public static final class LongArrayListJsoniterSupport {
+
+        private static final AtomicBoolean enabled = new AtomicBoolean();
+
+        /**
+         * Returns {@code true} if {@code LongArrayListJsoniterSupport} is enabled,
+         * {@code false} otherwise.
+         *
+         * @return {@code true} if {@code LongArrayListJsoniterSupport} is enabled,
+         *         {@code false} otherwise
+         */
+        public static final boolean enabled() {
+            return enabled.get();
+        }
+
+        private static final JsonIterator.ReadArrayCallback READ_LONG_ARRAY_LIST = (subIter, attachment) -> {
+            var valueType = subIter.whatIsNext();
+            if (valueType != ValueType.NUMBER) {
+                throw new JsonException("expect long, but found " + valueType);
+            }
+            ((LongArrayList) attachment).add(subIter.readLong());
+            return true;
+        };
+
+        /**
+         * Enables {@code LongArrayListSupport}.
+         */
+        public static final void enable() {
+            if (enabled.compareAndSet(false, true)) {
+                JsoniterSpi.registerTypeEncoder(LongArrayList.class, new Encoder.ReflectionEncoder() {
+
+                    @Override
+                    public void encode(Object obj, JsonStream stream) throws IOException {
+                        if (obj == null) {
+                            stream.writeNull();
+                            return;
+                        }
+                        LongArrayList list = (LongArrayList) obj;
+                        var len = list.size();
+                        if (len == 0) {
+                            stream.writeEmptyArray();
+                            return;
+                        }
+                        stream.writeArrayStart();
+                        stream.writeIndention();
+                        stream.writeVal(list.valueData(0));
+                        for (var i = 1; i < len; i++) {
+                            stream.writeMore();
+                            stream.writeVal(list.valueData(i));
+                        }
+                        stream.writeArrayEnd();
+                    }
+
+                    @Override
+                    public Any wrap(Object obj) {
+                        LongArrayList list = (LongArrayList) obj;
+                        return Any.wrap(list.toLongArray());
+                    }
+
+                });
+                JsoniterSpi.registerTypeDecoder(LongArrayList.class, iter -> {
+                    var list = new LongArrayList();
+                    iter.readArrayCB(READ_LONG_ARRAY_LIST, list);
+                    return list;
+                });
+            } else {
+                throw new IllegalStateException("LongArrayListSupport.enable can only be called once");
+            }
+        }
+
+        private LongArrayListJsoniterSupport() {
+        }
+
     }
 
 }

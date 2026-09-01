@@ -1,5 +1,9 @@
 package com.github.fmjsjx.libcommon.collection;
 
+import com.jsoniter.JsonIterator;
+import com.jsoniter.output.JsonStream;
+import com.jsoniter.spi.JsonException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -577,6 +581,60 @@ public class IntArrayListTests {
         assertEquals(7, sizeOf(list));
         assertEquals(Integer.MIN_VALUE, valuesOf(list)[6]);
 
+    }
+
+    @BeforeAll
+    public static void enableJsoniterSupport() {
+        if (!IntArrayList.IntArrayListJsoniterSupport.enabled()) {
+            IntArrayList.IntArrayListJsoniterSupport.enable();
+        }
+    }
+
+    @Test
+    public void testJsoniterSupportEnabled() {
+        assertTrue(IntArrayList.IntArrayListJsoniterSupport.enabled());
+        // enable can only be called once
+        assertThrows(IllegalStateException.class, IntArrayList.IntArrayListJsoniterSupport::enable);
+    }
+
+    @Test
+    public void testJsoniterEncode() {
+        assertEquals("[1,2,3]", JsonStream.serialize(new IntArrayList(1, 2, 3)));
+        assertEquals("[]", JsonStream.serialize(new IntArrayList()));
+        assertEquals("[-2147483648,-1,0,1,2147483647]",
+                JsonStream.serialize(new IntArrayList(Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE)));
+        assertEquals("{\"ids\":[1,2,3]}", JsonStream.serialize(Map.of("ids", new IntArrayList(1, 2, 3))));
+    }
+
+    @Test
+    public void testJsoniterDecode() {
+        var list = JsonIterator.deserialize("[1,2,3]", IntArrayList.class);
+        assertValues(list, 1, 2, 3);
+
+        assertValues(JsonIterator.deserialize("[]", IntArrayList.class));
+
+        assertValues(JsonIterator.deserialize("[-2147483648,-1,0,1,2147483647]", IntArrayList.class),
+                Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE);
+
+        // whitespace between elements must be accepted
+        assertValues(JsonIterator.deserialize("[ 1 , 2 , 3 ]", IntArrayList.class), 1, 2, 3);
+
+        // non-numeric elements must be rejected
+        assertThrows(JsonException.class, () -> JsonIterator.deserialize("[1,\"a\"]", IntArrayList.class));
+    }
+
+    @Test
+    public void testJsoniterRoundTrip() {
+        var list = new IntArrayList(1, 2, 3);
+        var json = JsonStream.serialize(list);
+        assertEquals("[1,2,3]", json);
+        assertValues(JsonIterator.deserialize(json, IntArrayList.class), 1, 2, 3);
+
+        var boundaries = new IntArrayList(Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE);
+        assertValues(JsonIterator.deserialize(JsonStream.serialize(boundaries), IntArrayList.class),
+                Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE);
+
+        assertValues(JsonIterator.deserialize(JsonStream.serialize(new IntArrayList()), IntArrayList.class));
     }
 
 }

@@ -14,6 +14,8 @@ dependencies {
     compileOnlyApi("com.fasterxml.uuid:java-uuid-generator")
     annotationProcessor("org.jspecify:jspecify:1.0.1")
 
+    compileOnlyApi("com.jsoniter:jsoniter")
+
     compileOnlyApi(kotlin("stdlib"))
     compileOnlyApi("org.jetbrains.kotlin:kotlin-reflect")
     compileOnlyApi("org.jetbrains.kotlinx:kotlinx-coroutines-core")
