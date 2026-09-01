@@ -1,5 +1,7 @@
 package com.github.fmjsjx.libcommon.collection;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.reader.ObjectReader;
 import com.github.fmjsjx.libcommon.util.ArrayUtil;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.ValueType;
@@ -520,6 +522,68 @@ public class IntArrayList extends AbstractList<@NonNull Integer>
         }
 
         private IntArrayListJsoniterSupport() {
+        }
+
+    }
+
+    /**
+     * {@code IntArrayList} fastjson2 support.
+     */
+    public static final class IntArrayListFastjson2Support {
+
+        private static final AtomicBoolean enabled = new AtomicBoolean();
+
+        /**
+         * Returns {@code true} if {@code IntArrayListFastjson2Support} is enabled,
+         * {@code false} otherwise.
+         *
+         * @return {@code true} if {@code IntArrayListFastjson2Support} is enabled,
+         *         {@code false} otherwise
+         */
+        public static final boolean enabled() {
+            return enabled.get();
+        }
+
+        /**
+         * Enables {@code IntArrayListFastjson2Support}.
+         */
+        public static final void enable() {
+            if (enabled.compareAndSet(false, true)) {
+                JSON.register(IntArrayList.class, (jsonWriter, object, fieldName, fieldType, features) -> {
+                    if (object == null) {
+                        jsonWriter.writeNull();
+                        return;
+                    }
+                    IntArrayList list = (IntArrayList) object;
+                    var len = list.size();
+                    jsonWriter.startArray();
+                    for (var i = 0; i < len; i++) {
+                        if (i > 0) {
+                            jsonWriter.writeComma();
+                        }
+                        jsonWriter.writeInt32(list.valueData(i));
+                    }
+                    jsonWriter.endArray();
+                });
+                ObjectReader<IntArrayList> reader = (jsonReader, fieldType, fieldName, features) -> {
+                    if (jsonReader.nextIfNull()) {
+                        return null;
+                    }
+                    var list = new IntArrayList();
+                    jsonReader.nextIfArrayStart();
+                    while (!jsonReader.nextIfArrayEnd()) {
+                        list.add(jsonReader.readInt32Value());
+                    }
+                    return list;
+                };
+                JSON.register(IntArrayList.class, reader);
+                JSON.register(IntList.class, reader);
+            } else {
+                throw new IllegalStateException("IntArrayListFastjson2Support.enable can only be called once");
+            }
+        }
+
+        private IntArrayListFastjson2Support() {
         }
 
     }

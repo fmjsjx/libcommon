@@ -1,6 +1,8 @@
 package com.github.fmjsjx.libcommon.json;
 
 import com.alibaba.fastjson2.*;
+import com.github.fmjsjx.libcommon.collection.IntArrayList;
+import com.github.fmjsjx.libcommon.collection.LongArrayList;
 import com.github.fmjsjx.libcommon.util.ReflectUtil;
 
 import java.io.*;
@@ -37,6 +39,17 @@ public class Fastjson2Library implements JsonLibrary<JSONObject> {
         // Add Jackson3 support since 3.17
         if (ReflectUtil.hasClassForName("com.github.fmjsjx.libcommon.json.Jackson3Library")) {
             registerJackson3Library();
+        }
+        // Automatically enable the fastjson2 supports for IntArrayList & LongArrayList
+        try {
+            IntArrayList.IntArrayListFastjson2Support.enable();
+        } catch (Exception e) {
+            // NOOP
+        }
+        try {
+            LongArrayList.LongArrayListFastjson2Support.enable();
+        } catch (Exception e) {
+            // NOOP
         }
         useISOFormatForDateTimeFields();
         // Use LinkedHashMap as default object supplier since 4.1.2

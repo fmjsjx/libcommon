@@ -6,6 +6,8 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.*;
+import com.github.fmjsjx.libcommon.collection.IntArrayList;
+import com.github.fmjsjx.libcommon.collection.LongArrayList;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.ValueType;
 import com.jsoniter.any.Any;
@@ -631,6 +633,23 @@ public class Fastjson2LibraryTests {
         assertEquals(json, Fastjson2Library.getInstance().dumpsToString(obj));
         assertEquals("{}", Fastjson2Library.getInstance().dumpsToString(new FieldZonedDateTime()));
         assertEquals(obj.getField(), JsoniterLibrary.getInstance().loads(json, FieldZonedDateTime.class).field);
+    }
+
+    @Test
+    public void testAutoEnableIntAndLongArrayListSupport() {
+        // the default instance must auto-enable the fastjson2 supports for IntArrayList & LongArrayList
+        //noinspection ResultOfMethodCallIgnored
+        Fastjson2Library.getInstance();
+        assertTrue(IntArrayList.IntArrayListFastjson2Support.enabled());
+        assertTrue(LongArrayList.LongArrayListFastjson2Support.enabled());
+
+        // simple encode
+        assertEquals("[1,2,3]", Fastjson2Library.getInstance().dumpsToString(new IntArrayList(1, 2, 3)));
+        assertEquals("[1,2,3]", Fastjson2Library.getInstance().dumpsToString(new LongArrayList(1L, 2L, 3L)));
+
+        // simple decode
+        assertEquals(new IntArrayList(1, 2, 3), Fastjson2Library.getInstance().loads("[1,2,3]", IntArrayList.class));
+        assertEquals(new LongArrayList(1L, 2L, 3L), Fastjson2Library.getInstance().loads("[1,2,3]", LongArrayList.class));
     }
 
 }

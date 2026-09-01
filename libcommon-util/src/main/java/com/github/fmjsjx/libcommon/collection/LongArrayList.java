@@ -1,5 +1,7 @@
 package com.github.fmjsjx.libcommon.collection;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.reader.ObjectReader;
 import com.github.fmjsjx.libcommon.util.ArrayUtil;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.ValueType;
@@ -494,6 +496,68 @@ public class LongArrayList extends AbstractList<@NonNull Long>
         }
 
         private LongArrayListJsoniterSupport() {
+        }
+
+    }
+
+    /**
+     * {@code LongArrayList} fastjson2 support.
+     */
+    public static final class LongArrayListFastjson2Support {
+
+        private static final AtomicBoolean enabled = new AtomicBoolean();
+
+        /**
+         * Returns {@code true} if {@code LongArrayListFastjson2Support} is enabled,
+         * {@code false} otherwise.
+         *
+         * @return {@code true} if {@code LongArrayListFastjson2Support} is enabled,
+         *         {@code false} otherwise
+         */
+        public static final boolean enabled() {
+            return enabled.get();
+        }
+
+        /**
+         * Enables {@code LongArrayListFastjson2Support}.
+         */
+        public static final void enable() {
+            if (enabled.compareAndSet(false, true)) {
+                JSON.register(LongArrayList.class, (jsonWriter, object, fieldName, fieldType, features) -> {
+                    if (object == null) {
+                        jsonWriter.writeNull();
+                        return;
+                    }
+                    LongArrayList list = (LongArrayList) object;
+                    var len = list.size();
+                    jsonWriter.startArray();
+                    for (var i = 0; i < len; i++) {
+                        if (i > 0) {
+                            jsonWriter.writeComma();
+                        }
+                        jsonWriter.writeInt64(list.valueData(i));
+                    }
+                    jsonWriter.endArray();
+                });
+                ObjectReader<LongArrayList> reader = (jsonReader, fieldType, fieldName, features) -> {
+                    if (jsonReader.nextIfNull()) {
+                        return null;
+                    }
+                    var list = new LongArrayList();
+                    jsonReader.nextIfArrayStart();
+                    while (!jsonReader.nextIfArrayEnd()) {
+                        list.add(jsonReader.readInt64Value());
+                    }
+                    return list;
+                };
+                JSON.register(LongArrayList.class, reader);
+                JSON.register(LongList.class, reader);
+            } else {
+                throw new IllegalStateException("LongArrayListFastjson2Support.enable can only be called once");
+            }
+        }
+
+        private LongArrayListFastjson2Support() {
         }
 
     }

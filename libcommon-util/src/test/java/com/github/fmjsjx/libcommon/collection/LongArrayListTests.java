@@ -1,5 +1,7 @@
 package com.github.fmjsjx.libcommon.collection;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONException;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.output.JsonStream;
 import com.jsoniter.spi.JsonException;
@@ -589,6 +591,13 @@ public class LongArrayListTests {
         }
     }
 
+    @BeforeAll
+    public static void enableFastjson2Support() {
+        if (!LongArrayList.LongArrayListFastjson2Support.enabled()) {
+            LongArrayList.LongArrayListFastjson2Support.enable();
+        }
+    }
+
     @Test
     public void testJsoniterSupportEnabled() {
         assertTrue(LongArrayList.LongArrayListJsoniterSupport.enabled());
@@ -634,6 +643,53 @@ public class LongArrayListTests {
                 Long.MIN_VALUE, -1, 0, 1, Long.MAX_VALUE);
 
         assertValues(JsonIterator.deserialize(JsonStream.serialize(new LongArrayList()), LongArrayList.class));
+    }
+
+    @Test
+    public void testFastjson2SupportEnabled() {
+        assertTrue(LongArrayList.LongArrayListFastjson2Support.enabled());
+        // enable can only be called once
+        assertThrows(IllegalStateException.class, LongArrayList.LongArrayListFastjson2Support::enable);
+    }
+
+    @Test
+    public void testFastjson2Encode() {
+        assertEquals("[1,2,3]", JSON.toJSONString(new LongArrayList(1L, 2L, 3L)));
+        assertEquals("[]", JSON.toJSONString(new LongArrayList()));
+        assertEquals("[-9223372036854775808,-1,0,1,9223372036854775807]",
+                JSON.toJSONString(new LongArrayList(Long.MIN_VALUE, -1L, 0L, 1L, Long.MAX_VALUE)));
+    }
+
+    @Test
+    public void testFastjson2Decode() {
+        assertValues(JSON.parseObject("[1,2,3]", LongArrayList.class), 1, 2, 3);
+        assertValues((LongArrayList) JSON.parseObject("[1,2,3]", LongList.class), 1, 2, 3);
+
+        assertValues(JSON.parseObject("[]", LongArrayList.class));
+        assertValues((LongArrayList) JSON.parseObject("[]", LongList.class));
+
+        assertValues(JSON.parseObject("[-9223372036854775808,-1,0,1,9223372036854775807]", LongArrayList.class),
+                Long.MIN_VALUE, -1, 0, 1, Long.MAX_VALUE);
+
+        // whitespace between elements must be accepted
+        assertValues(JSON.parseObject("[ 1 , 2 , 3 ]", LongArrayList.class), 1, 2, 3);
+
+        // non-numeric elements must be rejected
+        assertThrows(JSONException.class, () -> JSON.parseObject("[1,\"a\"]", LongArrayList.class));
+    }
+
+    @Test
+    public void testFastjson2RoundTrip() {
+        var list = new LongArrayList(1L, 2L, 3L);
+        var json = JSON.toJSONString(list);
+        assertEquals("[1,2,3]", json);
+        assertValues(JSON.parseObject(json, LongArrayList.class), 1, 2, 3);
+
+        var boundaries = new LongArrayList(Long.MIN_VALUE, -1L, 0L, 1L, Long.MAX_VALUE);
+        assertValues(JSON.parseObject(JSON.toJSONString(boundaries), LongArrayList.class),
+                Long.MIN_VALUE, -1, 0, 1, Long.MAX_VALUE);
+
+        assertValues(JSON.parseObject(JSON.toJSONString(new LongArrayList()), LongArrayList.class));
     }
 
 }
