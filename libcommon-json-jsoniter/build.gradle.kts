@@ -10,6 +10,7 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api")
     api(project(":libcommon-json"))
+    implementation(project(":libcommon-util"))
     api("com.jsoniter:jsoniter")
     compileOnlyApi(project(":libcommon-json-jackson2"))
     compileOnlyApi(project(":libcommon-json-fastjson2"))

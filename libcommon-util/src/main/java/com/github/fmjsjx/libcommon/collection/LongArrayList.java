@@ -1,10 +1,32 @@
 package com.github.fmjsjx.libcommon.collection;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.reader.ObjectReader;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.fmjsjx.libcommon.util.ArrayUtil;
+import com.jsoniter.JsonIterator;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
+import com.jsoniter.output.JsonStream;
+import com.jsoniter.spi.Encoder;
+import com.jsoniter.spi.JsonException;
+import com.jsoniter.spi.JsoniterSpi;
 import org.jspecify.annotations.NonNull;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.LongConsumer;
 import java.util.stream.LongStream;
 
@@ -403,6 +425,306 @@ public class LongArrayList extends AbstractList<@NonNull Long>
 
     private @NonNull String outOfBoundsMsg(int index) {
         return "Index: " + index + ", Size: " + size;
+    }
+
+
+    /**
+     * {@code LongArrayList} jsoniter support.
+     */
+    public static final class LongArrayListJsoniterSupport {
+
+        private static final AtomicBoolean enabled = new AtomicBoolean();
+
+        /**
+         * Returns {@code true} if {@code LongArrayListJsoniterSupport} is enabled,
+         * {@code false} otherwise.
+         *
+         * @return {@code true} if {@code LongArrayListJsoniterSupport} is enabled,
+         *         {@code false} otherwise
+         */
+        public static final boolean enabled() {
+            return enabled.get();
+        }
+
+        private static final JsonIterator.ReadArrayCallback READ_LONG_ARRAY_LIST = (subIter, attachment) -> {
+            var valueType = subIter.whatIsNext();
+            if (valueType != ValueType.NUMBER) {
+                throw new JsonException("expect long, but found " + valueType);
+            }
+            ((LongArrayList) attachment).add(subIter.readLong());
+            return true;
+        };
+
+        /**
+         * Enables {@code LongArrayListSupport}.
+         */
+        public static final void enable() {
+            if (enabled.compareAndSet(false, true)) {
+                JsoniterSpi.registerTypeEncoder(LongArrayList.class, new Encoder.ReflectionEncoder() {
+
+                    @Override
+                    public void encode(Object obj, JsonStream stream) throws IOException {
+                        if (obj == null) {
+                            stream.writeNull();
+                            return;
+                        }
+                        LongArrayList list = (LongArrayList) obj;
+                        var len = list.size();
+                        if (len == 0) {
+                            stream.writeEmptyArray();
+                            return;
+                        }
+                        stream.writeArrayStart();
+                        stream.writeIndention();
+                        stream.writeVal(list.valueData(0));
+                        for (var i = 1; i < len; i++) {
+                            stream.writeMore();
+                            stream.writeVal(list.valueData(i));
+                        }
+                        stream.writeArrayEnd();
+                    }
+
+                    @Override
+                    public Any wrap(Object obj) {
+                        LongArrayList list = (LongArrayList) obj;
+                        return Any.wrap(list.toLongArray());
+                    }
+
+                });
+                JsoniterSpi.registerTypeDecoder(LongArrayList.class, iter -> {
+                    var list = new LongArrayList();
+                    iter.readArrayCB(READ_LONG_ARRAY_LIST, list);
+                    return list;
+                });
+                JsoniterSpi.registerTypeDecoder(LongList.class, iter -> {
+                    var list = new LongArrayList();
+                    iter.readArrayCB(READ_LONG_ARRAY_LIST, list);
+                    return list;
+                });
+            } else {
+                throw new IllegalStateException("LongArrayListSupport.enable can only be called once");
+            }
+        }
+
+        private LongArrayListJsoniterSupport() {
+        }
+
+    }
+
+    /**
+     * {@code LongArrayList} fastjson2 support.
+     */
+    public static final class LongArrayListFastjson2Support {
+
+        private static final AtomicBoolean enabled = new AtomicBoolean();
+
+        /**
+         * Returns {@code true} if {@code LongArrayListFastjson2Support} is enabled,
+         * {@code false} otherwise.
+         *
+         * @return {@code true} if {@code LongArrayListFastjson2Support} is enabled,
+         *         {@code false} otherwise
+         */
+        public static final boolean enabled() {
+            return enabled.get();
+        }
+
+        /**
+         * Enables {@code LongArrayListFastjson2Support}.
+         */
+        public static final void enable() {
+            if (enabled.compareAndSet(false, true)) {
+                JSON.register(LongArrayList.class, (jsonWriter, object, fieldName, fieldType, features) -> {
+                    if (object == null) {
+                        jsonWriter.writeNull();
+                        return;
+                    }
+                    LongArrayList list = (LongArrayList) object;
+                    var len = list.size();
+                    jsonWriter.startArray();
+                    for (var i = 0; i < len; i++) {
+                        if (i > 0) {
+                            jsonWriter.writeComma();
+                        }
+                        jsonWriter.writeInt64(list.valueData(i));
+                    }
+                    jsonWriter.endArray();
+                });
+                ObjectReader<LongArrayList> reader = (jsonReader, fieldType, fieldName, features) -> {
+                    if (jsonReader.nextIfNull()) {
+                        return null;
+                    }
+                    var list = new LongArrayList();
+                    jsonReader.nextIfArrayStart();
+                    while (!jsonReader.nextIfArrayEnd()) {
+                        list.add(jsonReader.readInt64Value());
+                    }
+                    return list;
+                };
+                JSON.register(LongArrayList.class, reader);
+                JSON.register(LongList.class, reader);
+            } else {
+                throw new IllegalStateException("LongArrayListFastjson2Support.enable can only be called once");
+            }
+        }
+
+        private LongArrayListFastjson2Support() {
+        }
+
+    }
+
+    /**
+     * {@code LongArrayList} Jackson2 support.
+     */
+    public static final class LongArrayListJackson2Support {
+
+        private static final AtomicBoolean enabled = new AtomicBoolean();
+
+        private static final JsonSerializer<LongArrayList> SERIALIZER = new JsonSerializer<>() {
+            @Override
+            public void serialize(LongArrayList list, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+                var len = list.size();
+                gen.writeStartArray();
+                for (var i = 0; i < len; i++) {
+                    gen.writeNumber(list.valueData(i));
+                }
+                gen.writeEndArray();
+            }
+        };
+
+        private static final JsonDeserializer<LongArrayList> DESERIALIZER = new JsonDeserializer<>() {
+            @Override
+            public LongArrayList deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+                if (!p.isExpectedStartArrayToken()) {
+                    throw MismatchedInputException.from(p, LongArrayList.class, "expect JSON array, but found " + p.currentToken());
+                }
+                var list = new LongArrayList();
+                while (p.nextToken() != JsonToken.END_ARRAY) {
+                    list.add(p.getLongValue());
+                }
+                return list;
+            }
+        };
+
+        /**
+         * Returns {@code true} if {@code LongArrayListJackson2Support} is enabled,
+         * {@code false} otherwise.
+         *
+         * @return {@code true} if {@code LongArrayListJackson2Support} is enabled,
+         *         {@code false} otherwise
+         */
+        public static final boolean enabled() {
+            return enabled.get();
+        }
+
+        /**
+         * Returns a new Jackson2 {@link Module} supporting encoding/decoding
+         * {@code LongArrayList}s and {@code LongList}s.
+         *
+         * @return a Jackson2 {@code Module}
+         */
+        public static final Module module() {
+            var module = new SimpleModule("LongArrayListJackson2Module");
+            module.addSerializer(LongArrayList.class, SERIALIZER);
+            module.addDeserializer(LongArrayList.class, DESERIALIZER);
+            module.addDeserializer(LongList.class, DESERIALIZER);
+            return module;
+        }
+
+        /**
+         * Enables {@code LongArrayListJackson2Support} on the specified
+         * {@code ObjectMapper}.
+         *
+         * @param mapper the {@code ObjectMapper} to enable the support on
+         */
+        public static final void enable(ObjectMapper mapper) {
+            if (enabled.compareAndSet(false, true)) {
+                mapper.registerModule(module());
+            } else {
+                throw new IllegalStateException("LongArrayListJackson2Support.enable can only be called once");
+            }
+        }
+
+        private LongArrayListJackson2Support() {
+        }
+
+    }
+
+    /**
+     * {@code LongArrayList} Jackson3 support.
+     */
+    public static final class LongArrayListJackson3Support {
+
+        private static final AtomicBoolean enabled = new AtomicBoolean();
+
+        private static final tools.jackson.databind.ser.std.StdSerializer<LongArrayList> SERIALIZER = new tools.jackson.databind.ser.std.StdSerializer<>(LongArrayList.class) {
+            @Override
+            public void serialize(LongArrayList list, tools.jackson.core.JsonGenerator gen, tools.jackson.databind.SerializationContext provider) {
+                var len = list.size();
+                gen.writeStartArray();
+                for (var i = 0; i < len; i++) {
+                    gen.writeNumber(list.valueData(i));
+                }
+                gen.writeEndArray();
+            }
+        };
+
+        private static final tools.jackson.databind.deser.std.StdDeserializer<LongArrayList> DESERIALIZER = new tools.jackson.databind.deser.std.StdDeserializer<>(LongArrayList.class) {
+            @Override
+            public LongArrayList deserialize(tools.jackson.core.JsonParser p, tools.jackson.databind.DeserializationContext ctxt) {
+                if (!p.isExpectedStartArrayToken()) {
+                    throw tools.jackson.databind.exc.MismatchedInputException.from(p, LongArrayList.class, "expect JSON array, but found " + p.currentToken());
+                }
+                var list = new LongArrayList();
+                while (p.nextToken() != tools.jackson.core.JsonToken.END_ARRAY) {
+                    list.add(p.getLongValue());
+                }
+                return list;
+            }
+        };
+
+        /**
+         * Returns {@code true} if {@code LongArrayListJackson3Support} is enabled,
+         * {@code false} otherwise.
+         *
+         * @return {@code true} if {@code LongArrayListJackson3Support} is enabled,
+         *         {@code false} otherwise
+         */
+        public static final boolean enabled() {
+            return enabled.get();
+        }
+
+        /**
+         * Returns a new Jackson3 module supporting encoding/decoding
+         * {@code LongArrayList}s and {@code LongList}s.
+         *
+         * @return a Jackson3 module
+         */
+        public static final tools.jackson.databind.JacksonModule module() {
+            var module = new tools.jackson.databind.module.SimpleModule("LongArrayListJackson3Module");
+            module.addSerializer(LongArrayList.class, SERIALIZER);
+            module.addDeserializer(LongArrayList.class, DESERIALIZER);
+            module.addDeserializer(LongList.class, DESERIALIZER);
+            return module;
+        }
+
+        /**
+         * Enables {@code LongArrayListJackson3Support} on the specified mapper
+         * builder.
+         *
+         * @param builder the mapper builder to enable the support on
+         */
+        public static final void enable(tools.jackson.databind.cfg.MapperBuilder<?, ?> builder) {
+            if (enabled.compareAndSet(false, true)) {
+                builder.addModule(module());
+            } else {
+                throw new IllegalStateException("LongArrayListJackson3Support.enable can only be called once");
+            }
+        }
+
+        private LongArrayListJackson3Support() {
+        }
+
     }
 
 }

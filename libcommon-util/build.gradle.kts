@@ -14,6 +14,11 @@ dependencies {
     compileOnlyApi("com.fasterxml.uuid:java-uuid-generator")
     annotationProcessor("org.jspecify:jspecify:1.0.1")
 
+    compileOnlyApi("com.alibaba.fastjson2:fastjson2")
+    compileOnlyApi("com.jsoniter:jsoniter")
+    compileOnlyApi("com.fasterxml.jackson.core:jackson-databind")
+    compileOnlyApi("tools.jackson.core:jackson-databind")
+
     compileOnlyApi(kotlin("stdlib"))
     compileOnlyApi("org.jetbrains.kotlin:kotlin-reflect")
     compileOnlyApi("org.jetbrains.kotlinx:kotlinx-coroutines-core")

@@ -2,6 +2,8 @@ package com.github.fmjsjx.libcommon.json;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 
+import com.github.fmjsjx.libcommon.collection.IntArrayList;
+import com.github.fmjsjx.libcommon.collection.LongArrayList;
 import com.github.fmjsjx.libcommon.util.KotlinUtil;
 import com.github.fmjsjx.libcommon.util.ReflectUtil;
 import tools.jackson.core.type.TypeReference;
@@ -86,6 +88,17 @@ public class Jackson3Library implements JsonLibrary<JsonNode> {
         }
         if (Jackson3JsoniterModule.isJsoniterAvailable()) {
             mapperBuilder.addModule(Jackson3JsoniterModule.getInstance());
+        }
+        // Automatically enable the Jackson3 supports for IntArrayList & LongArrayList
+        try {
+            IntArrayList.IntArrayListJackson3Support.enable(mapperBuilder);
+        } catch (Exception e) {
+            // NOOP
+        }
+        try {
+            LongArrayList.LongArrayListJackson3Support.enable(mapperBuilder);
+        } catch (Exception e) {
+            // NOOP
         }
         return mapperBuilder.build();
     }

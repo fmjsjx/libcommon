@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.github.fmjsjx.libcommon.collection.IntArrayList;
+import com.github.fmjsjx.libcommon.collection.LongArrayList;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.ValueType;
 import com.jsoniter.any.Any;
@@ -68,6 +70,8 @@ public class JsoniterLibrary implements JsonLibrary<Any> {
             JsoniterSpi.setDefaultConfig(JsoniterSpi.getDefaultConfig().copyBuilder().escapeUnicode(false).build());
             Jdk8TimeSupport.enableAll();
             Jdk8OptionalSupport.enableAll();
+            enableIntArrayListSupport();
+            enableLongArrayListSupport();
             // support encoding/decoding for Jackson2 JsonNode
             if (Jackson2Support.isAvailable()) {
                 Jackson2Support.enableAll();
@@ -77,6 +81,23 @@ public class JsoniterLibrary implements JsonLibrary<Any> {
                 Jackson3Support.enableAll();
             }
         }
+
+        private static void enableIntArrayListSupport() {
+            try {
+                IntArrayList.IntArrayListJsoniterSupport.enable();
+            } catch (Exception e) {
+                // NOOP
+            }
+        }
+
+        private static void enableLongArrayListSupport() {
+            try {
+                LongArrayList.LongArrayListJsoniterSupport.enable();
+            } catch (Exception e) {
+                // NOOP
+            }
+        }
+
     }
 
     /**

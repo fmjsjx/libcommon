@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.fmjsjx.libcommon.collection.IntArrayList;
+import com.github.fmjsjx.libcommon.collection.LongArrayList;
 import com.github.fmjsjx.libcommon.util.KotlinUtil;
 import com.github.fmjsjx.libcommon.util.ReflectUtil;
 
@@ -103,7 +105,19 @@ public class Jackson2Library implements JsonLibrary<JsonNode> {
         if (JsoniterModule.isJsoniterAvailable()) {
             mapperBuilder.addModule(JsoniterModule.getInstance());
         }
-        return mapperBuilder.build();
+        var mapper = mapperBuilder.build();
+        // Automatically enable the Jackson2 supports for IntArrayList & LongArrayList
+        try {
+            IntArrayList.IntArrayListJackson2Support.enable(mapper);
+        } catch (Exception e) {
+            // NOOP
+        }
+        try {
+            LongArrayList.LongArrayListJackson2Support.enable(mapper);
+        } catch (Exception e) {
+            // NOOP
+        }
+        return mapper;
     }
 
     /**
