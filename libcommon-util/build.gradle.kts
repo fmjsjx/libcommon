@@ -16,6 +16,8 @@ dependencies {
 
     compileOnlyApi("com.alibaba.fastjson2:fastjson2")
     compileOnlyApi("com.jsoniter:jsoniter")
+    compileOnlyApi("com.fasterxml.jackson.core:jackson-databind")
+    compileOnlyApi("tools.jackson.core:jackson-databind")
 
     compileOnlyApi(kotlin("stdlib"))
     compileOnlyApi("org.jetbrains.kotlin:kotlin-reflect")

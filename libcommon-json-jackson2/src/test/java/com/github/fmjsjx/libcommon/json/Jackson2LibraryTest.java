@@ -1,11 +1,13 @@
 package com.github.fmjsjx.libcommon.json;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.github.fmjsjx.libcommon.collection.IntArrayList;
+import com.github.fmjsjx.libcommon.collection.LongArrayList;
 import com.jsoniter.JsonIterator;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +21,7 @@ public class Jackson2LibraryTest {
         Type type = String.class;
         var jt = Jackson2Library.toJavaType(type);
         assertEquals(TypeFactory.defaultInstance().constructType(String.class), jt);
-        TypeReference<List<String>> stringListTypeRef = new TypeReference<List<String>>() {
+        TypeReference<List<String>> stringListTypeRef = new TypeReference<>() {
         };
         jt = Jackson2Library.toJavaType(stringListTypeRef.getType());
         assertEquals(TypeFactory.defaultInstance().constructCollectionLikeType(List.class, String.class), jt);
@@ -62,6 +64,23 @@ public class Jackson2LibraryTest {
         public String toString() {
             return "TestJavaTimeModule{time=" + time + "}";
         }
+    }
+
+    @Test
+    public void testAutoEnableIntAndLongArrayListSupport() {
+        // the default instance must auto-enable the Jackson2 supports for IntArrayList & LongArrayList
+        //noinspection ResultOfMethodCallIgnored
+        Jackson2Library.getInstance();
+        assertTrue(IntArrayList.IntArrayListJackson2Support.enabled());
+        assertTrue(LongArrayList.LongArrayListJackson2Support.enabled());
+
+        // simple encode
+        assertEquals("[1,2,3]", Jackson2Library.getInstance().dumpsToString(new IntArrayList(1, 2, 3)));
+        assertEquals("[1,2,3]", Jackson2Library.getInstance().dumpsToString(new LongArrayList(1L, 2L, 3L)));
+
+        // simple decode
+        assertEquals(new IntArrayList(1, 2, 3), Jackson2Library.getInstance().loads("[1,2,3]", IntArrayList.class));
+        assertEquals(new LongArrayList(1L, 2L, 3L), Jackson2Library.getInstance().loads("[1,2,3]", LongArrayList.class));
     }
 
 }

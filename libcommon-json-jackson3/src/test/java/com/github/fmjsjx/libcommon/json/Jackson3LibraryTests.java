@@ -2,6 +2,8 @@ package com.github.fmjsjx.libcommon.json;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.fmjsjx.libcommon.collection.IntArrayList;
+import com.github.fmjsjx.libcommon.collection.LongArrayList;
 import com.jsoniter.JsonIterator;
 import org.junit.jupiter.api.Test;
 import tools.jackson.core.type.TypeReference;
@@ -64,6 +66,23 @@ public class Jackson3LibraryTests {
                 "{\"name\":\"testJsoniterModule\",\"value\":{\"id\":1,\"o\":[666,777,888]}}",
                 Jackson3Library.getInstance().dumpsToString(obj)
         );
+    }
+
+    @Test
+    public void testAutoEnableIntAndLongArrayListSupport() {
+        // the default instance must auto-enable the Jackson3 supports for IntArrayList & LongArrayList
+        //noinspection ResultOfMethodCallIgnored
+        Jackson3Library.getInstance();
+        assertTrue(IntArrayList.IntArrayListJackson3Support.enabled());
+        assertTrue(LongArrayList.LongArrayListJackson3Support.enabled());
+
+        // simple encode
+        assertEquals("[1,2,3]", Jackson3Library.getInstance().dumpsToString(new IntArrayList(1, 2, 3)));
+        assertEquals("[1,2,3]", Jackson3Library.getInstance().dumpsToString(new LongArrayList(1L, 2L, 3L)));
+
+        // simple decode
+        assertEquals(new IntArrayList(1, 2, 3), Jackson3Library.getInstance().loads("[1,2,3]", IntArrayList.class));
+        assertEquals(new LongArrayList(1L, 2L, 3L), Jackson3Library.getInstance().loads("[1,2,3]", LongArrayList.class));
     }
 
 }

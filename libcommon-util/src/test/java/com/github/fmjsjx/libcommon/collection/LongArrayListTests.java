@@ -2,6 +2,8 @@ package com.github.fmjsjx.libcommon.collection;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.output.JsonStream;
 import com.jsoniter.spi.JsonException;
@@ -598,6 +600,26 @@ public class LongArrayListTests {
         }
     }
 
+    private static JsonMapper jackson2Mapper;
+    private static tools.jackson.databind.json.JsonMapper jackson3Mapper;
+
+    @BeforeAll
+    public static void enableJackson2Support() {
+        jackson2Mapper = JsonMapper.builder().build();
+        if (!LongArrayList.LongArrayListJackson2Support.enabled()) {
+            LongArrayList.LongArrayListJackson2Support.enable(jackson2Mapper);
+        }
+    }
+
+    @BeforeAll
+    public static void enableJackson3Support() {
+        var mapperBuilder = tools.jackson.databind.json.JsonMapper.builder();
+        if (!LongArrayList.LongArrayListJackson3Support.enabled()) {
+            LongArrayList.LongArrayListJackson3Support.enable(mapperBuilder);
+        }
+        jackson3Mapper = mapperBuilder.build();
+    }
+
     @Test
     public void testJsoniterSupportEnabled() {
         assertTrue(LongArrayList.LongArrayListJsoniterSupport.enabled());
@@ -690,6 +712,100 @@ public class LongArrayListTests {
                 Long.MIN_VALUE, -1, 0, 1, Long.MAX_VALUE);
 
         assertValues(JSON.parseObject(JSON.toJSONString(new LongArrayList()), LongArrayList.class));
+    }
+
+    @Test
+    public void testJackson2SupportEnabled() {
+        assertTrue(LongArrayList.LongArrayListJackson2Support.enabled());
+        // enable can only be called once
+        assertThrows(IllegalStateException.class, () -> LongArrayList.LongArrayListJackson2Support.enable(jackson2Mapper));
+    }
+
+    @Test
+    public void testJackson2Encode() throws Exception {
+        assertEquals("[1,2,3]", jackson2Mapper.writeValueAsString(new LongArrayList(1L, 2L, 3L)));
+        assertEquals("[]", jackson2Mapper.writeValueAsString(new LongArrayList()));
+        assertEquals("[-9223372036854775808,-1,0,1,9223372036854775807]",
+                jackson2Mapper.writeValueAsString(new LongArrayList(Long.MIN_VALUE, -1L, 0L, 1L, Long.MAX_VALUE)));
+    }
+
+    @Test
+    public void testJackson2Decode() throws Exception {
+        assertValues(jackson2Mapper.readValue("[1,2,3]", LongArrayList.class), 1, 2, 3);
+        assertValues((LongArrayList) jackson2Mapper.readValue("[1,2,3]", LongList.class), 1, 2, 3);
+
+        assertValues(jackson2Mapper.readValue("[]", LongArrayList.class));
+
+        assertValues(jackson2Mapper.readValue("[-9223372036854775808,-1,0,1,9223372036854775807]", LongArrayList.class),
+                Long.MIN_VALUE, -1, 0, 1, Long.MAX_VALUE);
+
+        // whitespace between elements must be accepted
+        assertValues(jackson2Mapper.readValue("[ 1 , 2 , 3 ]", LongArrayList.class), 1, 2, 3);
+
+        // non-numeric elements must be rejected
+        assertThrows(JsonProcessingException.class, () -> jackson2Mapper.readValue("[1,\"a\"]", LongArrayList.class));
+    }
+
+    @Test
+    public void testJackson2RoundTrip() throws Exception {
+        var list = new LongArrayList(1L, 2L, 3L);
+        var json = jackson2Mapper.writeValueAsString(list);
+        assertEquals("[1,2,3]", json);
+        assertValues(jackson2Mapper.readValue(json, LongArrayList.class), 1, 2, 3);
+
+        var boundaries = new LongArrayList(Long.MIN_VALUE, -1L, 0L, 1L, Long.MAX_VALUE);
+        assertValues(jackson2Mapper.readValue(jackson2Mapper.writeValueAsString(boundaries), LongArrayList.class),
+                Long.MIN_VALUE, -1, 0, 1, Long.MAX_VALUE);
+
+        assertValues(jackson2Mapper.readValue(jackson2Mapper.writeValueAsString(new LongArrayList()), LongArrayList.class));
+    }
+
+    @Test
+    public void testJackson3SupportEnabled() {
+        assertTrue(LongArrayList.LongArrayListJackson3Support.enabled());
+        // enable can only be called once
+        assertThrows(IllegalStateException.class,
+                () -> LongArrayList.LongArrayListJackson3Support.enable(tools.jackson.databind.json.JsonMapper.builder()));
+    }
+
+    @Test
+    public void testJackson3Encode() {
+        assertEquals("[1,2,3]", jackson3Mapper.writeValueAsString(new LongArrayList(1L, 2L, 3L)));
+        assertEquals("[]", jackson3Mapper.writeValueAsString(new LongArrayList()));
+        assertEquals("[-9223372036854775808,-1,0,1,9223372036854775807]",
+                jackson3Mapper.writeValueAsString(new LongArrayList(Long.MIN_VALUE, -1L, 0L, 1L, Long.MAX_VALUE)));
+    }
+
+    @Test
+    public void testJackson3Decode() {
+        assertValues(jackson3Mapper.readValue("[1,2,3]", LongArrayList.class), 1, 2, 3);
+        assertValues((LongArrayList) jackson3Mapper.readValue("[1,2,3]", LongList.class), 1, 2, 3);
+
+        assertValues(jackson3Mapper.readValue("[]", LongArrayList.class));
+
+        assertValues(jackson3Mapper.readValue("[-9223372036854775808,-1,0,1,9223372036854775807]", LongArrayList.class),
+                Long.MIN_VALUE, -1, 0, 1, Long.MAX_VALUE);
+
+        // whitespace between elements must be accepted
+        assertValues(jackson3Mapper.readValue("[ 1 , 2 , 3 ]", LongArrayList.class), 1, 2, 3);
+
+        // non-numeric elements must be rejected
+        assertThrows(tools.jackson.core.JacksonException.class,
+                () -> jackson3Mapper.readValue("[1,\"a\"]", LongArrayList.class));
+    }
+
+    @Test
+    public void testJackson3RoundTrip() {
+        var list = new LongArrayList(1L, 2L, 3L);
+        var json = jackson3Mapper.writeValueAsString(list);
+        assertEquals("[1,2,3]", json);
+        assertValues(jackson3Mapper.readValue(json, LongArrayList.class), 1, 2, 3);
+
+        var boundaries = new LongArrayList(Long.MIN_VALUE, -1L, 0L, 1L, Long.MAX_VALUE);
+        assertValues(jackson3Mapper.readValue(jackson3Mapper.writeValueAsString(boundaries), LongArrayList.class),
+                Long.MIN_VALUE, -1, 0, 1, Long.MAX_VALUE);
+
+        assertValues(jackson3Mapper.readValue(jackson3Mapper.writeValueAsString(new LongArrayList()), LongArrayList.class));
     }
 
 }

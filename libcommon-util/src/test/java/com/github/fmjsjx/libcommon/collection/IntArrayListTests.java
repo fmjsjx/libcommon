@@ -2,6 +2,8 @@ package com.github.fmjsjx.libcommon.collection;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.output.JsonStream;
 import com.jsoniter.spi.JsonException;
@@ -599,6 +601,26 @@ public class IntArrayListTests {
         }
     }
 
+    private static JsonMapper jackson2Mapper;
+    private static tools.jackson.databind.json.JsonMapper jackson3Mapper;
+
+    @BeforeAll
+    public static void enableJackson2Support() {
+        jackson2Mapper = JsonMapper.builder().build();
+        if (!IntArrayList.IntArrayListJackson2Support.enabled()) {
+            IntArrayList.IntArrayListJackson2Support.enable(jackson2Mapper);
+        }
+    }
+
+    @BeforeAll
+    public static void enableJackson3Support() {
+        var mapperBuilder = tools.jackson.databind.json.JsonMapper.builder();
+        if (!IntArrayList.IntArrayListJackson3Support.enabled()) {
+            IntArrayList.IntArrayListJackson3Support.enable(mapperBuilder);
+        }
+        jackson3Mapper = mapperBuilder.build();
+    }
+
     @Test
     public void testJsoniterSupportEnabled() {
         assertTrue(IntArrayList.IntArrayListJsoniterSupport.enabled());
@@ -691,6 +713,100 @@ public class IntArrayListTests {
                 Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE);
 
         assertValues(JSON.parseObject(JSON.toJSONString(new IntArrayList()), IntArrayList.class));
+    }
+
+    @Test
+    public void testJackson2SupportEnabled() {
+        assertTrue(IntArrayList.IntArrayListJackson2Support.enabled());
+        // enable can only be called once
+        assertThrows(IllegalStateException.class, () -> IntArrayList.IntArrayListJackson2Support.enable(jackson2Mapper));
+    }
+
+    @Test
+    public void testJackson2Encode() throws Exception {
+        assertEquals("[1,2,3]", jackson2Mapper.writeValueAsString(new IntArrayList(1, 2, 3)));
+        assertEquals("[]", jackson2Mapper.writeValueAsString(new IntArrayList()));
+        assertEquals("[-2147483648,-1,0,1,2147483647]",
+                jackson2Mapper.writeValueAsString(new IntArrayList(Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE)));
+    }
+
+    @Test
+    public void testJackson2Decode() throws Exception {
+        assertValues(jackson2Mapper.readValue("[1,2,3]", IntArrayList.class), 1, 2, 3);
+        assertValues((IntArrayList) jackson2Mapper.readValue("[1,2,3]", IntList.class), 1, 2, 3);
+
+        assertValues(jackson2Mapper.readValue("[]", IntArrayList.class));
+
+        assertValues(jackson2Mapper.readValue("[-2147483648,-1,0,1,2147483647]", IntArrayList.class),
+                Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE);
+
+        // whitespace between elements must be accepted
+        assertValues(jackson2Mapper.readValue("[ 1 , 2 , 3 ]", IntArrayList.class), 1, 2, 3);
+
+        // non-numeric elements must be rejected
+        assertThrows(JsonProcessingException.class, () -> jackson2Mapper.readValue("[1,\"a\"]", IntArrayList.class));
+    }
+
+    @Test
+    public void testJackson2RoundTrip() throws Exception {
+        var list = new IntArrayList(1, 2, 3);
+        var json = jackson2Mapper.writeValueAsString(list);
+        assertEquals("[1,2,3]", json);
+        assertValues(jackson2Mapper.readValue(json, IntArrayList.class), 1, 2, 3);
+
+        var boundaries = new IntArrayList(Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE);
+        assertValues(jackson2Mapper.readValue(jackson2Mapper.writeValueAsString(boundaries), IntArrayList.class),
+                Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE);
+
+        assertValues(jackson2Mapper.readValue(jackson2Mapper.writeValueAsString(new IntArrayList()), IntArrayList.class));
+    }
+
+    @Test
+    public void testJackson3SupportEnabled() {
+        assertTrue(IntArrayList.IntArrayListJackson3Support.enabled());
+        // enable can only be called once
+        assertThrows(IllegalStateException.class,
+                () -> IntArrayList.IntArrayListJackson3Support.enable(tools.jackson.databind.json.JsonMapper.builder()));
+    }
+
+    @Test
+    public void testJackson3Encode() {
+        assertEquals("[1,2,3]", jackson3Mapper.writeValueAsString(new IntArrayList(1, 2, 3)));
+        assertEquals("[]", jackson3Mapper.writeValueAsString(new IntArrayList()));
+        assertEquals("[-2147483648,-1,0,1,2147483647]",
+                jackson3Mapper.writeValueAsString(new IntArrayList(Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE)));
+    }
+
+    @Test
+    public void testJackson3Decode() {
+        assertValues(jackson3Mapper.readValue("[1,2,3]", IntArrayList.class), 1, 2, 3);
+        assertValues((IntArrayList) jackson3Mapper.readValue("[1,2,3]", IntList.class), 1, 2, 3);
+
+        assertValues(jackson3Mapper.readValue("[]", IntArrayList.class));
+
+        assertValues(jackson3Mapper.readValue("[-2147483648,-1,0,1,2147483647]", IntArrayList.class),
+                Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE);
+
+        // whitespace between elements must be accepted
+        assertValues(jackson3Mapper.readValue("[ 1 , 2 , 3 ]", IntArrayList.class), 1, 2, 3);
+
+        // non-numeric elements must be rejected
+        assertThrows(tools.jackson.core.JacksonException.class,
+                () -> jackson3Mapper.readValue("[1,\"a\"]", IntArrayList.class));
+    }
+
+    @Test
+    public void testJackson3RoundTrip() {
+        var list = new IntArrayList(1, 2, 3);
+        var json = jackson3Mapper.writeValueAsString(list);
+        assertEquals("[1,2,3]", json);
+        assertValues(jackson3Mapper.readValue(json, IntArrayList.class), 1, 2, 3);
+
+        var boundaries = new IntArrayList(Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE);
+        assertValues(jackson3Mapper.readValue(jackson3Mapper.writeValueAsString(boundaries), IntArrayList.class),
+                Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE);
+
+        assertValues(jackson3Mapper.readValue(jackson3Mapper.writeValueAsString(new IntArrayList()), IntArrayList.class));
     }
 
 }

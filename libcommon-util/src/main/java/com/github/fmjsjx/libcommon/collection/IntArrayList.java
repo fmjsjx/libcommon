@@ -2,6 +2,17 @@ package com.github.fmjsjx.libcommon.collection;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.reader.ObjectReader;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.fmjsjx.libcommon.util.ArrayUtil;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.ValueType;
@@ -584,6 +595,160 @@ public class IntArrayList extends AbstractList<@NonNull Integer>
         }
 
         private IntArrayListFastjson2Support() {
+        }
+
+    }
+
+    /**
+     * {@code IntArrayList} Jackson2 support.
+     */
+    public static final class IntArrayListJackson2Support {
+
+        private static final AtomicBoolean enabled = new AtomicBoolean();
+
+        private static final JsonSerializer<IntArrayList> SERIALIZER = new JsonSerializer<>() {
+            @Override
+            public void serialize(IntArrayList list, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+                var len = list.size();
+                gen.writeStartArray();
+                for (var i = 0; i < len; i++) {
+                    gen.writeNumber(list.valueData(i));
+                }
+                gen.writeEndArray();
+            }
+        };
+
+        private static final JsonDeserializer<IntArrayList> DESERIALIZER = new JsonDeserializer<>() {
+            @Override
+            public IntArrayList deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+                if (!p.isExpectedStartArrayToken()) {
+                    throw MismatchedInputException.from(p, IntArrayList.class, "expect JSON array, but found " + p.currentToken());
+                }
+                var list = new IntArrayList();
+                while (p.nextToken() != JsonToken.END_ARRAY) {
+                    list.add(p.getIntValue());
+                }
+                return list;
+            }
+        };
+
+        /**
+         * Returns {@code true} if {@code IntArrayListJackson2Support} is enabled,
+         * {@code false} otherwise.
+         *
+         * @return {@code true} if {@code IntArrayListJackson2Support} is enabled,
+         *         {@code false} otherwise
+         */
+        public static final boolean enabled() {
+            return enabled.get();
+        }
+
+        /**
+         * Returns a new Jackson2 {@link Module} supporting encoding/decoding
+         * {@code IntArrayList}s and {@code IntList}s.
+         *
+         * @return a Jackson2 {@code Module}
+         */
+        public static final Module module() {
+            var module = new SimpleModule("IntArrayListJackson2Module");
+            module.addSerializer(IntArrayList.class, SERIALIZER);
+            module.addDeserializer(IntArrayList.class, DESERIALIZER);
+            module.addDeserializer(IntList.class, DESERIALIZER);
+            return module;
+        }
+
+        /**
+         * Enables {@code IntArrayListJackson2Support} on the specified
+         * {@code ObjectMapper}.
+         *
+         * @param mapper the {@code ObjectMapper} to enable the support on
+         */
+        public static final void enable(ObjectMapper mapper) {
+            if (enabled.compareAndSet(false, true)) {
+                mapper.registerModule(module());
+            } else {
+                throw new IllegalStateException("IntArrayListJackson2Support.enable can only be called once");
+            }
+        }
+
+        private IntArrayListJackson2Support() {
+        }
+
+    }
+
+    /**
+     * {@code IntArrayList} Jackson3 support.
+     */
+    public static final class IntArrayListJackson3Support {
+
+        private static final AtomicBoolean enabled = new AtomicBoolean();
+
+        private static final tools.jackson.databind.ser.std.StdSerializer<IntArrayList> SERIALIZER = new tools.jackson.databind.ser.std.StdSerializer<>(IntArrayList.class) {
+            @Override
+            public void serialize(IntArrayList list, tools.jackson.core.JsonGenerator gen, tools.jackson.databind.SerializationContext provider) {
+                var len = list.size();
+                gen.writeStartArray();
+                for (var i = 0; i < len; i++) {
+                    gen.writeNumber(list.valueData(i));
+                }
+                gen.writeEndArray();
+            }
+        };
+
+        private static final tools.jackson.databind.deser.std.StdDeserializer<IntArrayList> DESERIALIZER = new tools.jackson.databind.deser.std.StdDeserializer<>(IntArrayList.class) {
+            @Override
+            public IntArrayList deserialize(tools.jackson.core.JsonParser p, tools.jackson.databind.DeserializationContext ctxt) {
+                if (!p.isExpectedStartArrayToken()) {
+                    throw tools.jackson.databind.exc.MismatchedInputException.from(p, IntArrayList.class, "expect JSON array, but found " + p.currentToken());
+                }
+                var list = new IntArrayList();
+                while (p.nextToken() != tools.jackson.core.JsonToken.END_ARRAY) {
+                    list.add(p.getIntValue());
+                }
+                return list;
+            }
+        };
+
+        /**
+         * Returns {@code true} if {@code IntArrayListJackson3Support} is enabled,
+         * {@code false} otherwise.
+         *
+         * @return {@code true} if {@code IntArrayListJackson3Support} is enabled,
+         *         {@code false} otherwise
+         */
+        public static final boolean enabled() {
+            return enabled.get();
+        }
+
+        /**
+         * Returns a new Jackson3 module supporting encoding/decoding
+         * {@code IntArrayList}s and {@code IntList}s.
+         *
+         * @return a Jackson3 module
+         */
+        public static final tools.jackson.databind.JacksonModule module() {
+            var module = new tools.jackson.databind.module.SimpleModule("IntArrayListJackson3Module");
+            module.addSerializer(IntArrayList.class, SERIALIZER);
+            module.addDeserializer(IntArrayList.class, DESERIALIZER);
+            module.addDeserializer(IntList.class, DESERIALIZER);
+            return module;
+        }
+
+        /**
+         * Enables {@code IntArrayListJackson3Support} on the specified mapper
+         * builder.
+         *
+         * @param builder the mapper builder to enable the support on
+         */
+        public static final void enable(tools.jackson.databind.cfg.MapperBuilder<?, ?> builder) {
+            if (enabled.compareAndSet(false, true)) {
+                builder.addModule(module());
+            } else {
+                throw new IllegalStateException("IntArrayListJackson3Support.enable can only be called once");
+            }
+        }
+
+        private IntArrayListJackson3Support() {
         }
 
     }
