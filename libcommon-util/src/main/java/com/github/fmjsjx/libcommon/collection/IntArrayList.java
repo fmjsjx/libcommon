@@ -1,6 +1,7 @@
 package com.github.fmjsjx.libcommon.collection;
 
 import com.github.fmjsjx.libcommon.util.ArrayUtil;
+import com.jsoniter.JsonIterator;
 import com.jsoniter.ValueType;
 import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
@@ -458,6 +459,15 @@ public class IntArrayList extends AbstractList<@NonNull Integer>
             return enabled.get();
         }
 
+        private static final JsonIterator.ReadArrayCallback READ_INT_ARRAY_LIST = (subIter, attachment) -> {
+            var valueType = subIter.whatIsNext();
+            if (valueType != ValueType.NUMBER) {
+                throw new JsonException("expect int, but found " + valueType);
+            }
+            ((IntArrayList) attachment).add(subIter.readInt());
+            return true;
+        };
+
         /**
          * Enables {@code IntArrayListJsoniterSupport}.
          */
@@ -496,14 +506,12 @@ public class IntArrayList extends AbstractList<@NonNull Integer>
                 });
                 JsoniterSpi.registerTypeDecoder(IntArrayList.class, iter -> {
                     var list = new IntArrayList();
-                    iter.readArrayCB((subIter, attachment) -> {
-                        var valueType = subIter.whatIsNext();
-                        if (valueType != ValueType.NUMBER) {
-                            throw new JsonException("expect int, but found " + valueType);
-                        }
-                        ((IntArrayList) attachment).add(subIter.readInt());
-                        return true;
-                    }, list);
+                    iter.readArrayCB(READ_INT_ARRAY_LIST, list);
+                    return list;
+                });
+                JsoniterSpi.registerTypeDecoder(IntList.class, iter -> {
+                    var list = new IntArrayList();
+                    iter.readArrayCB(READ_INT_ARRAY_LIST, list);
                     return list;
                 });
             } else {

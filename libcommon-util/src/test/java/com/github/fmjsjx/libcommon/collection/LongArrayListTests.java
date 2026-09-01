@@ -607,8 +607,8 @@ public class LongArrayListTests {
 
     @Test
     public void testJsoniterDecode() {
-        var list = JsonIterator.deserialize("[1,2,3]", LongArrayList.class);
-        assertValues(list, 1, 2, 3);
+        assertValues(JsonIterator.deserialize("[1,2,3]", LongArrayList.class), 1, 2, 3);
+        assertValues((LongArrayList) JsonIterator.deserialize("[1,2,3]", LongList.class), 1, 2, 3);
 
         assertValues(JsonIterator.deserialize("[]", LongArrayList.class));
 

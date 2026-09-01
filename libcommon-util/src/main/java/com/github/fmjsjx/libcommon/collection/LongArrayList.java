@@ -483,6 +483,11 @@ public class LongArrayList extends AbstractList<@NonNull Long>
                     iter.readArrayCB(READ_LONG_ARRAY_LIST, list);
                     return list;
                 });
+                JsoniterSpi.registerTypeDecoder(LongList.class, iter -> {
+                    var list = new LongArrayList();
+                    iter.readArrayCB(READ_LONG_ARRAY_LIST, list);
+                    return list;
+                });
             } else {
                 throw new IllegalStateException("LongArrayListSupport.enable can only be called once");
             }

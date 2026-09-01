@@ -608,8 +608,8 @@ public class IntArrayListTests {
 
     @Test
     public void testJsoniterDecode() {
-        var list = JsonIterator.deserialize("[1,2,3]", IntArrayList.class);
-        assertValues(list, 1, 2, 3);
+        assertValues(JsonIterator.deserialize("[1,2,3]", IntArrayList.class), 1, 2, 3);
+        assertValues((IntArrayList) JsonIterator.deserialize("[1,2,3]", IntList.class), 1, 2, 3);
 
         assertValues(JsonIterator.deserialize("[]", IntArrayList.class));
 

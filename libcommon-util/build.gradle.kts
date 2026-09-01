@@ -14,6 +14,7 @@ dependencies {
     compileOnlyApi("com.fasterxml.uuid:java-uuid-generator")
     annotationProcessor("org.jspecify:jspecify:1.0.1")
 
+    compileOnlyApi("com.alibaba.fastjson2:fastjson2")
     compileOnlyApi("com.jsoniter:jsoniter")
 
     compileOnlyApi(kotlin("stdlib"))
