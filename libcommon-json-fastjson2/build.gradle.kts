@@ -13,12 +13,12 @@ dependencies {
     api(project(":libcommon-json"))
     implementation(project(":libcommon-util"))
     api("com.alibaba.fastjson2:fastjson2")
-    compileOnlyApi("com.jsoniter:jsoniter")
-    compileOnlyApi(project(":libcommon-json-jackson2"))
-    compileOnlyApi(project(":libcommon-json-jackson3"))
+    "optionalApi"("com.jsoniter:jsoniter")
+    "optionalApi"(project(":libcommon-json-jackson2"))
+    "optionalApi"(project(":libcommon-json-jackson3"))
 
-    compileOnlyApi(kotlin("stdlib"))
-    compileOnlyApi("com.alibaba.fastjson2:fastjson2-kotlin")
+    "optionalApi"(kotlin("stdlib"))
+    "optionalApi"("com.alibaba.fastjson2:fastjson2-kotlin")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

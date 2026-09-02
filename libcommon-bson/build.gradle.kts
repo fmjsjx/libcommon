@@ -11,7 +11,7 @@ dependencies {
     implementation(project(":libcommon-util"))
     api("org.mongodb:bson")
     api("org.mongodb:mongodb-driver-core")
-    compileOnlyApi(kotlin("stdlib"))
+    "optionalApi"(kotlin("stdlib"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

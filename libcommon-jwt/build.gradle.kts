@@ -12,7 +12,8 @@ dependencies {
     implementation(project(":libcommon-json-jsoniter"))
     implementation(project(":libcommon-json-fastjson2"))
     implementation(project(":libcommon-util"))
-    compileOnlyApi(kotlin("stdlib"))
+    annotationProcessor("org.jspecify:jspecify")
+    "optionalApi"(kotlin("stdlib"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

@@ -57,7 +57,7 @@ dependencies {
         api("jakarta.annotation:jakarta.annotation-api:3.0.0")
         api("com.google.code.findbugs:jsr305:3.0.2")
         api("com.fasterxml.uuid:java-uuid-generator:5.2.0")
-        api("org.jspecify:jspecify:1.0.1")
+        annotationProcessor("org.jspecify:jspecify:1.0.1")
     }
     // log4j2
     implementation(platform("org.apache.logging.log4j:log4j-bom:2.26.1"))
@@ -74,16 +74,27 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(javaVersion)
     }
+
+    registerFeature("optional") {
+        usingSourceSet(sourceSets.create("optional"))
+    }
 }
 
 configurations {
+    named("optionalApi") {
+        dependencyConstraints.addAll(project.configurations.findByName("api")?.dependencyConstraints ?: emptyList())
+    }
     compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
+        extendsFrom(
+            configurations.annotationProcessor.get(),
+            configurations.named("optionalApi").get(),
+        )
     }
     testImplementation {
         extendsFrom(
             configurations.compileOnly.get(),
             configurations.compileOnlyApi.get(),
+            configurations.named("optionalApi").get(),
         )
     }
 }

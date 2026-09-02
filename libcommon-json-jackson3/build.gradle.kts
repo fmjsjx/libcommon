@@ -12,10 +12,10 @@ dependencies {
     implementation(project(":libcommon-util"))
 
     api("tools.jackson.core:jackson-databind")
-    compileOnlyApi("com.jsoniter:jsoniter")
+    "optionalApi"("com.jsoniter:jsoniter")
 
-    compileOnlyApi(kotlin("stdlib"))
-    compileOnlyApi("tools.jackson.module:jackson-module-kotlin")
+    "optionalApi"(kotlin("stdlib"))
+    "optionalApi"("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
