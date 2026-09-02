@@ -40,6 +40,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
+            suppressAllPomMetadataWarnings()
             pom {
                 name.set("libcommon/JSON Jackson3")
                 description.set("A set of some common useful libraries.")

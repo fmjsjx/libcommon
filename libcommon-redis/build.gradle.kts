@@ -36,6 +36,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
+            suppressAllPomMetadataWarnings()
             pom {
                 name.set("libcommon/REDIS")
                 description.set("A set of some common useful libraries.")

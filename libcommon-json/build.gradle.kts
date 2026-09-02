@@ -34,6 +34,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
+            suppressAllPomMetadataWarnings()
             pom {
                 name.set("libcommon/JSON")
                 description.set("A set of some common useful libraries.")
