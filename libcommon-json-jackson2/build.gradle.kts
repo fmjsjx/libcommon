@@ -63,6 +63,14 @@ publishing {
                     val dependencyElements = document.getElementsByTagName("dependency")
                     for (i in 0 until dependencyElements.length) {
                         val depElement = dependencyElements.item(i) as org.w3c.dom.Element
+                        // Skip dependencyManagement dependencies
+                        val parentNode = depElement.parentNode
+                        if (parentNode != null && parentNode.nodeName == "dependencies") {
+                            val grandParentNode = parentNode.parentNode
+                            if (grandParentNode != null && grandParentNode.nodeName == "dependencyManagement") {
+                                continue
+                            }
+                        }
                         val artifactId = depElement.getElementsByTagName("artifactId").item(0)?.textContent
 
                         // Check if this dependency is a compileOnlyApi optional dependency declared by this module
