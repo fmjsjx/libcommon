@@ -12,11 +12,11 @@ dependencies {
     api(project(":libcommon-json"))
     implementation(project(":libcommon-util"))
     api("com.jsoniter:jsoniter")
-    compileOnlyApi(project(":libcommon-json-jackson2"))
-    compileOnlyApi(project(":libcommon-json-fastjson2"))
-    compileOnlyApi(project(":libcommon-json-jackson3"))
+    "optionalApi"(project(":libcommon-json-jackson2"))
+    "optionalApi"(project(":libcommon-json-fastjson2"))
+    "optionalApi"(project(":libcommon-json-jackson3"))
 
-    compileOnlyApi(kotlin("stdlib"))
+    "optionalApi"(kotlin("stdlib"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

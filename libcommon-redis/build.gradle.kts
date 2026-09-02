@@ -11,8 +11,8 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
     implementation(project(":libcommon-util"))
     api("io.lettuce:lettuce-core")
-    compileOnlyApi(kotlin("stdlib"))
-    compileOnlyApi("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
+    "optionalApi"(kotlin("stdlib"))
+    "optionalApi"("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

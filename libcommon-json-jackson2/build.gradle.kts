@@ -16,10 +16,10 @@ dependencies {
     api("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    compileOnlyApi("com.jsoniter:jsoniter")
+    "optionalApi"("com.jsoniter:jsoniter")
 
-    compileOnlyApi(kotlin("stdlib"))
-    compileOnlyApi("com.fasterxml.jackson.module:jackson-module-kotlin")
+    "optionalApi"(kotlin("stdlib"))
+    "optionalApi"("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
