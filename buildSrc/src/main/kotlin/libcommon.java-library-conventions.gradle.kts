@@ -82,7 +82,20 @@ java {
 
 configurations {
     named("optionalApi") {
-        dependencyConstraints.addAll(project.configurations.findByName("api")?.dependencyConstraints ?: emptyList())
+        withDependencies {
+            val apiConfig = project.configurations.findByName("api")
+            if (apiConfig != null) {
+                // copy main api's dependency constraints
+                dependencyConstraints.addAll(apiConfig.dependencyConstraints)
+
+                // copy main api's platform(BOM) dependencies
+                apiConfig.dependencies.forEach { dep ->
+                    if (dep is ModuleDependency && dep.isEndorsingStrictVersions) {
+                        dependencies.add(dep)
+                    }
+                }
+            }
+        }
     }
     compileOnly {
         extendsFrom(
