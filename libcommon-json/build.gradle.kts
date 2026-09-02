@@ -18,21 +18,14 @@ dependencies {
 description = "libcommon/JSON"
 
 tasks.test {
-    // Use junit platform for unit tests.
+    // Use JUnit platform for unit tests.
     useJUnitPlatform()
 }
 
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            val javaComponent = components["java"] as AdhocComponentWithVariants
-            javaComponent.withVariantsFromConfiguration(configurations.named("optionalApiElements").get()) {
-                skip()
-            }
-            javaComponent.withVariantsFromConfiguration(configurations.named("optionalRuntimeElements").get()) {
-                skip()
-            }
-            from(javaComponent)
+            from(components["java"])
             versionMapping {
                 usage("java-api") {
                     fromResolutionOf("runtimeClasspath")
@@ -41,7 +34,6 @@ publishing {
                     fromResolutionResult()
                 }
             }
-            suppressAllPomMetadataWarnings()
             pom {
                 name.set("libcommon/JSON")
                 description.set("A set of some common useful libraries.")

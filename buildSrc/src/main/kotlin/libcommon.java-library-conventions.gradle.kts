@@ -74,40 +74,16 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(javaVersion)
     }
-
-    registerFeature("optional") {
-        usingSourceSet(sourceSets.create("optional"))
-    }
 }
 
 configurations {
-    named("optionalApi") {
-        withDependencies {
-            val apiConfig = project.configurations.findByName("api")
-            if (apiConfig != null) {
-                // copy main api's dependency constraints
-                dependencyConstraints.addAll(apiConfig.dependencyConstraints)
-
-                // copy main api's platform(BOM) dependencies
-                apiConfig.dependencies.forEach { dep ->
-                    if (dep is ModuleDependency && dep.isEndorsingStrictVersions) {
-                        dependencies.add(dep)
-                    }
-                }
-            }
-        }
-    }
     compileOnly {
-        extendsFrom(
-            configurations.annotationProcessor.get(),
-            configurations.named("optionalApi").get(),
-        )
+        extendsFrom(configurations.annotationProcessor.get())
     }
     testImplementation {
         extendsFrom(
             configurations.compileOnly.get(),
             configurations.compileOnlyApi.get(),
-            configurations.named("optionalApi").get(),
         )
     }
 }

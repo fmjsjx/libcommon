@@ -25,7 +25,6 @@ publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["javaPlatform"])
-            suppressAllPomMetadataWarnings()
             pom {
                 name.set("libcommon/BOM")
                 description.set("A set of some common useful libraries.")
