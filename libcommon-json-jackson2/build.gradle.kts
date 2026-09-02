@@ -36,7 +36,14 @@ description = "libcommon/JSON Jackson2"
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            from(components["java"])
+            val javaComponent = components["java"] as AdhocComponentWithVariants
+            javaComponent.withVariantsFromConfiguration(configurations.named("optionalApiElements").get()) {
+                skip()
+            }
+            javaComponent.withVariantsFromConfiguration(configurations.named("optionalRuntimeElements").get()) {
+                skip()
+            }
+            from(javaComponent)
             versionMapping {
                 usage("java-api") {
                     fromResolutionOf("runtimeClasspath")
