@@ -59,6 +59,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
+            suppressAllPomMetadataWarnings()
             pom {
                 name.set("libcommon/Util")
                 description.set("A set of some common useful libraries.")

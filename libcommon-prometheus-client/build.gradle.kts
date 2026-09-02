@@ -39,6 +39,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
+            suppressAllPomMetadataWarnings()
             pom {
                 name.set("libcommon/Prometheus")
                 description.set("A set of some useful libraries for Prometheus.")

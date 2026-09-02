@@ -47,6 +47,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
+            suppressAllPomMetadataWarnings()
             pom {
                 name.set("libcommon/JWT")
                 description.set("A set of some common useful libraries.")

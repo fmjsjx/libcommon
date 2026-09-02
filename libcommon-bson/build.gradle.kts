@@ -35,6 +35,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
+            suppressAllPomMetadataWarnings()
             pom {
                 name.set("libcommon/BSON")
                 description.set("A set of some common useful libraries.")

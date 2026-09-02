@@ -44,6 +44,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
+            suppressAllPomMetadataWarnings()
             pom {
                 name.set("libcommon/JSON Fastjson2")
                 description.set("A set of some common useful libraries.")

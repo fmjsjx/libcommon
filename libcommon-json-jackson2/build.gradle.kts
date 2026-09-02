@@ -45,6 +45,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
+            suppressAllPomMetadataWarnings()
             pom {
                 name.set("libcommon/JSON Jackson2")
                 description.set("A set of some common useful libraries.")

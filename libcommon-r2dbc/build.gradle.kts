@@ -49,6 +49,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
+            suppressAllPomMetadataWarnings()
             pom {
                 name.set("libcommon/R2DBC")
                 description.set("A set of some common useful libraries.")
