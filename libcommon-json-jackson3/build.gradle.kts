@@ -15,7 +15,7 @@ dependencies {
     "optionalApi"("com.jsoniter:jsoniter")
 
     "optionalApi"(kotlin("stdlib"))
-    "optionalApi"("com.fasterxml.jackson.module:jackson-module-kotlin")
+    "optionalApi"("tools.jackson.module:jackson-module-kotlin")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
