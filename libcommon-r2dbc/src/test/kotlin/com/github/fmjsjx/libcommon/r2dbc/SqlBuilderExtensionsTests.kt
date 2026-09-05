@@ -428,13 +428,81 @@ class SqlBuilderExtensionsTests {
 
     @Test
     fun testSubquery() {
-        val sqlBuilder = SqlBuilder()
+        var sqlBuilder = SqlBuilder()
+        sqlBuilder.subquery {
+            selectAll()
+            from<TestEntity>()
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("(", "SELECT", "*", "FROM", "test_entity", ")")
+
+        sqlBuilder = SqlBuilder()
+        sqlBuilder.subquery(name = null) {
+            selectAll()
+            from<TestEntity>()
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("(", "SELECT", "*", "FROM", "test_entity", ")")
+
+        sqlBuilder = SqlBuilder()
         sqlBuilder.subquery("test") {
             selectAll()
             from<TestEntity>()
         } shouldBeSameInstanceAs sqlBuilder
         sqlBuilder.sqlPartsValue shouldContainExactly
                 listOf("(", "SELECT", "*", "FROM", "test_entity", ")", "test")
+
+        sqlBuilder = SqlBuilder()
+        sqlBuilder.subquery("t") {
+            select(TestEntity::name)
+            from<TestEntity>()
+            where(TestEntity::id).eq(1)
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("(", "SELECT", "name", "FROM", "test_entity", "WHERE", "id", "= ?", ")", "t")
+        sqlBuilder.valuesValue shouldContainExactly listOf(1)
+    }
+
+    @Test
+    fun testExists() {
+        var sqlBuilder = SqlBuilder()
+        sqlBuilder.exists {
+            selectAll()
+            from<TestEntity>()
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("EXISTS", "(", "SELECT", "*", "FROM", "test_entity", ")")
+
+        sqlBuilder = SqlBuilder()
+        sqlBuilder.exists(name = null) {
+            selectAll()
+            from<TestEntity>()
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("EXISTS", "(", "SELECT", "*", "FROM", "test_entity", ")")
+
+        sqlBuilder = SqlBuilder()
+        sqlBuilder.exists("t") {
+            selectAll()
+            from<TestEntity>()
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("EXISTS", "(", "SELECT", "*", "FROM", "test_entity", ")", "t")
+
+        sqlBuilder = SqlBuilder()
+        sqlBuilder.selectAll().from<TestEntity>().where {
+            exists {
+                selectAll()
+                from<TestEntity2>()
+                where(TestEntity2::id).eq(1)
+            }
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf(
+                    "SELECT", "*", "FROM", "test_entity", "WHERE",
+                    "EXISTS", "(", "SELECT", "*", "FROM", "test2", "WHERE", "id", "= ?", ")"
+                )
+        sqlBuilder.valuesValue shouldContainExactly listOf(1)
     }
 
     @Test
@@ -446,6 +514,25 @@ class SqlBuilderExtensionsTests {
         } shouldBeSameInstanceAs sqlBuilder
         sqlBuilder.sqlPartsValue shouldContainExactly
                 listOf("IN", "(", "SELECT", "*", "FROM", "test_entity", ")")
+    }
+
+    @Test
+    fun testNotIn_Subquery() {
+        var sqlBuilder = SqlBuilder()
+        sqlBuilder.notIn {
+            selectAll()
+            from<TestEntity>()
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("NOT", "IN", "(", "SELECT", "*", "FROM", "test_entity", ")")
+
+        sqlBuilder = SqlBuilder()
+        sqlBuilder.where(TestEntity::id).notIn {
+            select(TestEntity2::id)
+            from<TestEntity2>()
+        } shouldBeSameInstanceAs sqlBuilder
+        sqlBuilder.sqlPartsValue shouldContainExactly
+                listOf("WHERE", "id", "NOT", "IN", "(", "SELECT", "id", "FROM", "test2", ")")
     }
 
     @Test

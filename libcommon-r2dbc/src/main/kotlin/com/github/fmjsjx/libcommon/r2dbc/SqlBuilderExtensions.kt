@@ -466,12 +466,30 @@ fun SqlBuilder.groupBy(vararg columns: KProperty1<*, *>): SqlBuilder = groupBy(c
  * Append a subquery into SQL.
  *
  * @param name the name of the subquery
- * @param block the subquery block
+ * @param subqueryBlock the subquery block
  * @return this [SqlBuilder]
  * @since 4.3
  */
-inline fun SqlBuilder.subquery(name: String, block: SqlBuilder.() -> Unit): SqlBuilder =
-    subquery().apply { block() }.endSubquery(name)
+inline fun SqlBuilder.subquery(name: String? = null, subqueryBlock: SqlBuilder.() -> Unit): SqlBuilder =
+    subquery().run {
+        subqueryBlock()
+        if (name == null) {
+            endSubquery()
+        } else {
+            endSubquery(name)
+        }
+    }
+
+/**
+ * Append `EXISTS` clause into SQL with the specified subquery.
+ *
+ * @param name the name of the subquery
+ * @param subqueryBlock the subquery block
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+inline fun SqlBuilder.exists(name: String? = null, subqueryBlock: SqlBuilder.() -> Unit): SqlBuilder =
+    exists().subquery(name, subqueryBlock)
 
 /**
  * Append `IN` clause into SQL with the specified subquery.
@@ -482,6 +500,20 @@ inline fun SqlBuilder.subquery(name: String, block: SqlBuilder.() -> Unit): SqlB
  */
 inline fun SqlBuilder.isIn(subqueryBlock: SqlBuilder.() -> Unit): SqlBuilder =
     inSubquery().apply { subqueryBlock() }.endSubquery()
+
+/**
+ * Append `NOT IN` clause into SQL with the specified subquery.
+ *
+ * This method is equivalent to:
+ * ```
+ * not().isIn(subqueryBlock)
+ * ```
+ *
+ * @param subqueryBlock the subquery block
+ * @return this [SqlBuilder]
+ * @since 4.3
+ */
+inline fun SqlBuilder.notIn(subqueryBlock: SqlBuilder.() -> Unit): SqlBuilder = not().isIn(subqueryBlock)
 
 /**
  * Append `INNER JOIN` clause into SQL with the specified subquery.
