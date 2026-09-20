@@ -4,6 +4,7 @@ import com.github.fmjsjx.libcommon.redis.core.RedisConnectionAdapter
 import com.github.fmjsjx.libcommon.util.launch
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
+import io.lettuce.core.SetArgs
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.codec.ByteArrayCodec
 import kotlinx.coroutines.Dispatchers
@@ -87,29 +88,29 @@ class KeepAliveRedisCoroutineLockTests {
         if (::scheduler.isInitialized) {
             try {
                 scheduler.shutdown()
-            } catch (e: Exception) {
-                // Ignore
+            } catch (_: Exception) {
+                // NOOP
             }
         }
         if (::byteConnection.isInitialized) {
             try {
                 byteConnection.close()
-            } catch (e: Exception) {
-                // Ignore
+            } catch (_: Exception) {
+                // NOOP
             }
         }
         if (::connection.isInitialized) {
             try {
                 connection.close()
-            } catch (e: Exception) {
-                // Ignore
+            } catch (_: Exception) {
+                // NOOP
             }
         }
         if (::redisClient.isInitialized) {
             try {
                 redisClient.shutdown()
-            } catch (e: Exception) {
-                // Ignore
+            } catch (_: Exception) {
+                // NOOP
             }
         }
     }
@@ -326,7 +327,7 @@ class KeepAliveRedisCoroutineLockTests {
             val timeout = 10L
 
             // Lock with another value first
-            connection.sync().setex(key, 1, "other")
+            connection.sync().set(key, "other", SetArgs().ex(1))
 
             try {
                 val lock = KeepAliveRedisCoroutineLock(adapter, key, value, timeout, scheduler)
@@ -402,7 +403,7 @@ class KeepAliveRedisCoroutineLockTests {
                         ) {
                             actionExecuted.set(true)
                         }
-                    } catch (e: IllegalStateException) {
+                    } catch (_: IllegalStateException) {
                         // OK
                     }
 
@@ -632,7 +633,7 @@ class KeepAliveRedisCoroutineLockTests {
             val timeout = 10L
 
             // Lock with another value first
-            byteConnection.sync().setex(key, 1, "other".toByteArray())
+            byteConnection.sync().set(key,"other".toByteArray(), SetArgs().ex(1))
 
             try {
                 val lock = KeepAliveRedisCoroutineLock(byteAdapter, key, value, timeout, scheduler)
