@@ -6,18 +6,18 @@ plugins {
 
 dependencies {
     // kotlin
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.4.10"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.4.20"))
     // kotlin coroutines
     implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.11.0"))
 
     // Kotest
-    testImplementation(platform("io.kotest:kotest-bom:6.2.4"))
+    testImplementation(platform("io.kotest:kotest-bom:6.2.5"))
 
     constraints {
         // reactor-kotlin-extensions
-        implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.3.0")
+        implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.3.2")
         // mockk
-        testImplementation("io.mockk:mockk:1.14.9")
+        testImplementation("io.mockk:mockk:1.14.11")
     }
 
 }
