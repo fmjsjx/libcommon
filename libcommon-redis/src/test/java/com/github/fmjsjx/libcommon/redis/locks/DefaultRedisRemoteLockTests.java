@@ -3,6 +3,7 @@ package com.github.fmjsjx.libcommon.redis.locks;
 import com.github.fmjsjx.libcommon.redis.core.RedisConnectionAdapter;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
+import io.lettuce.core.SetArgs;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.codec.ByteArrayCodec;
 import org.junit.jupiter.api.*;
@@ -210,7 +211,7 @@ public class DefaultRedisRemoteLockTests {
         long timeout = 10;
 
         // Lock with another value first
-        connection.sync().setex(key, 1, "other");
+        connection.sync().set(key, "other", new SetArgs().ex(1));
 
         try {
             DefaultRedisRemoteLock<String, String> lock = new DefaultRedisRemoteLock<>(adapter, key, value, timeout);
@@ -369,7 +370,7 @@ public class DefaultRedisRemoteLockTests {
         long timeout = 10;
 
         // Lock with another value first
-        connection.sync().setex(key, 1, "other");
+        connection.sync().set(key, "other", new SetArgs().ex(1));
 
         try {
             DefaultRedisRemoteLock<String, String> lock = new DefaultRedisRemoteLock<>(adapter, key, value, timeout);
@@ -455,7 +456,7 @@ public class DefaultRedisRemoteLockTests {
         var executor = Executors.newSingleThreadExecutor();
 
         // Lock with another value first
-        connection.sync().setex(key, 1, "other");
+        connection.sync().set(key, "other", new SetArgs().ex(1));
 
         try {
             DefaultRedisRemoteLock<String, String> lock = new DefaultRedisRemoteLock<>(adapter, key, value, timeout);
@@ -670,7 +671,7 @@ public class DefaultRedisRemoteLockTests {
         long timeout = 10;
 
         // Lock with another value first
-        byteConnection.sync().setex(key, 1, "other".getBytes());
+        byteConnection.sync().set(key, "other".getBytes(), new SetArgs().ex(1));
 
         try {
             DefaultRedisRemoteLock<byte[], byte[]> lock = new DefaultRedisRemoteLock<>(byteAdapter, key, value, timeout);
@@ -799,7 +800,7 @@ public class DefaultRedisRemoteLockTests {
         long timeout = 10;
 
         // Lock with another value first
-        byteConnection.sync().setex(key, 1, "other".getBytes());
+        byteConnection.sync().set(key, "other".getBytes(), new SetArgs().ex(1));
 
         try {
             DefaultRedisRemoteLock<byte[], byte[]> lock = new DefaultRedisRemoteLock<>(byteAdapter, key, value, timeout);

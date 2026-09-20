@@ -3,6 +3,7 @@ package com.github.fmjsjx.libcommon.redis.locks;
 import com.github.fmjsjx.libcommon.redis.core.RedisConnectionAdapter;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
+import io.lettuce.core.SetArgs;
 import io.lettuce.core.api.StatefulRedisConnection;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
@@ -252,7 +253,7 @@ public class KeepAliveRedisRemoteLockTests {
         long timeout = 10;
 
         // Lock with another value first
-        connection.sync().setex(key, 1, "other");
+        connection.sync().set(key, "other", new SetArgs().ex(1));
 
         try {
             KeepAliveRedisRemoteLock<String, String> lock = new KeepAliveRedisRemoteLock<>(adapter, key, value, timeout, scheduler);
@@ -567,7 +568,7 @@ public class KeepAliveRedisRemoteLockTests {
         long timeout = 10;
 
         // Lock with another value first
-        byteConnection.sync().setex(key, 1, "other".getBytes());
+        byteConnection.sync().set(key, "other".getBytes(), new SetArgs().ex(1));
 
         try {
             KeepAliveRedisRemoteLock<byte[], byte[]> lock = new KeepAliveRedisRemoteLock<>(byteAdapter, key, value, timeout, scheduler);
