@@ -33,7 +33,7 @@ dependencies {
     api(platform("io.prometheus:simpleclient_bom:0.16.0"))
     api(platform("io.prometheus:prometheus-metrics-bom:1.9.0"))
     // Kotlin
-    api(platform("org.jetbrains.kotlin:kotlin-bom:2.4.10"))
+    api(platform("org.jetbrains.kotlin:kotlin-bom:2.4.20"))
     // Spring Boot
     api(platform("org.springframework.boot:spring-boot-dependencies:4.0.8"))
     // assertj
