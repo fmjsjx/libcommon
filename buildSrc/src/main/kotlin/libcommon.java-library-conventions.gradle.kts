@@ -44,7 +44,7 @@ dependencies {
         implementation("ch.qos.logback:logback-classic:1.6.3")
         api("io.lettuce:lettuce-core:7.7.0.RELEASE")
         api("com.jsoniter:jsoniter:0.9.23")
-        val fastjson2Version = "2.0.62"
+        val fastjson2Version = "2.0.65"
         api("com.alibaba.fastjson2:fastjson2:$fastjson2Version")
         api("com.alibaba.fastjson2:fastjson2-kotlin:$fastjson2Version")
         val jrubyVersion = "10.1.1.0"
