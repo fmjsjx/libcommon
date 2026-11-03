@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
     // Netty
-    api(platform("io.netty:netty-bom:4.2.19.Final"))
+    api(platform("io.netty:netty-bom:4.2.20.Final"))
     // MongoDB Driver
     implementation(platform("org.mongodb:mongodb-driver-bom:5.14.0"))
     // Junit
