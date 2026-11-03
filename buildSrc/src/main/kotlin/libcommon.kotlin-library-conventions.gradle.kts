@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     // kotlin
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.4.20"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.4.21"))
     // kotlin coroutines
     implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.11.0"))
 
