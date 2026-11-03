@@ -40,7 +40,7 @@ dependencies {
     testImplementation(platform("org.assertj:assertj-bom:3.27.7"))
 
     constraints {
-        implementation("org.slf4j:slf4j-api:2.0.19")
+        implementation("org.slf4j:slf4j-api:2.0.20")
         implementation("ch.qos.logback:logback-classic:1.6.3")
         api("io.lettuce:lettuce-core:7.7.0.RELEASE")
         api("com.jsoniter:jsoniter:0.9.23")
