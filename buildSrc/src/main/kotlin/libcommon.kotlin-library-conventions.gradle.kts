@@ -11,7 +11,7 @@ dependencies {
     implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.11.0"))
 
     // Kotest
-    testImplementation(platform("io.kotest:kotest-bom:6.2.5"))
+    testImplementation(platform("io.kotest:kotest-bom:6.2.6"))
 
     constraints {
         // reactor-kotlin-extensions
