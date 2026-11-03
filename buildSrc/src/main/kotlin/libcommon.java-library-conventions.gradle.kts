@@ -35,7 +35,7 @@ dependencies {
     // Kotlin
     api(platform("org.jetbrains.kotlin:kotlin-bom:2.4.21"))
     // Spring Boot
-    api(platform("org.springframework.boot:spring-boot-dependencies:4.0.8"))
+    api(platform("org.springframework.boot:spring-boot-dependencies:4.1.2"))
     // assertj
     testImplementation(platform("org.assertj:assertj-bom:3.27.7"))
 
