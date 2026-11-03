@@ -23,7 +23,7 @@ final class RedisDirectConnectionAdapter<K, V> extends AbstractRedisConnectionAd
 
     @Override
     public RedisReactiveCommands<K, V> reactive() {
-        return connection.reactive();
+        return connection.commands(RedisReactiveCommands.factory());
     }
 
 }
