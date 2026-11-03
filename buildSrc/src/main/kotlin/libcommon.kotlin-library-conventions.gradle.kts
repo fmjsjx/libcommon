@@ -15,7 +15,7 @@ dependencies {
 
     constraints {
         // reactor-kotlin-extensions
-        implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.3.2")
+        implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.3.3")
         // mockk
         testImplementation("io.mockk:mockk:1.14.11")
     }
