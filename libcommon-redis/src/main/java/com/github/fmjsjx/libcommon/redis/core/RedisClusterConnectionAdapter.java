@@ -23,7 +23,7 @@ final class RedisClusterConnectionAdapter<K, V> extends AbstractRedisConnectionA
 
     @Override
     public RedisAdvancedClusterReactiveCommands<K, V> reactive() {
-        return connection.reactive();
+        return connection.commands(RedisAdvancedClusterReactiveCommands.factory());
     }
 
 }

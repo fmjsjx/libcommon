@@ -24,7 +24,7 @@ abstract class AbstractRedisPubSubConnectionAdapter<K, V, C extends StatefulRedi
 
     @Override
     public RedisPubSubReactiveCommands<K, V> reactive() {
-        return connection.reactive();
+        return connection.commands(RedisPubSubReactiveCommands.factory());
     }
 
 }
