@@ -22,7 +22,7 @@ dependencies {
     // Junit
     testImplementation(platform("org.junit:junit-bom:6.1.3"))
     // Mockito
-    testImplementation(platform("org.mockito:mockito-bom:5.23.0"))
+    testImplementation(platform("org.mockito:mockito-bom:5.24.0"))
     // Jackson 2
     api(platform("com.fasterxml.jackson:jackson-bom:2.22.2"))
     // Jackson 3
